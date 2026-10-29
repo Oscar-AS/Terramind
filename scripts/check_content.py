@@ -177,7 +177,7 @@ def check_fiches() -> bool:
 
 def main() -> int:
     wo = check_templates()
-    checked = [wo is not None or any(p.is_file() for p in TEMPLATES.values())]
+    checked = [any(p.is_file() for p in TEMPLATES.values())]
     checked += [check_audio(wo), check_rules(), check_fiches()]
     if not any(checked):
         print("Contenu : rien à vérifier.")

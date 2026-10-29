@@ -22,6 +22,9 @@ gh api -X PATCH "repos/$REPO" \
 echo "Réglages de fusion appliqués."
 
 # --- 2. Protection de main (PUT : remplace la règle existante, donc relançable) ---
+# Relecture CODEOWNERS non obligatoire : chaque dossier n'a qu'un propriétaire, qui ne peut pas
+# approuver sa propre PR. La rendre obligatoire bloquerait toute PR de son propre périmètre.
+# CODEOWNERS continue de demander automatiquement la relecture au bon membre.
 protection=$(cat <<'JSON'
 {
   "required_status_checks": { "strict": true, "checks": [{ "context": "ci-ok" }] },
@@ -29,7 +32,7 @@ protection=$(cat <<'JSON'
   "required_pull_request_reviews": {
     "required_approving_review_count": 1,
     "dismiss_stale_reviews": true,
-    "require_code_owner_reviews": true,
+    "require_code_owner_reviews": false,
     "require_last_push_approval": true
   },
   "restrictions": null,
