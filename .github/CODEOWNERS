@@ -1,0 +1,21 @@
+# Propriétaires du code : chaque PR demande automatiquement la relecture du responsable.
+# TODO : vérifier la correspondance pseudo GitHub ↔ membre (placeholders) :
+#   Oscar = @Oscar-AS   Salam = @AliouneKane   Rama = @Vimdie
+# La dernière règle qui correspond l'emporte : l'ordre compte.
+
+# Salam : moteur, canaux, tableau de bord
+/engine/            @AliouneKane
+/channels/          @AliouneKane
+/dashboard/         @AliouneKane
+
+# Oscar : IA et données (inclut les modules métier du moteur)
+/ml/                @Oscar-AS
+/data/              @Oscar-AS
+/engine/app/modules/ @Oscar-AS
+
+# Rama : contenu et recherche utilisateur
+/content/           @Vimdie
+/research/          @Vimdie
+
+# Contrat d'API : Salam et Oscar
+/docs/api.md        @AliouneKane @Oscar-AS
