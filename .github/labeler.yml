@@ -1,0 +1,45 @@
+# Étiquettes posées automatiquement selon les chemins modifiés (actions/labeler v5).
+
+module:planification:
+  - changed-files:
+      - any-glob-to-any-file: engine/app/modules/planification/**
+
+module:prevention:
+  - changed-files:
+      - any-glob-to-any-file: engine/app/modules/prevention/**
+
+module:diagnostic:
+  - changed-files:
+      - any-glob-to-any-file: engine/app/modules/diagnostic/**
+
+canal:whatsapp:
+  - changed-files:
+      - any-glob-to-any-file:
+          - channels/whatsapp/**
+          - engine/**/*whatsapp*
+
+canal:pwa:
+  - changed-files:
+      - any-glob-to-any-file:
+          - channels/pwa/**
+          - engine/**/*pwa*
+
+dashboard:
+  - changed-files:
+      - any-glob-to-any-file: dashboard/**
+
+ml:
+  - changed-files:
+      - any-glob-to-any-file: ml/**
+
+content:
+  - changed-files:
+      - any-glob-to-any-file: content/**
+
+research:
+  - changed-files:
+      - any-glob-to-any-file: research/**
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: docs/**
