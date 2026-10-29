@@ -1,0 +1,95 @@
+# Déploiement continu du moteur : après une CI réussie sur main, ou sur une étiquette v*.
+# DÉSACTIVÉ (if: false) tant que l'hébergeur n'est pas choisi par Salam (Render, Railway, Fly.io…).
+# Secrets et URL viennent de l'environnement GitHub `production`, jamais du dépôt.
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # TODO : remplacer `false` par la condition ci-dessous une fois l'hébergeur choisi.
+    if: ${{ false && (github.event_name == 'push' || github.event.workflow_run.conclusion == 'success') }}
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      # Variables de l'environnement `production` (Settings → Environments → production).
+      ENGINE_URL: ${{ vars.ENGINE_URL }}
+      # TODO : chemin d'un endpoint de test qui doit répondre sans "mock": true en production.
+      SMOKE_TEST_PATH: ${{ vars.SMOKE_TEST_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+      - name: Déployer (TODO hébergeur)
+        env:
+          # TODO : nom du secret de déploiement selon l'hébergeur choisi.
+          DEPLOY_TOKEN: ${{ secrets.TODO_DEPLOY_TOKEN }}
+        run: |
+          echo "::error::TODO : commande de déploiement de l'hébergeur choisi."
+          exit 1
+
+      - name: Vérifier /health
+        run: |
+          if [ -z "$ENGINE_URL" ]; then echo "::error::Variable ENGINE_URL absente de l'environnement production."; exit 1; fi
+          body=""
+          for attempt in $(seq 1 10); do
+            if body=$(curl -fsS --max-time 10 "$ENGINE_URL/health"); then break; fi
+            echo "Tentative $attempt : moteur pas encore prêt."
+            sleep 15
+          done
+          status=$(printf '%s' "$body" | python3 -c 'import json, sys; print(json.load(sys.stdin).get("status", ""))' || true)
+          if [ "$status" != "ok" ]; then echo "::error::/health ne renvoie pas status « ok » : $body"; exit 1; fi
+          echo "/health : ok"
+
+      - name: Refuser les réponses factices en production
+        run: |
+          if [ -z "$SMOKE_TEST_PATH" ]; then echo "::error::Variable SMOKE_TEST_PATH absente de l'environnement production."; exit 1; fi
+          curl -fsS --max-time 20 "$ENGINE_URL$SMOKE_TEST_PATH" > response.json
+          python3 - <<'PY'
+          import json
+          import sys
+
+          def has_mock(value):
+              if isinstance(value, dict):
+                  return value.get("mock") is True or any(has_mock(v) for v in value.values())
+              if isinstance(value, list):
+                  return any(has_mock(v) for v in value)
+              return False
+
+          with open("response.json", encoding="utf-8") as handle:
+              if has_mock(json.load(handle)):
+                  print("::error::Réponse factice (\"mock\": true) détectée en production.")
+                  sys.exit(1)
+          print("Aucune réponse factice.")
+          PY
+
+  release:
+    # Indépendant du déploiement : la release v1.0-final est créée même si l'hébergeur n'est pas branché.
+    if: github.event_name == 'push' && github.ref == 'refs/tags/v1.0-final'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Créer la GitHub Release avec notes générées
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME déjà présente."
+          else
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --generate-notes --title "TerraMind Afrique $GITHUB_REF_NAME"
+          fi
