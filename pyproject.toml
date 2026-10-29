@@ -6,6 +6,8 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
+# La longueur des lignes est gérée par black (qui ne coupe pas les chaînes).
+ignore = ["E501"]
 
 [tool.black]
 line-length = 100

@@ -13,7 +13,17 @@ from pathlib import Path, PurePosixPath
 
 MAX_FILE_BYTES = 1024 * 1024
 MAX_SAMPLE_IMAGE_BYTES = 200 * 1024
-FORBIDDEN_SUFFIXES = {".pt", ".pth", ".onnx", ".h5", ".safetensors", ".ckpt", ".tif", ".tiff", ".zip"}
+FORBIDDEN_SUFFIXES = {
+    ".pt",
+    ".pth",
+    ".onnx",
+    ".h5",
+    ".safetensors",
+    ".ckpt",
+    ".tif",
+    ".tiff",
+    ".zip",
+}
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".heic", ".webp"}
 BANNED_DEPENDENCY = re.compile(r"ultralytics|yolov8", re.IGNORECASE)
 
@@ -45,7 +55,9 @@ def check(path: PurePosixPath) -> list[str]:
     if size > MAX_FILE_BYTES:
         errors.append(f"{path} : fichier de {size // 1024} Ko, limite 1 Mo. Le garder hors de git.")
     if is_env_file(path):
-        errors.append(f"{path} : fichier d'environnement interdit (seul .env.example est autorisé).")
+        errors.append(
+            f"{path} : fichier d'environnement interdit (seul .env.example est autorisé)."
+        )
     if suffix in FORBIDDEN_SUFFIXES:
         errors.append(
             f"{path} : type de fichier interdit ({suffix}) : modèles, rasters et archives restent hors de git."
