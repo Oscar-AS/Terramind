@@ -1,2 +1,4 @@
 * text=auto eol=lf
 *.sh text eol=lf
+# Données brutes : conservées octet pour octet, sans conversion des fins de ligne
+data/raw/** -text
