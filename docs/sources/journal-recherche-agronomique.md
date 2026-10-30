@@ -108,6 +108,63 @@ Statuts : **Utilisée** (reprise dans le brouillon) · **Lue, non utilisée** ·
 - Lire en entier les sources marquées « Via résumé » avant d'en citer les chiffres dans le pitch.
 - Faire valider la table et les fiches par l'agronome, puis noter la date et le nom du validateur dans ce journal.
 
+## Session 2 · 30 octobre 2026 · Recherche sur X (Twitter) pour les points en suspens
+
+**Qui** : Salam, avec un agent IA ayant accès à X (Grok), puis vérification des pistes par un assistant IA (Claude, d'Anthropic) par recherche web.
+
+**Pourquoi** : trois points restaient sans source après la session 1 : 1) signalements de mildiou au Sénégal (dont celui de Notto Gouye Diama, févr. 2026) ; 2) maïs : maladies des feuilles et chenille légionnaire d'automne ; 3) fiches techniques ISRA réactualisées en 2022.
+
+**Outils** : recherche sur X par l'agent (français, anglais, période 2018 à 2026), puis recherche web pour remonter des posts aux documents d'origine. Les posts X n'ont pas pu être ouverts directement (accès refusé sans compte) : leur texte vient du rapport de l'agent et reste à vérifier.
+
+### Requêtes effectuées
+
+| # | Requête (résumé) | Résultat principal |
+|---|---|---|
+| 1 | X : mildiou / late blight / *Phytophthora infestans* + Sénégal, Niayes, Rufisque, Notto | Rien |
+| 2 | X : ISRA, DPV, ANCAR, CDH, FAO + mildiou | Rien |
+| 3 | X : maladies foliaires du maïs (helminthosporiose, rouille, striure) + Sénégal | Rien |
+| 4 | X : chenille légionnaire d'automne / *Spodoptera frugiperda* + Sénégal | Posts 2018-2019 (FAO Sénégal, presse, revue scientifique) |
+| 5 | X : *Tuta absoluta* + Sénégal | Un fil d'un agronome (2024), une note de marché (2020) |
+| 6 | X : fiches techniques ISRA / USAID 2022 | Rien |
+| 7 | Web : « First records of the fall armyworm… in Senegal » | Article confirmé (Brévault et al., 2018) |
+| 8 | Web : FAMEWS FAO DPV Sénégal 2019 | Rien sur le Sénégal (seulement Togo, Bénin, Guinée) |
+| 9 | Web : « Biological management options against the fall armyworm… Senegal » | Article confirmé (Sarr et al., 2023) |
+
+### Sources consultées
+
+| Source | Producteur, année | Accès le 30/10/2026 | Statut | Ce que nous en avons tiré |
+|---|---|---|---|---|
+| [First records of the fall armyworm, *Spodoptera frugiperda*, in Senegal](https://agritrop.cirad.fr/588026/) (DOI 10.1127/entomologia/2018/0553) | Brévault, Ndiaye, Badiane, Bal, Sembène, Silvie, Haran ; *Entomologia Generalis* 37(2), p. 129-142, 2018 | Résumé lu ; texte complet réservé (copie à demander sur Agritrop) | **Via résumé** | Premiers signalements de la chenille légionnaire d'automne au Sénégal, sur maïs ; souches « riz » et « maïs » identifiées. Repéré grâce à un post X de la revue (6 juil. 2018) |
+| [Biological management options against the fall armyworm… in Senegal](https://www.documentation.ird.fr/hor/PAR00026735) (DOI 10.1007/s12600-023-01109-3) | Sarr, Bal, Gauthier ; *Phytoparasitica* 51, p. 975-992, 2023 | Résumé lu (IRD Horizon) | **Via résumé** | Essai au champ en 2018 et 2019 dans le nord-ouest du Sénégal : sans traitement, 1 à 25 % de la surface foliaire et 3 à 44 % des épis abîmés. Trouvé pendant la vérification, pas via X. Les produits testés ne sont pas repris (règle du projet) |
+| [Post @FAOSenegal](https://x.com/FAOSenegal/status/1095344462899773440) | FAO Sénégal, 12 févr. 2019 | Non ouvert (X demande un compte) | **À vérifier** | Selon l'agent : formation FAO + DPV à l'application FAMEWS pour surveiller la chenille légionnaire. Pas confirmé par le web |
+| [Post @dakaractu](https://x.com/dakaractu/status/950717500567715840) | Dakaractu, 9 janv. 2018 | Non ouvert | **À vérifier** | Selon l'agent : formation contre la chenille légionnaire à Kaolack (projet Naatal Mbay avec la DPV) |
+| [Post @JonathanBobMas1](https://x.com/JonathanBobMas1/status/1807782340581556703) | Particulier se présentant comme agronome, 1er juil. 2024 | Non ouvert | **Lue, non utilisée** | Selon l'agent : *Tuta absoluta*, « menace majeure » pour la tomate au Sénégal. Avis personnel, pas une source ; nos sources sur *Tuta* sont déjà meilleures (session 1) |
+| Posts @Pressafrik (2018), @acdivoca (2019), @TridgeGlobal (2020) | Presse, ONG, entreprise | Non ouverts | **Lue, non utilisée** | Contexte général à l'échelle de l'Afrique, rien de propre au Sénégal |
+
+### Ce que nous n'avons pas trouvé
+
+- **Aucun signalement de mildiou au Sénégal sur X**, ni de suite donnée au signalement de Notto Gouye Diama (Thiesinfo, 17 févr. 2026). Le point reste non confirmé.
+- **Aucune maladie des feuilles du maïs** signalée au Sénégal sur X.
+- **Aucune trace des fiches ISRA 2022** sur X (annonce, partage ou lien).
+- Aucun compte X actif de l'ISRA ou du CDH Cambérène n'a été identifié.
+
+### Limites
+
+- X sert à trouver des pistes, pas des preuves : seuls les documents vers lesquels mènent les posts (articles, rapports) peuvent être cités.
+- Le texte des posts vient du rapport de l'agent et n'a pas pu être vérifié directement.
+- Pas de recherche en wolof sur X.
+
+### Ce qui a été produit
+
+- Cette session uniquement. Rien n'a été ajouté à la base de travail ni à la table.
+
+### Suites à donner
+
+- Maïs : utiliser la chenille légionnaire d'automne (ravageur) comme problème principal sourcé, à discuter le 4 nov. Le diagnostic photo PlantVillage ne couvre que des maladies du maïs qui n'ont pas de source sénégalaise.
+- Demander une copie de Brévault et al. (2018) sur Agritrop et lire Sarr et al. (2023) en entier avant d'en citer les chiffres.
+- Mildiou et fiches ISRA 2022 : X n'apporte rien, passer par l'agronome, le CDH Cambérène ou les organisateurs.
+- Contacts possibles : FAO Sénégal (@FAOSenegal) et DPV (compte X à confirmer).
+
 ---
 
 ## Modèle pour une nouvelle session
