@@ -27,23 +27,23 @@ Jeux publics téléchargés le 2026-10-30 (provenance : [data/README.md](../data
 ### Base fusionnée terramind_v1 (décision D8)
 `data_local/processed/terramind_v1/` : `images/<culture>/<classe>/`, `manifest.csv` (une ligne par image, avec sa source et son étiquette d'origine), `classes.csv`, `exclusions.csv`. Reconstruction : `python ml/training/build_merged_dataset.py`.
 
-35 206 images, 37 classes (classes de 114 à 2 294 images) :
+35 448 images, 40 classes (classes de 72 à 2 294 images ; seuil : 50 images par classe) :
 
 | Culture | Sain | Maladie | Ravageur | Abiotique | Total |
 |---|---|---|---|---|---|
 | Cajou | 1 368 | 3 802 | 1 378 | – | 6 548 |
 | Manioc | 1 193 | 5 169 | 1 014 | – | 7 376 |
-| Maïs | 754 | 5 290 | 3 046 | – | 9 090 |
+| Maïs | 754 | 5 384 | 3 046 | 76 | 9 260 |
 | Oignon | 660 | 1 416 | 758 | – | 2 834 |
-| Tomate | 1 745 | 6 872 | 627 | 114 | 9 358 |
-| **Total** | **5 720** | **22 549** | **6 823** | **114** | **35 206** |
+| Tomate | 1 745 | 6 944 | 627 | 114 | 9 430 |
+| **Total** | **5 720** | **22 715** | **6 823** | **190** | **35 448** |
 
 Détail par classe : `classes.csv`. Correspondance des étiquettes : [data/label_mapping.csv](../data/label_mapping.csv).
 
 ### Remarques
 - Seuls le maïs et la tomate de ces jeux figurent dans la liste provisoire des cultures du projet ; le choix final dépend de la décision du 4 nov 2026.
 - **Biais de source** : la plupart des classes ne viennent que d'un seul jeu (toutes les images CCMT font 400×400 px, celles de TOM2024 ont des tailles variables). Le modèle pourrait apprendre à reconnaître le jeu plutôt que la maladie : redimensionner toutes les images à l'entraînement et mesurer les résultats par source.
-- Absents de la base faute d'images : mildiou de la tomate, Tuta absoluta, rouille du maïs (voir D8).
+- Absent de la base faute d'images : Tuta absoluta (voir D8). Classes les plus petites, à surveiller : mildiou de la tomate (72), trouble abiotique du maïs (76), rouille du maïs (94).
 - La tomate contient deux classes de fruits (`healthy_fruit`, `blossom_end_rot`) : à exclure si le diagnostic se limite aux feuilles.
 - Entraînement / validation / test : TODO (découpage sur terramind_v1)
 - Photos de terrain : TODO

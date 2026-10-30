@@ -31,7 +31,7 @@ MAPPING = Path("data/label_mapping.csv")
 OUT = Path("data_local/processed/terramind_v1")
 EXCLUSIONS_TRACKED = Path("data/exclusions/terramind_v1.csv")
 MIN_SIDE = 64
-MIN_IMAGES = 100
+MIN_IMAGES = 50
 
 
 @dataclass
