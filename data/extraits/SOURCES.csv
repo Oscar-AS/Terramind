@@ -1,0 +1,7 @@
+fichier,document_source,contenu,lignes
+rgph5_2023_part_menages_maraichers_par_culture.csv,"ANSD, RGPH-5 (2023), chapitre 10 Agriculture, rapport définitif","Tableaux X21 à X24 : % des ménages agricoles pratiquant le maraîchage ou la floriculture dans la saison qui cultivent chaque produit, par région et milieu de résidence",850
+dhort_production_horticole_nationale_2015-2022.csv,"ANSD, bulletin mensuel d'octobre 2023, tableau I.4-3 (source : Direction de l'Horticulture)",Production nationale en tonnes ; données antérieures révisées ; 2021/2022 provisoire,119
+eaa_2020-2021_part_menages_maraichage_par_region.csv,"DAPSA, EAA 2020-2021, tableaux annexes, tableau 4.2.1","% des ménages agricoles ayant pratiqué une culture maraîchère sur 12 mois ; moyenne nationale 14,0 %",14
+eaa_2020-2021_production_moyenne_menage_maraichage.csv,"DAPSA, EAA 2020-2021, tableaux annexes, tableau 4.2.3","Production moyenne (kg) par ménage producteur ; vide = culture non observée ; petits effectifs par région (voir N national au tableau 4.2.2) : ordre de grandeur, pas une statistique précise",150
+eaa_2020-2021_production_moyenne_menage_national.csv,"DAPSA, EAA 2020-2021, tableaux annexes, tableau 4.2.2",Production moyenne (kg) par ménage producteur et nombre de ménages de l'échantillon,19
+eaa_2020-2021_utilisation_productions_maraicheres.csv,"DAPSA, EAA 2020-2021, tableaux annexes, tableau 4.2.4",Répartition (%) de la production par usage,21
