@@ -1,0 +1,121 @@
+{
+    "type": "Feature",
+    "stac_version": "1.0.0-beta.2",
+    "id": "texture_class",
+    "properties": {
+        "start_datetime": "2001-01-01T00:00:00Z",
+        "end_datetime": "2017-01-01T00:00:00Z",
+        "proj:epsg": 3857,
+        "proj:transform": [
+            30.0,
+            0.0,
+            -3502582.8076430312,
+            0.0,
+            -30.0,
+            4530073.13045243,
+            0.0,
+            0.0,
+            1.0
+        ],
+        "proj:shape": [
+            289306,
+            328563
+        ],
+        "datetime": null
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    57.081712708848684,
+                    -34.89121030686439
+                ],
+                [
+                    57.081712708848684,
+                    37.64980990000001
+                ],
+                [
+                    -31.464236700000008,
+                    37.64980990000001
+                ],
+                [
+                    -31.464236700000008,
+                    -34.89121030686439
+                ],
+                [
+                    57.081712708848684,
+                    -34.89121030686439
+                ]
+            ]
+        ]
+    },
+    "links": [
+        {
+            "rel": "root",
+            "href": "../../catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "collection",
+            "href": "../collection.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../collection.json",
+            "type": "application/json"
+        }
+    ],
+    "assets": {
+        "image": {
+            "href": "https://isdasoil.s3.amazonaws.com/soil_data/texture_class/texture_class.tif",
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "title": "USDA Texture Class",
+            "description": "USDA Texture Class at 0-20cm and 20-50cm depth, predicted mean",
+            "eo:bands": [
+                {
+                    "name": "mean_0_20",
+                    "description": "USDA Texture Class, predicted mean at 0-20 cm depth"
+                },
+                {
+                    "name": "mean_20_50",
+                    "description": "USDA Texture Class, predicted mean at 20-50 cm depth"
+                }
+            ],
+            "roles": [
+                "data"
+            ]
+        },
+        "metadata": {
+            "href": "https://isdasoil.s3.amazonaws.com/soil_data/texture_class/texture_class_attribute_table.csv",
+            "type": "text/csv",
+            "title": "USDA Texture Class attribute table",
+            "description": "Metadata file for categorical data: maps pixel values to the categorical value/class it represents",
+            "roles": [
+                "metadata"
+            ]
+        },
+        "thumbnail": {
+            "href": "https://isdasoil.s3.amazonaws.com/soil_data/texture_class/texture_class_thumbnail.png",
+            "type": "image/png",
+            "title": "USDA Texture Class thumbnail",
+            "roles": [
+                "thumbnail"
+            ]
+        }
+    },
+    "bbox": [
+        -31.464236700000008,
+        -34.89121030686439,
+        57.081712708848684,
+        37.64980990000001
+    ],
+    "stac_extensions": [
+        "projection",
+        "eo"
+    ],
+    "collection": "soil_data",
+    "back-transformation": null,
+    "unit": null
+}

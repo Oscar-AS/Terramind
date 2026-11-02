@@ -4,7 +4,7 @@ Usage (depuis la racine du dépôt) :
     python3 scripts/donnees/telecharger_sources.py            # toutes les sources
     python3 scripts/donnees/telecharger_sources.py power faostat
 
-Sources : geoboundaries, power, soilgrids, faostat, wfp, chirps, documents.
+Sources : geoboundaries, power, soilgrids, isdasoil, faostat, wfp, chirps, documents.
 Bibliothèque standard uniquement, sauf la source chirps qui a besoin de
 Pillow (décodage des tuiles GeoTIFF). Chaque fichier écrit est ajouté à
 data/raw/MANIFESTE.csv (source, URL, date, taille, SHA-256).
@@ -18,12 +18,14 @@ import datetime as dt
 import hashlib
 import io
 import json
+import math
 import struct
 import sys
 import time
 import urllib.error
 import urllib.request
 import zipfile
+import zlib
 from pathlib import Path
 
 RACINE = Path(__file__).resolve().parents[2]
@@ -49,6 +51,14 @@ SOILGRIDS = (
     "&property=phh2o&property=clay&property=sand&property=silt&property=soc&property=cec&property=nitrogen"
     "&depth=0-5cm&depth=5-15cm&depth=15-30cm&value=mean&value=Q0.05&value=Q0.95"
 )
+ISDASOIL = "https://isdasoil.s3.amazonaws.com/soil_data/{p}/{p}.{ext}"
+# Toutes les couches de sol iSDAsoil sauf « fcc » (classification de fertilité au codage particulier).
+ISDASOIL_PROPRIETES = [
+    "ph", "sand_content", "silt_content", "clay_content", "texture_class", "carbon_organic", "carbon_total",
+    "nitrogen_total", "phosphorous_extractable", "potassium_extractable", "calcium_extractable",
+    "magnesium_extractable", "sulphur_extractable", "zinc_extractable", "iron_extractable",
+    "aluminium_extractable", "cation_exchange_capacity", "bulk_density", "stone_content", "bedrock_depth",
+]
 FAOSTAT_ZIP = "https://bulks-faostat.fao.org/production/Production_Crops_Livestock_E_Africa.zip"
 WFP_PAQUET = "https://data.humdata.org/api/3/action/package_show?id=wfp-food-prices-for-senegal"
 
@@ -187,6 +197,99 @@ def soilgrids():
             continue
         ecrire(RAW / "soilgrids" / f"{nom.lower()}.json", contenu, "SoilGrids 2.0 (ISRIC)", url,
                f"centroïde {nom} ({lat}, {lon}), résolution 250 m")
+
+
+def _bigtiff_tags(entete):
+    """Premier IFD d'un BigTIFF petit-boutiste ; les tableaux trop longs sont renvoyés comme (offset, nombre)."""
+    if entete[:4] != b"II+\x00":
+        raise ValueError("BigTIFF attendu")
+    tailles = {2: 1, 3: 2, 4: 4, 12: 8, 16: 8}
+    formats = {3: "H", 4: "I", 12: "d", 16: "Q"}
+    off = struct.unpack("<Q", entete[8:16])[0]
+    n = struct.unpack("<Q", entete[off:off + 8])[0]
+    tags = {}
+    for i in range(n):
+        e = entete[off + 8 + i * 20: off + 28 + i * 20]
+        tag, typ, nb = struct.unpack("<HHQ", e[:12])
+        taille = tailles.get(typ, 1) * nb
+        if taille <= 8:
+            brut = e[12:12 + taille]
+        else:
+            pos = struct.unpack("<Q", e[12:20])[0]
+            if pos + taille > len(entete):
+                tags[tag] = ("tableau", pos, nb)
+                continue
+            brut = entete[pos:pos + taille]
+        tags[tag] = brut.decode("ascii", "ignore").strip("\x00 ") if typ == 2 else struct.unpack("<" + formats[typ] * nb, brut)
+    return tags
+
+
+def _retransformer(regle, x):
+    if regle in (None, ""):
+        return x
+    if regle == "x/10":
+        return x / 10
+    if regle == "x/100":
+        return x / 100
+    if regle == "expm1(x/10)":
+        return math.expm1(x / 10)
+    raise ValueError(f"règle de retransformation inconnue : {regle}")
+
+
+def isdasoil():
+    """Valeurs iSDAsoil (30 m) aux points pilotes, lues dans les COG publics d'AWS sans compte.
+    Seule la tuile contenant chaque point est téléchargée (requêtes HTTP partielles)."""
+    print("iSDAsoil (sols à 30 m, CC BY 4.0), lecture des tuiles utiles sur AWS")
+    points = points_pilotes()
+    lignes = []
+    for prop in ISDASOIL_PROPRIETES:
+        meta_url = ISDASOIL.format(p=prop, ext="json")
+        meta_brut = telecharger(meta_url)
+        ecrire(RAW / "isdasoil" / "metadonnees" / f"{prop}.json", meta_brut, "iSDAsoil (iSDA)", meta_url)
+        meta = json.loads(meta_brut)
+        regle, unite = meta.get("back-transformation"), meta.get("unit") or ""
+        bandes = [b["name"] for b in meta["assets"]["image"]["eo:bands"]]
+        url = meta["assets"]["image"]["href"]
+        t = _bigtiff_tags(_plage(url, 0, 65535))
+        larg, tl, th, nb_bandes = t[256][0], t[322][0], t[323][0], t[277][0]
+        bits, nodata = t[258][0], int(t[42113])
+        if t[259][0] != 8 or t[284][0] != 1 or t[317][0] != 1 or nb_bandes != len(bandes) or bits not in (8, 16):
+            raise ValueError(f"{prop} : structure de fichier inattendue")
+        pas, x0, y0 = t[33550][0], t[33922][3], t[33922][4]
+        _, pos_off, _ = t[324]
+        _, pos_nb, _ = t[325]
+        fmt, octets = ("B", 1) if bits == 8 else ("H", 2)
+        tuiles = {}
+        for nom, (lat, lon) in points.items():
+            # Projection Web Mercator (EPSG:3857), celle des fichiers iSDAsoil.
+            x = 6378137 * math.radians(lon)
+            y = 6378137 * math.log(math.tan(math.pi / 4 + math.radians(lat) / 2))
+            col, lig = int((x - x0) / pas), int((y0 - y) / pas)
+            k = (lig // th) * ((larg + tl - 1) // tl) + col // tl
+            if k not in tuiles:
+                debut = struct.unpack("<Q", _plage(url, pos_off + 8 * k, pos_off + 8 * k + 7))[0]
+                taille = struct.unpack("<I", _plage(url, pos_nb + 4 * k, pos_nb + 4 * k + 3))[0]
+                tuiles[k] = zlib.decompress(_plage(url, debut, debut + taille - 1))
+            px = ((lig % th) * tl + col % tl) * nb_bandes
+            for i, bande in enumerate(bandes):
+                brut = struct.unpack_from("<" + fmt, tuiles[k], (px + i) * octets)[0]
+                if brut == nodata:
+                    valeur = None
+                elif bande.startswith("mean"):
+                    valeur = round(_retransformer(regle, brut), 3)
+                else:
+                    valeur = None  # écart type : retransformation non documentée pour les échelles log
+                lignes.append([prop, bande, nom, lat, lon, brut, valeur, unite, regle or ""])
+        print(f"  {prop} : {len(tuiles)} tuile(s)")
+    sortie = io.StringIO()
+    w = csv.writer(sortie)
+    w.writerow(["propriete", "bande", "departement", "latitude", "longitude", "valeur_brute", "valeur",
+                "unite", "retransformation"])
+    w.writerows(lignes)
+    ecrire(RAW / "isdasoil" / "isdasoil_points_pilotes.csv", sortie.getvalue().encode("utf-8"),
+           "iSDAsoil (iSDA), COG publics sur AWS", ISDASOIL.format(p="PROPRIETE", ext="tif"),
+           "EXTRAIT : pixel de 30 m sous chaque centroïde ; valeur = moyenne retransformée selon les métadonnées ; "
+           "écarts types laissés bruts ; texture_class = code brut (légende à trouver)")
 
 
 def faostat():
@@ -331,7 +434,7 @@ def documents():
         ecrire(RAW / "documents" / nom, contenu, titre, url)
 
 
-SOURCES = {"geoboundaries": geoboundaries, "power": power, "soilgrids": soilgrids,
+SOURCES = {"geoboundaries": geoboundaries, "power": power, "soilgrids": soilgrids, "isdasoil": isdasoil,
            "faostat": faostat, "wfp": wfp, "chirps": chirps, "documents": documents}
 
 if __name__ == "__main__":

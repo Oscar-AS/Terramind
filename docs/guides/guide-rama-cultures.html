@@ -138,6 +138,15 @@
   .etapes-c li { counter-increment: c; position: relative; padding-left: 9mm; margin-bottom: 2.4mm; font-size: 9pt; }
   .etapes-c li::before { content: counter(c); position: absolute; left: 0; top: -.3mm; width: 6mm; height: 6mm; border-radius: 50%; background: var(--ocre); color: var(--blanc); font-weight: 700; font-size: 8pt; text-align: center; line-height: 6mm; }
 
+
+  /* ---------- CARNET ---------- */
+  .carnets { columns: 3; column-gap: 4mm; }
+  .carnet { break-inside: avoid; margin-bottom: 3mm; }
+  .carnet .cg { font-size: 7pt; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: var(--feuille); margin-bottom: 1mm; }
+  .carnet table { width: 100%; border-collapse: collapse; font-size: 8pt; }
+  .carnet td { border-bottom: 1px solid var(--trait); padding: .75mm 1.5mm; }
+  .carnet td:first-child { width: 48%; color: var(--nuit); font-weight: 600; background: var(--brume); }
+
   /* ---------- SOMMAIRE ---------- */
   .essentiel { background: var(--nuit); color: var(--blanc); border-radius: 5mm; padding: 9mm 9mm 7mm; }
   .essentiel h2 { color: var(--dune); margin-top: 0; font-size: 15pt; }
@@ -147,7 +156,7 @@
                           background: var(--ocre); color: var(--blanc); font-weight: 700; font-size: 8pt; text-align: center; line-height: 6.5mm; }
   .essentiel b { color: var(--blanc); }
   .sommaire { list-style: none; }
-  .sommaire li { display: grid; grid-template-columns: 9mm 1fr auto; align-items: baseline; padding: 1.5mm 0; border-bottom: 1px solid var(--trait); }
+  .sommaire li { display: grid; grid-template-columns: 9mm 1fr auto; align-items: baseline; padding: 1.05mm 0; border-bottom: 1px solid var(--trait); }
   .sommaire .n { font-family: var(--titre); font-weight: 700; font-size: 13pt; color: var(--ocre); }
   .sommaire .t { font-weight: 600; font-size: 10pt; }
   .sommaire .t span { display: block; font-weight: 400; font-size: 8pt; color: var(--gris); }
@@ -465,7 +474,8 @@
         <li><span class="n">8</span><span class="t">Maladies et ravageurs<span>Les reconnaître, les prévenir</span></span><span class="pg">p. 13</span></li>
         <li><span class="n">9</span><span class="t">Tes modèles à remplir<span>Fiche culture, fiche maladie</span></span><span class="pg">p. 15</span></li>
         <li><span class="n">10</span><span class="t">Écrire pour le bot<span>Comment écrire une fiche qu'il retrouve bien</span></span><span class="pg">p. 16</span></li>
-        <li><span class="n">11</span><span class="t">Petit lexique<span>Les mots techniques expliqués</span></span><span class="pg">p. 17</span></li>
+        <li><span class="n">11</span><span class="t">Carnet de prononciation<span>Les mots à dire en wolof</span></span><span class="pg">p. 17</span></li>
+        <li><span class="n">12</span><span class="t">Petit lexique<span>Les mots techniques expliqués</span></span><span class="pg">p. 18</span></li>
       </ul>
     </div>
   </div>
@@ -859,9 +869,23 @@
   <div class="pied"><span><b>TerraMind Afrique</b> · Guide cultures et maladies</span><span>16</span></div>
 </section>
 
-<!-- ============ 11. LEXIQUE ============ -->
+<!-- ============ 11. CARNET DE PRONONCIATION ============ -->
 <section class="page">
-  <div class="surtitre">11 · Petit lexique</div>
+  <div class="surtitre">11 · Ton carnet de prononciation</div>
+  <h1>Comment dit-on ça en wolof ?</h1>
+  <p class="chapo" style="margin-bottom: 3mm;">La voix du bot lit le wolof, mais elle trébuche sur les mots français, les chiffres et les symboles. Elle a besoin d'un carnet qui lui dit comment prononcer ces mots <b>comme un agriculteur les dit</b>. Tu parles wolof : c'est toi la mieux placée pour le remplir.</p>
+  <div class="grille2" style="gap: 4mm; margin-bottom: 3mm;">
+    <div class="encart menthe" style="font-size: 8.6pt;"><span class="titre">Comment le remplir</span>Pour chaque mot, écris comment on le dit vraiment au champ ou au marché : un mot wolof, un mot français « à la wolof », ou le mot français tel quel si c'est ce que tout le monde dit. Note les autres façons de dire. Si tu hésites, demande autour de toi ; tu peux aussi demander à Claude, mais vérifie toujours avec quelqu'un qui parle wolof.</div>
+    <div class="encart sable" style="font-size: 8.6pt;"><span class="titre">Déjà trouvés, à confirmer</span><b>Aubergine amère</b> : « diakhatou » (on voit aussi « jaxatu »). <b>Saison des pluies</b> : « nawet » (ou « nawèt »). Les nombres de 0 à 10, cent et mille sont aussi déjà notés : relis-les avec Salam. Tout le reste ci-dessous est à remplir.</div>
+  </div>
+  <div class="carnets"><div class="carnet"><div class="cg">Mois</div><table><tr><td>janvier</td><td></td></tr><tr><td>février</td><td></td></tr><tr><td>mars</td><td></td></tr><tr><td>avril</td><td></td></tr><tr><td>mai</td><td></td></tr><tr><td>juin</td><td></td></tr><tr><td>juillet</td><td></td></tr><tr><td>août</td><td></td></tr><tr><td>septembre</td><td></td></tr><tr><td>octobre</td><td></td></tr><tr><td>novembre</td><td></td></tr><tr><td>décembre</td><td></td></tr></table></div><div class="carnet"><div class="cg">Unités</div><table><tr><td>kilo (kg)</td><td></td></tr><tr><td>hectare (ha)</td><td></td></tr><tr><td>pour cent (%)</td><td></td></tr><tr><td>degré (°C)</td><td></td></tr><tr><td>litre</td><td></td></tr><tr><td>mètre</td><td></td></tr><tr><td>tonne</td><td></td></tr><tr><td>sac</td><td></td></tr></table></div><div class="carnet"><div class="cg">Cultures</div><table><tr><td>tomate</td><td></td></tr><tr><td>pomme de terre</td><td></td></tr><tr><td>oignon</td><td></td></tr><tr><td>chou</td><td></td></tr><tr><td>poivron</td><td></td></tr><tr><td>piment</td><td></td></tr><tr><td>carotte</td><td></td></tr><tr><td>maïs</td><td></td></tr><tr><td>gombo</td><td></td></tr><tr><td>navet</td><td></td></tr><tr><td>salade</td><td></td></tr></table></div><div class="carnet"><div class="cg">Au champ</div><table><tr><td>pépinière</td><td></td></tr><tr><td>repiquer</td><td></td></tr><tr><td>semer</td><td></td></tr><tr><td>arroser</td><td></td></tr><tr><td>engrais</td><td></td></tr><tr><td>fumier</td><td></td></tr><tr><td>compost</td><td></td></tr><tr><td>champ</td><td></td></tr><tr><td>récolte</td><td></td></tr><tr><td>maladie (d'une plante)</td><td></td></tr><tr><td>insecte</td><td></td></tr><tr><td>feuille</td><td></td></tr><tr><td>racine</td><td></td></tr><tr><td>eau salée</td><td></td></tr><tr><td>agent agricole</td><td></td></tr><tr><td>ANCAR</td><td></td></tr></table></div><div class="carnet"><div class="cg">Saisons</div><table><tr><td>saison sèche froide</td><td></td></tr><tr><td>saison sèche chaude</td><td></td></tr></table></div></div>
+  <p class="petit" style="margin-top: 2mm;">Recopie ce tableau dans un Google Sheets partagé avec Salam (colonnes : mot français · comment on le dit · autres façons · qui l'a confirmé). Priorité : les mois et les cultures, puis les unités.</p>
+  <div class="pied"><span><b>TerraMind Afrique</b> · Guide cultures et maladies</span><span>17</span></div>
+</section>
+
+<!-- ============ 12. LEXIQUE ============ -->
+<section class="page">
+  <div class="surtitre">12 · Petit lexique</div>
   <h1>Les mots techniques, en clair</h1>
   <div class="lexique" style="margin-top: 6mm;">
     <div class="mot"><b>pH</b><span>Un chiffre qui dit si la terre est acide. En dessous de 6 : plutôt acide. Entre 6 et 7 : idéal pour la plupart des légumes.</span></div>
@@ -884,7 +908,7 @@
     <span class="titre">D'où viennent les informations de ce guide</span>
     <span class="petit">Guide pratique du maraîchage au Sénégal (Beniest et al., ISRA, FAO, CDH Cambérène, 1987) · Fiche technique « Production biologique de la tomate au Sénégal » (KCOA, 2025) · Ephytia (INRAE) · De Bon et al., Cahiers Agricultures, 2019 · Ministère de l'Agriculture, typologie des sols · ANSD, RGPH-5, 2024 · FAOSTAT 2024 · DAPSA, enquête agricole annuelle · Pfeiffer et al., Florida Entomologist, 2013 · Thèse de S. Sylla (UCAD, CIRAD) · Brévault et al., Entomologia Generalis, 2018. Les liens sont dans le journal des sources du projet.</span>
   </div>
-  <div class="pied"><span><b>TerraMind Afrique</b> · Guide cultures et maladies</span><span>17</span></div>
+  <div class="pied"><span><b>TerraMind Afrique</b> · Guide cultures et maladies</span><span>18</span></div>
 </section>
 
 </body>
