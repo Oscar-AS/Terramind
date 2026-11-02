@@ -1,0 +1,37 @@
+type,ecrit,a_dire_en_wolof,source,statut
+chiffre,0,tus,jangawolof.org/numbers ; bu.edu/200word/wolof/numbers,a_valider_locuteur
+chiffre,1,benn,jangawolof.org/numbers ; bu.edu/200word/wolof/numbers,a_valider_locuteur
+chiffre,2,ñaar,jangawolof.org/numbers ; bu.edu/200word/wolof/numbers,a_valider_locuteur
+chiffre,3,ñett,jangawolof.org/numbers ; bu.edu/200word/wolof/numbers,a_valider_locuteur
+chiffre,4,ñeent,jangawolof.org/numbers ; bu.edu/200word/wolof/numbers,a_valider_locuteur
+chiffre,5,juróom,jangawolof.org/numbers ; bu.edu/200word/wolof/numbers,a_valider_locuteur
+chiffre,6,juróom-benn,jangawolof.org/numbers ; bu.edu/200word/wolof/numbers,a_valider_locuteur
+chiffre,7,juróom-ñaar,jangawolof.org/numbers ; bu.edu/200word/wolof/numbers,a_valider_locuteur
+chiffre,8,juróom-ñett,jangawolof.org/numbers ; bu.edu/200word/wolof/numbers,a_valider_locuteur
+chiffre,9,juróom-ñeent,jangawolof.org/numbers ; bu.edu/200word/wolof/numbers,a_valider_locuteur
+base,10,fukk,jangawolof.org/numbers,a_valider_locuteur
+base,100,téeméer,jangawolof.org/understanding-wolof-numbers-counting-in-wolof,a_valider_locuteur
+base,1000,junni,jangawolof.org/understanding-wolof-numbers-counting-in-wolof,a_valider_locuteur
+liaison,et (entre parties d'un nombre),ak,jangawolof.org/numbers,a_valider_locuteur
+mot,kg,,à remplir par un locuteur,a_remplir
+mot,ha,,à remplir par un locuteur,a_remplir
+mot,%,,à remplir par un locuteur,a_remplir
+mot,°C,,à remplir par un locuteur,a_remplir
+mot,janvier,,à remplir par un locuteur,a_remplir
+mot,février,,à remplir par un locuteur,a_remplir
+mot,mars,,à remplir par un locuteur,a_remplir
+mot,avril,,à remplir par un locuteur,a_remplir
+mot,mai,,à remplir par un locuteur,a_remplir
+mot,juin,,à remplir par un locuteur,a_remplir
+mot,juillet,,à remplir par un locuteur,a_remplir
+mot,août,,à remplir par un locuteur,a_remplir
+mot,septembre,,à remplir par un locuteur,a_remplir
+mot,octobre,,à remplir par un locuteur,a_remplir
+mot,novembre,,à remplir par un locuteur,a_remplir
+mot,décembre,,à remplir par un locuteur,a_remplir
+mot,tomate,,à remplir par un locuteur (orthographe wolof prononçable par la voix),a_remplir
+mot,pomme de terre,,à remplir par un locuteur,a_remplir
+mot,oignon,,à remplir par un locuteur,a_remplir
+mot,chou,,à remplir par un locuteur,a_remplir
+mot,poivron,,à remplir par un locuteur,a_remplir
+mot,ANCAR,,à remplir par un locuteur (épeler ou dire « agent agricole »),a_remplir
