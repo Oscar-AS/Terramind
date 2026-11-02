@@ -26,7 +26,8 @@ Projet présenté au **PAS Challenge 2026 (SALTIS)**.
         |  Diagnostic      photo -> culture, maladie,       |
         |                  confiance ou « incertain »       |
         |                                                   |
-        |  Réponses : gabarits validés FR / wolof + audio   |
+        |  Réponses : RAG sur fiches validées, FR et wolof  |
+        |  (wolof en vocal) ; réponses types en secours    |
         +---------------------------------------------------+
 ```
 
@@ -38,7 +39,7 @@ Le système est **général** : la culture est un paramètre partout. Seule la l
 engine/              Moteur FastAPI
   app/routes/        Points d'entrée HTTP
   app/modules/       planification/, prevention/, diagnostic/
-  app/responses/     Assemblage des réponses à partir des gabarits
+  app/responses/     Réponses : RAG sur les fiches + réponses types
   tests/
 channels/
   whatsapp/          Bot WhatsApp (webhook)
@@ -46,7 +47,7 @@ channels/
 dashboard/           Tableau de bord
 content/
   fiches/            Fiches agronomiques (maladies, cultures)
-  templates/         Gabarits de réponses FR / wolof
+  templates/         Réponses types FR / wolof (envoyées mot pour mot)
   audio/wo/          Audios wolof pré-enregistrés
 ml/
   notebooks/ training/ eval/
@@ -70,7 +71,7 @@ scripts/             Scripts d'organisation (GitHub)
 |---|---|---|
 | Salam | Chef de projet, moteur, canaux, tableau de bord | `engine/`, `channels/`, `dashboard/` |
 | Oscar | IA et données, propriétaire du dépôt | `ml/`, `data/`, `engine/app/modules/` |
-| Rama | Contenu agronomique, gabarits FR/wolof, tests utilisateurs, pitch | `content/`, `research/` |
+| Rama | Contenu agronomique (fiches pour le RAG), réponses types FR/wolof, tests utilisateurs, pitch | `content/`, `research/` |
 
 Plan de tâches détaillé : [docs/TACHES.md](docs/TACHES.md). Document de suivi partagé : TODO_LIEN_DOC
 

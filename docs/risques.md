@@ -3,7 +3,7 @@
 | Risque | Mesure | Responsable | Date de décision |
 |---|---|---|---|
 | Pas de décision sur les cultures et la zone | TODO | Équipe | 4 nov 2026 |
-| Pas d'agronome validateur | TODO | Rama | 5 nov 2026 |
+| Pas d'agronome validateur | Contenu fondé uniquement sur des sources publiées (guide ISRA-FAO 1987, fiches KCOA, littérature) ; ce qui n'est pas sourcé est exclu ; l'agronome devient un bonus (voir D7 dans [decisions.md](decisions.md)) | Salam | 2 nov 2026 |
 | Salam surchargé | TODO | Équipe | 5 nov 2026 |
 | API WhatsApp non validée | TODO (plan B : PWA, voir D2 dans [decisions.md](decisions.md)) | Salam | 10 nov 2026 |
 | Pas assez de testeurs | TODO | Rama | 10 nov 2026 |
