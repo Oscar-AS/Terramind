@@ -225,12 +225,64 @@ def eaa_2022_2023():
            "de droite du classeur n'a pas de titre clair et n'est pas repris")
 
 
+def dhort_recensement_niayes():
+    """Recensement de l'horticulture dans les Niayes (Direction de l'Horticulture, 2012, publié en 2013,
+    financement PADEN) : instruction des exploitants (tableau 10) et contraintes de production (tableau 30).
+    Le tableau 04 (relief) n'est pas repris : son texte et son graphique se contredisent."""
+    chemin = RACINE / "data" / "raw" / "documents" / "paden" / "dhort_resultats_recensement_horticulture_niayes.pdf"
+    texte = subprocess.run(["pdftotext", "-layout", str(chemin), "-"], check=True, capture_output=True,
+                           text=True).stdout
+    source = ("Direction de l'Horticulture, Recensement de l'horticulture dans les Niayes, résultats (mars 2013, "
+              "données 2012, financement PADEN), copie Wayback de paden-senegal.org")
+
+    def bloc(titre, fin):
+        i = texte.index(titre)
+        return texte[i:texte.index(fin, i)]
+
+    def nombre_fr(x):
+        return float(("0" + x if x.startswith(",") else x).replace(",", "."))
+
+    # Tableau 10 : 4 niveaux x (masculin, féminin, total)
+    niveaux = ["sans_niveau", "alphabetise_lire_ecrire", "alphabetise_lire", "instruit_primaire_au_moins"]
+    lignes = []
+    for brut in bloc("Tableau 10 :", "Source: Recensement").splitlines():
+        m = re.match(r"\s*([A-ZÉ][A-Za-zéèêëô' ]+?)\s{2,}((?:\d+,\d\s+){11}\d+,\d)\s*$", brut)
+        if not m:
+            continue
+        v = [nombre_fr(x) for x in m.group(2).split()]
+        for k, sexe in enumerate(("masculin", "feminin", "ensemble")):
+            for j, niv in enumerate(niveaux):
+                lignes.append([m.group(1).strip(), sexe, niv, v[4 * k + j]])
+    if not any(l[0] == "Total" and l[1] == "ensemble" and l[2] == "sans_niveau" and l[3] == 71.3 for l in lignes):
+        raise SystemExit("Recensement Niayes, tableau 10 : contrôle « 71,3 % sans niveau » raté")
+    ecrire("dhort_2012_niayes_instruction_exploitants.csv", ["communaute_rurale", "sexe", "niveau", "pct"], lignes,
+           source, "Tableau 10 (p. 15) : % des exploitants horticoles par niveau d'instruction, par sexe")
+
+    # Tableau 30 : contraintes de production (effectif et % par contrainte, puis effectif total)
+    contraintes = ["aucune", "acces_foncier", "ressources_eau", "main_oeuvre", "acces_credit", "acces_intrants"]
+    lignes = []
+    for brut in bloc("Tableau 30 :", "Source: Recensement").splitlines():
+        m = re.match(r"\s*([A-ZÉ][A-Za-zéèêëô' ]+?)\s{2,}((?:[\d,]+\s+){12}\d+)\s*$", brut)
+        if not m:
+            continue
+        v = m.group(2).split()
+        for j, c in enumerate(contraintes):
+            lignes.append([m.group(1).strip(), c, int(v[2 * j]), nombre_fr(v[2 * j + 1]) if v[2 * j + 1] != "0" else 0.0,
+                           int(v[12])])
+    if not any(l[0] == "Ensemble" and l[1] == "acces_intrants" and l[3] == 80.9 and l[4] == 10163 for l in lignes):
+        raise SystemExit("Recensement Niayes, tableau 30 : contrôle « intrants 80,9 % sur 10 163 » raté")
+    ecrire("dhort_2012_niayes_contraintes_production.csv",
+           ["communaute_rurale", "contrainte", "exploitations", "pct", "exploitations_total"], lignes, source,
+           "Tableau 30 (p. 32) : exploitations horticoles citant chaque contrainte de production")
+
+
 if __name__ == "__main__":
     print("Extraction des tableaux")
     rgph5_maraichage()
     dhort_production_nationale()
     eaa_2020_2021_maraichage()
     eaa_2022_2023()
+    dhort_recensement_niayes()
     with (SORTIE / "SOURCES.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["fichier", "document_source", "contenu", "lignes"])

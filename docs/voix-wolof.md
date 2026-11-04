@@ -94,7 +94,18 @@ Ces contrôles ne remplacent pas l'écoute humaine, mais ils attrapent les raté
 | `bilalfaye/speecht5_tts-wolof-v0.2` | Voix de secours | Libre | MIT |
 | Corpus Kallaama (copies `yigagilbert/kallaama-trs-dataset-19hr`, `KeraCare/Wolof-Kallaama`…) | Ajustement de la reconnaissance | Libre | À vérifier sur chaque copie et sur la publication d'origine |
 
+Téléchargement en local (`modeles/`, exclu de Git) : `python3 scripts/outils/telecharger_modeles.py` (M-Kiriku-ASR, dofbi/wolof-asr, Kiriku-Wolof-TTS, SpeechT5 wolof ; environ 8,8 Go).
+
 Les demandes d'accès se font avec un compte Hugging Face de l'équipe ; le jeton Hugging Face va dans `.env` (`HF_TOKEN`), jamais dans le code.
+
+**Accès vérifiés le 4 nov 2026** (compte de Salam, jeton en lecture) : les 4 modèles sur demande sont ouverts. Test : un fichier du modèle se lit avec le jeton (HTTP 200) et pas sans (401).
+
+| Modèle | Taille | Remarque |
+|---|---|---|
+| `AIHubSN/Kiriku-Wolof-ASR` | 6,2 Go | Licence Apache 2.0 |
+| `AIHubSN/M-Kiriku-ASR` | 6,2 Go | Licence Apache 2.0 |
+| `AIHubSN/Kiriku-Wolof-TTS` | **1,0 Go** | Licence non indiquée. **Sept fois plus léger que la voix GalsenAI : à tester en premier.** VITS (Coqui TTS 0.19), une seule voix, 22 050 Hz, entraîné directement sur l'écriture wolof (pas de phonétiseur) : il lit ce qu'on lui écrit, d'où l'importance de notre normalisation (nombres en toutes lettres, lexique). Aucune mesure de qualité publiée. Le fichier `model.pth` est un fichier « pickle » de PyTorch : ne le charger que depuis cette source vérifiée |
+| `galsenai/xTTS-v2-wolof` | plus de 7 Go | **Les poids ne sont pas sur Hugging Face** : la page ne contient qu'un identifiant Google Drive (`checkpoint-id.yml`), à télécharger avec `gdown`. Elle demande aussi une version modifiée de la bibliothèque TTS, fournie dans le dépôt GitHub `Galsenaicommunity/Wolof-TTS`. Conditions : respecter la loi sénégalaise ; la voix peut imiter n'importe qui à partir de 6 s d'audio, ce qui oblige à utiliser seulement une voix dont on a le consentement |
 
 ## 8. Qui fait quoi
 

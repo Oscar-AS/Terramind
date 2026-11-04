@@ -51,3 +51,6 @@ data/raw/nasa_power/
 data/raw/wfp_prix/
 data/raw/documents/
 data/raw/images/
+
+# Poids des modèles (plusieurs Go), téléchargés par scripts/outils/telecharger_modeles.py
+modeles/

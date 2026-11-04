@@ -30,6 +30,7 @@ flowchart TD
 | [`risques.md`](risques.md) | Risques identifiés et parades |
 | [`voix-wolof.md`](voix-wolof.md) | Chaîne de secours pour la voix wolof, contrôles automatiques, accès aux modèles |
 | [`TACHES.md`](TACHES.md) | Le plan de tâches de l'équipe, jalon par jalon |
+| [`strategie-donnees-manquantes.md`](strategie-donnees-manquantes.md) | Pour chaque donnée qui manque : comment la combler, comment s'en passer, comment le bot la produira avec les agriculteurs |
 | [`sources/journal-recherche-agronomique.md`](sources/journal-recherche-agronomique.md) | Le journal daté de toutes les recherches : requêtes, sources lues, ce qui n'a pas été trouvé |
 | [`sources/seuils-meteo-maladies-ravageurs.md`](sources/seuils-meteo-maladies-ravageurs.md) | Règles météo du module Prévention (mildiou, alternariose, mineuse, teigne du chou) et premier test |
 | [`sources/demandes-acces.md`](sources/demandes-acces.md) | Demandes de données envoyées aux institutions et leur suivi |
