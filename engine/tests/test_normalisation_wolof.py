@@ -44,11 +44,11 @@ class Preparation(unittest.TestCase):
         self.assertTrue(r.synthetisable)
 
     def test_signale_decimales_symboles_et_mots_a_remplir(self):
-        r = nz.preparer("Tomate bi: 2,5 kg, 30 %.", LEX)
+        r = nz.preparer("Tomate bi: 2,5 ha, 30 %.", LEX)
         self.assertFalse(r.synthetisable)
         texte = " ".join(r.problemes)
         self.assertIn("décimal", texte)
-        self.assertIn("kg", texte)
+        self.assertIn("« ha »", texte)  # « ha » reste à remplir dans le lexique
         self.assertIn("tomate", texte)
 
     def test_signale_le_francais(self):

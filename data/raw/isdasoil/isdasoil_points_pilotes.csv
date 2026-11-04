@@ -63,14 +63,14 @@ clay_content,mean_0_20,Tivaoune,15.0884,-16.6518,12,12,%,
 clay_content,mean_20_50,Tivaoune,15.0884,-16.6518,13,13,%,
 clay_content,stdev_0_20,Tivaoune,15.0884,-16.6518,6,,%,
 clay_content,stdev_20_50,Tivaoune,15.0884,-16.6518,6,,%,
-texture_class,mean_0_20,Kebemer,15.3042,-16.2611,9,9,,
-texture_class,mean_20_50,Kebemer,15.3042,-16.2611,9,9,,
-texture_class,mean_0_20,Rufisque,14.7593,-17.2054,6,6,,
-texture_class,mean_20_50,Rufisque,14.7593,-17.2054,6,6,,
-texture_class,mean_0_20,Thies,14.7459,-16.8698,9,9,,
-texture_class,mean_20_50,Thies,14.7459,-16.8698,9,9,,
-texture_class,mean_0_20,Tivaoune,15.0884,-16.6518,9,9,,
-texture_class,mean_20_50,Tivaoune,15.0884,-16.6518,9,9,,
+texture_class,mean_0_20,Kebemer,15.3042,-16.2611,9,Sandy Loam,,
+texture_class,mean_20_50,Kebemer,15.3042,-16.2611,9,Sandy Loam,,
+texture_class,mean_0_20,Rufisque,14.7593,-17.2054,6,Sandy Clay Loam,,
+texture_class,mean_20_50,Rufisque,14.7593,-17.2054,6,Sandy Clay Loam,,
+texture_class,mean_0_20,Thies,14.7459,-16.8698,9,Sandy Loam,,
+texture_class,mean_20_50,Thies,14.7459,-16.8698,9,Sandy Loam,,
+texture_class,mean_0_20,Tivaoune,15.0884,-16.6518,9,Sandy Loam,,
+texture_class,mean_20_50,Tivaoune,15.0884,-16.6518,9,Sandy Loam,,
 carbon_organic,mean_0_20,Kebemer,15.3042,-16.2611,10,1.718,g/kg,expm1(x/10)
 carbon_organic,mean_20_50,Kebemer,15.3042,-16.2611,10,1.718,g/kg,expm1(x/10)
 carbon_organic,stdev_0_20,Kebemer,15.3042,-16.2611,2,,g/kg,expm1(x/10)
@@ -103,22 +103,22 @@ carbon_total,mean_0_20,Tivaoune,15.0884,-16.6518,14,3.055,g/kg,expm1(x/10)
 carbon_total,mean_20_50,Tivaoune,15.0884,-16.6518,13,2.669,g/kg,expm1(x/10)
 carbon_total,stdev_0_20,Tivaoune,15.0884,-16.6518,11,,g/kg,expm1(x/10)
 carbon_total,stdev_20_50,Tivaoune,15.0884,-16.6518,10,,g/kg,expm1(x/10)
-nitrogen_total,mean_0_20,Kebemer,15.3042,-16.2611,22,8.025,g/kg,expm1(x/10)
-nitrogen_total,mean_20_50,Kebemer,15.3042,-16.2611,23,8.974,g/kg,expm1(x/10)
-nitrogen_total,stdev_0_20,Kebemer,15.3042,-16.2611,13,,g/kg,expm1(x/10)
-nitrogen_total,stdev_20_50,Kebemer,15.3042,-16.2611,14,,g/kg,expm1(x/10)
-nitrogen_total,mean_0_20,Rufisque,14.7593,-17.2054,61,444.858,g/kg,expm1(x/10)
-nitrogen_total,mean_20_50,Rufisque,14.7593,-17.2054,47,108.947,g/kg,expm1(x/10)
-nitrogen_total,stdev_0_20,Rufisque,14.7593,-17.2054,8,,g/kg,expm1(x/10)
-nitrogen_total,stdev_20_50,Rufisque,14.7593,-17.2054,7,,g/kg,expm1(x/10)
-nitrogen_total,mean_0_20,Thies,14.7459,-16.8698,41,59.34,g/kg,expm1(x/10)
-nitrogen_total,mean_20_50,Thies,14.7459,-16.8698,32,23.533,g/kg,expm1(x/10)
-nitrogen_total,stdev_0_20,Thies,14.7459,-16.8698,8,,g/kg,expm1(x/10)
-nitrogen_total,stdev_20_50,Thies,14.7459,-16.8698,9,,g/kg,expm1(x/10)
-nitrogen_total,mean_0_20,Tivaoune,15.0884,-16.6518,27,13.88,g/kg,expm1(x/10)
-nitrogen_total,mean_20_50,Tivaoune,15.0884,-16.6518,26,12.464,g/kg,expm1(x/10)
-nitrogen_total,stdev_0_20,Tivaoune,15.0884,-16.6518,13,,g/kg,expm1(x/10)
-nitrogen_total,stdev_20_50,Tivaoune,15.0884,-16.6518,16,,g/kg,expm1(x/10)
+nitrogen_total,mean_0_20,Kebemer,15.3042,-16.2611,22,0.246,g/kg,expm1(x/100)
+nitrogen_total,mean_20_50,Kebemer,15.3042,-16.2611,23,0.259,g/kg,expm1(x/100)
+nitrogen_total,stdev_0_20,Kebemer,15.3042,-16.2611,13,,g/kg,expm1(x/100)
+nitrogen_total,stdev_20_50,Kebemer,15.3042,-16.2611,14,,g/kg,expm1(x/100)
+nitrogen_total,mean_0_20,Rufisque,14.7593,-17.2054,61,0.84,g/kg,expm1(x/100)
+nitrogen_total,mean_20_50,Rufisque,14.7593,-17.2054,47,0.6,g/kg,expm1(x/100)
+nitrogen_total,stdev_0_20,Rufisque,14.7593,-17.2054,8,,g/kg,expm1(x/100)
+nitrogen_total,stdev_20_50,Rufisque,14.7593,-17.2054,7,,g/kg,expm1(x/100)
+nitrogen_total,mean_0_20,Thies,14.7459,-16.8698,41,0.507,g/kg,expm1(x/100)
+nitrogen_total,mean_20_50,Thies,14.7459,-16.8698,32,0.377,g/kg,expm1(x/100)
+nitrogen_total,stdev_0_20,Thies,14.7459,-16.8698,8,,g/kg,expm1(x/100)
+nitrogen_total,stdev_20_50,Thies,14.7459,-16.8698,9,,g/kg,expm1(x/100)
+nitrogen_total,mean_0_20,Tivaoune,15.0884,-16.6518,27,0.31,g/kg,expm1(x/100)
+nitrogen_total,mean_20_50,Tivaoune,15.0884,-16.6518,26,0.297,g/kg,expm1(x/100)
+nitrogen_total,stdev_0_20,Tivaoune,15.0884,-16.6518,13,,g/kg,expm1(x/100)
+nitrogen_total,stdev_20_50,Tivaoune,15.0884,-16.6518,16,,g/kg,expm1(x/100)
 phosphorous_extractable,mean_0_20,Kebemer,15.3042,-16.2611,18,5.05,ppm,expm1(x/10)
 phosphorous_extractable,mean_20_50,Kebemer,15.3042,-16.2611,14,3.055,ppm,expm1(x/10)
 phosphorous_extractable,stdev_0_20,Kebemer,15.3042,-16.2611,3,,ppm,expm1(x/10)

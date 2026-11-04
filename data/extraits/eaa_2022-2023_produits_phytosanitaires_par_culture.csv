@@ -1,0 +1,256 @@
+culture,type_produit,pct_parcelles
+Arachide,Herbicide,19.8
+Arachide,Fongicide,76.6
+Arachide,Insecticide,6.8
+Arachide,Raticide,0.3
+Arachide,Bactéricide,0.3
+Arachide,Nématicides,0.3
+Arachide,Extrait de feuille,0.3
+Arachide,Ensemble,35.8
+Aubergine,Herbicide,0
+Aubergine,Fongicide,0
+Aubergine,Insecticide,90.1
+Aubergine,Raticide,0
+Aubergine,Bactéricide,42.6
+Aubergine,Nématicides,27.7
+Aubergine,Extrait de feuille,0
+Aubergine,Ensemble,60.3
+Béréf,Herbicide,100
+Béréf,Fongicide,0
+Béréf,Insecticide,0
+Béréf,Raticide,0
+Béréf,Bactéricide,0
+Béréf,Nématicides,0
+Béréf,Extrait de feuille,0
+Béréf,Ensemble,3.5
+Bissap,Herbicide,0
+Bissap,Fongicide,0
+Bissap,Insecticide,21.4
+Bissap,Raticide,0
+Bissap,Bactéricide,0
+Bissap,Nématicides,78.5
+Bissap,Extrait de feuille,0
+Bissap,Ensemble,1.9
+Coton,Herbicide,66.0
+Coton,Fongicide,41.4
+Coton,Insecticide,83.2
+Coton,Raticide,0
+Coton,Bactéricide,5.4
+Coton,Nématicides,7.8
+Coton,Extrait de feuille,0
+Coton,Ensemble,74.6
+Diakhatou,Herbicide,28.8
+Diakhatou,Fongicide,2.0
+Diakhatou,Insecticide,62.0
+Diakhatou,Raticide,0
+Diakhatou,Bactéricide,25.8
+Diakhatou,Nématicides,4.5
+Diakhatou,Extrait de feuille,23.3
+Diakhatou,Ensemble,82.0
+Fonio,Herbicide,100
+Fonio,Fongicide,0
+Fonio,Insecticide,0
+Fonio,Raticide,0
+Fonio,Bactéricide,0
+Fonio,Nématicides,0
+Fonio,Extrait de feuille,0
+Fonio,Ensemble,21.6
+Gombo,Herbicide,0
+Gombo,Fongicide,0
+Gombo,Insecticide,100
+Gombo,Raticide,0
+Gombo,Bactéricide,0
+Gombo,Nématicides,0
+Gombo,Extrait de feuille,0
+Gombo,Ensemble,16.4
+Mais,Herbicide,76.9
+Mais,Fongicide,19.9
+Mais,Insecticide,3.8
+Mais,Raticide,0
+Mais,Bactéricide,0
+Mais,Nématicides,0
+Mais,Extrait de feuille,0.2
+Mais,Ensemble,22.4
+Manioc,Herbicide,38.6
+Manioc,Fongicide,0
+Manioc,Insecticide,0
+Manioc,Raticide,0
+Manioc,Bactéricide,20.8
+Manioc,Nématicides,20.8
+Manioc,Extrait de feuille,40.6
+Manioc,Ensemble,5.3
+Mil,Herbicide,12.0
+Mil,Fongicide,52.3
+Mil,Insecticide,38.7
+Mil,Raticide,0.2
+Mil,Bactéricide,1.6
+Mil,Nématicides,1.6
+Mil,Extrait de feuille,0
+Mil,Ensemble,7.9
+Niébé,Herbicide,26.9
+Niébé,Fongicide,25.4
+Niébé,Insecticide,49.3
+Niébé,Raticide,0.4
+Niébé,Bactéricide,0
+Niébé,Nématicides,10.6
+Niébé,Extrait de feuille,0
+Niébé,Ensemble,7.6
+Pastèque,Herbicide,10.0
+Pastèque,Fongicide,29.1
+Pastèque,Insecticide,87.1
+Pastèque,Raticide,2.4
+Pastèque,Bactéricide,3.2
+Pastèque,Nématicides,1.7
+Pastèque,Extrait de feuille,0
+Pastèque,Ensemble,68.8
+Patate Douce,Herbicide,0
+Patate Douce,Fongicide,0
+Patate Douce,Insecticide,100
+Patate Douce,Raticide,0
+Patate Douce,Bactéricide,0
+Patate Douce,Nématicides,0
+Patate Douce,Extrait de feuille,0
+Patate Douce,Ensemble,0.1
+Piment,Herbicide,6.5
+Piment,Fongicide,16.9
+Piment,Insecticide,72.2
+Piment,Raticide,0
+Piment,Bactéricide,4.0
+Piment,Nématicides,0.3
+Piment,Extrait de feuille,21.9
+Piment,Ensemble,48.9
+Riz irrigué,Herbicide,91.5
+Riz irrigué,Fongicide,2.6
+Riz irrigué,Insecticide,14.6
+Riz irrigué,Raticide,0
+Riz irrigué,Bactéricide,0
+Riz irrigué,Nématicides,0
+Riz irrigué,Extrait de feuille,0
+Riz irrigué,Ensemble,43.9
+Riz pluvial,Herbicide,94.1
+Riz pluvial,Fongicide,9.5
+Riz pluvial,Insecticide,13.8
+Riz pluvial,Raticide,0
+Riz pluvial,Bactéricide,0
+Riz pluvial,Nématicides,0
+Riz pluvial,Extrait de feuille,0
+Riz pluvial,Ensemble,11.6
+Sésame,Herbicide,12.6
+Sésame,Fongicide,68.1
+Sésame,Insecticide,20.1
+Sésame,Raticide,16.4
+Sésame,Bactéricide,0
+Sésame,Nématicides,2.9
+Sésame,Extrait de feuille,0
+Sésame,Ensemble,18.4
+Sorgho,Herbicide,53.9
+Sorgho,Fongicide,27.2
+Sorgho,Insecticide,19.2
+Sorgho,Raticide,0
+Sorgho,Bactéricide,0
+Sorgho,Nématicides,0.5
+Sorgho,Extrait de feuille,1.9
+Sorgho,Ensemble,16.2
+Tomate cérise,Herbicide,0
+Tomate cérise,Fongicide,29.8
+Tomate cérise,Insecticide,96.7
+Tomate cérise,Raticide,11.4
+Tomate cérise,Bactéricide,0
+Tomate cérise,Nématicides,0
+Tomate cérise,Extrait de feuille,3.3
+Tomate cérise,Ensemble,92.8
+Tomate industrie,Herbicide,17.2
+Tomate industrie,Fongicide,29.3
+Tomate industrie,Insecticide,58.1
+Tomate industrie,Raticide,0
+Tomate industrie,Bactéricide,0
+Tomate industrie,Nématicides,1.1
+Tomate industrie,Extrait de feuille,7.5
+Tomate industrie,Ensemble,74.8
+Vouandzou,Herbicide,0
+Vouandzou,Fongicide,0
+Vouandzou,Insecticide,0
+Vouandzou,Raticide,0
+Vouandzou,Bactéricide,0
+Vouandzou,Nématicides,0
+Vouandzou,Extrait de feuille,0
+Choux,Herbicide,8.3
+Choux,Fongicide,57.4
+Choux,Insecticide,99.0
+Choux,Raticide,0
+Choux,Bactéricide,1.0
+Choux,Nématicides,1.0
+Choux,Extrait de feuille,0
+Choux,Ensemble,92.9
+Oignon,Herbicide,19.2
+Oignon,Fongicide,14.6
+Oignon,Insecticide,78.4
+Oignon,Raticide,0
+Oignon,Bactéricide,0
+Oignon,Nématicides,18.5
+Oignon,Extrait de feuille,0
+Oignon,Ensemble,41.2
+Carotte,Herbicide,100
+Carotte,Fongicide,0
+Carotte,Insecticide,17.3
+Carotte,Raticide,0
+Carotte,Bactéricide,0
+Carotte,Nématicides,0
+Carotte,Extrait de feuille,0
+Carotte,Ensemble,31.6
+Courge,Herbicide,41.3
+Courge,Fongicide,85.2
+Courge,Insecticide,85.2
+Courge,Raticide,0
+Courge,Bactéricide,0
+Courge,Nématicides,7.3
+Courge,Extrait de feuille,0
+Courge,Ensemble,81.6
+Haricot vert,Herbicide,0
+Haricot vert,Fongicide,100
+Haricot vert,Insecticide,100
+Haricot vert,Raticide,0
+Haricot vert,Bactéricide,0
+Haricot vert,Nématicides,0
+Haricot vert,Extrait de feuille,0
+Haricot vert,Ensemble,32.0
+Melon,Herbicide,0
+Melon,Fongicide,0
+Melon,Insecticide,100
+Melon,Raticide,0
+Melon,Bactéricide,0
+Melon,Nématicides,0
+Melon,Extrait de feuille,0
+Melon,Ensemble,42.5
+Concombre,Herbicide,0
+Concombre,Fongicide,0
+Concombre,Insecticide,100
+Concombre,Raticide,0
+Concombre,Bactéricide,75.9
+Concombre,Nématicides,0
+Concombre,Extrait de feuille,0
+Concombre,Ensemble,14.7
+Oignon vert,Herbicide,0
+Oignon vert,Fongicide,0
+Oignon vert,Insecticide,100
+Oignon vert,Raticide,0
+Oignon vert,Bactéricide,0
+Oignon vert,Nématicides,0
+Oignon vert,Extrait de feuille,0
+Oignon vert,Ensemble,50.0
+Navet,Herbicide,84.5
+Navet,Fongicide,84.5
+Navet,Insecticide,100
+Navet,Raticide,0
+Navet,Bactéricide,0
+Navet,Nématicides,0
+Navet,Extrait de feuille,0
+Navet,Ensemble,77.4
+Total,Herbicide,28.7
+Total,Fongicide,59.0
+Total,Insecticide,18.1
+Total,Raticide,0.5
+Total,Bactéricide,0.8
+Total,Nématicides,1.0
+Total,Extrait de feuille,0.6
+Total,Ensemble,23.1

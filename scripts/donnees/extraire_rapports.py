@@ -177,11 +177,60 @@ def eaa_2020_2021_maraichage():
            "DAPSA, EAA 2020-2021, tableaux annexes, tableau 4.2.4", "Répartition (%) de la production par usage")
 
 
+def eaa_2022_2023():
+    """Tableaux du classeur EAA 2022-2023 utiles au besoin (ravageurs, traitements, usages).
+    Les feuilles sont des données de graphiques : on repère chaque bloc par son titre et on
+    s'arrête à la ligne « Total »."""
+    wb = openpyxl.load_workbook(DOCS / "dapsa_eaa_2022-2023_tableaux.xlsx", read_only=True, data_only=True)
+
+    def bloc(feuille, titre, decalage_entete):
+        rangs = [[c for c in r if c is not None] for r in wb[feuille].iter_rows(values_only=True)]
+        i = next(k for k, r in enumerate(rangs) if r and isinstance(r[0], str) and r[0].startswith(titre))
+        entete = [str(c).strip(" ,") for c in rangs[i + decalage_entete]]
+        lignes = []
+        for r in rangs[i + decalage_entete + 1:]:
+            if not r:
+                continue
+            lignes.append(r)
+            if str(r[0]).strip() == "Total":
+                return entete, lignes
+        raise SystemExit(f"EAA 2022-2023 : fin du bloc « {titre} » introuvable")
+
+    source = "DAPSA, Enquête agricole annuelle 2022-2023, classeur des tableaux et graphiques"
+    # 8.1.2 : principaux chocs subis (8 premières colonnes du premier bloc ; % de ménages agricoles)
+    entete, rangs = bloc("Chapitre 8", "Graphique 8.1 2", 2)
+    lignes = [[r[0].strip().title(), choc.split(":")[-1].strip(), round(v * 100, 1)]
+              for r in rangs for choc, v in zip(entete[1:], r[1:]) if isinstance(v, (int, float))]
+    if not any(l[0] == "Louga" and "ravageurs" in l[1] and l[2] == 43.9 for l in lignes):
+        raise SystemExit("EAA 2022-2023 : contrôle ravageurs Louga raté")
+    ecrire("eaa_2022-2023_chocs_production_par_region.csv", ["region", "choc", "pct_menages"], lignes, source,
+           "Graphique 8.1.2 : % des ménages agricoles ayant subi chaque choc de production (tous types de "
+           "cultures, pas seulement le maraîchage) ; libellés recopiés du classeur")
+
+    # 3.4.3 : produits phytosanitaires par culture principale (% des parcelles)
+    entete, rangs = bloc("Chapitre 3", "Graphique 3.4 3", 1)
+    lignes = [[r[0].strip(), produit, round(v * 100, 1)]
+              for r in rangs for produit, v in zip(entete[1:], r[1:]) if isinstance(v, (int, float))]
+    ecrire("eaa_2022-2023_produits_phytosanitaires_par_culture.csv", ["culture", "type_produit", "pct_parcelles"],
+           lignes, source, "Graphique 3.4.3 : % des parcelles traitées par type de produit, selon la culture "
+           "principale ; certaines cultures reposent sur très peu de parcelles (valeurs 0 ou 100 %)")
+
+    # 4.2.3 : usages de la production maraîchère (bloc de gauche, en proportions)
+    entete, rangs = bloc("Chapitre 4", "Graphique 4.2 3", 1)
+    lignes = [[r[0].strip()] + [round(v * 100, 1) for v in r[1:5]] for r in rangs
+              if all(isinstance(v, (int, float)) for v in r[1:5])]
+    ecrire("eaa_2022-2023_utilisation_productions_maraicheres.csv",
+           ["culture", "pct_vente", "pct_semences", "pct_dons", "pct_consommation"], lignes, source,
+           "Graphique 4.2.3, bloc de gauche : répartition (%) de la production maraîchère par usage ; le bloc "
+           "de droite du classeur n'a pas de titre clair et n'est pas repris")
+
+
 if __name__ == "__main__":
     print("Extraction des tableaux")
     rgph5_maraichage()
     dhort_production_nationale()
     eaa_2020_2021_maraichage()
+    eaa_2022_2023()
     with (SORTIE / "SOURCES.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["fichier", "document_source", "contenu", "lignes"])

@@ -94,6 +94,54 @@ DOCUMENTS = [
      "Ministère de l'Agriculture, Forum national de l'horticulture, 2025"),
 ]
 
+# Documents agronomiques publics qui remplacent les fiches ISRA-CDH 2022 introuvables (source `fiches`).
+# Classés par proximité avec les Niayes : Sénégal, puis littoral mauritanien (CNRADA), puis Niger
+# (zone la moins proche, voir research/itineraires-par-culture.md).
+FICHES = [
+    ("min_piesan_livret_oignon_niayes_fr_wo_2022.pdf",
+     "https://agriculture.gouv.sn/wp-content/uploads/2022/06/Livret-oignon-francais-wolof.pdf",
+     "Ministère de l'Agriculture (PIESAN), Bonnes pratiques de production d'oignon dans les Niayes, FR/wolof, 2022"),
+    ("paden_fiche_oignon_niayes.pdf", "https://duddal.org/files/original/39a30d91086dcdf5d3705b8973c518d6be6d6356.pdf",
+     "PADEN, fiche technique des bonnes pratiques de production d'oignon dans les Niayes (résultats ISRA-CDH)"),
+    ("cirad_isra_guide_pratique_maraichage_senegal_1987.pdf",
+     "https://open-library.cirad.fr/files/4/751__Guide_pratique_du_maraichage_au_Senegal.pdf",
+     "Beniest et al., Guide pratique du maraîchage au Sénégal, ISRA/CDH-FAO, 1987"),
+    ("fao_radhort_semences_tomate_senegal.pdf",
+     "https://duddal.org/files/original/3b6754ae5981f3846f3b1cdf425dd647eaf5498c.pdf",
+     "FAO/RADHORT/ISRA-CDH, Techniques de production de semences de tomate au Sénégal (variétés CDH) ; copie DUDDAL, le site de la FAO refuse les scripts"),
+    ("fao_production_precoce_oignon_senegal.pdf",
+     "https://openknowledge.fao.org/server/api/core/bitstreams/87539e9a-3717-4361-8937-06ad2c7a17af/content",
+     "FAO, Les techniques de production précoce pour l'étalement de la culture de l'oignon au Sénégal"),
+    ("fao_radhort_oignon_moyenne_vallee.pdf",
+     "https://openknowledge.fao.org/server/api/core/bitstreams/55f53417-aee9-4afb-b73b-96645d8e67db/content",
+     "FAO/RADHORT, La culture de l'oignon dans la moyenne vallée du fleuve Sénégal"),
+    ("fao_pepinieres_maraicheres_afrique_ouest.pdf",
+     "https://openknowledge.fao.org/server/api/core/bitstreams/f7907421-8016-46b3-a455-b312701cf893/content",
+     "FAO GCP/RAF/244/BEL, Les pépinières maraîchères en Afrique soudano-sahélienne"),
+    ("cirad_itineraires_oignon_vallee.pdf", "https://agritrop.cirad.fr/543957/1/document_543957.pdf",
+     "CIRAD/ISRA, Quelques éléments d'analyse sur les itinéraires techniques (oignon, vallée du fleuve)"),
+    ("stdf_pg302_aumn_chou_niayes_rapport.pdf",
+     "https://www.standardsfacility.org/sites/default/files/PG_302_ProjectActivities_Report.pdf",
+     "STDF/AUMN, projet PG 302, production durable du chou dans les Niayes, rapport d'activités"),
+] + [
+    (f"cnrada_{s}.html", f"https://cnrada.org/fiche-technique/{s}/",
+     f"CNRADA (Mauritanie), {s.replace('-', ' ')}")
+    for s in ("fiche-technique-de-la-tomate", "fiche-technique-du-poivron", "fiche-technique-du-choux-pomme",
+              "fiche-technique-de-la-pomme-de-terre", "fiche-technique-de-loignon", "fiche-technique-de-la-carotte",
+              "fiche-technique-du-piment", "fiche-technique-du-jacatou", "fiche-technique-de-laubergine",
+              "fiche-technique-du-gombo", "fiche-technique-de-la-pepiniere-maraichere")
+] + [
+    ("niger_techniques_production_chou.pdf",
+     "https://duddal.org/files/original/42982ad5f9b03fb4a86fbc3a9d146a07de108252.pdf",
+     "Niger, ministère de l'Agriculture, techniques de production des cultures irriguées : le chou"),
+    ("niger_cra_maradi_tomate.pdf", "https://duddal.org/files/original/e7629bcc5033ce35fe07dc456a3bae3091d7f291.pdf",
+     "Niger, Chambre régionale d'agriculture de Maradi, fiche technico-économique tomate"),
+    ("niger_cra_dosso_poivron.pdf", "https://reca-niger.org/IMG/pdf/FT_Poivron_CRADosso_V1.pdf",
+     "Niger, Chambre régionale d'agriculture de Dosso, fiche technique poivron"),
+    ("niger_cra_dosso_pomme_de_terre.pdf", "https://reca-niger.org/IMG/pdf/FTE_pommeDterre_Dosso_Mai2017.pdf",
+     "Niger, Chambre régionale d'agriculture de Dosso, fiche technico-économique pomme de terre, 2017"),
+]
+
 ANNEES_HORAIRES = range(2020, 2026)  # années civiles complètes
 JOURNALIER = ("19910101", "20251231")
 
@@ -233,21 +281,56 @@ def _retransformer(regle, x):
         return x / 100
     if regle == "expm1(x/10)":
         return math.expm1(x / 10)
+    if regle == "expm1(x/100)":
+        return math.expm1(x / 100)
     raise ValueError(f"règle de retransformation inconnue : {regle}")
+
+
+# Corrections vérifiées des métadonnées iSDAsoil d'AWS. Pour l'azote total, le fichier JSON
+# indique expm1(x/10), ce qui donne jusqu'à 445 g/kg (impossible : un sol en a ~0,2 à 3 g/kg).
+# Le catalogue Google Earth Engine d'iSDA (ISDASOIL/Africa/v1/nitrogen_total, vérifié le
+# 2 nov 2026) indique exp(x/100)-1 ; les autres règles des deux sources concordent.
+ISDASOIL_REGLES_CORRIGEES = {"nitrogen_total": "expm1(x/100)"}
+# Légende du code de texture (texture_class_attribute_table.csv, publiée avec la carte).
+ISDASOIL_TEXTURE_URL = "https://isdasoil.s3.amazonaws.com/soil_data/texture_class/texture_class_attribute_table.csv"
 
 
 def isdasoil():
     """Valeurs iSDAsoil (30 m) aux points pilotes, lues dans les COG publics d'AWS sans compte.
     Seule la tuile contenant chaque point est téléchargée (requêtes HTTP partielles)."""
     print("iSDAsoil (sols à 30 m, CC BY 4.0), lecture des tuiles utiles sur AWS")
-    points = points_pilotes()
+    legende_brute = telecharger(ISDASOIL_TEXTURE_URL)
+    ecrire(RAW / "isdasoil" / "metadonnees" / "texture_class_attribute_table.csv", legende_brute,
+           "iSDAsoil (iSDA)", ISDASOIL_TEXTURE_URL)
+    lignes = isdasoil_points(points_pilotes(), ISDASOIL_PROPRIETES, legende_brute, enregistrer_meta=True)
+    sortie = io.StringIO()
+    w = csv.writer(sortie)
+    w.writerow(["propriete", "bande", "departement", "latitude", "longitude", "valeur_brute", "valeur",
+                "unite", "retransformation"])
+    w.writerows(lignes)
+    ecrire(RAW / "isdasoil" / "isdasoil_points_pilotes.csv", sortie.getvalue().encode("utf-8"),
+           "iSDAsoil (iSDA), COG publics sur AWS", ISDASOIL.format(p="PROPRIETE", ext="tif"),
+           "EXTRAIT : pixel de 30 m sous chaque centroïde ; valeur = moyenne retransformée selon les métadonnées ; "
+           "écarts types laissés bruts ; texture_class = classe USDA d'après la légende publiée ; "
+           "azote : règle exp(x/100)-1 du catalogue Earth Engine (le JSON d'AWS indique x/10, erroné)")
+
+
+def isdasoil_points(points, proprietes, legende_brute, enregistrer_meta=False, fenetre=0):
+    """Lit les propriétés iSDAsoil sous chaque point {nom: (lat, lon)}. Avec fenetre=n, la valeur est la
+    moyenne des pixels valides d'un carré de (2n+1)² pixels autour du point (dans la même tuile), plus
+    représentative d'une zone qu'un pixel isolé. Renvoie des lignes [prop, bande, nom, lat, lon, brut, valeur,
+    unite, regle] ; « brut » est la moyenne des valeurs brutes de la fenêtre."""
+    legende = {int(r["Value"]): r["Description"]
+               for r in csv.DictReader(io.StringIO(legende_brute.decode("utf-8-sig")))}
     lignes = []
-    for prop in ISDASOIL_PROPRIETES:
+    for prop in proprietes:
         meta_url = ISDASOIL.format(p=prop, ext="json")
         meta_brut = telecharger(meta_url)
-        ecrire(RAW / "isdasoil" / "metadonnees" / f"{prop}.json", meta_brut, "iSDAsoil (iSDA)", meta_url)
+        if enregistrer_meta:
+            ecrire(RAW / "isdasoil" / "metadonnees" / f"{prop}.json", meta_brut, "iSDAsoil (iSDA)", meta_url)
         meta = json.loads(meta_brut)
         regle, unite = meta.get("back-transformation"), meta.get("unit") or ""
+        regle = ISDASOIL_REGLES_CORRIGEES.get(prop, regle)
         bandes = [b["name"] for b in meta["assets"]["image"]["eo:bands"]]
         url = meta["assets"]["image"]["href"]
         t = _bigtiff_tags(_plage(url, 0, 65535))
@@ -270,26 +353,30 @@ def isdasoil():
                 debut = struct.unpack("<Q", _plage(url, pos_off + 8 * k, pos_off + 8 * k + 7))[0]
                 taille = struct.unpack("<I", _plage(url, pos_nb + 4 * k, pos_nb + 4 * k + 3))[0]
                 tuiles[k] = zlib.decompress(_plage(url, debut, debut + taille - 1))
-            px = ((lig % th) * tl + col % tl) * nb_bandes
+            ly, lx = lig % th, col % tl
             for i, bande in enumerate(bandes):
-                brut = struct.unpack_from("<" + fmt, tuiles[k], (px + i) * octets)[0]
-                if brut == nodata:
-                    valeur = None
-                elif bande.startswith("mean"):
-                    valeur = round(_retransformer(regle, brut), 3)
+                if fenetre == 0:
+                    bruts = [struct.unpack_from("<" + fmt, tuiles[k], ((ly * tl + lx) * nb_bandes + i) * octets)[0]]
                 else:
+                    bruts = [struct.unpack_from("<" + fmt, tuiles[k], ((yy * tl + xx) * nb_bandes + i) * octets)[0]
+                             for yy in range(max(0, ly - fenetre), min(th, ly + fenetre + 1))
+                             for xx in range(max(0, lx - fenetre), min(tl, lx + fenetre + 1))]
+                bruts = [b for b in bruts if b != nodata]
+                if not bruts:
+                    brut, valeur = None, None
+                elif prop == "texture_class":
+                    brut = max(set(bruts), key=bruts.count)  # classe la plus fréquente
+                    valeur = legende[brut]  # classe USDA en anglais (ex. « Sandy Loam »)
+                elif bande.startswith("mean"):
+                    brut = bruts[0] if fenetre == 0 else round(sum(bruts) / len(bruts), 2)
+                    valeur = round(_retransformer(regle, brut) if fenetre == 0
+                                   else sum(_retransformer(regle, b) for b in bruts) / len(bruts), 3)
+                else:
+                    brut = bruts[0] if fenetre == 0 else round(sum(bruts) / len(bruts), 2)
                     valeur = None  # écart type : retransformation non documentée pour les échelles log
                 lignes.append([prop, bande, nom, lat, lon, brut, valeur, unite, regle or ""])
         print(f"  {prop} : {len(tuiles)} tuile(s)")
-    sortie = io.StringIO()
-    w = csv.writer(sortie)
-    w.writerow(["propriete", "bande", "departement", "latitude", "longitude", "valeur_brute", "valeur",
-                "unite", "retransformation"])
-    w.writerows(lignes)
-    ecrire(RAW / "isdasoil" / "isdasoil_points_pilotes.csv", sortie.getvalue().encode("utf-8"),
-           "iSDAsoil (iSDA), COG publics sur AWS", ISDASOIL.format(p="PROPRIETE", ext="tif"),
-           "EXTRAIT : pixel de 30 m sous chaque centroïde ; valeur = moyenne retransformée selon les métadonnées ; "
-           "écarts types laissés bruts ; texture_class = code brut (légende à trouver)")
+    return lignes
 
 
 def faostat():
@@ -434,8 +521,20 @@ def documents():
         ecrire(RAW / "documents" / nom, contenu, titre, url)
 
 
+def fiches():
+    """Documents agronomiques publics (itinéraires techniques), à la place des fiches ISRA-CDH 2022."""
+    print("Fiches et guides agronomiques publics (Sénégal, Mauritanie, Niger)")
+    for nom, url, titre in FICHES:
+        try:
+            contenu = telecharger(url)
+        except Exception as e:
+            print(f"  ÉCHEC {nom} : {e}")
+            continue
+        ecrire(RAW / "documents" / "fiches" / nom, contenu, titre, url)
+
+
 SOURCES = {"geoboundaries": geoboundaries, "power": power, "soilgrids": soilgrids, "isdasoil": isdasoil,
-           "faostat": faostat, "wfp": wfp, "chirps": chirps, "documents": documents}
+           "faostat": faostat, "wfp": wfp, "chirps": chirps, "documents": documents, "fiches": fiches}
 
 if __name__ == "__main__":
     demandes = sys.argv[1:] or list(SOURCES)

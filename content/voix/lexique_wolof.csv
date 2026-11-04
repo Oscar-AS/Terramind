@@ -13,12 +13,12 @@ base,10,fukk,jangawolof.org/numbers,a_valider_locuteur
 base,100,téeméer,jangawolof.org/understanding-wolof-numbers-counting-in-wolof,a_valider_locuteur
 base,1000,junni,jangawolof.org/understanding-wolof-numbers-counting-in-wolof,a_valider_locuteur
 liaison,et (entre parties d'un nombre),ak,jangawolof.org/numbers,a_valider_locuteur
-mot,kg,,à remplir par un locuteur,a_remplir
+mot,kg,kilo,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 7",a_valider_locuteur
 mot,ha,,à remplir par un locuteur,a_remplir
 mot,%,,à remplir par un locuteur,a_remplir
 mot,°C,,à remplir par un locuteur,a_remplir
-mot,janvier,,à remplir par un locuteur,a_remplir
-mot,février,,à remplir par un locuteur,a_remplir
+mot,janvier,Saawiee,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 3",a_valider_locuteur
+mot,février,Feewiryee,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 3",a_valider_locuteur
 mot,mars,,à remplir par un locuteur,a_remplir
 mot,avril,,à remplir par un locuteur,a_remplir
 mot,mai,,à remplir par un locuteur,a_remplir
@@ -26,39 +26,39 @@ mot,juin,,à remplir par un locuteur,a_remplir
 mot,juillet,,à remplir par un locuteur,a_remplir
 mot,août,,à remplir par un locuteur,a_remplir
 mot,septembre,,à remplir par un locuteur,a_remplir
-mot,octobre,,à remplir par un locuteur,a_remplir
-mot,novembre,,à remplir par un locuteur,a_remplir
-mot,décembre,,à remplir par un locuteur,a_remplir
+mot,octobre,Octoobar,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 3",a_valider_locuteur
+mot,novembre,Noovambar,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 3",a_valider_locuteur
+mot,décembre,Desambar,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 3",a_valider_locuteur
 mot,tomate,,à remplir par un locuteur (orthographe wolof prononçable par la voix),a_remplir
 mot,pomme de terre,,à remplir par un locuteur,a_remplir
-mot,oignon,,à remplir par un locuteur,a_remplir
+mot,oignon,soble,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 3, 17",a_valider_locuteur
 mot,chou,,à remplir par un locuteur,a_remplir
 mot,poivron,,à remplir par un locuteur,a_remplir
 mot,ANCAR,,à remplir par un locuteur (épeler ou dire « agent agricole »),a_remplir
 mot,aubergine amère,diakhatou,"piste X (Grok) : « diakhatou » majoritaire,  « jaxatu » aussi employé (orthographe officielle) ; exemple https://x.com/spicynxnx/status/2116328293867925572",a_valider_locuteur
 mot,saison des pluies,nawet,"piste X (Grok) : « nawet »,  « nawèt » ; exemple https://x.com/NdiayeGaindeSn1/status/1969354285667213607",a_valider_locuteur
-mot,litre,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,mètre,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,tonne,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,sac,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
+mot,litre,liitar,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 11",a_valider_locuteur
+mot,mètre,meetar,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 7",a_valider_locuteur
+mot,tonne,ton,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 28",a_valider_locuteur
+mot,sac,saako,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 26",a_valider_locuteur
 mot,piment,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
 mot,carotte,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
 mot,maïs,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
 mot,gombo,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
 mot,navet,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
 mot,salade,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,pépinière,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,repiquer,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,semer,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,arroser,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,engrais,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,fumier,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
+mot,pépinière,pepiñeer,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 3",a_valider_locuteur
+mot,repiquer,jëmbët,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 18 (variante écrite : jëbët)",a_valider_locuteur
+mot,semer,ji,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 9",a_valider_locuteur
+mot,arroser,suuxat,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 7, 19",a_valider_locuteur
+mot,engrais,angare,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 8",a_valider_locuteur
+mot,fumier,tos,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 7",a_valider_locuteur
 mot,compost,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,champ,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,récolte,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,maladie (d'une plante),,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,insecte,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
-mot,feuille,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
+mot,champ,tool,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 14",a_valider_locuteur
+mot,récolte,goob,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 24",a_valider_locuteur
+mot,maladie (d'une plante),feebar,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 12",a_valider_locuteur
+mot,insecte,gunóor,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 23 (traduit « attaques », au sens de ravageurs)",a_valider_locuteur
+mot,feuille,xob,"Livret PIESAN « Bonnes pratiques de production d'oignon dans les Niayes », MAER 2022, FR/wolof (agriculture.gouv.sn), p. 10, 25",a_valider_locuteur
 mot,racine,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
 mot,eau salée,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
 mot,agent agricole,,à remplir par un locuteur (non trouvé sur X par Grok le 2 nov. 2026),a_remplir
