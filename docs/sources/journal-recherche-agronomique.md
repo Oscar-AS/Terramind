@@ -167,6 +167,82 @@ Statuts : **Utilisée** (reprise dans le brouillon) · **Lue, non utilisée** ·
 
 ---
 
+## Session 3 · 2 novembre 2026 · Données ouvertes, seuils météo, documents publics à la place des fiches ISRA
+
+**Qui** : Salam, avec un assistant IA (Claude, d'Anthropic) qui a fait les recherches web et les téléchargements par script.
+
+**Pourquoi** : rassembler avant le développement toutes les données encore manquantes (consigne D7) :
+- photos pour le diagnostic ;
+- règles météo pour la Prévention ;
+- vérification des sols iSDAsoil ;
+- contenu des fiches ISRA-CDH introuvables ;
+- salinité ;
+- accès aux modèles wolof.
+
+**Outils** : recherche web, API de Hugging Face, de GitHub, de la Wayback Machine et de NASA POWER ; scripts du dépôt (`telecharger_sources.py`, `telecharger_images.py`, `extraire_rapports.py`, `comparer_zones.py`).
+
+### Requêtes effectuées
+
+| # | Requête (résumé) | Résultat principal |
+|---|---|---|
+| 1 | API Hugging Face : Kiriku, galsenai, whosper, dofbi, speecht5, Kallaama | Accès et licences relevés (voir `docs/voix-wolof.md` § 7 bis) ; nouvelle voix `AIHubSN/Kiriku-Wolof-TTS` |
+| 2 | Licences de PlantVillage et PlantDoc (Hugging Face, GitHub) | CC BY-SA 3.0 et CC BY 4.0 ; aucune classe oignon ni chou |
+| 3 | iSDAsoil : règle de l'azote total, légende des textures | Règle `exp(x/100)-1` (catalogue Earth Engine) ; légende USDA publiée avec la carte |
+| 4 | TOMCAST / FAST (alternariose) | Tableau des notes (UC IPM), Madden et al. 1978 |
+| 5 | Critères Hutton et période de Smith (mildiou) | AHDB 2017 |
+| 6 | Humectation estimée par l'humidité relative | Sentelhas et al. 2008 (seuil de 90 %) |
+| 7 | *Alternaria porri*, DOWNCAST (maladies de l'oignon) | Suheri et Price 2000 ; Jesperson et Sutton 1987 |
+| 8 | Degrés-jours : *Tuta absoluta*, *Plutella xylostella*, *Bemisia tabaci* | Seuils et constantes (voir le document des seuils) |
+| 9 | Salinité des sols des Niayes | 4 études (IJBCS 2012, ACSJ 2015, ESJ 2022, Mboltime) |
+| 10 | Wayback Machine : marcheagricole.sn | Pages des fiches ISRA-CDH jamais archivées |
+| 11 | Fiches ISRA / PADEN / ministère / FAO / ANCAR (oignon, tomate, chou, pomme de terre, poivron) | Livret PIESAN oignon 2022 (FR/wolof), fiche PADEN oignon, FAO/RADHORT tomate, STDF/AUMN chou |
+| 12 | isracdh.sn (site du CDH) | Fiches « publiées prochainement », prix pas encore publiés |
+| 13 | Fiches de zones voisines : CNRADA (Mauritanie), RECA et chambres d'agriculture (Niger) | 11 fiches CNRADA, 4 documents nigériens |
+| 14 | NASA POWER horaire, déc. 2025 à févr. 2026, Tivaouane | Test des critères Hutton sur l'épisode de Notto Gouye Diama |
+| 15 | NASA POWER + iSDAsoil sur 11 zones | Comparaison climat et sol des zones analogues |
+
+### Sources consultées
+
+Les sources et leur usage sont détaillés dans :
+- [seuils-meteo-maladies-ravageurs.md](seuils-meteo-maladies-ravageurs.md) (règles météo, salinité) ;
+- [research/itineraires-par-culture.md](../../research/itineraires-par-culture.md) (documents agronomiques par culture, zones analogues) ;
+- [data/README.md](../../data/README.md) et [data/CATALOGUE.md](../../data/CATALOGUE.md) (jeux de données).
+
+Chaque fichier téléchargé est inscrit dans `data/raw/MANIFESTE.csv` (URL, date, empreinte SHA-256).
+
+### Ce que nous n'avons pas trouvé
+
+- **Les fiches ISRA-CDH de 2022** : site fermé, pages jamais archivées, site du CDH sans fiches.
+- **Une carte ouverte de la salinité** à l'échelle du champ.
+- **Des photos d'oignon et de chou malades** dans les jeux ouverts.
+- **Des documents sénégalais récents** pour la tomate, le chou, le poivron et la pomme de terre, équivalents au livret oignon.
+- **Une validation au Sénégal** de l'un des modèles météo.
+
+### Limites
+
+- Les modèles météo viennent d'autres pays.
+- La météo vient d'une grille d'environ 50 km.
+- L'humectation des feuilles est estimée par l'humidité.
+- Les fiches de Mauritanie et du Niger ne valent que dans la mesure où leurs zones ressemblent aux Niayes (voir la comparaison climat et sol).
+- Les rendements cités sont des rendements de station.
+
+### Ce qui a été produit
+
+- Corrections et extensions des scripts de données : azote, textures, images, documents, zones.
+- Nouveaux tableaux dans `data/extraits/` : EAA 2022-2023, inventaire des images, comparaison des zones.
+- Documents `docs/sources/seuils-meteo-maladies-ravageurs.md` et `research/itineraires-par-culture.md`.
+- Décision D11.
+- 22 mots wolof sourcés ajoutés au lexique (livret PIESAN).
+
+### Suites à donner
+
+- Demander les fiches au CDH (formulaire de isracdh.sn).
+- Chercher des photos d'oignon et de chou malades sous une licence lisible.
+- Faire valider le lexique par un locuteur.
+- Tester les autres modèles sur les données EAA et NASA POWER.
+
+---
+
 ## Modèle pour une nouvelle session
 
 ```markdown

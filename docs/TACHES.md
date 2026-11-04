@@ -43,7 +43,7 @@ Décision d'équipe le **4 nov** : liste fermée des cultures du diagnostic et z
 
 ## Rama (contenu agronomique, réponses types, tests, pitch)
 
-> 2 nov 2026 : Rama a un profil communication, relations et image. La matière technique lui est fournie toute prête ([guide PDF](guides/guide-rama-cultures.pdf)) ; elle la met en mots simples. Agronome, entretiens et photos de terrain sont des **bonus** (décision D7) : aucune tâche n'attend après eux.
+> 2 nov 2026 : Rama a un profil communication, relations et image. La matière technique lui est fournie toute prête (guide PDF transmis directement à Rama, hors dépôt) ; elle la met en mots simples. Agronome, entretiens et photos de terrain sont des **bonus** (décision D7) : aucune tâche n'attend après eux.
 
 | Échéance | Tâche | Attend | Alimente |
 |---|---|---|---|

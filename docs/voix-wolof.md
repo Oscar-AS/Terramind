@@ -81,6 +81,21 @@ Ces contrôles ne remplacent pas l'écoute humaine, mais ils attrapent les raté
 - `bilalfaye/speecht5_tts-wolof` : licence MIT annoncée, à confirmer.
 - Il n'existe apparemment pas de voix wolof dans la collection MMS-TTS de Meta (selon un dépôt tiers ; à confirmer) ; les voix MMS sont de toute façon en CC BY-NC 4.0.
 
+## 7 bis. Accès aux modèles (vérifié le 2 nov 2026 sur l'API Hugging Face)
+
+| Modèle | Rôle | Accès | Licence affichée |
+|---|---|---|---|
+| `AIHubSN/Kiriku-Wolof-ASR` (base Whisper large-v2) | Reconnaissance vocale | Sur demande (« gated ») : accepter les conditions sur la page, avec un compte Hugging Face | Apache 2.0 |
+| `AIHubSN/M-Kiriku-ASR` (base Whisper large-v3) | Reconnaissance vocale, plus récente | Sur demande | Apache 2.0 |
+| `AIHubSN/Kiriku-Wolof-TTS` | **Voix de synthèse wolof, nouvelle piste** à ajouter au test d'écoute (§ 6) | Sur demande | Non indiquée |
+| `galsenai/xTTS-v2-wolof` | Voix de synthèse | Sur demande | Non indiquée (base XTTS-v2 de Coqui) |
+| `CAYTU/whosper-large-v2` | Reconnaissance vocale | Libre | Apache 2.0 |
+| `dofbi/wolof-asr` | Reconnaissance vocale | Libre | MIT |
+| `bilalfaye/speecht5_tts-wolof-v0.2` | Voix de secours | Libre | MIT |
+| Corpus Kallaama (copies `yigagilbert/kallaama-trs-dataset-19hr`, `KeraCare/Wolof-Kallaama`…) | Ajustement de la reconnaissance | Libre | À vérifier sur chaque copie et sur la publication d'origine |
+
+Les demandes d'accès se font avec un compte Hugging Face de l'équipe ; le jeton Hugging Face va dans `.env` (`HF_TOKEN`), jamais dans le code.
+
 ## 8. Qui fait quoi
 
 | Tâche | Qui | Quand |
