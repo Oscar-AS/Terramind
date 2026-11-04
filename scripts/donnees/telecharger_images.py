@@ -8,6 +8,9 @@ Usage (depuis la racine du dépôt) :
   Range et on n'extrait que les images couleur des cultures retenues.
 - PlantDoc (Singh et al. 2020, GitHub pratikkayal/PlantDoc-Dataset, CC BY 4.0) :
   photos prises au champ ; on ne récupère que les dossiers des cultures retenues.
+- Chou (Ayawli et al. 2025, Mendeley Data DOI 10.17632/sjmgzhwrxv.1, CC BY 4.0, Sunyani
+  Technical University, Ghana) : alternariose, pourriture noire, mildiou, sain ; l'archive
+  mélange images d'origine et images augmentées (rotation, recadrage, bruit…).
 
 Les images vont dans data/raw/images/ (exclu de Git) ; un inventaire par classe
 est écrit dans data/raw/images/INVENTAIRE.csv et recopié dans data/extraits/.
@@ -31,6 +34,9 @@ PV_URL = "https://huggingface.co/datasets/mohanty/PlantVillage/resolve/main/data
 PV_CULTURES = ("Tomato___", "Potato___", "Pepper,_bell___")
 PD_DEPOT = "pratikkayal/PlantDoc-Dataset"
 PD_MOTS = ("Tomato", "Potato", "Bell_pepper")
+CHOU_URL = ("https://data.mendeley.com/public-files/datasets/sjmgzhwrxv/files/"
+            "15717f20-a822-48c8-b1f1-cdaf53be636d/file_downloaded")
+CHOU_SHA256 = "4dba5e7a553b02eb28a17ac4ab2d671ee6b48223f3fa38ffd89163736240cd79"  # publié par Mendeley
 
 
 class FichierDistant(io.RawIOBase):
@@ -116,9 +122,38 @@ def plantdoc():
             print(f"  {k}/{len(fichiers)}")
 
 
+def chou():
+    import hashlib
+    print("Chou (Mendeley Data, Ghana) : téléchargement de l'archive (140 Mo)…")
+    with urllib.request.urlopen(urllib.request.Request(CHOU_URL, headers=UA), timeout=600) as r:
+        contenu = r.read()
+    empreinte = hashlib.sha256(contenu).hexdigest()
+    if empreinte != CHOU_SHA256:
+        raise SystemExit(f"Chou : empreinte inattendue {empreinte}")
+    # On ne garde que les images d'origine (archive ORIGINAL_ALL_COMBINE_CABBAGE_DISEASES.zip) :
+    # les versions augmentées gonfleraient artificiellement les résultats (même règle que CCMT).
+    classes = {"Cabbage_Altenaria_spot": "alternariose", "Cabbage - Black_rot": "pourriture_noire",
+               "Cabbage - Healthy": "sain", "Cabbage downy mildew - Original": "mildiou"}
+    base = SORTIE / "chou_mendeley"
+    if base.exists():
+        shutil.rmtree(base)
+    with zipfile.ZipFile(io.BytesIO(contenu)) as externe:
+        nom = next(n for n in externe.namelist() if n.endswith("ORIGINAL_ALL_COMBINE_CABBAGE_DISEASES.zip"))
+        with zipfile.ZipFile(io.BytesIO(externe.read(nom))) as zf:
+            for info in zf.infolist():
+                dossier = Path(info.filename).parent.name
+                if info.is_dir() or not info.filename.lower().endswith((".jpg", ".jpeg", ".png")):
+                    continue
+                cible = base / classes[dossier] / Path(info.filename).name
+                cible.parent.mkdir(parents=True, exist_ok=True)
+                cible.write_bytes(zf.read(info))
+    print(f"  ok, empreinte SHA-256 conforme ({empreinte[:12]}…)")
+
+
 def inventaire():
     lignes = []
-    for source, licence in (("plantvillage", "CC BY-SA 3.0"), ("plantdoc", "CC BY 4.0")):
+    for source, licence in (("plantvillage", "CC BY-SA 3.0"), ("plantdoc", "CC BY 4.0"),
+                            ("chou_mendeley", "CC BY 4.0")):
         base = SORTIE / source
         if not base.exists():
             continue
@@ -138,9 +173,11 @@ def inventaire():
 
 
 if __name__ == "__main__":
-    choix = sys.argv[1:] or ["plantvillage", "plantdoc"]
+    choix = sys.argv[1:] or ["plantvillage", "plantdoc", "chou"]
     if "plantvillage" in choix:
         plantvillage()
     if "plantdoc" in choix:
         plantdoc()
+    if "chou" in choix:
+        chou()
     inventaire()

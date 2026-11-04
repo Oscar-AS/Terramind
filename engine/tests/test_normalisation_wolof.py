@@ -44,12 +44,17 @@ class Preparation(unittest.TestCase):
         self.assertTrue(r.synthetisable)
 
     def test_signale_decimales_symboles_et_mots_a_remplir(self):
-        r = nz.preparer("Tomate bi: 2,5 ha, 30 %.", LEX)
+        # Un mot encore à remplir dans le lexique (le test ne casse pas quand le lexique avance).
+        a_remplir = sorted(m for m in LEX[3] if m.isalpha())
+        if not a_remplir:
+            self.skipTest("lexique entièrement rempli")
+        mot = a_remplir[0]
+        r = nz.preparer(f"Bi {mot}: 2,5 kilo, 30 %.", LEX)
         self.assertFalse(r.synthetisable)
         texte = " ".join(r.problemes)
         self.assertIn("décimal", texte)
-        self.assertIn("« ha »", texte)  # « ha » reste à remplir dans le lexique
-        self.assertIn("tomate", texte)
+        self.assertIn(f"« {mot} »", texte)
+        self.assertIn("%", texte)
 
     def test_signale_le_francais(self):
         r = nz.preparer("Arrose les feuilles le matin.", LEX)

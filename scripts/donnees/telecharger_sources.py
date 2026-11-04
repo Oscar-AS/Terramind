@@ -142,6 +142,40 @@ FICHES = [
      "Niger, Chambre régionale d'agriculture de Dosso, fiche technico-économique pomme de terre, 2017"),
 ]
 
+# Documents du PADEN (Programme d'aménagement et de développement économique des Niayes, financé par
+# le Canada). Le site paden-senegal.org n'existe plus ; copies de la Wayback Machine (adresse « id_ » = fichier
+# d'origine, sans bandeau). Le manuel sur les pesticides n'est pas repris (règle : aucun produit ni dose).
+PADEN = [
+    ("paden_fiche_technique_pomme_de_terre_2014.pdf", "https://web.archive.org/web/20171215030645id_/http://www.paden-senegal.org:80/IMG/pdf/fiche_technique_de_production_pomme_de_terre.pdf",
+     "PADEN, fiche technique de production intensive de la pomme de terre (A. Seck, janv. 2014) ; copie Wayback 20171215"),
+    ("paden_fiche_bonnes_pratiques_pomme_de_terre.pdf", "https://web.archive.org/web/20160429021611id_/http://paden-senegal.org/IMG/pdf/fiche_technique_bp_pdt-v_finale.pdf",
+     "PADEN, fiche des bonnes pratiques de production de pomme de terre dans les Niayes ; copie Wayback 20160429"),
+    ("paden_fiche_bonnes_pratiques_chou.pdf", "https://web.archive.org/web/20160428213721id_/http://paden-senegal.org/IMG/pdf/fiche_technique_bp_chou.pdf",
+     "PADEN, fiche des bonnes pratiques de production du chou dans les Niayes ; copie Wayback 20160428"),
+    ("paden_livret_chou_fr.pdf", "https://web.archive.org/web/20171215080250id_/http://www.paden-senegal.org:80/IMG/pdf/livret_chou_fr.pdf",
+     "PADEN, livret chou (français) ; copie Wayback 20171215"),
+    ("paden_livret_chou_wolof.pdf", "https://web.archive.org/web/20170301231412id_/http://paden-senegal.org/IMG/pdf/livret_chou_wolof.pdf",
+     "PADEN, livret chou (wolof) ; copie Wayback 20170301"),
+    ("paden_livret_pomme_de_terre_fr.pdf", "https://web.archive.org/web/20170302033944id_/http://paden-senegal.org/IMG/pdf/livret_pdt_3_fr.pdf",
+     "PADEN, livret pomme de terre (français) ; copie Wayback 20170302"),
+    ("paden_livret_pomme_de_terre_wolof.pdf", "https://web.archive.org/web/20170302033947id_/http://paden-senegal.org/IMG/pdf/livret_pdt_wolof_2.pdf",
+     "PADEN, livret pomme de terre (wolof) ; copie Wayback 20170302"),
+    ("paden_livret_oignon_fr.pdf", "https://web.archive.org/web/20170301150712id_/http://paden-senegal.org/IMG/pdf/maquette_livret_a5_oignon_fr.pdf",
+     "PADEN, livret oignon (français) ; copie Wayback 20170301"),
+    ("paden_livret_oignon_wolof.pdf", "https://web.archive.org/web/20170301211212id_/http://paden-senegal.org/IMG/pdf/maquette_livret_a5_oignon_wolof.pdf",
+     "PADEN, livret oignon (wolof) ; copie Wayback 20170301"),
+    ("paden_fiche_technique_carotte.pdf", "https://web.archive.org/web/20170329161824id_/http://www.paden-senegal.org:80/IMG/pdf/fiche_technique_carotte.pdf",
+     "PADEN, fiche technique carotte ; copie Wayback 20170329"),
+    ("paden_livret_carotte_wolof.pdf", "https://web.archive.org/web/20170301210049id_/http://paden-senegal.org/IMG/pdf/maquette_livret_a5_carotte_wolof.pdf",
+     "PADEN, livret carotte (wolof) ; copie Wayback 20170301"),
+    ("paden_depliant_tuta_absoluta.pdf", "https://web.archive.org/web/20160428163414id_/http://paden-senegal.org/IMG/pdf/depliant_tuta_absoluta.pdf",
+     "PADEN, dépliant sur la mineuse de la tomate (Tuta absoluta) ; copie Wayback 20160428"),
+    ("paden_manuel_principaux_ravageurs_niayes.pdf", "https://web.archive.org/web/20160428092246id_/http://paden-senegal.org/IMG/pdf/manuel_principaux_ravageurs_decultures_niayes.pdf",
+     "PADEN, manuel des principaux ravageurs des cultures des Niayes ; copie Wayback 20160428"),
+    ("dhort_resultats_recensement_horticulture_niayes.pdf", "https://web.archive.org/web/20160428102140id_/http://paden-senegal.org/IMG/pdf/dhor_resultats_du_recensement_de_l_horticulture_dans_les_niayes.pdf",
+     "Direction de l'Horticulture, résultats du recensement de l'horticulture dans les Niayes (diffusé par le PADEN) ; copie Wayback 20160428"),
+]
+
 ANNEES_HORAIRES = range(2020, 2026)  # années civiles complètes
 JOURNALIER = ("19910101", "20251231")
 
@@ -533,8 +567,24 @@ def fiches():
         ecrire(RAW / "documents" / "fiches" / nom, contenu, titre, url)
 
 
+def paden():
+    """Documents du PADEN archivés (le site d'origine n'existe plus)."""
+    print("Documents du PADEN (copies de la Wayback Machine)")
+    for nom, url, titre in PADEN:
+        try:
+            contenu = telecharger(url, essais=4, delai=20)
+        except Exception as e:
+            print(f"  ÉCHEC {nom} : {e}")
+            continue
+        if not contenu.startswith(b"%PDF"):
+            print(f"  ÉCHEC {nom} : la réponse n'est pas un PDF")
+            continue
+        ecrire(RAW / "documents" / "paden" / nom, contenu, titre, url)
+
+
 SOURCES = {"geoboundaries": geoboundaries, "power": power, "soilgrids": soilgrids, "isdasoil": isdasoil,
-           "faostat": faostat, "wfp": wfp, "chirps": chirps, "documents": documents, "fiches": fiches}
+           "faostat": faostat, "wfp": wfp, "chirps": chirps, "documents": documents, "fiches": fiches,
+           "paden": paden}
 
 if __name__ == "__main__":
     demandes = sys.argv[1:] or list(SOURCES)
