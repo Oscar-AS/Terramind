@@ -22,7 +22,7 @@ Projet présenté au **PAS Challenge 2026 (SALTIS)**.
         |         Moteur Python / FastAPI (engine/)         |
         |                                                   |
         |  Planification   GPS -> sol -> cultures + semis   |
-        |  Prévention      météo -> risque de mildiou       |
+        |  Prévention      météo -> maladies et ravageurs   |
         |  Diagnostic      photo -> culture, maladie,       |
         |                  confiance ou « incertain »       |
         |                                                   |
@@ -32,6 +32,22 @@ Projet présenté au **PAS Challenge 2026 (SALTIS)**.
 ```
 
 Le système est **général** : la culture est un paramètre partout. Seule la liste des cultures prises en charge par le diagnostic est fermée ; elle est fixée le 4 novembre 2026 (voir [docs/decisions.md](docs/decisions.md)).
+
+## Explorer le dépôt
+
+Chaque grand dossier a sa propre page de présentation : ce qu'il fait, son état, ses sources.
+
+| | Dossier | Ce qu'on y trouve |
+|---|---|---|
+| ⚙️ | [**engine/**](engine/) | Le moteur : planification, prévention, diagnostic, réponses (RAG) et voix wolof |
+| 💬 | [**channels/**](channels/) | Les façades : bot WhatsApp et appli web |
+| 📊 | [**dashboard/**](dashboard/) | Le tableau de bord pour l'équipe et les partenaires |
+| 📝 | [**content/**](content/) | Le savoir du bot : fiches sourcées, réponses types, lexique wolof |
+| 🗂️ | [**data/**](data/) | Les données ouvertes (sol, météo, cultures, images) et leur provenance |
+| 🧠 | [**ml/**](ml/) | Le modèle de diagnostic sur photo |
+| 🔎 | [**research/**](research/) | La base agronomique, les itinéraires par culture, les tests de terrain |
+| 📚 | [**docs/**](docs/) | Architecture, API, décisions, risques, journal des sources |
+| 🛠️ | [**scripts/**](scripts/) | Les outils qui collectent et vérifient les données |
 
 ## Structure du dépôt
 
@@ -62,7 +78,7 @@ research/
 docs/
   architecture.md api.md decisions.md risques.md TACHES.md
   rapports-hebdo/    Rapports hebdomadaires
-scripts/             Scripts d'organisation (GitHub)
+scripts/             Collecte et vérification des données, outils (voir scripts/README.md)
 ```
 
 ## Qui fait quoi
