@@ -40,7 +40,7 @@ class Nombres(unittest.TestCase):
 class Preparation(unittest.TestCase):
     def test_retire_sources_et_ecrit_les_nombres(self):
         r = nz.preparer("Dafay jël 110 bés. [Guide 1987, p. 119]", LEX)
-        self.assertEqual(r.morceaux, ["Dafay jël téeméer ak fukk bés."])
+        self.assertEqual(r.morceaux, ["dafay jël téeméer ak fukk bés."])
         self.assertTrue(r.synthetisable)
 
     def test_signale_decimales_symboles_et_mots_a_remplir(self):
@@ -59,6 +59,11 @@ class Preparation(unittest.TestCase):
     def test_signale_le_francais(self):
         r = nz.preparer("Arrose les feuilles le matin.", LEX)
         self.assertTrue(any("français" in p for p in r.problemes))
+
+    def test_minuscules_pour_la_voix(self):
+        # La voix wolof ignore les majuscules : sans ce passage en minuscules, « Salamalekum » perd son « S ».
+        r = nz.preparer("Salamalekum, na nga def.", LEX)
+        self.assertEqual(r.morceaux, ["salamalekum, na nga def."])
 
     def test_decoupage_court_et_ponctue(self):
         long = "Ab baat bu gudd, " * 20 + "jeex na"

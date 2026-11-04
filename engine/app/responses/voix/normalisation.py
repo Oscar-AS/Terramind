@@ -9,7 +9,8 @@ Ce module :
 3. remplace les mots du lexique (unités, mois, noms de cultures…) ;
 4. signale tout ce qu'il ne sait pas traiter (décimales, mot français,
    symbole, entrée de lexique non remplie) ;
-5. découpe le texte en morceaux courts, chacun terminé par une ponctuation.
+5. découpe le texte en morceaux courts, chacun terminé par une ponctuation, en minuscules
+   (la voix wolof ignore les majuscules).
 
 Règle d'usage : si `problemes` n'est pas vide, on ne synthétise PAS en direct ;
 on passe au repli (réponse type enregistrée, ou texte).
@@ -125,7 +126,9 @@ def preparer(texte, lexique=None):
         resultat.problemes.append(f"mots français dans le texte wolof : {', '.join(francais)}")
 
     t = re.sub(r"\s+", " ", t).strip()
-    resultat.morceaux = decouper(t)
+    # La voix wolof (Kiriku-Wolof-TTS) n'a appris que des minuscules : une majuscule est ignorée,
+    # ce qui fait disparaître la première lettre de la phrase (constaté à l'essai du 4 nov 2026).
+    resultat.morceaux = [m.lower() for m in decouper(t)]
     return resultat
 
 

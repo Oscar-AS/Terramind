@@ -107,6 +107,30 @@ Les demandes d'accès se font avec un compte Hugging Face de l'équipe ; le jeto
 | `AIHubSN/Kiriku-Wolof-TTS` | **1,0 Go** | Licence non indiquée. **Sept fois plus léger que la voix GalsenAI : à tester en premier.** VITS (Coqui TTS 0.19), une seule voix, 22 050 Hz, entraîné directement sur l'écriture wolof (pas de phonétiseur) : il lit ce qu'on lui écrit, d'où l'importance de notre normalisation (nombres en toutes lettres, lexique). Aucune mesure de qualité publiée. Le fichier `model.pth` est un fichier « pickle » de PyTorch : ne le charger que depuis cette source vérifiée |
 | `galsenai/xTTS-v2-wolof` | plus de 7 Go | **Les poids ne sont pas sur Hugging Face** : la page ne contient qu'un identifiant Google Drive (`checkpoint-id.yml`), à télécharger avec `gdown`. Elle demande aussi une version modifiée de la bibliothèque TTS, fournie dans le dépôt GitHub `Galsenaicommunity/Wolof-TTS`. Conditions : respecter la loi sénégalaise ; la voix peut imiter n'importe qui à partir de 6 s d'audio, ce qui oblige à utiliser seulement une voix dont on a le consentement |
 
+## 7 ter. Premier essai d'écoute et contrôle automatique (4 nov 2026)
+
+Script : `.venv/bin/python scripts/outils/essai_voix_wolof.py`. Environnement : `scripts/outils/requirements-voix.txt`. Les fichiers audio sont dans `modeles/essais/`, hors Git.
+
+**Méthode :**
+- 5 phrases **non inventées** : l'exemple de la fiche du modèle et 4 phrases du livret PIESAN sur l'oignon (2022, bilingue) ;
+- passage par la normalisation, puis synthèse avec Kiriku-Wolof-TTS ;
+- retranscription avec M-Kiriku-ASR, et calcul du taux d'erreur sur les caractères (CER) entre le texte lu et le texte entendu.
+
+| # | Texte lu (après normalisation) | Entendu par M-Kiriku | CER |
+|---|---|---|---|
+| 1 | salamalekum, na nga def. | salaamaalekum na nga def | 0,09 |
+| 2 | suxatal juróom ba juróom-benn liitar ci meetar kaare bune, subba teel walla bu jant buy so. | soxatal juróom ba juróom benn liitar ci meeta kaare bu suba teel wala bu jant buy so | 0,08 |
+| 3 | moytu leen ba fàaw iire ci mbayum sople. | moytuleen ba faa yiir ci mbayum sopp | 0,18 |
+| 4 | néemeeku gàancax gi ngir fagaru ci feebar yi ak gunóor yi. | nemmeeku gàncax gi dafa garu ci feebar yi ak gunóor yi | 0,16 |
+| 5 | bàayil sople bi ci tool bi mu wow benn ba ñaari fan. | bàyyil sopp bi ci tool bi mu wow benn ba ñaari fan | 0,06 |
+
+**Ce qu'on en tire :**
+- **Vitesse.** Sur un Mac sans carte graphique, 1 seconde d'audio se calcule en 0,1 seconde environ. La voix Kiriku (1 Go) lève la crainte de lenteur liée au modèle GalsenAI de 7 Go.
+- **Défaut corrigé.** Le modèle ne connaît pas les majuscules et supprimait la première lettre de chaque phrase. La normalisation met désormais tout en minuscules, et un test le vérifie.
+- **Mot à risque repéré automatiquement :** « sople » (oignon) est entendu « sopp » dans les 3 phrases où il apparaît. À traiter : soit l'écrire autrement pour la voix, soit le faire écouter par un locuteur (complément), soit l'éviter en voix de synthèse.
+- **Limites.** Un CER faible prouve que la reconnaissance retrouve le texte, pas qu'un agriculteur comprend sans effort. Les deux modèles viennent du même laboratoire (AIHubSN) et peuvent partager les mêmes biais. Le modèle léger dofbi donne un CER plus élevé (0,16 à 0,41) sur les mêmes audios : on utilise M-Kiriku comme juge.
+- **Seuil proposé** pour le contrôle automatique, à confirmer sur plus de phrases : CER ≤ 0,20 = acceptable ; au-delà, la phrase ne part pas en voix de synthèse.
+
 ## 8. Qui fait quoi
 
 | Tâche | Qui | Quand |
