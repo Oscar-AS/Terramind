@@ -97,7 +97,19 @@ Les informations des fiches du CNRADA (Kaédi) et du Niger restent signalées da
 - **Écartement au Niger (Maradi), à titre indicatif :** 80 × 60 cm, tuteurage.
 
 ### Chou pommé
-- **Sources :** STDF/AUMN, rapport du projet PG 302 dans les Niayes (cité **STDF**) ; CNRADA ; Niger.
+- **Sources :** **livret PADEN « Bonnes pratiques de production du chou pommé dans les Niayes »** (mars 2016, en français et en wolof, cité **PCH**) ; STDF/AUMN, rapport du projet PG 302 dans les Niayes (cité **STDF**) ; CNRADA ; Niger.
+- **Variétés selon la période de repiquage (PCH p. 3)** : le chou pommé est une culture de contre-saison sèche.
+
+| Variété | Repiquage | Jours jusqu'au début de récolte | Jours jusqu'à la fin |
+|---|---|---|---|
+| KK Cross F1 | octobre à juillet | 60 | 75 |
+| Tropica Cross F1 | octobre à juillet | 65 | 90 |
+| Santa F1 | octobre à avril | 68 | 95 |
+| Tropicana F1 | illisible dans l'extraction, à relire sur le PDF | 75 | 108 |
+| Marché de Copenhague | octobre à mars | 63 | 75 |
+| Africa Cross F1 | avril à juillet | 78 | 100 |
+
+Les colonnes de jours sont lues dans l'ordre du tableau ; leur sens exact (après repiquage ?) est à relire sur le PDF avant d'écrire la fiche.
 - **Niayes (STDF p. 5) :** **février est la période de forte infestation** de la teigne et du borer du chou. Les rendements des essais vont de 17 t/ha (parcelles témoins) à 24 t/ha avec une protection biologique.
 - **Saison des pluies (STDF p. 6-9) :** variété Tropica Cross, adaptée à l'hivernage, semée de mai à août. Il faut 200 m² de pépinière pour 1 ha ; repiquage environ 29 jours après le semis.
 - **Mauritanie (CNRADA) :**
@@ -107,13 +119,19 @@ Les informations des fiches du CNRADA (Kaédi) et du Niger restent signalées da
 - **Niger :** le chou tolère mal la salinité ; il demande beaucoup d'eau.
 
 ### Pomme de terre
-- **Sources :** CNRADA ; guide 1987 ; Niger (Dosso).
+- **Sources :** **fiche PADEN de production intensive de la pomme de terre** (A. Seck, janvier 2014, cité **PPT**) et livret PADEN pomme de terre (2016, en français et en wolof) ; CNRADA ; guide 1987 ; Niger (Dosso).
+- **Niayes (PPT p. 2)** :
+  - sol léger, riche en matière organique, pH neutre ;
+  - éviter les précédents solanacées (tomate, aubergine, jaxatu, piment) ;
+  - les fortes températures nuisent à la formation des tubercules, d'où la saison fraîche ;
+  - plus de 20 variétés conseillées par l'ISRA ; variétés courantes : Sahel, Claustar, O'sirène, Alpha…
+- **Trois périodes de culture (PPT p. 2)** : hâtive (octobre-novembre), pleine saison (novembre-février), tardive (mars-avril).
+- **Densité (PPT p. 4)** : environ 66 700 plants par hectare, avec des tubercules entiers de 30 g ou des moitiés de tubercules de 50 g.
 - **Sol :** léger, sableux ou sablo-limoneux, riche en matière organique bien décomposée (CNRADA).
 - **Plantation :** première quinzaine de novembre pour une récolte en février. En zone océanique, on peut planter jusqu'en février pour récolter en mai.
 - **Écartement :** 30 × 60 cm, soit environ 56 000 plants par hectare.
 - **Cycle :** au plus 100 jours de la plantation à la fin de la récolte.
 - **Variétés citées en Mauritanie :** Lola, Claustar (30 à 40 t/ha), Sahel (25 à 40 t/ha), Thalassa (25 à 45 t/ha), Spunta, Désirée…
-- **Calendrier des Niayes selon la fiche PADEN 2014** (lue seulement en résumé, pas téléchargée) : culture hâtive en octobre-novembre, pleine saison de novembre à février, culture tardive en mars-avril.
 
 ### Poivron
 - **Sources :** CNRADA ; Niger (Dosso) ; guide 1987.
@@ -145,8 +163,8 @@ Les informations des fiches du CNRADA (Kaédi) et du Niger restent signalées da
 ## 3. Ce qui manque encore
 
 - **Fiches ISRA-CDH 2022** : à demander au CDH par le formulaire de contact de isracdh.sn ou au CDH de Cambérène. Bonus.
-- **Fiche PADEN pomme de terre (2014)** : copies seulement sur des sites tiers (studylib, nanopdf), non téléchargée. Chercher l'original.
-- **Chou, tomate, poivron :** aucun document sénégalais récent équivalent au livret oignon. Les fiches CNRADA (littoral mauritanien) servent de remplacement, en le signalant.
+- ~~Fiche PADEN pomme de terre (2014)~~ : **trouvée le 4 nov 2026** dans les archives du site du PADEN (Wayback Machine), avec les livrets chou, pomme de terre, oignon et carotte, et le manuel des ravageurs de la DPV.
+- **Tomate, poivron, piment :** aucun livret sénégalais équivalent à ceux du PADEN (oignon, chou, pomme de terre, carotte). Les fiches CNRADA servent de remplacement, en le signalant.
 - **Rendements réels des petits producteurs des Niayes** : les rendements des sources sont ceux des stations de recherche, souvent bien au-dessus du champ. Les données EAA (production par ménage) restent un ordre de grandeur.
 
 ## 4. Bonus : du wolof sourcé
@@ -164,3 +182,4 @@ Le livret PIESAN est bilingue français-wolof. Il donne des mots wolof écrits p
 - CNRADA, fiches techniques maraîchères : <https://cnrada.org/fiches-techniques/cultures-maraicheres/>
 - Niger : chou <https://duddal.org/files/original/42982ad5f9b03fb4a86fbc3a9d146a07de108252.pdf>, tomate Maradi <https://duddal.org/files/original/e7629bcc5033ce35fe07dc456a3bae3091d7f291.pdf>, poivron Dosso <https://reca-niger.org/IMG/pdf/FT_Poivron_CRADosso_V1.pdf>, pomme de terre Dosso <https://reca-niger.org/IMG/pdf/FTE_pommeDterre_Dosso_Mai2017.pdf>
 - ISRA-CDH, site officiel : <https://isracdh.sn/fiches-techniques.php>
+- PADEN (Programme d'aménagement et de développement économique des Niayes), documents archivés : <https://web.archive.org/web/2017/http://www.paden-senegal.org/Documents-et-outils,25.html> ; liste et adresses exactes dans `scripts/donnees/telecharger_sources.py` (source `paden`)

@@ -28,6 +28,7 @@ flowchart LR
 | **CCMT** (Ghana) | Cajou, manioc, maïs, tomate ; 24 071 images après nettoyage | CC BY 4.0 | Base principale |
 | **PlantVillage** | 22 787 photos de laboratoire : tomate, pomme de terre, poivron | CC BY-SA 3.0 | Complément (fond uni) |
 | **PlantDoc** | 1 100 photos de terrain : tomate, pomme de terre, poivron | CC BY 4.0 | Test en conditions réelles |
+| **Chou** (Ghana, Mendeley Data 2025) | 203 images d'origine : alternariose, pourriture noire, mildiou, sain (versions augmentées écartées) | CC BY 4.0 | Première base pour le chou |
 
 La base fusionnée **terramind_v1** (TOM2024 + CCMT) fait **35 448 images, 5 cultures, 40 classes**, après retrait des images illisibles, des doublons et des images à étiquettes contradictoires. Elle est construite par `ml/training/build_merged_dataset.py`, sur la branche `ml/dataset-merge` d'Oscar, pas encore fusionnée.
 
@@ -42,7 +43,7 @@ pie title Exclusions avant entraînement (1 854 images)
 
 ## Ce qui est connu comme limite
 
-- **Pas de chou** dans les jeux ouverts trouvés. L'oignon n'est présent que dans TOM2024.
+- **Chou : peu d'images** (203, dont 28 de mildiou et 37 de pourriture noire), **aucune de la teigne**. L'oignon n'est présent que dans TOM2024.
 - **La mineuse de la tomate** (*Tuta absoluta*) a trop peu d'images (17) : le diagnostic ne la reconnaîtra pas encore. Elle est couverte par les **alertes météo** du module Prévention ([D11](../docs/decisions.md)).
 - Les photos de laboratoire (PlantVillage) ont un fond uni : un modèle entraîné seulement dessus se trompe au champ. D'où le test sur PlantDoc et les photos de terrain.
 

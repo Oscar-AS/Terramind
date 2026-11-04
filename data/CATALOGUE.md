@@ -1,6 +1,6 @@
 # Catalogue des sources de données
 
-État au 2 novembre 2026. Ce catalogue recense toutes les sources de données repérées pour TerraMind, qu'elles soient déjà téléchargées, demandées ou à obtenir. Le registre de provenance officiel reste [README.md](README.md) : une donnée n'est utilisée qu'une fois inscrite là-bas.
+État au 4 novembre 2026. Ce catalogue recense toutes les sources de données repérées pour TerraMind, qu'elles soient déjà téléchargées, demandées ou à obtenir. Le registre de provenance officiel reste [README.md](README.md) : une donnée n'est utilisée qu'une fois inscrite là-bas.
 
 - Téléchargement reproductible : `python3 scripts/donnees/telecharger_sources.py [source …]`.
 - Empreintes SHA-256, URL exactes et dates : [raw/MANIFESTE.csv](raw/MANIFESTE.csv).
@@ -62,7 +62,7 @@ Classeur `dapsa_eaa_2022-2023_tableaux.xlsx` : ce sont les données des graphiqu
 | Source | Comment | Contenu | Licence | Module | Priorité |
 |---|---|---|---|---|---|
 | SoilGrids 2.0 (ISRIC) | Script, source `soilgrids` (API souvent indisponible) | pH, argile, sable, limon, carbone organique, CEC, azote, résolution 250 m | CC BY 4.0 | Planification (vérification croisée d'iSDAsoil) | Basse (iSDAsoil couvre le besoin) |
-| Photos d'oignon et de chou malades | Aucun jeu ouvert repéré dans PlantVillage ni PlantDoc ; à chercher (Kaggle, Mendeley Data, Zenodo) avec licence lisible, ou photos de terrain avec consentement | Taches pourpres, thrips, teigne du chou… | À vérifier | Diagnostic photo | Haute si l'oignon et le chou sont retenus |
+| Photos de ravageurs du chou (teigne) et compléments chou | Oignon : couvert par TOM2024 (branche d'Oscar). Chou : 203 images d'origine téléchargées le 4 nov (Mendeley, CC BY 4.0), mais aucune image de teigne et peu de mildiou (28) ou de pourriture noire (37). À compléter par des photos de terrain avec consentement | Teigne, borer, mildiou du chou | — | Diagnostic photo | Moyenne |
 | Fiches techniques maraîchères ISRA-CDH (publiées en déc. 2022 sur marcheagricole.sn : tomate, pomme de terre, oignon, carotte, poivron…) | Le site marcheagricole.sn ne répond plus (nom de domaine introuvable) ; les pages de téléchargement (`/wpfd_file/fiche-technique-…-isra-cdh/`) n'ont **jamais été archivées** par la Wayback Machine (vérifié le 2 nov. 2026). Seule voie : **demander au CDH de Cambérène** (ISRA) | Itinéraires techniques réactualisés de 20 cultures | À demander | Planification, contenu | Haute |
 | DPV, Enquête de surveillance phytosanitaire 2018 | ANADS, catalogue 200, demande écrite au Directeur de la DPV | Ravageurs et maladies suivis | Autorisation de la DPV | Prévention, choix des cultures | Moyenne |
 | ANACIM (stations, séries ENACTS) | Courrier à la Direction de l'Exploitation de la Météorologie | Pluie, température, humidité au sol | Inconnue, tarif possible | Vérification de NASA POWER | Basse |

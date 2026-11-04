@@ -30,7 +30,7 @@ C'est le principe du **RAG** (génération à partir de documents) : un examen �
 |---|---|---|
 | [`fiches/`](fiches/) | Une fiche par culture et par maladie : symptômes, prévention **sans produit**, saison, source page par page | ✍️ En rédaction par Rama |
 | [`templates/`](templates/) | **Réponses types** : messages courts envoyés mot pour mot (accueil, « je ne sais pas », diagnostic incertain, alerte) | ✍️ En rédaction |
-| [`voix/lexique_wolof.csv`](voix/lexique_wolof.csv) | Carnet de prononciation pour la voix wolof : nombres, mois, unités, cultures, mots du champ | ✅ 38 entrées sourcées (à valider par un locuteur), 27 à remplir |
+| [`voix/lexique_wolof.csv`](voix/lexique_wolof.csv) | Carnet de prononciation pour la voix wolof : nombres, mois, unités, cultures, mots du champ | ✅ 51 entrées sourcées (à valider par un locuteur), 14 à remplir |
 | [`audio/wo/`](audio/wo/) | Réponses types sensibles **enregistrées par une voix humaine** en wolof | 📅 12 novembre |
 
 ## D'où vient le contenu

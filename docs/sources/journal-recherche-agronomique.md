@@ -243,6 +243,47 @@ Chaque fichier téléchargé est inscrit dans `data/raw/MANIFESTE.csv` (URL, dat
 
 ---
 
+## Session 4 · 4 novembre 2026 · Chou, documents du PADEN, test du calendrier des règles
+
+**Qui** : Salam, avec un assistant IA (Claude, d'Anthropic).
+
+**Pourquoi** : combler les manques listés à la fin de la session 3 :
+- photos de chou malade ;
+- fiche PADEN pomme de terre d'origine ;
+- lexique wolof ;
+- test des règles de Prévention sur d'autres épisodes.
+
+### Requêtes effectuées
+
+| # | Requête (résumé) | Résultat principal |
+|---|---|---|
+| 1 | Jeux d'images de maladies du chou, licence ouverte (Mendeley, Zenodo, Kaggle) | Mendeley `sjmgzhwrxv` (Ghana, CC BY 4.0) retenu ; jeux Kaggle agrégés écartés (licences mêlées) |
+| 2 | Fiche PADEN « production intensive de la pomme de terre » | Site paden-senegal.org fermé ; liste complète des PDF dans la Wayback Machine |
+| 3 | Index Wayback de paden-senegal.org | 67 PDF archivés ; 14 retenus (fiches, livrets FR/wolof, manuel DPV des ravageurs, recensement horticole) ; manuel sur les pesticides écarté |
+| 4 | Manuel DPV : conditions climatiques des maladies | Alternariose 20-25 °C avec alternance humide/ensoleillé (p. 80) ; mildiou décrit dans les Niayes (p. 88) |
+| 5 | Règles de Prévention sur NASA POWER horaire 2020-2025 (4 points) | Calendrier comparé aux saisons documentées (voir le document des seuils, § 5 bis) |
+
+### Ce qui a été produit
+
+- **Images de chou :** 203 images d'origine (`data/raw/images/chou_mendeley/`, empreinte vérifiée).
+- **Documents du PADEN :** 14 documents (`data/raw/documents/paden/`, source `paden`).
+- **Lexique wolof :** 13 mots ajoutés depuis les livrets PADEN (chou, pomme de terre, carotte, mois de mars à septembre, hectare, saisons) et variantes d'écriture des mois. 51 mots sont à valider, 14 restent à remplir.
+- **Test des règles :** `scripts/donnees/tester_modeles_prevention.py` et `data/extraits/prevention_calendrier_2020-2025.csv`.
+- **Itinéraires :** chou et pomme de terre complétés avec les documents du PADEN.
+
+### Ce que nous n'avons pas trouvé
+
+- Des images de la teigne du chou.
+- Une source pour un plafond de température dans la règle du mildiou.
+- Des observations datées par parcelle pour valider les alertes.
+
+### Suites à donner
+
+- Intégrer au module Prévention les conséquences du test (alerte seulement si la culture est déclarée ; générations depuis le repiquage).
+- Faire valider le lexique par un locuteur.
+
+---
+
 ## Modèle pour une nouvelle session
 
 ```markdown

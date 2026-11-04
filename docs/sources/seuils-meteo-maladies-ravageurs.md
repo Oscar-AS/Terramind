@@ -55,6 +55,31 @@ Calcul fait le 2 nov 2026 avec NASA POWER horaire au centroïde du département 
 
 **Limites :** un seul épisode, non confirmé par un diagnostic. Le point de grille est différent du champ, et on ne connaît pas de « faux positif » (les alertes de janvier n'ont pas été suivies d'un signalement connu). Il ne faut donc pas présenter ce résultat comme une validation.
 
+## 5 bis. Deuxième test : le calendrier des règles sur 2020-2025 (4 nov 2026)
+
+Script : `python3 -I scripts/donnees/tester_modeles_prevention.py`. Résultat : `data/extraits/prevention_calendrier_2020-2025.csv`.
+
+Les règles tournent sur la météo heure par heure de NASA POWER (2020 à 2025, 4 points pilotes), puis on compare leur calendrier aux saisons d'attaque documentées dans les Niayes. Ce n'est pas une validation au champ : aucune observation par parcelle n'existe.
+
+**Saisons documentées :**
+- mineuse de la tomate : de février à mai (thèse de S. Sylla) ;
+- teigne du chou : pic en février (rapport STDF/AUMN) ;
+- alternariose : 20 à 25 °C avec alternance de périodes humides et ensoleillées (manuel de la DPV, p. 80) ;
+- mildiou : signalé dans les Niayes par la DPV (p. 88) ; épisode de février 2026 à Notto Gouye Diama.
+
+| Règle | Ce que donne le calcul | Concordance avec le terrain |
+|---|---|---|
+| **Mildiou** (Hutton), jours d'alerte par mois | Saison fraîche (novembre à février) : 0,3 à 4 jours. **Hivernage** (août à octobre), à l'intérieur : **15 à 26 jours**. Rufisque (côte) : pic de **mars à mai** (8 à 16 jours) | Partielle. La règle se déclenche surtout en hivernage, quand on cultive peu de tomates et de pommes de terre. Elle a été conçue pour le Royaume-Uni et n'a **pas de plafond de température**, alors que le mildiou ralentit par forte chaleur |
+| **Alternariose** (TOMCAST), notes cumulées par mois | Maximum en hivernage (40 à 60) ; 1 à 14 en décembre-février ; pic de mars à mai à Rufisque | Cohérent avec le CNRADA (« dégâts importants en saison chaude et humide »). Même limite : la culture doit être en place |
+| **Mineuse**, durée d'une génération | 21 à 34 jours toute l'année : plus longue de décembre à mars, plus courte de juin à octobre | Les degrés-jours **seuls n'expliquent pas** le pic de février à mai. En revanche, une tomate repiquée début décembre en est à 2 à 6 générations entre février et mai : **la population s'accumule pendant la culture** |
+| **Teigne du chou**, durée d'une génération | 13 à 21 jours toute l'année | Un chou repiqué mi-novembre en est à environ 5 générations mi-février, ce qui concorde avec le pic de février |
+
+**Conséquences pour la conception des alertes (à intégrer au module Prévention) :**
+1. **Aucune alerte sans culture déclarée.** L'alerte mildiou ou alternariose ne part que si l'agriculteur a déclaré une tomate ou une pomme de terre en place. Sinon, en hivernage, elle partirait presque tous les jours, et les agriculteurs cesseraient de lire les alertes.
+2. **Ravageurs : compter les générations depuis le repiquage** (date demandée à l'agriculteur), et rappeler de surveiller à partir de la 3e génération. Une alerte selon la seule saison serait trop vague.
+3. **Mildiou : étudier un plafond de température** (heures humides comptées seulement si la température reste modérée). Source à trouver avant de fixer une valeur ; ne pas l'inventer.
+4. **Rufisque se comporte différemment** (humidité marine de mars à mai) : garder un calcul par point, pas une moyenne de la zone.
+
 ## 6. Salinité (module Planification)
 
 Aucune carte ouverte ne donne la salinité des sols des Niayes à l'échelle du champ. Les études publiées confirment pourtant que c'est un vrai problème :
@@ -79,4 +104,5 @@ Aucune carte ouverte ne donne la salinité des sols des Niayes à l'échelle du 
 - DOWNCAST : Jesperson et Sutton 1987, *Crop Protection* 6:95-103 ; synthèse dans *Agronomy* 2020, 10(5):738 <https://doi.org/10.3390/agronomy10050738> ; UC IPM <https://ipm.ucanr.edu/agriculture/onion-and-garlic/downy-mildew/>
 - *Tuta absoluta* : fiche USDA CAPS <https://caps.ceris.purdue.edu/wp-content/uploads/2025/07/Phthorimaea-absoluta-CAPS-datasheet-20250328.pdf> ; Krechemer et Foerster 2015, *Eur. J. Entomol.* <https://www.eje.cz/pdfs/eje/2015/04/11.pdf>
 - *Plutella xylostella* : Marchioro et Foerster, *Neotropical Entomology* <https://www.scielo.br/j/ne/a/9V8C8KkhNKGzVNJfYdx6hDB/?lang=en> ; Golizadeh et al. 2007 <https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1744-7917.2007.00157.x> ; UC IPM <https://ipm.ucanr.edu/PHENOLOGY/ma-diamondback_moth.html>
+- Manuel de la DPV (Direction de la Protection des Végétaux), *Principaux ravageurs et maladies des cultures maraîchères dans la zone des Niayes*, M. Ndiaye, diffusé par le PADEN (copie Wayback) : alternariose p. 80, mildiou p. 88, mineuse p. 28, teigne p. 18
 - *Bemisia tabaci* : synthèses de laboratoire <https://www.researchgate.net/publication/227697488_Modelling_temperature-dependent_bionomics_of_Bemisia_tabaci_Q-biotype> ; <https://akjournals.com/downloadpdf/journals/038/49/2/article-p289.pdf>
