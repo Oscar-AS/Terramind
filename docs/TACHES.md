@@ -20,8 +20,8 @@ Décision d'équipe le **4 nov** : liste fermée des cultures du diagnostic et z
 | 3 nov | Modèle de base avec confiance et seuil « incertain », test d'accès NASA POWER | Oscar : PlantVillage (30 oct), licence (31 oct) | Oscar : modules (10 nov) |
 | 6 nov | Cartes de sol et fonction sol(lat, lon) | — | Oscar : Planification (10 nov) ; Rama : table sol → culture (6 nov) |
 | 10 nov | Modules Prévention, Planification, livraison des 3 modules à Salam | Oscar : NASA POWER (3 nov), sol (6 nov) ; Rama : table sol → culture, fiches de maladies (6 nov) | Salam : branchement des vrais modules (10 nov) |
-| 13 nov | Évaluation sur photos de terrain | Rama : 50 photos de terrain (12 nov) | Oscar : MODEL_CARD final (17 nov) ; risque « précision faible » (14 nov) |
-| 14 nov | Test optionnel ASR wolof | Rama : locuteur wolof (30 oct) | Risque « ASR wolof inutilisable » (14 nov) |
+| 13 nov | Évaluation sur photos de champ déjà disponibles (TOM2024, CCMT, PlantDoc, chou Mendeley), par source et par classe ; photos de terrain de Rama en complément si elles existent | — | Oscar : MODEL_CARD final (17 nov) ; risque « précision faible » (14 nov) |
+| 14 nov | Test ASR wolof : contrôle aller-retour voix → texte (premier essai fait le 4 nov, CER 0,06 à 0,18, voir `docs/voix-wolof.md` § 7 ter) ; écoute par un locuteur en complément | — | Risque « ASR wolof inutilisable » (14 nov) |
 | 17 nov | MODEL_CARD final | Oscar : évaluation terrain (13 nov) | Oscar : fiche technique (22 nov) ; Rama : deck v1 (17 nov) |
 | 22 nov | Fiche technique | Oscar : MODEL_CARD final (17 nov) | Rama : deck final (22 nov) |
 | 24 nov | Réponses techniques au jury | Oscar : fiche technique (22 nov) | Revue du jury (25 nov) |
@@ -43,6 +43,8 @@ Décision d'équipe le **4 nov** : liste fermée des cultures du diagnostic et z
 
 ## Rama (contenu agronomique, réponses types, tests, pitch)
 
+> 4 nov 2026 : le terrain (photos, locuteurs, tests) n'est pas garanti : c'est un **complément**, jamais une condition. Chaque tâche a une base sans terrain ([strategie-donnees-manquantes.md](strategie-donnees-manquantes.md)).
+>
 > 2 nov 2026 : Rama a un profil communication, relations et image. La matière technique lui est fournie toute prête (guide PDF transmis directement à Rama, hors dépôt) ; elle la met en mots simples. Agronome, entretiens et photos de terrain sont des **bonus** (décision D7) : aucune tâche n'attend après eux.
 
 | Échéance | Tâche | Attend | Alimente |
@@ -52,7 +54,7 @@ Décision d'équipe le **4 nov** : liste fermée des cultures du diagnostic et z
 | 3 nov | 3 entretiens (bonus) | Rama : contacts (30 oct), guide et consentement (1 nov) | Équipe : décision cultures (4 nov) ; Rama : maquettes PWA (6 nov) |
 | 6 nov | Maquettes PWA, table sol → culture, fiches de maladies sans dosage | Équipe : cultures fixées (4 nov) ; Oscar : sol(lat, lon) (6 nov) | Salam : PWA v1 (10 nov) ; Oscar : Planification et Prévention (10 nov) |
 | 10 nov | Réponses types FR/wolof (ex-gabarits, voir D8), protocole de test | Rama : fiches (6 nov) ; contrat d'API (2 nov) | Salam : bot complet (10 nov) ; Rama : audios (12 nov), tests (16 nov) |
-| 12 nov | Audios wolof, 50 photos de terrain | Rama : réponses types (10 nov), locuteur wolof (30 oct), consentement (1 nov) | Salam : audios intégrés (13 nov) ; Oscar : évaluation terrain (13 nov) |
+| 12 nov | Audios wolof (sa voix ou celle d'un proche consentant) ; photos de terrain en **bonus** | Rama : réponses types (10 nov), consentement (1 nov) | Salam : audios intégrés (13 nov) |
 | 13 nov | Squelette du deck | — | Salam : slide marché (13 nov) ; Rama : deck v1 (17 nov) |
 | 16 nov | Tests utilisateurs (min. 8) | Rama : protocole (10 nov) ; Salam : PWA v1 et bot (10 nov), audios intégrés (13 nov) | Salam : robustesse (17 nov) ; Rama : deck v1 (17 nov) |
 | 17 nov | Deck v1 | Rama : tests (16 nov) ; Oscar : MODEL_CARD final (17 nov) | Rama : script du pitch (19 nov) |
