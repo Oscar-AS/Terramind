@@ -131,6 +131,29 @@ Script : `.venv/bin/python scripts/outils/essai_voix_wolof.py`. Environnement : 
 - **Limites.** Un CER faible prouve que la reconnaissance retrouve le texte, pas qu'un agriculteur comprend sans effort. Les deux modèles viennent du même laboratoire (AIHubSN) et peuvent partager les mêmes biais. Le modèle léger dofbi donne un CER plus élevé (0,16 à 0,41) sur les mêmes audios : on utilise M-Kiriku comme juge.
 - **Seuil proposé** pour le contrôle automatique, à confirmer sur plus de phrases : CER ≤ 0,20 = acceptable ; au-delà, la phrase ne part pas en voix de synthèse.
 
+## 7 quater. Contrôle aller-retour du lexique et des questions (5 nov 2026)
+
+Script : `.venv/bin/python scripts/outils/controle_voix.py`. Résultat : `content/voix/controle_voix.csv`, lu par la normalisation : un mot « a_risque » bloque la voix en direct.
+
+**Méthode corrigée.** Un premier passage testait les mots **seuls** : 49 sur 51 échouaient, car sur une demi-seconde d'audio la reconnaissance invente (« hum hum »). Ce résultat n'a pas été gardé. Chaque mot est désormais lu **dans la plus courte phrase réelle qui le contient** (transcriptions validées, puis corpus écrit de Kallaama), et il est « ok » si la reconnaissance le retrouve (CER du mot ≤ 0,34).
+
+| Contrôlé | ok | à risque | non testé |
+|---|---|---|---|
+| 30 questions D9 (phrases entières, seuil 0,20) | **30** (CER médian 0,05, max 0,14) | 0 | — |
+| 51 mots du lexique | **24** : tous les chiffres et bases, *ak*, *soble*, *nawet*, *meetar*, *saako*, *jëmbët*, *ji*, *suuxat*, *feebar*, *gunóor*, *xob*, *noor* | **11** : *juróom-benn*, *kilo*, *ektaar*, *Awril*, *Me*, *Ut*, *pombiteer*, *karoot*, *tos*, *tool*, *lolli* | **16**, sans phrase Kallaama : 9 mois écrits à la manière des livrets, *suppome*, *diakhatou*, *liitar*, *ton*, *pepiñeer*, *angare*, *goob* |
+
+**Lecture des « à risque ».** Deux cas différents :
+- **vraies déformations probables :** *karoot* → « garab », *tool* → « soaree », *tos* → « taf », *kilo* → « ci lo » ;
+- **conventions d'écriture de la reconnaissance :** *ektaar* → « hectare », *ut* collé au mot voisin, *Awril* → « awreel », *pombiteer* → « mumbitere ».
+
+Dans les deux cas, la voix en direct est bloquée pour ces mots (repli : réponse type enregistrée ou texte) jusqu'à une écoute humaine (complément) ou une autre orthographe qui passe le contrôle.
+
+**Limites.**
+- La voix et la reconnaissance viennent du même laboratoire.
+- Un mot peut passer dans une phrase et échouer dans une autre : « sople » était entendu « sopp » à l'essai du 4 nov, mais « soble » est retrouvé ici.
+- Les mois non testés le seront avec les variantes attestées dans Kallaama (`variante_kallaama` du lexique).
+- **Ne pas évaluer M-Kiriku sur l'audio de Kallaama** : il a été entraîné sur environ 90 h de ce corpus (fiche du modèle), le score serait trompeur.
+
 ## 8. Qui fait quoi
 
 | Tâche | Qui | Quand |

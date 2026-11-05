@@ -63,6 +63,8 @@ Elles servent à **vérifier** le modèle, pas à l'entraîner.
   Au-delà d'un seuil, le mot ou la phrase est marqué « à risque » et ne passe pas en voix de synthèse : le bot utilise la réponse type enregistrée ou le texte. Les deux modèles sont déjà en local (`modeles/`). Ce contrôle ne garantit pas qu'un agriculteur comprendra, mais il attrape automatiquement les mots que la voix déforme.
 
   **Premier essai (4 nov)** : CER de 0,06 à 0,18 sur 5 phrases officielles ; le contrôle a déjà repéré un mot à risque, « sople », entendu « sopp » ([voix-wolof.md § 7 ter](voix-wolof.md)).
+
+  **Contrôle complet (5 nov)** : 30 questions sur 30 et 24 mots sur 51 « ok » ; 11 mots à risque (voix bloquée pour eux) ; 16 non testés faute de phrase ([voix-wolof.md § 7 quater](voix-wolof.md)).
 - **Choix du modèle qui écrit le wolof (D9).** Les questions de test viennent du corpus **Kallaama** (enregistrements de conversations agricoles en wolof, transcrites, publiées en libre accès) et des livrets bilingues. Les réponses des modèles candidats sont notées automatiquement : comparaison avec les passages wolof officiels, contrôle aller-retour par la voix.
 
 **Complément** (si des locuteurs sont disponibles) : écoute par Rama ou d'autres locuteurs, notée de 1 à 5 ([voix-wolof.md § 6](voix-wolof.md)). Leur avis prime sur le contrôle automatique quand il existe.
