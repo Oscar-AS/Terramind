@@ -1,0 +1,5 @@
+# Seul engine/ entre dans l'image : tout le reste (données, modèles, secrets) en est exclu.
+*
+!engine/
+engine/tests/
+**/__pycache__
