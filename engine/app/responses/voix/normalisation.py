@@ -26,6 +26,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 LEXIQUE = Path(__file__).resolve().parents[4] / "content" / "voix" / "lexique_wolof.csv"
+# Résultat du contrôle automatique « aller-retour » (scripts/outils/controle_voix.py).
+CONTROLE = Path(__file__).resolve().parents[4] / "content" / "voix" / "controle_voix.csv"
 
 TAILLE_MAX = 160   # caractères par morceau envoyé à la synthèse
 TAILLE_MIN = 30    # en dessous, on fusionne avec le morceau voisin
@@ -62,6 +64,15 @@ def charger_lexique(chemin=LEXIQUE):
     return chiffres, bases, mots, a_remplir
 
 
+def charger_controle(chemin=CONTROLE):
+    """Mots du lexique que la voix déforme (CER au-dessus du seuil au contrôle aller-retour)."""
+    if not chemin.exists():
+        return set()
+    with open(chemin, encoding="utf-8") as f:
+        return {r["texte"].strip().lower() for r in csv.DictReader(f)
+                if r["type"] == "lexique" and r["statut"] == "a_risque"}
+
+
 def nombre_en_wolof(n, chiffres, bases):
     """Entier de 0 à 999 999 en toutes lettres, selon le système décrit par les sources du lexique :
     6 à 9 = cinq + unité ; dizaines = multiplicateur + « fukk » ; centaines et milliers =
@@ -91,8 +102,9 @@ def _multiplicateur(n, chiffres, bases):
     return chiffres[n] if n < 10 else nombre_en_wolof(n, chiffres, bases)
 
 
-def preparer(texte, lexique=None):
+def preparer(texte, lexique=None, a_risque=None):
     chiffres, bases, mots, a_remplir = lexique or charger_lexique()
+    a_risque = charger_controle() if a_risque is None else a_risque
     resultat = TextePret()
 
     t = re.sub(r"\[[^\]]*\]", " ", texte)                    # sources [Guide 1987, p. 140]
@@ -126,6 +138,9 @@ def preparer(texte, lexique=None):
         resultat.problemes.append(f"mots français dans le texte wolof : {', '.join(francais)}")
 
     t = re.sub(r"\s+", " ", t).strip()
+    risques = sorted(m for m in a_risque if re.search(rf"(?<!\w){re.escape(m)}(?!\w)", t, flags=re.IGNORECASE))
+    if risques:
+        resultat.problemes.append(f"mots que la voix déforme (contrôle aller-retour) : {', '.join(risques)}")
     # La voix wolof (Kiriku-Wolof-TTS) n'a appris que des minuscules : une majuscule est ignorée,
     # ce qui fait disparaître la première lettre de la phrase (constaté à l'essai du 4 nov 2026).
     resultat.morceaux = [m.lower() for m in decouper(t)]

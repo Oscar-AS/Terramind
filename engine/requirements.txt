@@ -1,0 +1,4 @@
+# Dépendances du moteur (Python 3.9+), vérifiées le 5 nov 2026
+fastapi==0.115.6
+uvicorn==0.32.1
+httpx==0.28.1

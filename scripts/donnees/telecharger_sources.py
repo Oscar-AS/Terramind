@@ -176,6 +176,16 @@ PADEN = [
      "Direction de l'Horticulture, résultats du recensement de l'horticulture dans les Niayes (diffusé par le PADEN) ; copie Wayback 20160428"),
 ]
 
+# Kallaama (Gauthier, Ndiaye, Guissé 2024 ; Jokalante, Orange, EPT ; Lacuna Fund), CC BY 4.0 :
+# paroles agricoles en wolof (radio interactive, groupes de discussion, messages vocaux).
+# On ne prend que le texte (transcriptions validées par un superviseur, lexique de prononciation,
+# corpus écrit), pas les 5,4 Go d'audio.
+KALLAAMA_DEPOT = "gauthelo/kallaama-speech-dataset"
+KALLAAMA_RACINE = "https://raw.githubusercontent.com/gauthelo/kallaama-speech-dataset/master/"
+KALLAAMA_FICHIERS = ("LICENSE", "README.md", "data/metadata.md", "data/lexicons/wolof/README.md",
+                     "data/lexicons/wolof/wol_lexicon.xsampa.txt", "data/text_corpora/README.md",
+                     "data/text_corpora/wolof.txt")
+
 ANNEES_HORAIRES = range(2020, 2026)  # années civiles complètes
 JOURNALIER = ("19910101", "20251231")
 
@@ -582,9 +592,20 @@ def paden():
         ecrire(RAW / "documents" / "paden" / nom, contenu, titre, url)
 
 
+def kallaama():
+    """Corpus Kallaama, partie texte en wolof (transcriptions validées, lexique, corpus écrit)."""
+    print("Kallaama (CC BY 4.0), texte wolof seulement")
+    arbre = json.loads(telecharger(f"https://api.github.com/repos/{KALLAAMA_DEPOT}/git/trees/master?recursive=1"))
+    stm = [x["path"] for x in arbre["tree"] if x["type"] == "blob"
+           and x["path"].startswith("data/transcriptions/checked/transcriptions-wol/stm/") and x["path"].endswith(".stm")]
+    for chemin in list(KALLAAMA_FICHIERS) + stm:
+        url = KALLAAMA_RACINE + chemin
+        ecrire(RAW / "kallaama" / chemin, telecharger(url), "Kallaama (Gauthier et al. 2024), CC BY 4.0", url)
+
+
 SOURCES = {"geoboundaries": geoboundaries, "power": power, "soilgrids": soilgrids, "isdasoil": isdasoil,
            "faostat": faostat, "wfp": wfp, "chirps": chirps, "documents": documents, "fiches": fiches,
-           "paden": paden}
+           "paden": paden, "kallaama": kallaama}
 
 if __name__ == "__main__":
     demandes = sys.argv[1:] or list(SOURCES)

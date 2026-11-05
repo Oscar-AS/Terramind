@@ -54,3 +54,4 @@ data/raw/images/
 
 # Poids des modèles (plusieurs Go), téléchargés par scripts/outils/telecharger_modeles.py
 modeles/
+data/raw/kallaama/

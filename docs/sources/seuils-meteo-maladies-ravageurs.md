@@ -77,7 +77,10 @@ Les règles tournent sur la météo heure par heure de NASA POWER (2020 à 2025,
 **Conséquences pour la conception des alertes (à intégrer au module Prévention) :**
 1. **Aucune alerte sans culture déclarée.** L'alerte mildiou ou alternariose ne part que si l'agriculteur a déclaré une tomate ou une pomme de terre en place. Sinon, en hivernage, elle partirait presque tous les jours, et les agriculteurs cesseraient de lire les alertes.
 2. **Ravageurs : compter les générations depuis le repiquage** (date demandée à l'agriculteur), et rappeler de surveiller à partir de la 3e génération. Une alerte selon la seule saison serait trop vague.
-3. **Mildiou : étudier un plafond de température** (heures humides comptées seulement si la température reste modérée). Source à trouver avant de fixer une valeur ; ne pas l'inventer.
+3. **Mildiou : plafond de température trouvé (5 nov 2026).** Le modèle de Wallin, base de Blitecast, ne compte les heures humides que si leur température moyenne est comprise entre **7,2 et 26,6 °C** (Wallin 1951, 1962 ; tableau UC IPM). La littérature concorde : formation des spores optimale vers 15 à 20 °C ; quasi nulle à 28 °C (*Plant Disease* 2005, tomate et pétunia) ; aucune germination à 27 °C (*Plant Disease* 2009, souches brésiliennes).
+   - Ajouté au test sous le nom « Hutton plafonné » : une heure humide ne compte que si la température est ≤ 26,6 °C.
+   - **Effet faible** : à l'intérieur des terres, en hivernage, les heures humides tombent la nuit, sous 26,6 °C. Le mildiou y est donc réellement favorisé (Thiès en septembre : 25,7 jours d'alerte sans plafond, 20,5 avec). Le plafond ne supprime que les alertes d'hivernage de Rufisque et une partie de celles de Thiès.
+   - **Conclusion :** le plafond s'ajoute à la règle, mais le filtre principal reste la culture déclarée.
 4. **Rufisque se comporte différemment** (humidité marine de mars à mai) : garder un calcul par point, pas une moyenne de la zone.
 
 ## 6. Salinité (module Planification)
@@ -104,5 +107,6 @@ Aucune carte ouverte ne donne la salinité des sols des Niayes à l'échelle du 
 - DOWNCAST : Jesperson et Sutton 1987, *Crop Protection* 6:95-103 ; synthèse dans *Agronomy* 2020, 10(5):738 <https://doi.org/10.3390/agronomy10050738> ; UC IPM <https://ipm.ucanr.edu/agriculture/onion-and-garlic/downy-mildew/>
 - *Tuta absoluta* : fiche USDA CAPS <https://caps.ceris.purdue.edu/wp-content/uploads/2025/07/Phthorimaea-absoluta-CAPS-datasheet-20250328.pdf> ; Krechemer et Foerster 2015, *Eur. J. Entomol.* <https://www.eje.cz/pdfs/eje/2015/04/11.pdf>
 - *Plutella xylostella* : Marchioro et Foerster, *Neotropical Entomology* <https://www.scielo.br/j/ne/a/9V8C8KkhNKGzVNJfYdx6hDB/?lang=en> ; Golizadeh et al. 2007 <https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1744-7917.2007.00157.x> ; UC IPM <https://ipm.ucanr.edu/PHENOLOGY/ma-diamondback_moth.html>
+- Plafond de température du mildiou : modèle de Wallin, UC IPM <https://ipm.ucanr.edu/DISEASE/DATABASE/potatolateblight.html> ; *Plant Disease* 89:975 (2005) <https://apsjournals.apsnet.org/doi/pdf/10.1094/PD-89-0975> ; *Plant Disease* 93:459 (2009) <https://apsjournals.apsnet.org/doi/pdf/10.1094/PDIS-93-5-0459>
 - Manuel de la DPV (Direction de la Protection des Végétaux), *Principaux ravageurs et maladies des cultures maraîchères dans la zone des Niayes*, M. Ndiaye, diffusé par le PADEN (copie Wayback) : alternariose p. 80, mildiou p. 88, mineuse p. 28, teigne p. 18
 - *Bemisia tabaci* : synthèses de laboratoire <https://www.researchgate.net/publication/227697488_Modelling_temperature-dependent_bionomics_of_Bemisia_tabaci_Q-biotype> ; <https://akjournals.com/downloadpdf/journals/038/49/2/article-p289.pdf>

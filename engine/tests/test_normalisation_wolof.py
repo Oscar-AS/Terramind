@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app" / "responses"
 import normalisation as nz  # noqa: E402
 
 LEX = nz.charger_lexique()
+RISQUE = set()  # les tests ne dépendent pas du dernier contrôle aller-retour
 CH, BA = LEX[0], LEX[1]
 
 
@@ -39,7 +40,7 @@ class Nombres(unittest.TestCase):
 
 class Preparation(unittest.TestCase):
     def test_retire_sources_et_ecrit_les_nombres(self):
-        r = nz.preparer("Dafay jël 110 bés. [Guide 1987, p. 119]", LEX)
+        r = nz.preparer("Dafay jël 110 bés. [Guide 1987, p. 119]", LEX, RISQUE)
         self.assertEqual(r.morceaux, ["dafay jël téeméer ak fukk bés."])
         self.assertTrue(r.synthetisable)
 
@@ -49,7 +50,7 @@ class Preparation(unittest.TestCase):
         if not a_remplir:
             self.skipTest("lexique entièrement rempli")
         mot = a_remplir[0]
-        r = nz.preparer(f"Bi {mot}: 2,5 kilo, 30 %.", LEX)
+        r = nz.preparer(f"Bi {mot}: 2,5 kilo, 30 %.", LEX, RISQUE)
         self.assertFalse(r.synthetisable)
         texte = " ".join(r.problemes)
         self.assertIn("décimal", texte)
@@ -57,13 +58,18 @@ class Preparation(unittest.TestCase):
         self.assertIn("%", texte)
 
     def test_signale_le_francais(self):
-        r = nz.preparer("Arrose les feuilles le matin.", LEX)
+        r = nz.preparer("Arrose les feuilles le matin.", LEX, RISQUE)
         self.assertTrue(any("français" in p for p in r.problemes))
 
     def test_minuscules_pour_la_voix(self):
         # La voix wolof ignore les majuscules : sans ce passage en minuscules, « Salamalekum » perd son « S ».
-        r = nz.preparer("Salamalekum, na nga def.", LEX)
+        r = nz.preparer("Salamalekum, na nga def.", LEX, RISQUE)
         self.assertEqual(r.morceaux, ["salamalekum, na nga def."])
+
+    def test_mot_a_risque_bloque_la_voix(self):
+        r = nz.preparer("Bàayil sople bi ci tool bi.", LEX, {"sople"})
+        self.assertFalse(r.synthetisable)
+        self.assertTrue(any("sople" in p for p in r.problemes))
 
     def test_decoupage_court_et_ponctue(self):
         long = "Ab baat bu gudd, " * 20 + "jeex na"

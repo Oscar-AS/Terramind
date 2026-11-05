@@ -284,6 +284,39 @@ Chaque fichier téléchargé est inscrit dans `data/raw/MANIFESTE.csv` (URL, dat
 
 ---
 
+## Session 5 · 5 novembre 2026 · Plafond du mildiou, questions wolof (Kallaama), contrôle de la voix
+
+**Qui** : Salam, avec un assistant IA (Claude, d'Anthropic).
+
+**Pourquoi** : appliquer la consigne « le terrain est un complément » ([strategie-donnees-manquantes.md](../strategie-donnees-manquantes.md)) :
+- trouver le plafond de température du mildiou ;
+- préparer les 30 questions de test D9 sans agriculteur ;
+- contrôler la voix wolof sans locuteur.
+
+### Requêtes effectuées
+
+| # | Requête (résumé) | Résultat principal |
+|---|---|---|
+| 1 | Température de sporulation de *Phytophthora infestans* | Optimum 15-20 °C ; quasi nulle à 28 °C (*Plant Disease* 2005) ; pas de germination à 27 °C (*Plant Disease* 2009) ; Crosier 1934 : 3-26 °C |
+| 2 | Modèle de Wallin / Blitecast, bornes de température | 7,2 à 26,6 °C (tableau UC IPM, Wallin 1951 et 1962) |
+| 3 | Corpus Kallaama : licence, contenu, téléchargement du texte seul | CC BY 4.0 ; transcriptions validées, lexique de prononciation de 48 793 formes et corpus écrit sur GitHub, sans les 5,4 Go d'audio |
+| 4 | Questions dans les transcriptions validées (mots interrogatifs × thèmes agricoles) | 76 candidates, 30 retenues à la main, mot pour mot |
+| 5 | Mots du lexique TerraMind dans le lexique Kallaama | 42 sur 51 attestés ; 6 variantes d'orthographe trouvées |
+
+### Ce qui a été produit
+
+- **Plafond :** variante « Hutton plafonné » dans `tester_modeles_prevention.py`.
+- **Questions D9 :** `research/questions_test_d9_wolof.csv`.
+- **Contrôle de la voix :** `scripts/outils/controle_voix.py` et `content/voix/controle_voix.csv`. Les mots « à risque » bloquent la voix en direct.
+- **Lexique :** colonnes `atteste_kallaama` et `variante_kallaama`.
+
+### Ce que nous n'avons pas trouvé
+
+- Des questions sur le maraîchage dans Kallaama : les émissions parlent surtout de mil, d'arachide, de maïs, de météo et de semences.
+- Les mots *suppome* (chou) et *pepiñeer* (pépinière), absents du lexique Kallaama : ils restent sourcés par les livrets officiels.
+
+---
+
 ## Modèle pour une nouvelle session
 
 ```markdown
