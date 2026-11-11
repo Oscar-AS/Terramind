@@ -58,7 +58,15 @@ async def envoyer_texte(destinataire: str, texte: str, client: httpx.AsyncClient
                           json={"messaging_product": "whatsapp", "to": destinataire, "type": "text",
                                 "text": {"body": texte[:4096]}})
     if r.status_code >= 400:
-        journal.warning("échec d'envoi WhatsApp : HTTP %s", r.status_code)
+        # Code et message d'erreur de Meta seulement : jamais le numéro ni le texte.
+        try:
+            erreur = r.json().get("error", {})
+        except ValueError:
+            erreur = {}
+        journal.warning("échec d'envoi WhatsApp : HTTP %s, code %s, %s", r.status_code,
+                        erreur.get("code"), erreur.get("message", "")[:200])
+    else:
+        journal.info("réponse WhatsApp envoyée (HTTP %s)", r.status_code)
 
 
 @router.post("/webhook/whatsapp")
@@ -70,7 +78,16 @@ async def recevoir(request: Request):
         raise HTTPException(status_code=401, detail="signature invalide")
     donnees = json.loads(corps or b"{}")
     envoyeur = getattr(request.app.state, "envoyer_texte", envoyer_texte)
+    messages = list(messages_texte(donnees))
+    champs = [c.get("field") for e in donnees.get("entry", []) for c in e.get("changes", [])]
+    journal.info("notification reçue : champs %s, %d message(s) texte", champs, len(messages))
+    for e in donnees.get("entry", []):
+        for c in e.get("changes", []):
+            for st in c.get("value", {}).get("statuses", []):
+                # Statut de nos réponses (sent, delivered, read, failed) et codes d'erreur Meta seulement.
+                erreurs = [(x.get("code"), x.get("title", "")[:120]) for x in st.get("errors", [])]
+                journal.info("statut de réponse : %s %s", st.get("status"), erreurs or "")
     async with httpx.AsyncClient(timeout=15) as client:
-        for expediteur, texte in messages_texte(donnees):
+        for expediteur, texte in messages:
             await envoyeur(expediteur, MESSAGE_ECHO.format(texte=texte[:200]), client)
     return {"statut": "recu", "mock": True}

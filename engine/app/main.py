@@ -5,9 +5,14 @@
 Jalon J1 : santé du service et webhook WhatsApp en écho. Les modules métier arrivent au jalon J2.
 """
 
+import logging
+
 from fastapi import FastAPI
 
 from .routes import whatsapp
+
+# Journaux du moteur visibles dans les logs de l'hébergeur (niveau INFO).
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s : %(message)s")
 
 app = FastAPI(title="TerraMind Afrique, moteur", version="0.1.0")
 app.include_router(whatsapp.router)
