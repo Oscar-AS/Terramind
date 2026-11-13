@@ -1,26 +1,27 @@
+import { ArrowsClockwise, BookOpen, type Icon, WifiSlash } from 'phosphor-react-native';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
 
-import { GrosBouton } from '@/components/GrosBouton';
 import type { Source } from '@/api';
+import { Bouton, Carte, T } from '@/components/ui';
 import { couleurs } from '@/theme';
 
-/** Attente animée : une icône qui « respire » et une phrase (l'agriculteur sait que ça travaille). */
-export function Chargement({ icone, texte }: { icone: string; texte: string }) {
-  const [echelle] = useState(() => new Animated.Value(1));
+/** Attente : l'icône au centre d'un halo qui s'élargit (l'agriculteur voit que ça travaille). */
+export function Chargement({ Icone, texte }: { Icone: Icon; texte: string }) {
+  const [v] = useState(() => new Animated.Value(0));
   useEffect(() => {
-    const boucle = Animated.loop(Animated.sequence([
-      Animated.timing(echelle, { toValue: 1.15, duration: 700, useNativeDriver: true }),
-      Animated.timing(echelle, { toValue: 1, duration: 700, useNativeDriver: true }),
-    ]));
+    const boucle = Animated.loop(Animated.timing(v, { toValue: 1, duration: 1400, easing: Easing.out(Easing.quad), useNativeDriver: true }));
     boucle.start();
     return () => boucle.stop();
-  }, [echelle]);
+  }, [v]);
   return (
     <View style={styles.centre} accessibilityLiveRegion="polite">
-      <Animated.Text style={[styles.icone, { transform: [{ scale: echelle }] }]}>{icone}</Animated.Text>
-      <Text style={styles.texte}>{texte}</Text>
-      <ActivityIndicator color={couleurs.vert} size="large" />
+      <View style={styles.halo}>
+        <Animated.View style={[styles.onde, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [0.45, 0] }),
+          transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1.6] }) }] }]} />
+        <View style={styles.coeur}><Icone size={44} color={couleurs.foret} weight="duotone" /></View>
+      </View>
+      <T v="corpsGras" style={{ textAlign: 'center' }}>{texte}</T>
     </View>
   );
 }
@@ -29,34 +30,37 @@ export function Chargement({ icone, texte }: { icone: string; texte: string }) {
 export function Erreur({ texte, onReessayer }: { texte: string; onReessayer: () => void }) {
   return (
     <View style={styles.centre}>
-      <Text style={styles.icone}>📶</Text>
-      <Text style={styles.texte}>{texte}</Text>
-      <GrosBouton icone="🔁" libelle="Réessayer" onPress={onReessayer} variante="clair" />
+      <View style={[styles.coeur, { backgroundColor: couleurs.terreClair }]}><WifiSlash size={40} color={couleurs.terre} weight="duotone" /></View>
+      <T v="corps" style={{ textAlign: 'center' }}>{texte}</T>
+      <View style={{ alignSelf: 'stretch' }}><Bouton libelle="Réessayer" Icone={ArrowsClockwise} onPress={onReessayer} variante="clair" /></View>
     </View>
   );
 }
 
-/** Sources de la réponse, en petit : on montre d'où vient le conseil. */
+/** D'où vient le conseil : toujours montré, discrètement. */
 export function Sources({ sources }: { sources: Source[] }) {
   if (!sources.length) return null;
   const uniques = [...new Map(sources.map((s) => [`${s.document} ${s.page}`, s])).values()];
   return (
-    <View style={styles.sources}>
-      <Text style={styles.sourcesTitre}>Sources</Text>
+    <Carte style={styles.sources}>
+      <View style={styles.sourcesTete}>
+        <BookOpen size={18} color={couleurs.encreDouce} weight="duotone" />
+        <T v="etiquette">Sources</T>
+      </View>
       {uniques.map((s) => (
-        <Text key={`${s.document}-${s.page}`} style={styles.source}>
-          • {s.document}{/^\d/.test(s.page) ? `, p. ${s.page}` : ` (${s.page})`}
-        </Text>
+        <T key={`${s.document}-${s.page}`} v="petit">
+          {s.document}{/^\d/.test(s.page) ? `, p. ${s.page}` : ` (${s.page})`}
+        </T>
       ))}
-    </View>
+    </Carte>
   );
 }
 
 const styles = StyleSheet.create({
-  centre: { alignItems: 'center', gap: 16, paddingVertical: 32 },
-  icone: { fontSize: 64 },
-  texte: { fontSize: 20, color: couleurs.texte, textAlign: 'center', lineHeight: 28 },
-  sources: { gap: 4, paddingTop: 8 },
-  sourcesTitre: { fontSize: 14, fontWeight: '700', color: couleurs.texteDoux },
-  source: { fontSize: 13, color: couleurs.texteDoux },
+  centre: { alignItems: 'center', gap: 18, paddingVertical: 28 },
+  halo: { width: 120, height: 120, alignItems: 'center', justifyContent: 'center' },
+  onde: { position: 'absolute', width: 120, height: 120, borderRadius: 60, backgroundColor: couleurs.feuille },
+  coeur: { width: 88, height: 88, borderRadius: 44, backgroundColor: couleurs.pousse, alignItems: 'center', justifyContent: 'center' },
+  sources: { backgroundColor: 'transparent', shadowOpacity: 0, elevation: 0, gap: 6 },
+  sourcesTete: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 });

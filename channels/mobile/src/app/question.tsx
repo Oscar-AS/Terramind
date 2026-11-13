@@ -1,27 +1,32 @@
+import { BookOpenText, ChatCircleText, PaperPlaneRight } from 'phosphor-react-native';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-import { poserQuestion } from '@/api';
+import { poserQuestion, type Reponse, type Source } from '@/api';
 import { Ecran } from '@/components/Ecran';
-import { Chargement } from '@/components/Etat';
-import { GrosBouton } from '@/components/GrosBouton';
-import { couleurs, tailles } from '@/theme';
+import { Chargement, Sources } from '@/components/Etat';
+import { Apparition, Carte, Pastille, T } from '@/components/ui';
+import { couleurs, polices, tailles } from '@/theme';
 
-// Étape 7 : question libre (POST /v1/chat). La note vocale arrivera avec la reconnaissance vocale
-// wolof ; en attendant, la question s'écrit. Le moteur ne répond qu'à partir des fiches validées (D8).
+// Étape 7 : question libre (POST /v1/chat). Le moteur ne répond qu'à partir des fiches (D8).
+// La note vocale arrivera avec la reconnaissance vocale wolof ; en attendant, la question s'écrit.
+const EXEMPLES = ['Ma tomate a des taches brunes avec des cercles', "Quand semer l'oignon ?", "L'eau de mon puits est salée"];
+
 export default function Question() {
   const [texte, setTexte] = useState('');
   const [envoi, setEnvoi] = useState(false);
-  const [reponse, setReponse] = useState<string | null>(null);
+  const [reponse, setReponse] = useState<{ texte: string; ok: boolean; sources: Source[] } | null>(null);
 
-  const envoyer = async () => {
-    if (!texte.trim()) return;
+  const envoyer = async (q = texte) => {
+    if (!q.trim()) return;
+    setTexte(q);
     setEnvoi(true);
     setReponse(null);
     try {
-      setReponse((await poserQuestion(texte.trim())).message.texte);
+      const r: Reponse<unknown> = await poserQuestion(q.trim());
+      setReponse({ texte: r.message.texte, ok: r.statut === 'ok', sources: r.sources });
     } catch (e) {
-      setReponse((e as Error).message);
+      setReponse({ texte: (e as Error).message, ok: false, sources: [] });
     } finally {
       setEnvoi(false);
     }
@@ -29,25 +34,52 @@ export default function Question() {
 
   return (
     <Ecran titre="Poser une question">
-      <TextInput
-        value={texte}
-        onChangeText={setTexte}
-        placeholder="Écris ta question ici"
-        multiline
-        style={styles.champ}
-        accessibilityLabel="Ta question"
-      />
-      <GrosBouton icone="📨" libelle="Envoyer" onPress={envoyer} />
-      {envoi ? <Chargement icone="💬" texte="Je cherche dans les fiches…" /> : null}
-      {reponse ? <Text style={styles.reponse}>{reponse}</Text> : null}
+      <View style={styles.saisie}>
+        <TextInput value={texte} onChangeText={setTexte} placeholder="Écris ta question ici" placeholderTextColor={couleurs.encreDouce}
+          multiline style={styles.champ} accessibilityLabel="Ta question" />
+        <Pressable accessibilityRole="button" accessibilityLabel="Envoyer" onPress={() => envoyer()} disabled={envoi}
+          style={({ pressed }) => [styles.envoyer, (pressed || envoi) && { opacity: 0.7 }]}>
+          <PaperPlaneRight size={26} color={couleurs.blanc} weight="fill" />
+        </Pressable>
+      </View>
+      {!reponse && !envoi ? (
+        <View style={{ gap: 8 }}>
+          <T v="etiquette">Par exemple</T>
+          {EXEMPLES.map((e, i) => (
+            <Apparition key={e} ordre={i}>
+              <Pressable accessibilityRole="button" accessibilityLabel={e} onPress={() => envoyer(e)} style={({ pressed }) => [styles.exemple, pressed && { backgroundColor: couleurs.pousse }]}>
+                <ChatCircleText size={20} color={couleurs.feuille} weight="duotone" />
+                <T v="corps" style={{ flex: 1, fontSize: 16 }}>{e}</T>
+              </Pressable>
+            </Apparition>
+          ))}
+        </View>
+      ) : null}
+      {envoi ? <Chargement Icone={BookOpenText} texte="Je cherche dans les fiches…" /> : null}
+      {reponse ? (
+        <Apparition>
+          <Carte style={!reponse.ok && { backgroundColor: couleurs.soleilClair }}>
+            <View style={styles.tete}>
+              <Pastille Icone={BookOpenText} taille={40} />
+              <T v="etiquette" style={{ flex: 1 }}>{reponse.ok ? 'D’après nos fiches' : 'Je ne sais pas'}</T>
+            </View>
+            <T v="corps">{reponse.texte}</T>
+          </Carte>
+          <View style={{ height: 12 }} />
+          <Sources sources={reponse.sources} />
+        </Apparition>
+      ) : null}
     </Ecran>
   );
 }
 
 const styles = StyleSheet.create({
+  saisie: { flexDirection: 'row', alignItems: 'flex-end', gap: 10 },
   champ: {
-    minHeight: 120, borderRadius: tailles.rayon, backgroundColor: couleurs.blanc, padding: 16,
-    fontSize: 19, color: couleurs.texte, textAlignVertical: 'top', borderWidth: 2, borderColor: couleurs.vertClair,
+    flex: 1, minHeight: 110, borderRadius: tailles.rayon, backgroundColor: couleurs.carte, padding: 16, fontSize: 18,
+    fontFamily: polices.texte, color: couleurs.encre, textAlignVertical: 'top', borderWidth: 1.5, borderColor: couleurs.trait,
   },
-  reponse: { fontSize: 19, color: couleurs.texte, lineHeight: 27, backgroundColor: couleurs.vertClair, borderRadius: tailles.rayon, padding: 16 },
+  envoyer: { width: 60, height: 60, borderRadius: 30, backgroundColor: couleurs.foret, alignItems: 'center', justifyContent: 'center' },
+  exemple: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, borderRadius: 16, backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait },
+  tete: { flexDirection: 'row', alignItems: 'center', gap: 10 },
 });

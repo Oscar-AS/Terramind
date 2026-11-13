@@ -1,75 +1,69 @@
 import { router } from 'expo-router';
+import { ArrowRight, Drop, type Icon, Mountains, Question, ThumbsDown, ThumbsUp } from 'phosphor-react-native';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Ecran } from '@/components/Ecran';
-import { GrosBouton } from '@/components/GrosBouton';
+import { Apparition, Bouton, Carte, Pastille, T } from '@/components/ui';
 import { type OuiNon, profil } from '@/profil';
-import { couleurs, tailles } from '@/theme';
+import { couleurs, polices, tailles } from '@/theme';
 
 // Étape 1c : les deux questions de /v1/plan (eau_puits_salee, champ_en_bas_fond).
-const QUESTIONS = [
-  { cle: 'eauSalee', icone: '💧', texte: "L'eau de ton puits est-elle salée ?" },
-  { cle: 'basFond', icone: '⛰️', texte: 'Ton champ est-il dans un bas-fond ?' },
-] as const;
-const CHOIX: { valeur: OuiNon; icone: string; libelle: string }[] = [
-  { valeur: 'oui', icone: '👍', libelle: 'Oui' },
-  { valeur: 'non', icone: '👎', libelle: 'Non' },
-  { valeur: 'ne_sait_pas', icone: '🤷🏿', libelle: 'Je ne sais pas' },
+const QUESTIONS: { cle: 'eauSalee' | 'basFond'; Icone: Icon; texte: string }[] = [
+  { cle: 'eauSalee', Icone: Drop, texte: "L'eau de ton puits est-elle salée ?" },
+  { cle: 'basFond', Icone: Mountains, texte: 'Ton champ est-il dans un bas-fond ?' },
+];
+const CHOIX: { valeur: OuiNon; Icone: Icon; libelle: string }[] = [
+  { valeur: 'oui', Icone: ThumbsUp, libelle: 'Oui' },
+  { valeur: 'non', Icone: ThumbsDown, libelle: 'Non' },
+  { valeur: 'ne_sait_pas', Icone: Question, libelle: 'Je ne sais pas' },
 ];
 
 export default function Champ() {
   const depart = profil.lire();
-  const [reponses, setReponses] = useState<Record<string, OuiNon | undefined>>({
-    eauSalee: depart.eauSalee, basFond: depart.basFond,
-  });
-
+  const [rep, setRep] = useState<Record<string, OuiNon | undefined>>({ eauSalee: depart.eauSalee, basFond: depart.basFond });
   const terminer = () => {
-    profil.ecrire({ eauSalee: reponses.eauSalee ?? 'ne_sait_pas', basFond: reponses.basFond ?? 'ne_sait_pas' });
+    profil.ecrire({ eauSalee: rep.eauSalee ?? 'ne_sait_pas', basFond: rep.basFond ?? 'ne_sait_pas' });
     router.replace('/accueil');
   };
 
   return (
-    <Ecran titre="Ton champ" avecAccueil={false} etape={{ actuelle: 3, total: 3 }}>
-      {QUESTIONS.map((q) => (
-        <View key={q.cle} style={styles.question}>
-          <Text style={styles.icone}>{q.icone}</Text>
-          <Text style={styles.texte}>{q.texte}</Text>
-          <View style={styles.reponses}>
-            {CHOIX.map((c) => {
-              const choisi = reponses[q.cle] === c.valeur;
-              return (
-                <Pressable
-                  key={c.valeur}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected: choisi }}
-                  accessibilityLabel={c.libelle}
-                  onPress={() => setReponses((r) => ({ ...r, [q.cle]: c.valeur }))}
-                  style={[styles.choix, choisi && styles.choisi]}>
-                  <Text style={styles.choixIcone}>{c.icone}</Text>
-                  <Text style={[styles.choixTexte, choisi && styles.choisiTexte]}>{c.libelle}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+    <Ecran titre="Ton champ" avecRetour={false} etape={{ actuelle: 3, total: 3 }}>
+      {QUESTIONS.map((q, i) => (
+        <Apparition key={q.cle} ordre={i + 1}>
+          <Carte>
+            <View style={styles.tete}>
+              <Pastille Icone={q.Icone} taille={52} />
+              <T v="corpsGras" style={{ flex: 1, fontSize: 19 }}>{q.texte}</T>
+            </View>
+            <View style={styles.reponses}>
+              {CHOIX.map((c) => {
+                const choisi = rep[q.cle] === c.valeur;
+                return (
+                  <Pressable key={c.valeur} accessibilityRole="radio" accessibilityState={{ selected: choisi }} accessibilityLabel={c.libelle}
+                    onPress={() => setRep((r) => ({ ...r, [q.cle]: c.valeur }))}
+                    style={[styles.choix, choisi && styles.choisi]}>
+                    <c.Icone size={28} color={choisi ? couleurs.blanc : couleurs.foret} weight={choisi ? 'fill' : 'duotone'} />
+                    <T style={[styles.choixTexte, choisi && { color: couleurs.blanc }]}>{c.libelle}</T>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </Carte>
+        </Apparition>
       ))}
-      <GrosBouton icone="✅" libelle="C'est bon" onPress={terminer} />
+      <Apparition ordre={3}><Bouton libelle="C'est bon" Icone={ArrowRight} onPress={terminer} /></Apparition>
     </Ecran>
   );
 }
 
 const styles = StyleSheet.create({
-  question: { backgroundColor: couleurs.blanc, borderRadius: tailles.rayon, padding: 16, gap: 12, alignItems: 'center' },
-  icone: { fontSize: 48 },
-  texte: { fontSize: tailles.corps, fontWeight: '600', color: couleurs.texte, textAlign: 'center' },
-  reponses: { flexDirection: 'row', gap: 8, alignSelf: 'stretch' },
+  tete: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  reponses: { flexDirection: 'row', gap: 8, marginTop: 4 },
   choix: {
-    flex: 1, minHeight: tailles.boutonMin * 1.3, borderRadius: tailles.rayon, alignItems: 'center',
-    justifyContent: 'center', backgroundColor: couleurs.vertClair, borderWidth: 3, borderColor: 'transparent', gap: 4,
+    flex: 1, minHeight: 84, borderRadius: tailles.rayonPetit, alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: couleurs.sable, borderWidth: 2, borderColor: couleurs.trait, paddingHorizontal: 4,
   },
-  choisi: { borderColor: couleurs.vert, backgroundColor: couleurs.vert },
-  choixIcone: { fontSize: 28 },
-  choixTexte: { fontSize: 15, fontWeight: '700', color: couleurs.texte, textAlign: 'center' },
-  choisiTexte: { color: couleurs.blanc },
+  choisi: { backgroundColor: couleurs.foret, borderColor: couleurs.foret },
+  choixTexte: { fontFamily: polices.texteGras, fontSize: 15, color: couleurs.encre, textAlign: 'center' },
 });

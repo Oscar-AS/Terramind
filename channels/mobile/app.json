@@ -41,7 +41,8 @@
           "cameraPermission": "TerraMind utilise l'appareil photo pour examiner une feuille de ta plante.",
           "photosPermission": "TerraMind lit la photo de feuille que tu choisis."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "scheme": "terramind",
     "experiments": {

@@ -36,7 +36,11 @@ export type Alerte = {
 };
 export type Alertes = { alertes: Alerte[]; meteo: { source: string; periode: [string, string] } };
 export type Prediction = { culture: string; etiquette: string; categorie: string; libelle: string; confiance: number };
-export type Diagnostic = { predictions: Prediction[]; seuil_incertain: number };
+export type Diagnostic = {
+  predictions: Prediction[];
+  seuil_incertain: number;
+  conseils?: { fiche: string; titre: string; texte: string } | null;
+};
 
 export class ErreurReseau extends Error {}
 

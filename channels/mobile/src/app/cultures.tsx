@@ -1,21 +1,30 @@
 import { router } from 'expo-router';
+import { Check, Minus, Plus } from 'phosphor-react-native';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Ecran } from '@/components/Ecran';
-import { GrosBouton } from '@/components/GrosBouton';
+import { Apparition, Bouton, Carte, T } from '@/components/ui';
 import { CULTURES, profil } from '@/profil';
-import { couleurs, tailles } from '@/theme';
+import { couleurs, ombre, polices, tailles } from '@/theme';
 
 // Étape 4 : la culture et sa date de repiquage, qui déclenchent les alertes.
-const MOIS = ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+const COURT = ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
 function Compteur({ valeur, libelle, onMoins, onPlus }: { valeur: string; libelle: string; onMoins: () => void; onPlus: () => void }) {
   return (
     <View style={styles.compteur}>
-      <Pressable accessibilityLabel={`${libelle} moins`} onPress={onMoins} style={styles.rond}><Text style={styles.rondTexte}>−</Text></Pressable>
-      <Text style={styles.valeur} accessibilityLabel={`${libelle} : ${valeur}`}>{valeur}</Text>
-      <Pressable accessibilityLabel={`${libelle} plus`} onPress={onPlus} style={styles.rond}><Text style={styles.rondTexte}>+</Text></Pressable>
+      <T v="etiquette">{libelle}</T>
+      <View style={styles.compteurLigne}>
+        <Pressable accessibilityRole="button" accessibilityLabel={`${libelle} moins`} onPress={onMoins} style={styles.rond} hitSlop={6}>
+          <Minus size={26} color={couleurs.foret} weight="bold" />
+        </Pressable>
+        <T style={styles.valeur} accessibilityLabel={`${libelle} : ${valeur}`}>{valeur}</T>
+        <Pressable accessibilityRole="button" accessibilityLabel={`${libelle} plus`} onPress={onPlus} style={styles.rond} hitSlop={6}>
+          <Plus size={26} color={couleurs.foret} weight="bold" />
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -31,8 +40,8 @@ export default function Cultures() {
   // Repiquage dans les 12 derniers mois : si le mois choisi est après le mois courant, c'est l'an dernier.
   const annee = mois > aujourdhui.getMonth() ? aujourdhui.getFullYear() - 1 : aujourdhui.getFullYear();
   const joursDuMois = new Date(annee, mois + 1, 0).getDate();
-  const jourValide = Math.min(jour, joursDuMois);
-  const date = `${annee}-${String(mois + 1).padStart(2, '0')}-${String(jourValide).padStart(2, '0')}`;
+  const j = Math.min(jour, joursDuMois);
+  const date = `${annee}-${String(mois + 1).padStart(2, '0')}-${String(j).padStart(2, '0')}`;
 
   const enregistrer = () => {
     profil.ecrire({ culture, dateRepiquage: date });
@@ -41,56 +50,55 @@ export default function Cultures() {
 
   return (
     <Ecran titre="Mes cultures">
-      <Text style={styles.question}>{"Qu'est-ce que tu as planté ?"}</Text>
+      <T v="corps" style={{ color: couleurs.encreDouce }}>{"Qu'est-ce que tu as planté ?"}</T>
       <View style={styles.grille}>
-        {CULTURES.map((c) => (
-          <Pressable
-            key={c.id}
-            accessibilityRole="radio"
-            accessibilityState={{ selected: culture === c.id }}
-            accessibilityLabel={c.libelle}
-            onPress={() => setCulture(c.id)}
-            style={[styles.tuile, culture === c.id && styles.tuileChoisie]}>
-            <Text style={styles.tuileIcone}>{c.icone}</Text>
-            <Text style={[styles.tuileTexte, culture === c.id && { color: couleurs.blanc }]}>{c.libelle}</Text>
-          </Pressable>
-        ))}
+        {CULTURES.map((c, i) => {
+          const choisi = culture === c.id;
+          return (
+            <Apparition key={c.id} ordre={i} style={styles.case}>
+              <Pressable accessibilityRole="radio" accessibilityState={{ selected: choisi }} accessibilityLabel={c.libelle}
+                onPress={() => setCulture(c.id)} style={[styles.tuile, choisi && styles.tuileChoisie]}>
+                {choisi ? <View style={styles.coche}><Check size={16} color={couleurs.blanc} weight="bold" /></View> : null}
+                <T style={{ fontSize: 44 }}>{c.icone}</T>
+                <T style={[styles.tuileTexte, choisi && { color: couleurs.foret }]}>{c.libelle}</T>
+              </Pressable>
+            </Apparition>
+          );
+        })}
       </View>
       {culture ? (
-        <>
-          <Text style={styles.question}>Quand as-tu repiqué ?</Text>
-          <View style={styles.date}>
-            <Compteur valeur={String(jourValide)} libelle="Jour"
-              onMoins={() => setJour(jourValide <= 1 ? joursDuMois : jourValide - 1)}
-              onPlus={() => setJour(jourValide >= joursDuMois ? 1 : jourValide + 1)} />
-            <Compteur valeur={MOIS[mois]} libelle="Mois"
-              onMoins={() => setMois((mois + 11) % 12)} onPlus={() => setMois((mois + 1) % 12)} />
-          </View>
-          <Text style={styles.rappel}>{jourValide} {MOIS[mois]} {annee}</Text>
-          <GrosBouton icone="✅" libelle="C'est noté" onPress={enregistrer} />
-        </>
+        <Apparition>
+          <Carte>
+            <T v="sousTitre">Quand as-tu repiqué ?</T>
+            <View style={styles.date}>
+              <Compteur valeur={String(j)} libelle="Jour"
+                onMoins={() => setJour(j <= 1 ? joursDuMois : j - 1)} onPlus={() => setJour(j >= joursDuMois ? 1 : j + 1)} />
+              <Compteur valeur={COURT[mois]} libelle="Mois"
+                onMoins={() => setMois((mois + 11) % 12)} onPlus={() => setMois((mois + 1) % 12)} />
+            </View>
+            <T v="corpsGras" style={{ textAlign: 'center', color: couleurs.foret }}>Le {j} {MOIS[mois]} {annee}</T>
+          </Carte>
+          <View style={{ height: 16 }} />
+          <Bouton libelle="C'est noté" Icone={Check} onPress={enregistrer} />
+        </Apparition>
       ) : null}
     </Ecran>
   );
 }
 
 const styles = StyleSheet.create({
-  question: { fontSize: 20, fontWeight: '700', color: couleurs.texte, textAlign: 'center' },
-  grille: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center' },
+  grille: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6 },
+  case: { width: '33.33%', padding: 6 },
   tuile: {
-    width: '30%', minWidth: 96, aspectRatio: 1, borderRadius: tailles.rayon, backgroundColor: couleurs.vertClair,
-    alignItems: 'center', justifyContent: 'center', gap: 4, borderWidth: 3, borderColor: 'transparent',
+    aspectRatio: 0.9, borderRadius: tailles.rayon, backgroundColor: couleurs.carte, alignItems: 'center', justifyContent: 'center',
+    gap: 6, borderWidth: 2, borderColor: couleurs.trait, ...ombre,
   },
-  tuileChoisie: { backgroundColor: couleurs.vert, borderColor: couleurs.vert },
-  tuileIcone: { fontSize: 40 },
-  tuileTexte: { fontSize: 14, fontWeight: '700', color: couleurs.texte, textAlign: 'center' },
-  date: { flexDirection: 'row', gap: 12, justifyContent: 'center' },
-  compteur: { flex: 1, alignItems: 'center', gap: 8, backgroundColor: couleurs.blanc, borderRadius: tailles.rayon, padding: 12 },
-  rond: {
-    width: tailles.boutonMin, height: tailles.boutonMin, borderRadius: tailles.boutonMin / 2,
-    backgroundColor: couleurs.vertClair, alignItems: 'center', justifyContent: 'center',
-  },
-  rondTexte: { fontSize: 32, fontWeight: '700', color: couleurs.texte },
-  valeur: { fontSize: 26, fontWeight: '800', color: couleurs.texte },
-  rappel: { fontSize: 18, color: couleurs.texteDoux, textAlign: 'center' },
+  tuileChoisie: { borderColor: couleurs.feuille, backgroundColor: couleurs.pousse },
+  coche: { position: 'absolute', top: 8, right: 8, width: 24, height: 24, borderRadius: 12, backgroundColor: couleurs.feuille, alignItems: 'center', justifyContent: 'center' },
+  tuileTexte: { fontFamily: polices.texteGras, fontSize: 14, color: couleurs.encre, textAlign: 'center' },
+  date: { flexDirection: 'row', gap: 12 },
+  compteur: { flex: 1, alignItems: 'center', gap: 8, backgroundColor: couleurs.sable, borderRadius: 18, padding: 12 },
+  compteurLigne: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  rond: { width: 48, height: 48, borderRadius: 24, backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait, alignItems: 'center', justifyContent: 'center' },
+  valeur: { fontFamily: polices.titre, fontSize: 26, color: couleurs.encre, minWidth: 56, textAlign: 'center' },
 });

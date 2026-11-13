@@ -1,11 +1,33 @@
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Camera, Images, Leaf, Sun } from 'phosphor-react-native';
+import { useEffect, useState } from 'react';
+import { Animated, Easing, Platform, StyleSheet, View } from 'react-native';
 
 import { Ecran } from '@/components/Ecran';
-import { GrosBouton } from '@/components/GrosBouton';
-import { couleurs, tailles } from '@/theme';
+import { Apparition, Bouton, T } from '@/components/ui';
+import { couleurs } from '@/theme';
+
+/** Cadre de visée : coins marqués et feuille qui flotte doucement. */
+function Viseur() {
+  const [v] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    const boucle = Animated.loop(Animated.sequence([
+      Animated.timing(v, { toValue: 1, duration: 1600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      Animated.timing(v, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+    ]));
+    boucle.start();
+    return () => boucle.stop();
+  }, [v]);
+  return (
+    <View style={styles.viseur}>
+      {(['hg', 'hd', 'bg', 'bd'] as const).map((c) => <View key={c} style={[styles.coin, styles[c]]} />)}
+      <Animated.View style={{ transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [-8, 8] }) }, { rotate: '-12deg' }] }}>
+        <Leaf size={120} color={couleurs.feuille} weight="duotone" />
+      </Animated.View>
+    </View>
+  );
+}
 
 // Étape 5a : photo d'une feuille. Appareil photo du téléphone (cadrage carré), galerie en secours.
 export default function Photo() {
@@ -21,33 +43,33 @@ export default function Photo() {
       }
     }
     const options: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 0.8, allowsEditing: true, aspect: [1, 1] };
-    const r = source === 'camera'
-      ? await ImagePicker.launchCameraAsync(options)
-      : await ImagePicker.launchImageLibraryAsync(options);
+    const r = source === 'camera' ? await ImagePicker.launchCameraAsync(options) : await ImagePicker.launchImageLibraryAsync(options);
     if (r.canceled || !r.assets?.[0]) return;
-    const a = r.assets[0];
-    router.push({ pathname: '/diagnostic/resultat', params: { uri: a.uri, type: a.mimeType ?? '' } });
+    router.push({ pathname: '/diagnostic/resultat', params: { uri: r.assets[0].uri, type: r.assets[0].mimeType ?? '' } });
   };
 
   return (
     <Ecran titre="Ma plante est malade">
-      <View style={styles.cadre}>
-        <Text style={styles.cadreIcone}>🍃</Text>
-        <Text style={styles.cadreTexte}>Une seule feuille, de près, à la lumière du jour.</Text>
-      </View>
-      {message ? <Text style={styles.message}>{message}</Text> : null}
-      <GrosBouton icone="📸" libelle="Prendre la photo" onPress={() => ouvrir('camera')} />
-      <GrosBouton icone="🖼️" libelle="Choisir dans ma galerie" onPress={() => ouvrir('galerie')} variante="clair" />
+      <Apparition ordre={0}><Viseur /></Apparition>
+      <Apparition ordre={1} style={styles.conseils}>
+        <View style={styles.conseil}><Leaf size={22} color={couleurs.foret} weight="duotone" /><T v="corps" style={{ flex: 1 }}>Une seule feuille, de près</T></View>
+        <View style={styles.conseil}><Sun size={22} color={couleurs.soleil} weight="duotone" /><T v="corps" style={{ flex: 1 }}>À la lumière du jour</T></View>
+      </Apparition>
+      {message ? <T v="corpsGras" style={{ color: couleurs.terre }}>{message}</T> : null}
+      <Apparition ordre={2}><Bouton libelle="Prendre la photo" Icone={Camera} onPress={() => ouvrir('camera')} /></Apparition>
+      <Apparition ordre={3}><Bouton libelle="Choisir dans ma galerie" Icone={Images} onPress={() => ouvrir('galerie')} variante="clair" /></Apparition>
     </Ecran>
   );
 }
 
+const COIN = { position: 'absolute' as const, width: 44, height: 44, borderColor: couleurs.foret };
 const styles = StyleSheet.create({
-  cadre: {
-    aspectRatio: 1, borderRadius: tailles.rayon, borderWidth: 4, borderStyle: 'dashed', borderColor: couleurs.vert,
-    alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24, backgroundColor: couleurs.vertClair,
-  },
-  cadreIcone: { fontSize: 96 },
-  cadreTexte: { fontSize: 20, fontWeight: '600', color: couleurs.texte, textAlign: 'center' },
-  message: { fontSize: 17, color: couleurs.ocre, textAlign: 'center' },
+  viseur: { aspectRatio: 1.15, borderRadius: 28, backgroundColor: couleurs.pousse, alignItems: 'center', justifyContent: 'center' },
+  coin: COIN,
+  hg: { top: 18, left: 18, borderTopWidth: 5, borderLeftWidth: 5, borderTopLeftRadius: 14 },
+  hd: { top: 18, right: 18, borderTopWidth: 5, borderRightWidth: 5, borderTopRightRadius: 14 },
+  bg: { bottom: 18, left: 18, borderBottomWidth: 5, borderLeftWidth: 5, borderBottomLeftRadius: 14 },
+  bd: { bottom: 18, right: 18, borderBottomWidth: 5, borderRightWidth: 5, borderBottomRightRadius: 14 },
+  conseils: { gap: 10 },
+  conseil: { flexDirection: 'row', alignItems: 'center', gap: 12 },
 });

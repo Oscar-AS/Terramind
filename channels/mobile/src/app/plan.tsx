@@ -1,48 +1,67 @@
 import { router } from 'expo-router';
+import { CalendarBlank, CheckCircle, Hourglass, MinusCircle, Plant, Warning, WarningCircle } from 'phosphor-react-native';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { type Adaptation, type CulturePlan, demanderPlan, type Plan, type Reponse } from '@/api';
 import { Ecran } from '@/components/Ecran';
 import { Chargement, Erreur, Sources } from '@/components/Etat';
-import { GrosBouton } from '@/components/GrosBouton';
+import { Apparition, Badge, Bouton, Carte, T } from '@/components/ui';
 import { CULTURES } from '@/profil';
-import { couleurs, tailles } from '@/theme';
+import { nombreFr } from '@/format';
+import { couleurs } from '@/theme';
 
 // Étape 3 : que planter ici, et quand (POST /v1/plan).
-// Badge = couleur ET icône ET mot (jamais la couleur seule).
-const BADGES: Record<Adaptation, { icone: string; mot: string; fond: string; texte: string }> = {
-  conseillee: { icone: '✅', mot: 'Conseillée', fond: couleurs.vert, texte: couleurs.blanc },
-  possible: { icone: '⚠️', mot: 'Possible', fond: couleurs.ocre, texte: couleurs.blanc },
-  deconseillee: { icone: '⛔', mot: 'Pas maintenant', fond: couleurs.vertClair, texte: couleurs.texte },
+const BADGES: Record<Adaptation, { Icone: typeof CheckCircle; mot: string; couleur: string; fond: string }> = {
+  conseillee: { Icone: CheckCircle, mot: 'Conseillée', couleur: couleurs.foret, fond: couleurs.pousse },
+  possible: { Icone: WarningCircle, mot: 'Possible', couleur: '#7A5A12', fond: couleurs.soleilClair },
+  deconseillee: { Icone: MinusCircle, mot: 'Pas maintenant', couleur: couleurs.encreDouce, fond: couleurs.sableFonce },
 };
 
-function Carte({ c }: { c: CulturePlan }) {
+function Ligne({ Icone, texte }: { Icone: typeof CheckCircle; texte: string }) {
+  return (
+    <View style={styles.ligne}>
+      <Icone size={20} color={couleurs.encreDouce} weight="duotone" />
+      <T v="corps" style={{ flex: 1, fontSize: 16 }}>{texte}</T>
+    </View>
+  );
+}
+
+function CarteCulture({ c, ordre }: { c: CulturePlan; ordre: number }) {
   const b = BADGES[c.adaptation];
   const icone = CULTURES.find((x) => x.id === c.culture)?.icone ?? '🌱';
+  const eteinte = c.adaptation === 'deconseillee';
   return (
-    <View style={[styles.carte, c.adaptation === 'deconseillee' && styles.carteEteinte]}>
-      <View style={styles.carteHaut}>
-        <Text style={styles.carteIcone}>{icone}</Text>
-        <View style={{ flex: 1, gap: 6 }}>
-          <Text style={styles.carteNom}>{c.libelle}</Text>
-          <View style={[styles.badge, { backgroundColor: b.fond }]}>
-            <Text style={[styles.badgeTexte, { color: b.texte }]}>{b.icone} {b.mot}</Text>
+    <Apparition ordre={ordre}>
+      <Carte style={eteinte && styles.eteinte}>
+        <View style={styles.tete}>
+          <View style={[styles.vignette, { backgroundColor: b.fond }]}><T style={{ fontSize: 34 }}>{icone}</T></View>
+          <View style={{ flex: 1, gap: 6 }}>
+            <T v="sousTitre">{c.libelle}</T>
+            <Badge Icone={b.Icone} texte={b.mot} couleur={b.couleur} fond={b.fond} />
           </View>
         </View>
-      </View>
-      <Text style={styles.ligne}>🗓️ {c.periode_semis}</Text>
-      <Text style={styles.ligne}>⏳ {c.cycle_jours[0]} à {c.cycle_jours[1]} jours au champ</Text>
-      {c.raisons.map((r) => <Text key={r} style={styles.raison}>{r}</Text>)}
-      {c.avertissements.map((a) => <Text key={a} style={styles.avertissement}>⚠️ {a}</Text>)}
-    </View>
+        {!eteinte ? (
+          <>
+            <Ligne Icone={CalendarBlank} texte={c.periode_semis} />
+            <Ligne Icone={Hourglass} texte={`${c.cycle_jours[0]} à ${c.cycle_jours[1]} jours au champ`} />
+            {c.raisons.slice(1).map((r) => <T key={r} v="petit">{r}</T>)}
+          </>
+        ) : <T v="petit">{c.periode_semis}</T>}
+        {c.avertissements.map((a) => (
+          <View key={a} style={styles.avertissement}>
+            <Warning size={20} color={couleurs.terre} weight="duotone" />
+            <T v="corps" style={{ flex: 1, fontSize: 16 }}>{a}</T>
+          </View>
+        ))}
+      </Carte>
+    </Apparition>
   );
 }
 
 export default function PlanEcran() {
   const [reponse, setReponse] = useState<Reponse<Plan> | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
-
   const [essai, setEssai] = useState(0);
   useEffect(() => {
     let actif = true;
@@ -58,20 +77,31 @@ export default function PlanEcran() {
     setEssai((e) => e + 1);
   };
 
+  const sol = reponse?.donnees.sol;
+  const cultures = reponse?.donnees.cultures ?? [];
   return (
     <Ecran titre="Que planter ?">
       {erreur ? <Erreur texte={erreur} onReessayer={charger} /> : null}
-      {!erreur && !reponse ? <Chargement icone="🌱" texte="Je regarde ton sol et la saison…" /> : null}
+      {!erreur && !reponse ? <Chargement Icone={Plant} texte="Je regarde ton sol et la saison…" /> : null}
       {reponse ? (
         <>
-          <Text style={styles.resume}>{reponse.message.texte}</Text>
-          {reponse.donnees.sol.texture ? (
-            <Text style={styles.sol}>
-              🟫 Ton sol : {reponse.donnees.sol.sable_pct} % de sable, pH {reponse.donnees.sol.ph}
-            </Text>
+          {sol?.texture ? (
+            <Apparition ordre={0}>
+              <View style={styles.sol}>
+                <View style={{ flex: 1 }}>
+                  <T v="etiquette" style={{ color: '#F3E3CF' }}>Ton sol</T>
+                  <T v="sousTitre" style={{ color: couleurs.blanc }}>{nombreFr(sol.sable_pct, 0)} % de sable</T>
+                </View>
+                <View style={styles.solChiffre}>
+                  <T v="etiquette" style={{ color: '#F3E3CF' }}>pH</T>
+                  <T v="sousTitre" style={{ color: couleurs.blanc }}>{nombreFr(sol.ph, 1)}</T>
+                </View>
+              </View>
+            </Apparition>
           ) : null}
-          {reponse.donnees.cultures.map((c) => <Carte key={c.culture} c={c} />)}
-          <GrosBouton icone="🌿" libelle="J'ai planté" onPress={() => router.push('/cultures')} />
+          <Apparition ordre={1}><T v="corpsGras">{reponse.message.texte}</T></Apparition>
+          {cultures.map((c, i) => <CarteCulture key={c.culture} c={c} ordre={i + 2} />)}
+          <Bouton libelle="J'ai planté" sousTitre="Pour recevoir les alertes" Icone={Plant} onPress={() => router.push('/cultures')} />
           <Sources sources={reponse.sources} />
         </>
       ) : null}
@@ -80,16 +110,11 @@ export default function PlanEcran() {
 }
 
 const styles = StyleSheet.create({
-  resume: { fontSize: 20, fontWeight: '700', color: couleurs.texte },
-  sol: { fontSize: 16, color: couleurs.texteDoux },
-  carte: { backgroundColor: couleurs.blanc, borderRadius: tailles.rayon, padding: 16, gap: 8 },
-  carteEteinte: { opacity: 0.7 },
-  carteHaut: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  carteIcone: { fontSize: 44 },
-  carteNom: { fontSize: 22, fontWeight: '800', color: couleurs.texte },
-  badge: { alignSelf: 'flex-start', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
-  badgeTexte: { fontSize: 15, fontWeight: '700' },
-  ligne: { fontSize: 16, color: couleurs.texte },
-  raison: { fontSize: 16, color: couleurs.texteDoux },
-  avertissement: { fontSize: 16, color: couleurs.rouge },
+  sol: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#7A4A2B', borderRadius: 24, padding: 18, gap: 12 },
+  solChiffre: { alignItems: 'flex-end' },
+  tete: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  vignette: { width: 64, height: 64, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  eteinte: { opacity: 0.75 },
+  ligne: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  avertissement: { flexDirection: 'row', gap: 10, backgroundColor: couleurs.terreClair, borderRadius: 14, padding: 12 },
 });

@@ -1,26 +1,28 @@
 import { router } from 'expo-router';
+import { Bug, CalendarCheck, CloudRain, CloudSun, Eye, EyeSlash, type Icon, Leaf, SealCheck } from 'phosphor-react-native';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { type Alertes, demanderAlertes, envoyerRetour, type Reponse } from '@/api';
 import { Ecran } from '@/components/Ecran';
 import { Chargement, Erreur, Sources } from '@/components/Etat';
-import { GrosBouton } from '@/components/GrosBouton';
-import { couleurs, tailles } from '@/theme';
+import { Apparition, Badge, Bouton, Carte, Pastille, T } from '@/components/ui';
+import { dateFr } from '@/format';
+import { couleurs } from '@/theme';
 
 // Étape 6 : risques météo de la semaine (POST /v1/alert) et retour de l'agriculteur (POST /v1/feedback).
-const RISQUES: Record<string, { icone: string; nom: string }> = {
-  late_blight: { icone: '🌧️', nom: 'Mildiou' },
-  alternaria: { icone: '🍂', nom: 'Alternariose' },
-  tuta_absoluta: { icone: '🐛', nom: 'Mineuse de la tomate' },
-  plutella_xylostella: { icone: '🐛', nom: 'Teigne du chou' },
+const RISQUES: Record<string, { Icone: Icon; nom: string }> = {
+  late_blight: { Icone: CloudRain, nom: 'Mildiou' },
+  alternaria: { Icone: Leaf, nom: 'Alternariose' },
+  tuta_absoluta: { Icone: Bug, nom: 'Mineuse de la tomate' },
+  plutella_xylostella: { Icone: Bug, nom: 'Teigne du chou' },
 };
+
 
 export default function AlertesEcran() {
   const [reponse, setReponse] = useState<Reponse<Alertes> | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [retours, setRetours] = useState<Record<string, boolean>>({});
-
   const [essai, setEssai] = useState(0);
   useEffect(() => {
     let actif = true;
@@ -39,8 +41,8 @@ export default function AlertesEcran() {
   if (reponse?.statut === 'culture_requise') {
     return (
       <Ecran titre="Alertes de la semaine">
-        <Text style={styles.texte}>{reponse.message.texte}</Text>
-        <GrosBouton icone="🌿" libelle="J'ai planté" onPress={() => router.replace('/cultures')} />
+        <T v="corps">{reponse.message.texte}</T>
+        <Bouton libelle="J'ai planté" Icone={CalendarCheck} onPress={() => router.replace('/cultures')} />
       </Ecran>
     );
   }
@@ -54,38 +56,49 @@ export default function AlertesEcran() {
   return (
     <Ecran titre="Alertes de la semaine">
       {erreur ? <Erreur texte={erreur} onReessayer={charger} /> : null}
-      {!erreur && !reponse ? <Chargement icone="🌦️" texte="Je regarde la météo de ton champ…" /> : null}
+      {!erreur && !reponse ? <Chargement Icone={CloudSun} texte="Je regarde la météo de ton champ…" /> : null}
       {reponse ? (
         <>
+          <Apparition ordre={0} style={styles.periode}>
+            <CloudSun size={20} color={couleurs.encreDouce} weight="duotone" />
+            <T v="petit">Météo du {dateFr(reponse.donnees.meteo.periode[0], false)} au {dateFr(reponse.donnees.meteo.periode[1], false)}</T>
+          </Apparition>
           {actives.length === 0 ? (
-            <View style={[styles.carte, { alignItems: 'center' }]}>
-              <Text style={styles.grandeIcone}>😌</Text>
-              <Text style={styles.texte}>{reponse.message.texte}</Text>
-            </View>
+            <Apparition ordre={1}>
+              <Carte style={styles.calme}>
+                <Pastille Icone={SealCheck} taille={72} />
+                <T v="sousTitre" style={{ textAlign: 'center' }}>Tout est calme</T>
+                <T v="corps" style={{ textAlign: 'center' }}>{reponse.message.texte}</T>
+              </Carte>
+            </Apparition>
           ) : null}
-          {actives.map((a) => (
-            <View key={a.id} style={styles.carte}>
-              <View style={styles.haut}>
-                <Text style={styles.grandeIcone}>{RISQUES[a.risque]?.icone ?? '⚠️'}</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.nom}>{RISQUES[a.risque]?.nom ?? a.risque}</Text>
-                  <Text style={styles.niveau}>{a.niveau === 'favorable' ? 'Conditions favorables' : 'À surveiller'}</Text>
-                </View>
-              </View>
-              <Text style={styles.texte}>{a.conseil}</Text>
-              {retours[a.id] ? (
-                <Text style={styles.merci}>{"Merci, c'est noté."}</Text>
-              ) : (
-                <View style={styles.boutons}>
-                  <View style={{ flex: 1 }}><GrosBouton icone="👀" libelle="J'ai vu" onPress={() => repondre(a.id, 'oui')} /></View>
-                  <View style={{ flex: 1 }}><GrosBouton icone="🙈" libelle="Rien vu" onPress={() => repondre(a.id, 'non')} variante="clair" /></View>
-                </View>
-              )}
-            </View>
-          ))}
-          <Text style={styles.periode}>
-            Météo du {reponse.donnees.meteo.periode[0]} au {reponse.donnees.meteo.periode[1]} (NASA POWER).
-          </Text>
+          {actives.map((a, i) => {
+            const r = RISQUES[a.risque] ?? { Icone: Bug, nom: a.risque };
+            return (
+              <Apparition key={a.id} ordre={i + 1}>
+                <Carte>
+                  <View style={styles.tete}>
+                    <Pastille Icone={r.Icone} couleur={couleurs.terre} fond={couleurs.terreClair} taille={56} />
+                    <View style={{ flex: 1, gap: 6 }}>
+                      <T v="sousTitre">{r.nom}</T>
+                      <Badge Icone={r.Icone} texte={a.niveau === 'favorable' ? 'Conditions favorables' : 'À surveiller'}
+                        couleur={couleurs.terre} fond={couleurs.terreClair} />
+                    </View>
+                  </View>
+                  <T v="corps">{a.conseil}</T>
+                  {retours[a.id] ? <T v="corpsGras" style={{ color: couleurs.feuille }}>{"Merci, c'est noté."}</T> : (
+                    <>
+                      <T v="petit">As-tu vu des signes dans ton champ ?</T>
+                      <View style={styles.boutons}>
+                        <View style={{ flex: 1 }}><Bouton libelle="Oui, j'ai vu" Icone={Eye} onPress={() => repondre(a.id, 'oui')} /></View>
+                        <View style={{ flex: 1 }}><Bouton libelle="Rien vu" Icone={EyeSlash} onPress={() => repondre(a.id, 'non')} variante="clair" /></View>
+                      </View>
+                    </>
+                  )}
+                </Carte>
+              </Apparition>
+            );
+          })}
           <Sources sources={reponse.sources} />
         </>
       ) : null}
@@ -94,13 +107,8 @@ export default function AlertesEcran() {
 }
 
 const styles = StyleSheet.create({
-  carte: { backgroundColor: couleurs.blanc, borderRadius: tailles.rayon, padding: 16, gap: 12 },
-  haut: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  grandeIcone: { fontSize: 48 },
-  nom: { fontSize: 22, fontWeight: '800', color: couleurs.texte },
-  niveau: { fontSize: 16, fontWeight: '700', color: couleurs.ocre },
-  texte: { fontSize: 19, color: couleurs.texte, lineHeight: 27, textAlign: 'center' },
+  periode: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  calme: { alignItems: 'center', paddingVertical: 28 },
+  tete: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   boutons: { flexDirection: 'row', gap: 8 },
-  merci: { fontSize: 17, color: couleurs.vert, fontWeight: '700', textAlign: 'center' },
-  periode: { fontSize: 14, color: couleurs.texteDoux, textAlign: 'center' },
 });

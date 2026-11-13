@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { couleurs, tailles } from '@/theme';
+import { couleurs, polices, tailles } from '@/theme';
 
 type Props = {
   visible: boolean;
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   fond: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', justifyContent: 'flex-end' },
   zoneFermer: { flex: 1 },
   feuille: {
-    backgroundColor: couleurs.fond,
+    backgroundColor: couleurs.sable,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: tailles.marge,
@@ -56,20 +56,20 @@ const styles = StyleSheet.create({
     width: 48,
     height: 5,
     borderRadius: 3,
-    backgroundColor: couleurs.texteDoux,
+    backgroundColor: couleurs.encreDouce,
     opacity: 0.4,
     marginVertical: 10,
   },
   entete: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  titre: { flex: 1, fontSize: 22, fontWeight: '700', color: couleurs.texte },
+  titre: { flex: 1, fontSize: 24, fontFamily: polices.titre, color: couleurs.encre },
   fermer: {
     width: tailles.boutonMin,
     height: tailles.boutonMin,
     borderRadius: tailles.boutonMin / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: couleurs.vertClair,
+    backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait,
   },
-  fermerTexte: { fontSize: 24, color: couleurs.texte },
+  fermerTexte: { fontSize: 24, color: couleurs.encre },
   contenu: { gap: 16 },
 });
