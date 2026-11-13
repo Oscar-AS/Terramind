@@ -113,7 +113,7 @@ def test_fiche_en_4_parties_pour_chaque_maladie():
             assert f[cle], f"{etiquette} : partie « {PARTIES_FICHE[cle]} » absente"
         assert f["sources"], etiquette
     # Pas encore de fiche : rien d'inventé.
-    assert fiche_simple("septoria_leaf_spot") is None
+    assert fiche_simple("healthy") is None
     # Aucune fiche ne nomme de produit de traitement (TerraMind ne donne ni produit ni dose).
     interdits = ("mancozèbe", "mancozeb", "cuivre", "deltaméthrine", "abamectine", "endosulfan", "bicarbonate")
     for p in fiches.passages():

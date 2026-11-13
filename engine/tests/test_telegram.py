@@ -59,4 +59,4 @@ def test_fiche_telegram_en_4_parties():
     for titre in ("1. Ce que c'est", "2. Pourquoi c'est arrivé", "3. Que faire maintenant", "4. Pour que ça ne revienne pas"):
         assert titre in t
     assert "Sources" in t
-    assert texte_fiche("target_spot", "tomato") is None
+    assert texte_fiche("healthy", "tomato") is None

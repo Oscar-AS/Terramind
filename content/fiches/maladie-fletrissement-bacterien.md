@@ -22,7 +22,12 @@ Bactérie *Ralstonia solanacearum* (ancien nom *Pseudomonas solanacearum*).
 
 ## Que faire maintenant
 - Aucun produit n'est efficace contre cette bactérie. [RAD p. 19]
+- Arracher et détruire les plantes atteintes. [FAOPI p. 27]
 - Montrer la plante à un agent agricole pour confirmer.
 
 ## Pour que ça ne revienne pas
-- Nos sources ne donnent pas encore de méthode de prévention précise pour le Sénégal : demander conseil à un agent agricole.
+- Faire une rotation des cultures. [FAOPI p. 26]
+- Choisir une parcelle bien drainée ; éviter les arrosages qui détrempent le sol. [FAOPI p. 26]
+- Ne pas planter à côté d'une culture sensible. [FAOPI p. 26]
+- Garder les outils propres et désherber régulièrement. [FAOPI p. 26]
+- À la fin de la récolte, arracher et détruire les plants. [FAOPI p. 27]

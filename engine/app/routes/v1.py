@@ -150,7 +150,8 @@ FICHES_ETIQUETTES = {
     "fusarium": "maladie-fusariose", "bacterial_wilt": "maladie-fletrissement-bacterien",
     "helicoverpa_armigera": "ravageur-noctuelle-tomate", "caterpillars": "ravageur-chenilles-oignon",
     "mites": "ravageur-acariose-tomate", "blossom_end_rot": "accident-necrose-apicale",
-    "sunburn": "accident-coup-de-soleil",
+    "sunburn": "accident-coup-de-soleil", "septoria_leaf_spot": "maladie-septoriose",
+    "target_spot": "maladie-tache-cible",
 }
 
 # Les 4 questions qu'on se pose quand on est malade, dans l'ordre (sections communes des fiches).
