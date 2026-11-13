@@ -169,7 +169,7 @@ def main():
         with SORTIE.open(encoding="utf-8") as f:
             anciens = {r["cle"]: r for r in csv.DictReader(f)}
     with SORTIE.open("w", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=CHAMPS)
+        w = csv.DictWriter(f, fieldnames=CHAMPS, lineterminator="\n")
         w.writeheader()
         for cle, usage, voix, fr in MESSAGES:
             assert not any(c.isdigit() for c in fr), f"{cle} : pas de chiffre dans un texte lu à voix haute"
