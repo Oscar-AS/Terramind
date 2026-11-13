@@ -66,7 +66,12 @@ npx tsc --noEmit && npx expo lint # vérifications
 Sans `EXPO_PUBLIC_ENGINE_URL`, l'application appelle `http://localhost:8000` (le moteur lancé sur le même ordinateur, utile pour la version web).
 
 **Distribution sans store** :
-- **Android** : APK fabriqué avec EAS Build, partagé par lien ou QR code.
+- **Android** : APK fabriqué avec EAS Build, partagé par lien ou QR code. Le profil `apk` de [`eas.json`](eas.json) produit un APK (pas un AAB) qui appelle le moteur en ligne (`https://terramind-moteur.onrender.com`) :
+  ```bash
+  npx eas-cli@latest login                              # compte Expo de l'équipe
+  npx eas-cli@latest build -p android --profile apk     # compilation dans le cloud, lien de téléchargement à la fin
+  ```
+  Le moteur gratuit de Render s'endort après une période sans visite : la première requête peut prendre environ une minute.
 - **iPhone** : la version web, à ajouter à l'écran d'accueil. Apple n'autorise pas l'installation libre d'une application sans compte développeur payant.
 
 ## Limites actuelles
