@@ -30,6 +30,12 @@ SYNONYMES = {  # mots courants des agriculteurs → mots des fiches
     "arrosage": "arroser", "sale": "sel", "salee": "sel", "salinite": "sel", "traiter": "traitement",
     "soigner": "traitement", "engrais": "engrais", "puit": "puits",
 }
+# Mots qu'un agriculteur emploie pour chacune des 4 sections communes des fiches maladies.
+MOTS_SECTIONS = {
+    "pourquoi c'est arrivé": "pourquoi cause origine",
+    "que faire maintenant": "soigner traitement guerir lutter",
+    "pour que ça ne revienne pas": "eviter prevention prevenir proteger",
+}
 NOMS_CULTURES = {"tomato": "tomate", "onion": "oignon", "cabbage": "chou", "potato": "pomme terre",
                  "pepper": "poivron", "carrot": "carotte", "bitter_eggplant": "jaxatu"}
 
@@ -106,7 +112,7 @@ def passages() -> list[Passage]:
             # Les fiches sans référence pour une section restent citées par leur titre.
             refs = refs or [f"FICHE {titre}"]
             resultat.append(Passage(chemin.stem, titre, section[3:].strip(), propre, refs,
-                                    normaliser(f"{titre} {noms} {section} {section} {propre}")))
+                                    normaliser(f"{titre} {noms} {section} {section} {MOTS_SECTIONS.get(section[3:].strip().lower(), '')} {propre}")))
     return resultat
 
 
