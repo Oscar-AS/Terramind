@@ -17,6 +17,6 @@ COPY --chown=user engine/ engine/
 # Modèle de diagnostic v0 (ONNX + étiquettes), produit par ml/training/ ; hors Git.
 # Fiches du RAG (D8).
 COPY --chown=user content/fiches/ content/fiches/
-COPY --chown=user modeles/diagnostic/terramind_diag_v0.onnx modeles/diagnostic/etiquettes.json modeles/diagnostic/
+COPY --chown=user modeles/diagnostic/ modeles/diagnostic/
 
 CMD ["sh", "-c", "uvicorn engine.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

@@ -2,7 +2,6 @@
 *
 !engine/
 !content/fiches/
-!modeles/diagnostic/terramind_diag_v0.onnx
-!modeles/diagnostic/etiquettes.json
+!modeles/diagnostic/
 engine/tests/
 **/__pycache__

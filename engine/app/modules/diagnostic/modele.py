@@ -19,7 +19,7 @@ from PIL import Image
 
 RACINE = Path(__file__).resolve().parents[4]
 DOSSIER = Path(os.environ.get("MODEL_PATH") or RACINE / "modeles" / "diagnostic")
-SEUIL_INCERTAIN = float(os.environ.get("DIAGNOSTIC_CONFIDENCE_THRESHOLD") or 0.6)
+SEUIL_INCERTAIN = 0.6  # repli si ni variable d'environnement ni calibration
 TAILLE = 224
 MOYENNE = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 ECART = np.array([0.229, 0.224, 0.225], dtype=np.float32)
@@ -36,8 +36,16 @@ LIBELLES = {
     "leaf_curl": ("maladie", "Enroulement jaune (virus TYLCV)"),
     "mosaic_virus": ("maladie", "Mosaïque (virus)"),
     "mites": ("ravageur", "Acariens"),
+    "virosis": ("maladie", "Virose"),
+    "bacterial_wilt": ("maladie", "Flétrissement bactérien"),
+    "fusarium": ("maladie", "Fusariose"),
+    "caterpillars": ("ravageur", "Chenilles"),
+    "helicoverpa_armigera": ("ravageur", "Noctuelle de la tomate"),
+    "blossom_end_rot": ("abiotique", "Pourriture apicale (fruit)"),
+    "sunburn": ("abiotique", "Coup de soleil (fruit)"),
+    "healthy_fruit": ("sain", "Fruit sain"),
 }
-CULTURES_FR = {"tomato": "tomate", "potato": "pomme de terre", "pepper": "poivron"}
+CULTURES_FR = {"tomato": "tomate", "potato": "pomme de terre", "pepper": "poivron", "onion": "oignon"}
 
 
 class ModeleAbsent(RuntimeError):
@@ -48,12 +56,15 @@ class ModeleAbsent(RuntimeError):
 def _charger():
     import onnxruntime as ort  # import tardif : le moteur démarre même sans modèle
 
-    fichier = DOSSIER / "terramind_diag_v0.onnx"
-    if not fichier.exists():
-        raise ModeleAbsent(f"modèle introuvable : {fichier}")
+    fichier = next((DOSSIER / n for n in ("terramind_diag.onnx", "terramind_diag_v0.onnx") if (DOSSIER / n).exists()), None)
+    if fichier is None:
+        raise ModeleAbsent(f"modèle introuvable dans {DOSSIER}")
     session = ort.InferenceSession(str(fichier), providers=["CPUExecutionProvider"])
     etiquettes = json.loads((DOSSIER / "etiquettes.json").read_text())
-    return session, etiquettes
+    # Calibration (v1) : température choisie sur la validation de terrain, seuil d'incertitude.
+    calib = DOSSIER / "calibration.json"
+    reglage = json.loads(calib.read_text()) if calib.exists() else {}
+    return session, etiquettes, float(reglage.get("temperature", 1.0)), reglage.get("seuil_incertain")
 
 
 def _preparer(contenu: bytes) -> np.ndarray:
@@ -69,8 +80,9 @@ def _preparer(contenu: bytes) -> np.ndarray:
 
 
 def diagnostiquer(contenu: bytes, culture: str | None = None) -> dict:
-    session, etiquettes = _charger()
-    logits = session.run(None, {session.get_inputs()[0].name: _preparer(contenu)})[0][0]
+    session, etiquettes, temperature, seuil_calibre = _charger()
+    seuil = float(os.environ.get("DIAGNOSTIC_CONFIDENCE_THRESHOLD") or seuil_calibre or SEUIL_INCERTAIN)
+    logits = session.run(None, {session.get_inputs()[0].name: _preparer(contenu)})[0][0] / temperature
     if culture:  # culture déclarée : on ne garde que ses classes
         masque = np.array([e["culture"] == culture for e in etiquettes])
         if masque.any():
@@ -83,6 +95,6 @@ def diagnostiquer(contenu: bytes, culture: str | None = None) -> dict:
         categorie, libelle = LIBELLES[e["etiquette"]]
         predictions.append({"culture": e["culture"], "etiquette": e["etiquette"], "categorie": categorie,
                             "libelle": libelle, "confiance": round(float(p[i]), 3)})
-    return {"predictions": predictions, "seuil_incertain": SEUIL_INCERTAIN,
+    return {"predictions": predictions, "seuil_incertain": seuil,
             "fiche": None, "questions_suivi": [],
-            "certain": predictions[0]["confiance"] >= SEUIL_INCERTAIN}
+            "certain": predictions[0]["confiance"] >= seuil}
