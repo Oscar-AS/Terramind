@@ -137,12 +137,16 @@ def chercher(question: str, n: int = 3, k1: float = 1.4, b: float = 0.75) -> lis
 
 
 def sources_de(ps: list[Passage]) -> list[dict]:
-    vues, sortie = set(), []
+    """Une ligne par document, pages regroupées (« 134, 140 »). « p. 130 » seul hérite du document précédent."""
+    pages: dict[str, list[str]] = {}
     for p in ps:
+        precedent = None
         for r in p.references:
+            if r.startswith("p.") and precedent:
+                r = f"{precedent} {r}"
+            precedent = r.split(" ")[0].rstrip(",;")
             s = _source(r)
-            cle = (s["document"], s["page"])
-            if cle not in vues:
-                vues.add(cle)
-                sortie.append(s)
-    return sortie
+            liste = pages.setdefault(s["document"], [])
+            if s["page"] != "—" and s["page"] not in liste:
+                liste.append(s["page"])
+    return [{"document": d, "page": ", ".join(pg) if pg else "—"} for d, pg in pages.items()]

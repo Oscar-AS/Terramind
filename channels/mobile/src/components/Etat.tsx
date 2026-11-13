@@ -49,7 +49,7 @@ export function Sources({ sources }: { sources: Source[] }) {
       </View>
       {uniques.map((s) => (
         <T key={`${s.document}-${s.page}`} v="petit">
-          {s.document}{/^\d/.test(s.page) ? `, p. ${s.page}` : ` (${s.page})`}
+          {s.document}{/^\d/.test(s.page) ? `, p. ${s.page}` : s.page === '—' ? '' : ` (${s.page})`}
         </T>
       ))}
     </Carte>

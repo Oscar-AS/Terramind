@@ -126,8 +126,8 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
         return enveloppe("erreur", "Je n'arrive pas à lire cette photo. Reprends-la, bien nette.", {}, code=400)
     certain = r.pop("certain")
     top = r["predictions"][0]
-    source = [{"document": "Modèle TerraMind v0 (PlantVillage CC BY-SA 3.0, PlantDoc CC BY 4.0)",
-               "page": "ml/eval/diagnostic_v0.json"}]
+    source = [{"document": "Modèle TerraMind v1 (TOM2024 CC BY 4.0, PlantVillage CC BY-SA 3.0, PlantDoc CC BY 4.0)",
+               "page": "ml/eval/diagnostic_v1.md"}]
     if not certain:
         return enveloppe("incertain", "Je ne suis pas sûr de ce que je vois. Reprends la photo d'une seule "
                          "feuille, de près, à la lumière du jour. " + AGENT, r, source)
