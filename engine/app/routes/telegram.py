@@ -177,7 +177,15 @@ def traiter(maj: dict):
         if "lat" in etat:
             _alertes(chat)
     elif texte:
-        envoyer(chat, "Je ne peux pas encore répondre aux questions libres. " + AGENT, reply_markup=CLAVIER)
+        from ..modules.rag.reponse import repondre
+
+        r = repondre(texte)
+        if r["statut"] != "ok":
+            envoyer(chat, "Je n'ai pas la réponse dans mes fiches. " + AGENT, reply_markup=CLAVIER)
+        else:
+            src = "\n".join(f"• {s['document']}" + (f", p. {s['page']}" if s["page"][:1].isdigit() else "")
+                             for s in r["sources"][:3])
+            envoyer(chat, f"{r['texte']}\n\nSources :\n{src}", reply_markup=CLAVIER)
 
 
 def _appel_silencieux(methode: str, **donnees):

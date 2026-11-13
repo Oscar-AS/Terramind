@@ -80,9 +80,18 @@ class Routes(unittest.TestCase):
             r = self.c.post("/v1/alert", json={**COMMUN, "lat": 14.76, "lon": -17.21, "culture": "tomato"})
         self.assertEqual(r.status_code, 503)
 
-    def test_chat_honnete(self):
-        r = self.c.post("/v1/chat", json={**COMMUN, "texte": "Comment traiter le mildiou ?"})
+    def test_chat_hors_sujet(self):
+        with mock.patch.dict("os.environ", {"GEMINI_API_KEY": ""}):
+            r = self.c.post("/v1/chat", json={**COMMUN, "texte": "Quel est le prix du riz à Dakar ?"})
         self.assertEqual(r.json()["statut"], "je_ne_sais_pas")
+
+    def test_chat_fiche_sourcee(self):
+        with mock.patch.dict("os.environ", {"GEMINI_API_KEY": ""}):
+            r = self.c.post("/v1/chat", json={**COMMUN, "texte": "Ma tomate a des taches brunes avec des cercles"})
+        corps = r.json()
+        self.assertEqual(corps["statut"], "ok")
+        self.assertIn("Alternariose", corps["message"]["texte"])
+        self.assertTrue(corps["sources"])
 
     def test_langue_invalide(self):
         r = self.c.post("/v1/chat", json={**COMMUN, "langue": "en", "texte": "x"})

@@ -3,7 +3,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/RAG-fiches%20sourcées-1f4d3a" alt="RAG sur fiches sourcées">
   <img src="https://img.shields.io/badge/langues-français%20·%20wolof-3f8f5f" alt="Français et wolof">
-  <img src="https://img.shields.io/badge/fiches-en%20rédaction-d08a2e" alt="Fiches en rédaction">
+  <img src="https://img.shields.io/badge/fiches-14%20à%20relire-d08a2e" alt="14 fiches à relire">
 </p>
 
 ## En une phrase
@@ -28,7 +28,7 @@ C'est le principe du **RAG** (génération à partir de documents) : un examen �
 
 | Dossier | Contenu | État |
 |---|---|---|
-| [`fiches/`](fiches/) | Une fiche par culture et par maladie : symptômes, prévention **sans produit**, saison, source page par page | ✍️ En rédaction par Rama |
+| [`fiches/`](fiches/) | Une fiche par culture et par maladie : symptômes, prévention **sans produit**, saison, source page par page | ✅ 14 fiches sourcées (13 nov), brouillon à relire par Rama |
 | [`templates/`](templates/) | **Réponses types** : messages courts envoyés mot pour mot (accueil, « je ne sais pas », diagnostic incertain, alerte) | ✍️ En rédaction |
 | [`voix/lexique_wolof.csv`](voix/lexique_wolof.csv) | Carnet de prononciation pour la voix wolof : nombres, mois, unités, cultures, mots du champ | ✅ 51 entrées sourcées (à valider par un locuteur), 14 à remplir |
 | [`audio/wo/`](audio/wo/) | Réponses types sensibles **enregistrées par une voix humaine** en wolof | 📅 12 novembre |

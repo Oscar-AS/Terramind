@@ -141,10 +141,15 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
 
 @router.post("/chat")
 def chat(d: DemandeChat):
-    # D8 : réponse uniquement à partir des fiches validées. content/fiches/ est encore vide et
-    # aucun modèle de langage n'est configuré : réponse honnête « je ne sais pas ».
-    return enveloppe("je_ne_sais_pas", "Je ne peux pas encore répondre à cette question. " + AGENT,
-                     {"transcription": None, "passages": []})
+    # D8 : réponse uniquement à partir des fiches (content/fiches/), rédigée par Gemini si une clé
+    # est configurée, sinon passage de fiche renvoyé tel quel.
+    from ..modules.rag.reponse import repondre
+
+    r = repondre(d.texte)
+    donnees = {"transcription": None, "passages": r["passages"], "mode": r["mode"]}
+    if r["statut"] != "ok":
+        return enveloppe("je_ne_sais_pas", "Je n'ai pas la réponse dans mes fiches. " + AGENT, donnees)
+    return enveloppe("ok", r["texte"], donnees, r["sources"])
 
 
 @router.post("/feedback")
