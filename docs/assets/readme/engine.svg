@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-label="Le moteur : Un seul cerveau pour WhatsApp, l'appli web et le tableau de bord">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-label="Le moteur : Un seul cerveau pour l'application mobile et le bot Telegram">
   <defs>
     <linearGradient id="fond" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#1f4d3a"/><stop offset="1" stop-color="#14261d"/>
@@ -17,5 +17,5 @@
       <line x1="30" y1="90" x2="38" y2="82"/><line x1="82" y1="38" x2="90" y2="30"/></g></g>
   <text x="230" y="92" font-family="Georgia, 'Times New Roman', serif" font-size="22" fill="#f3e3c3" letter-spacing="3">TERRAMIND AFRIQUE · ENGINE/</text>
   <text x="230" y="146" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="bold" fill="#ffffff">Le moteur</text>
-  <text x="230" y="186" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#fbf7ef">Un seul cerveau pour WhatsApp, l'appli web et le tableau de bord</text>
+  <text x="230" y="186" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#fbf7ef">Un seul cerveau pour l'application mobile et le bot Telegram</text>
 </svg>

@@ -34,6 +34,8 @@ flowchart LR
     V --> DI["Diagnostic photo"]
 ```
 
+Comment ces données servent le moteur, et pourquoi chaque seuil a sa valeur : [docs/seuils-et-parametres.md](../docs/seuils-et-parametres.md).
+
 | Dossier | Contenu | Dans Git ? |
 |---|---|---|
 | [`raw/`](raw/) | Fichiers bruts tels que téléchargés, et [`MANIFESTE.csv`](raw/MANIFESTE.csv) (URL, date, SHA-256 de chaque fichier) | Les petits fichiers oui ; images, météo horaire, prix et documents non (retéléchargeables par script) |
@@ -45,7 +47,9 @@ flowchart LR
 - Dans la région de Thiès, en contre-saison froide, l'oignon est cultivé par 56 % des ménages maraîchers, la tomate par 53 % et le chou par 47 % (RGPH-5).
 - 21 % des ménages agricoles de Thiès et 44 % de ceux de Louga ont subi des ravageurs inhabituels (DAPSA, 2022-2023).
 
-Pour tout retélécharger, voir [scripts/](../scripts/).
+- Le modèle de diagnostic v1 s'entraîne sur 14 074 images : PlantVillage, PlantDoc et TOM2024 (photos de terrain du Burkina Faso). Il obtient 91,7 % sur des photos de terrain jamais vues ([ml/](../ml/)).
+
+Pour tout retélécharger, voir [scripts/](../scripts/). Les images TOM2024 viennent du fichier `raw/train-00000-of-00001.parquet` du jeu Hugging Face `Project-AgML/TOM2024_disease_classification` (CC BY 4.0), rangé dans `raw/images/tom2024/`.
 
 ---
 

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-label="Les façades : Là où l'agriculteur parle au bot : WhatsApp d'abord, l'appli web en secours">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-label="Les façades : Là où l'agriculteur parle à TerraMind : application mobile et Telegram">
   <defs>
     <linearGradient id="fond" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#1f4d3a"/><stop offset="1" stop-color="#14261d"/>
@@ -14,5 +14,5 @@
       <circle cx="91" cy="97" r="3.5" fill="#fff"/></g>
   <text x="230" y="92" font-family="Georgia, 'Times New Roman', serif" font-size="22" fill="#f3e3c3" letter-spacing="3">TERRAMIND AFRIQUE · CHANNELS/</text>
   <text x="230" y="146" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="bold" fill="#ffffff">Les façades</text>
-  <text x="230" y="186" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#fbf7ef">Là où l'agriculteur parle au bot : WhatsApp d'abord, l'appli web en secours</text>
+  <text x="230" y="186" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#fbf7ef">Là où l'agriculteur parle à TerraMind : application mobile et Telegram</text>
 </svg>

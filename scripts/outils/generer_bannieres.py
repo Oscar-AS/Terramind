@@ -43,8 +43,8 @@ ICONES = {
 }
 
 BANNIERES = {
-    "engine": ("engine/", "Le moteur", "Un seul cerveau pour WhatsApp, l'appli web et le tableau de bord"),
-    "channels": ("channels/", "Les façades", "Là où l'agriculteur parle au bot : WhatsApp d'abord, l'appli web en secours"),
+    "engine": ("engine/", "Le moteur", "Un seul cerveau pour l'application mobile et le bot Telegram"),
+    "channels": ("channels/", "Les façades", "Là où l'agriculteur parle à TerraMind : application mobile et Telegram"),
     "dashboard": ("dashboard/", "Le tableau de bord", "Ce que l'équipe et les partenaires voient : usage, questions, alertes"),
     "content": ("content/", "Le savoir du bot", "Fiches agronomiques, réponses types et voix wolof, tout sourcé"),
     "data": ("data/", "Les données", "Sols, météo, cultures, prix, images : chaque fichier avec sa source"),

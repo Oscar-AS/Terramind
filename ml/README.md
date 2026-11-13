@@ -1,61 +1,91 @@
 <p align="center"><img src="../docs/assets/readme/ml.svg" alt="ml/ : l'intelligence artificielle de diagnostic" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/tâche-classification%20d'images-1f4d3a" alt="Classification d'images">
-  <img src="https://img.shields.io/badge/base-35%20448%20images-3f8f5f" alt="35 448 images">
-  <img src="https://img.shields.io/badge/état-données%20prêtes,%20entraînement%20à%20venir-d08a2e" alt="Données prêtes, entraînement à venir">
+  <img src="https://img.shields.io/badge/modèle-MobileNetV3%20v1-1f4d3a" alt="MobileNetV3 v1">
+  <img src="https://img.shields.io/badge/terrain%20TOM2024-91,7%20%25-3f8f5f" alt="91,7 % sur TOM2024">
+  <img src="https://img.shields.io/badge/PlantDoc-56,9%20%25-d08a2e" alt="56,9 % sur PlantDoc">
 </p>
 
 ## En une phrase
 
-Ce dossier contient le modèle qui regarde **la photo d'une feuille** et dit quelle maladie ou quel ravageur est probable, avec un niveau de confiance. Sous un seuil, il répond honnêtement « incertain » et le bot oriente vers un agent agricole.
+Le modèle regarde **la photo d'une feuille** et donne les maladies ou ravageurs les plus probables, avec une confiance **calibrée**. Sous le seuil, il répond honnêtement « je ne suis pas sûr ».
 
-## Du champ à la réponse
+## De la photo à la réponse
 
 ```mermaid
 flowchart LR
-    P["📷 Photo envoyée<br/>sur WhatsApp"] --> M["Modèle de diagnostic<br/>(classification d'images)"]
-    M --> C{"Confiance<br/>≥ seuil ?"}
-    C -->|oui| R["Maladie probable<br/>+ fiche de prévention"]
-    C -->|non| I["« Incertain »<br/>+ orientation vers un agent"]
+    P["Photo d'une feuille"] --> PR["Redimensionnée<br/>224 x 224"]
+    PR --> M["MobileNetV3-Large<br/>ONNX, 16 Mo"]
+    M --> T["Calibration<br/>température 0,81"]
+    T --> C{"Confiance<br/>au moins 0,6 ?"}
+    C -->|oui| R["Maladie probable<br/>+ prévention de la fiche"]
+    C -->|non| I["« Je ne suis pas sûr »<br/>+ agent agricole"]
 ```
 
-## Les images d'entraînement
+## Les résultats, honnêtement
 
-| Source | Contenu | Licence | Rôle |
+Chaque test porte sur des photos **jamais vues** à l'entraînement :
+
+| Jeu de test | Images | v0 | **v1 (déployée)** |
 |---|---|---|---|
-| **TOM2024** (Burkina Faso) | Photos de terrain : tomate, oignon, maïs | CC BY 4.0 | Base principale (conditions réelles) |
-| **CCMT** (Ghana) | Cajou, manioc, maïs, tomate ; 24 071 images après nettoyage | CC BY 4.0 | Base principale |
-| **PlantVillage** | 22 787 photos de laboratoire : tomate, pomme de terre, poivron | CC BY-SA 3.0 | Complément (fond uni) |
-| **PlantDoc** | 1 100 photos de terrain : tomate, pomme de terre, poivron | CC BY 4.0 | Test en conditions réelles |
-| **Chou** (Ghana, Mendeley Data 2025) | 203 images d'origine : alternariose, pourriture noire, mildiou, sain (versions augmentées écartées) | CC BY 4.0 | Première base pour le chou |
+| **TOM2024** : photos de terrain, Burkina Faso | 1 058 | — | **91,7 %** |
+| **PlantDoc** : photos du web, très variées | 102 | 54,9 % | 56,9 % |
+| Validation de terrain (sert à choisir le modèle) | 1 291 | — | 84,2 % |
 
-La base fusionnée **terramind_v1** (TOM2024 + CCMT) fait **35 448 images, 5 cultures, 40 classes**, après retrait des images illisibles, des doublons et des images à étiquettes contradictoires. Elle est construite par `ml/training/build_merged_dataset.py`, sur la branche `ml/dataset-merge` d'Oscar, pas encore fusionnée.
+Au **seuil de 0,6** : sur TOM2024, 93 % des photos sont jugées « sûres », dont 94 % de réponses justes. Sur PlantDoc, 60 % sont jugées sûres, dont 72 % justes.
+
+- **Ce qui marche bien** : l'oignon (sain 99 %, chenilles 100 %, fusariose 95 %) et la virose de la tomate (90 %).
+- **Ce qui marche mal** : le mildiou de la tomate (50 %, seulement 74 images d'entraînement), les acariens (71 %), et les photos de type PlantDoc.
+
+Le seuil a été choisi après avoir vu les tests, ce qui rend ces derniers chiffres un peu optimistes ([diagnostic_v1.md](eval/diagnostic_v1.md)).
+
+> **Analogie Kuroko no Basket** : un joueur qui ne s'entraîne qu'en salle vide brille à l'entraînement et se perd en match. C'est PlantVillage : 99,8 % sur ses photos de laboratoire en v0, mais 54,9 % au champ. La v1 s'est donc entraînée « en match », avec les photos de terrain de TOM2024, et elle est évaluée sur des photos de terrain.
+
+## Les images d'entraînement (v1)
 
 ```mermaid
-pie title Exclusions avant entraînement (1 854 images)
-    "Doublons exacts (copies)" : 936
-    "Doublons à étiquettes différentes" : 515
-    "Classes de moins de 50 images" : 167
-    "Images trop petites (< 64 px)" : 142
-    "Images illisibles" : 94
+pie title Images d'entraînement v1 (14 074)
+    "TOM2024 · tomate et oignon, terrain" : 4968
+    "PlantVillage · laboratoire, plafonné" : 8325
+    "PlantDoc · web" : 781
 ```
 
-## Ce qui est connu comme limite
-
-- **Chou : peu d'images** (203, dont 28 de mildiou et 37 de pourriture noire), **aucune de la teigne**. L'oignon n'est présent que dans TOM2024.
-- **La mineuse de la tomate** (*Tuta absoluta*) a trop peu d'images (17) : le diagnostic ne la reconnaîtra pas encore. Elle est couverte par les **alertes météo** du module Prévention ([D11](../docs/decisions.md)).
-- Les photos de laboratoire (PlantVillage) ont un fond uni : un modèle entraîné seulement dessus se trompe au champ. D'où le test sur PlantDoc et les photos de terrain.
-
-## Structure
-
-| Dossier | Contenu | État |
+| Source | Contenu | Licence |
 |---|---|---|
-| [`notebooks/`](notebooks/) | Explorations | 📅 |
-| [`training/`](training/) | Construction de la base, entraînement | 🚧 branche `ml/dataset-merge` |
-| [`eval/`](eval/) | Évaluation par classe, seuil « incertain » | 📅 |
-| [`MODEL_CARD.md`](MODEL_CARD.md) | Fiche du modèle : données, méthode, métriques, limites | 📅 version finale le 17 nov |
+| **TOM2024** (Burkina Faso, Hugging Face `Project-AgML/TOM2024_disease_classification`) | Tomate et oignon, photos de terrain ; classes d'au moins 50 images | CC BY 4.0 |
+| **PlantVillage** | Tomate, pomme de terre, poivron ; laboratoire, 600 images par classe au plus | CC BY-SA 3.0 |
+| **PlantDoc** | Tomate, pomme de terre, poivron ; photos du web | CC BY 4.0 |
+
+Étiquettes : vocabulaire commun de `data/label_mapping.csv`, défini par Oscar sur la branche `ml/dataset-merge` (base terramind_v1 : TOM2024 + CCMT, 35 448 images). Le modèle compte 26 classes, dont 5 pour l'oignon.
+
+## Ce qu'il contient
+
+| Fichier | Rôle |
+|---|---|
+| [`training/entrainer_diagnostic_v1.py`](training/entrainer_diagnostic_v1.py) | Entraînement v1 : données, découpage reproductible, calibration, export ONNX, métriques |
+| [`training/entrainer_diagnostic.py`](training/entrainer_diagnostic.py) | Entraînement v0 (référence) |
+| [`training/exporter_onnx.py`](training/exporter_onnx.py) | Export ONNX de la v0, avec contrôle de l'écart avec PyTorch |
+| [`eval/diagnostic_v1.md`](eval/diagnostic_v1.md) | Résultats v1 commentés, choix du seuil et limites |
+| [`eval/diagnostic_v1_mobilenet_v3_large.json`](eval/diagnostic_v1_mobilenet_v3_large.json) | Toutes les métriques : par classe, par seuil |
+| [`eval/diagnostic_v0.md`](eval/diagnostic_v0.md) | Résultats de la v0 |
+| [`MODEL_CARD.md`](MODEL_CARD.md) | Fiche du modèle (en cours) |
+
+## Reproduire
+
+```bash
+# images : scripts/donnees/telecharger_images.py (PlantVillage, PlantDoc) ;
+# TOM2024 : raw/train-00000-of-00001.parquet du jeu Hugging Face, dans data/raw/images/tom2024/
+.venv/bin/python ml/training/entrainer_diagnostic_v1.py --arch mobilenet_v3_large --epoques 10
+```
+
+Environ 30 minutes sur un Mac M (accélération MPS). Le modèle est écrit dans `modeles/diagnostic_v1_mobilenet_v3_large/`, hors Git, puis copié dans `modeles/diagnostic/` pour le moteur. Le script lit les étiquettes depuis la branche `origin/ml/dataset-merge`.
+
+## Limites et suite
+
+- Pas de photos des Niayes : aucun test local pour l'instant (photos consenties à collecter).
+- Chou absent du modèle ; mineuse de la tomate trop rare dans TOM2024 (19 images), donc couverte par les **alertes météo**.
+- À venir : ajouter CCMT (Ghana) pour la tomate, et comparer avec ConvNeXt-Tiny.
 
 ## Responsable
 
-**Oscar**. Voir [docs/TACHES.md](../docs/TACHES.md).
+**Oscar**. Le modèle v1 est proposé à sa revue.
