@@ -1,5 +1,7 @@
-# Seul engine/ entre dans l'image : tout le reste (données, modèles, secrets) en est exclu.
+# Seuls engine/ et le modèle de diagnostic entrent dans l'image : tout le reste (données, modèles, secrets) en est exclu.
 *
 !engine/
+!modeles/diagnostic/terramind_diag_v0.onnx
+!modeles/diagnostic/etiquettes.json
 engine/tests/
 **/__pycache__

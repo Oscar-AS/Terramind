@@ -1,0 +1,75 @@
+{
+  "modele": "mobilenet_v3_large (ImageNet) affiné",
+  "donnees": {
+    "entrainement": 15754,
+    "validation_labo": 2599,
+    "test_terrain_plantdoc": 102
+  },
+  "classes": [
+    "pepper/bacterial_spot",
+    "pepper/healthy",
+    "potato/alternaria",
+    "potato/healthy",
+    "potato/late_blight",
+    "tomato/alternaria",
+    "tomato/bacterial_spot",
+    "tomato/healthy",
+    "tomato/late_blight",
+    "tomato/leaf_curl",
+    "tomato/leaf_mold",
+    "tomato/mites",
+    "tomato/mosaic_virus",
+    "tomato/septoria_leaf_spot",
+    "tomato/target_spot"
+  ],
+  "precision_validation_labo": 0.9985,
+  "precision_test_terrain": 0.549,
+  "test_terrain_par_classe": {
+    "pepper/bacterial_spot": 0.667,
+    "pepper/healthy": 0.625,
+    "potato/alternaria": 0.5,
+    "potato/late_blight": 0.5,
+    "tomato/alternaria": 0.556,
+    "tomato/bacterial_spot": 0.111,
+    "tomato/healthy": 0.25,
+    "tomato/late_blight": 0.5,
+    "tomato/leaf_curl": 0.833,
+    "tomato/leaf_mold": 0.5,
+    "tomato/mosaic_virus": 0.7,
+    "tomato/septoria_leaf_spot": 0.818
+  },
+  "historique": [
+    {
+      "epoque": 1,
+      "validation_labo": 0.917660638707195,
+      "test_terrain": 0.4019607843137255
+    },
+    {
+      "epoque": 2,
+      "validation_labo": 0.9692189303578299,
+      "test_terrain": 0.4019607843137255
+    },
+    {
+      "epoque": 3,
+      "validation_labo": 0.9884570988841862,
+      "test_terrain": 0.4117647058823529
+    },
+    {
+      "epoque": 4,
+      "validation_labo": 0.9892266256252404,
+      "test_terrain": 0.5490196078431373
+    },
+    {
+      "epoque": 5,
+      "validation_labo": 0.9984609465178915,
+      "test_terrain": 0.5490196078431373
+    },
+    {
+      "epoque": 6,
+      "validation_labo": 0.9984609465178915,
+      "test_terrain": 0.5980392156862745
+    }
+  ],
+  "graine": 2026,
+  "epoques": 6
+}
