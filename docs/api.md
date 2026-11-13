@@ -16,7 +16,7 @@ Le moteur est le seul endroit où vit la logique agricole. WhatsApp, l'appli web
 | Champ | Type | Obligatoire | Description |
 |---|---|---|---|
 | `utilisateur` | texte | oui | Identifiant **pseudonymisé** : empreinte SHA-256 du numéro, calculée par la façade. Jamais le numéro en clair |
-| `canal` | `whatsapp` \| `pwa` \| `dashboard` | oui | Façade d'origine |
+| `canal` | `whatsapp` \| `telegram` \| `mobile` \| `pwa` \| `dashboard` | oui | Façade d'origine |
 | `langue` | `fr` \| `wo` | oui | Langue de la réponse attendue |
 
 ### Réponses : une enveloppe identique pour tous les points d'entrée
@@ -189,14 +189,27 @@ Le moteur est le seul endroit où vit la logique agricole. WhatsApp, l'appli web
 |---|---|---|
 | `GET /sante` | Le service répond | ✅ fait (J1) |
 | `GET /webhook/whatsapp` | Vérification de l'adresse par Meta | ✅ fait (J1) |
-| `POST /webhook/whatsapp` | Messages WhatsApp entrants. Signature `X-Hub-Signature-256` obligatoire ; sans secret configuré, refus (503) | ✅ fait (J1), écho de démonstration |
+| `POST /webhook/whatsapp` | Messages WhatsApp entrants. Signature `X-Hub-Signature-256` obligatoire ; sans secret configuré, refus (503) | ✅ fait (J1), écho de démonstration ; en extension (D12) |
+| `POST /webhook/telegram` | Messages du bot Telegram. En-tête `X-Telegram-Bot-Api-Secret-Token` obligatoire ; sans jeton ni secret configurés, refus (503) | ✅ fait (13 nov) |
+
+### État des points d'entrée métier (13 nov 2026)
+
+| Point d'entrée | État |
+|---|---|
+| `POST /v1/plan` | ✅ réel : sol iSDAsoil lu au point (15 à 30 s la première fois, puis en cache), 6 cultures, règles du guide ISRA 1987 |
+| `POST /v1/alert` | ✅ réel : NASA POWER (la semaine analysée s'arrête 3 jours avant la date, délai de publication de NASA) |
+| `POST /v1/diagnose` | ✅ modèle v0 (tomate, pomme de terre, poivron) ; voir `ml/eval/diagnostic_v0.json` |
+| `POST /v1/chat` | ⏳ répond toujours `je_ne_sais_pas` : `content/fiches/` est vide et aucun modèle de langage n'est configuré |
+| `POST /v1/feedback` | ⏳ accepté et journalisé, pas encore enregistré (`enregistre: false`, base de données non configurée) |
+| Langue `wo` | ⏳ le moteur répond en français et l'indique (`langue: "fr"`, `audio_url: null`) |
 
 ## 8. Erreurs
 
 | Code HTTP | Quand | `statut` |
 |---|---|---|
 | 200 | Réponse rendue, y compris `incertain`, `je_ne_sais_pas` et `culture_requise` | voir ci-dessus |
-| 400 | Requête mal formée (champ manquant, langue inconnue) | `erreur` + `message.texte` explicite |
+| 400 | Requête mal formée, ou photo illisible | `erreur` + `message.texte` explicite |
+| 422 | Champ manquant ou valeur hors liste (validation automatique de FastAPI, corps d'erreur standard) | — |
 | 401 / 403 | Signature ou jeton invalides (webhook) | — |
 | 413 | Photo ou audio trop lourds | `erreur` |
 | 503 | Dépendance indisponible (météo, modèle, secret non configuré). La façade répond par la réponse type « service momentanément indisponible » | `erreur` |
@@ -217,3 +230,4 @@ Le moteur est le seul endroit où vit la logique agricole. WhatsApp, l'appli web
 | Version | Date | Changement | Validé par |
 |---|---|---|---|
 | 0.1 | 5 nov 2026 | Première proposition | Salam ; **Oscar : à valider** |
+- **v0.2 (13 nov 2026)** : canaux `telegram` et `mobile` (D12), webhook Telegram, code 422, état réel des points d'entrée.
