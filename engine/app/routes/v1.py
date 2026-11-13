@@ -1,0 +1,154 @@
+"""Points d'entrée métier /v1 (contrat : docs/api.md, v0.1).
+
+Toutes les réponses suivent l'enveloppe commune. Langue : le wolof écrit et la voix ne sont
+pas encore branchés (D9, D10) ; une demande en wolof reçoit donc le texte français, et
+l'enveloppe le dit honnêtement (`langue: "fr"`, `audio_url: null`).
+"""
+
+from __future__ import annotations
+
+import datetime as dt
+import logging
+from typing import Literal, Optional
+
+from fastapi import APIRouter, File, Form, UploadFile
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
+
+from ..modules import meteo
+from ..modules.planification import sol as sol_module
+from ..modules.planification.cultures import CULTURES
+from ..modules.planification.plan import planifier
+from ..modules.prevention.alerte import SOURCE_SEUILS, calculer
+
+journal = logging.getLogger("terramind.v1")
+router = APIRouter(prefix="/v1")
+VERSION = "0.1"
+PHOTO_MAX = 8 * 1024 * 1024
+Langue = Literal["fr", "wo"]
+Canal = Literal["whatsapp", "telegram", "pwa", "mobile", "dashboard"]
+OuiNon = Literal["oui", "non", "ne_sait_pas"]
+
+AGENT = ("Pour être sûr, montre ta plante à un agent agricole (ANCAR, service départemental "
+         "de l'agriculture).")
+
+
+def enveloppe(statut: str, texte: str, donnees: dict, sources: list | None = None, code: int = 200):
+    return JSONResponse(status_code=code, content={
+        "version": VERSION, "mock": False, "statut": statut, "langue": "fr",
+        "message": {"texte": texte, "texte_fr": texte, "audio_url": None, "reponse_type": None},
+        "sources": sources or [], "donnees": donnees,
+    })
+
+
+def indisponible(e: Exception):
+    journal.warning("dépendance indisponible : %s", e)
+    return enveloppe("erreur", "Le service est momentanément indisponible. Réessaie dans quelques minutes.",
+                     {}, code=503)
+
+
+class Commun(BaseModel):
+    utilisateur: str = Field(min_length=1, max_length=128)
+    canal: Canal
+    langue: Langue
+
+
+class DemandePlan(Commun):
+    lat: float = Field(ge=-90, le=90)
+    lon: float = Field(ge=-180, le=180)
+    date: Optional[dt.date] = None
+    eau_puits_salee: OuiNon = "ne_sait_pas"
+    champ_en_bas_fond: OuiNon = "ne_sait_pas"
+
+
+class DemandeAlerte(Commun):
+    lat: float = Field(ge=-90, le=90)
+    lon: float = Field(ge=-180, le=180)
+    culture: Optional[str] = None
+    date_repiquage: Optional[dt.date] = None
+    date: Optional[dt.date] = None
+
+
+class DemandeChat(Commun):
+    texte: str = Field(min_length=1, max_length=2000)
+
+
+class Retour(Commun):
+    alerte_id: str = Field(min_length=1, max_length=200)
+    vu: OuiNon
+
+
+@router.post("/plan")
+def plan(d: DemandePlan):
+    date = d.date or dt.date.today()
+    try:
+        donnees, sources = planifier(d.lat, d.lon, date, d.eau_puits_salee, d.champ_en_bas_fond)
+    except sol_module.SolIndisponible as e:
+        return indisponible(e)
+    conseillees = [c["libelle"] for c in donnees["cultures"] if c["adaptation"] == "conseillee"]
+    texte = (f"Ce mois-ci, tu peux planter : {', '.join(conseillees)}."
+             if conseillees else "Aucune culture de la liste n'est conseillée ce mois-ci. " + AGENT)
+    journal.info("plan : %s cultures conseillées", len(conseillees))
+    return enveloppe("ok", texte, donnees, sources)
+
+
+@router.post("/alert")
+def alerte(d: DemandeAlerte):
+    if not d.culture:
+        return enveloppe("culture_requise", "Dis-moi d'abord ce que tu as planté.", {})
+    if d.culture not in CULTURES:
+        return enveloppe("erreur", "Cette culture n'est pas encore prise en charge.", {}, code=400)
+    try:
+        donnees = calculer(round(d.lat, 2), round(d.lon, 2), d.culture, d.date or dt.date.today(),
+                           d.date_repiquage)
+    except meteo.MeteoIndisponible as e:
+        return indisponible(e)
+    actives = [a["conseil"] for a in donnees["alertes"] if a["niveau"] != "aucun"]
+    texte = " ".join(actives) if actives else "Pas d'alerte cette semaine pour ta culture."
+    return enveloppe("ok", texte, donnees, [SOURCE_SEUILS,
+                     {"document": "NASA POWER", "page": "météo au point du champ"}])
+
+
+@router.post("/diagnose")
+async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(None),
+                   utilisateur: str = Form(...), canal: Canal = Form(...), langue: Langue = Form(...)):
+    from ..modules.diagnostic import modele  # numpy/onnxruntime chargés seulement ici
+
+    contenu = await photo.read()
+    if len(contenu) > PHOTO_MAX:
+        return enveloppe("erreur", "La photo est trop lourde.", {}, code=413)
+    try:
+        r = modele.diagnostiquer(contenu, culture)
+    except modele.ModeleAbsent as e:
+        return indisponible(e)
+    except Exception as e:  # image illisible
+        journal.info("photo illisible : %s", e)
+        return enveloppe("erreur", "Je n'arrive pas à lire cette photo. Reprends-la, bien nette.", {}, code=400)
+    certain = r.pop("certain")
+    top = r["predictions"][0]
+    source = [{"document": "Modèle TerraMind v0 (PlantVillage CC BY-SA 3.0, PlantDoc CC BY 4.0)",
+               "page": "ml/eval/diagnostic_v0.json"}]
+    if not certain:
+        return enveloppe("incertain", "Je ne suis pas sûr de ce que je vois. Reprends la photo d'une seule "
+                         "feuille, de près, à la lumière du jour. " + AGENT, r, source)
+    if top["categorie"] == "sain":
+        texte = "Cette feuille semble saine."
+    else:
+        texte = (f"Cela ressemble à : {top['libelle']}. Ce n'est qu'une première indication, "
+                 "pas un diagnostic sûr. " + AGENT)
+    return enveloppe("ok", texte, r, source)
+
+
+@router.post("/chat")
+def chat(d: DemandeChat):
+    # D8 : réponse uniquement à partir des fiches validées. content/fiches/ est encore vide et
+    # aucun modèle de langage n'est configuré : réponse honnête « je ne sais pas ».
+    return enveloppe("je_ne_sais_pas", "Je ne peux pas encore répondre à cette question. " + AGENT,
+                     {"transcription": None, "passages": []})
+
+
+@router.post("/feedback")
+def feedback(d: Retour):
+    # Pas encore de base de données (Supabase non configuré) : le retour est seulement journalisé.
+    journal.info("retour : alerte=%s vu=%s canal=%s", d.alerte_id.split("-")[-3:-2], d.vu, d.canal)
+    return enveloppe("ok", "Merci, c'est noté.", {"enregistre": False})
