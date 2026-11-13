@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import {
-  CameraPlus, FirstAidKit, FrameCorners, type Icon, Leaf, Question, SealCheck, ShieldCheck, Sun, Warning,
+  CameraPlus, FirstAidKit, FrameCorners, type Icon, Info, Leaf, Question, SealCheck, ShieldCheck, Sun, Warning,
 } from 'phosphor-react-native';
 import { useEffect, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
@@ -132,7 +132,24 @@ export default function Resultat() {
             </>
           ) : (
             <>
-              {/* 2b. Reconnu : confiance, puis ce qu'il faut faire. */}
+              {/* 2b. Reconnu : ce que c'est en mots simples, la confiance, puis ce qu'il faut faire. */}
+              {!sain ? (
+                <Apparition ordre={1}>
+                  <Carte>
+                    <View style={styles.conseilsTete}>
+                      <Pastille Icone={Info} taille={40} />
+                      <T v="sousTitre" style={{ flex: 1 }}>C’est quoi ?</T>
+                    </View>
+                    {reponse.donnees.explication ? (
+                      reponse.donnees.explication.texte.split('\n').map((l) => (
+                        <T key={l} v="corps" style={{ fontSize: 17 }}>{l.replace(/^-\s*/, '')}</T>
+                      ))
+                    ) : (
+                      <T v="corps" style={{ fontSize: 17 }}>Je n’ai pas encore d’explication simple sur ce problème. Montre ta plante à un agent agricole.</T>
+                    )}
+                  </Carte>
+                </Apparition>
+              ) : null}
               {!sain ? (
                 <Apparition ordre={1}>
                   <Carte>

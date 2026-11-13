@@ -100,3 +100,12 @@ class Routes(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_explication_simple_des_maladies():
+    from engine.app.routes.v1 import FICHES_ETIQUETTES, explication_fiche
+
+    for etiquette in list(FICHES_ETIQUETTES) + ["helicoverpa_armigera", "mites"]:
+        e = explication_fiche(etiquette)
+        assert e and e["texte"] and e["sources"], etiquette
+    assert explication_fiche("fusarium") is None  # pas encore de fiche : rien d'inventé

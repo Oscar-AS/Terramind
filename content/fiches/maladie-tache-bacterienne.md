@@ -9,6 +9,10 @@ statut: brouillon à relire par Rama
 
 Bactéries *Xanthomonas*. On l'appelle aussi « galle bactérienne » ou « bacterial spot ».
 
+## En bref
+- C'est une bactérie. Elle fait de petites taches mouillées qui noircissent, puis les feuilles jaunissent et sèchent vite. [G87 p. 140]
+- On la voit surtout en hivernage. [G87 p. 140]
+
 ## Comment la reconnaître
 - De petites taches d'aspect mouillé sur les feuilles, qui noircissent. [G87 p. 140 ; p. 130 pour le poivron]
 - Puis les feuilles jaunissent et sèchent vite. [G87 p. 140]

@@ -131,9 +131,11 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
     if not certain:
         return enveloppe("incertain", "Je ne suis pas sûr de ce que je vois. Reprends la photo d'une seule "
                          "feuille, de près, à la lumière du jour. " + AGENT, r, source)
+    r["explication"] = explication_fiche(top["etiquette"])
     r["conseils"] = conseils_fiche(top["etiquette"])
-    if r["conseils"]:
-        source += r["conseils"]["sources"]
+    for partie in (r["explication"], r["conseils"]):
+        if partie:
+            source += [s for s in partie["sources"] if s not in source]
     if top["categorie"] == "sain":
         texte = "Cette feuille semble saine."
     else:
@@ -148,6 +150,26 @@ FICHES_ETIQUETTES = {
     "bacterial_spot": "maladie-tache-bacterienne", "leaf_curl": "maladie-viroses-tomate",
     "mosaic_virus": "maladie-viroses-tomate", "virosis": "maladie-viroses-tomate",
 }
+
+
+# Explication simple (« C'est quoi ? ») : section « En bref » de la fiche, ou section dédiée
+# d'une fiche qui regroupe plusieurs ravageurs.
+EXPLICATIONS_SECTIONS = {
+    "helicoverpa_armigera": ("ravageurs-autres", "Noctuelle de la tomate (ver du fruit)"),
+    "mites": ("ravageurs-autres", "Acariose bronzée de la tomate"),
+}
+
+
+def explication_fiche(etiquette: str) -> Optional[dict]:
+    from ..modules.rag import fiches
+
+    nom, section = EXPLICATIONS_SECTIONS.get(etiquette) or (FICHES_ETIQUETTES.get(etiquette), "En bref")
+    if not nom:
+        return None
+    ps = [p for p in fiches.passages() if p.fiche == nom and p.section == section]
+    if not ps:
+        return None
+    return {"fiche": nom, "texte": ps[0].texte, "sources": fiches.sources_de(ps)}
 
 
 def conseils_fiche(etiquette: str) -> Optional[dict]:

@@ -39,6 +39,7 @@ export type Prediction = { culture: string; etiquette: string; categorie: string
 export type Diagnostic = {
   predictions: Prediction[];
   seuil_incertain: number;
+  explication?: { fiche: string; texte: string } | null;
   conseils?: { fiche: string; titre: string; texte: string } | null;
 };
 

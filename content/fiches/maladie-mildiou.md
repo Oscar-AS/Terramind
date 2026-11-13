@@ -9,6 +9,10 @@ statut: brouillon à relire par Rama
 
 Organisme *Phytophthora infestans*. On l'appelle aussi « late blight ».
 
+## En bref
+- Cette maladie fait des taches huileuses qui brunissent, et le feuillage sèche très vite. [EPH]
+- Elle profite d'une humidité très forte qui dure plusieurs heures ; elle se développe peu vers 27 à 28 °C. [SEU]
+
 ## Comment le reconnaître
 - Des taches d'aspect huileux qui brunissent. [EPH]
 - Parfois un duvet blanc sous la feuille. [EPH]

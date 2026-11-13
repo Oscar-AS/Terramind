@@ -9,6 +9,10 @@ statut: brouillon à relire par Rama
 
 Champignon *Alternaria solani*. On l'appelle aussi « early blight ».
 
+## En bref
+- C'est un champignon. Il fait sur les feuilles des taches brunes avec des cercles, comme une cible. [G87 p. 134 et 140]
+- Ensuite les feuilles jaunissent, brunissent et sèchent. [G87 p. 134 et 140]
+
 ## Comment la reconnaître
 - Sur les feuilles : des taches brunes arrondies, avec des cercles concentriques, comme une cible. [G87 p. 134 et 140]
 - Les taches sont souvent entourées d'un halo jaune. [RAD p. 7-8]
