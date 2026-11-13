@@ -1,0 +1,63 @@
+"""Règles du module Prévention (D11), reprises de scripts/donnees/tester_modeles_prevention.py.
+
+Seuils et sources : docs/sources/seuils-meteo-maladies-ravageurs.md.
+- Mildiou, Hutton plafonné : 2 jours de suite avec Tmin ≥ 10 °C et ≥ 6 h à humidité ≥ 90 %,
+  une heure humide ne comptant que si T ≤ 26,6 °C (borne haute de Wallin).
+- Alternariose, TOMCAST : note quotidienne 0 à 4 (tableau UC IPM), alerte à partir de 15 points
+  cumulés (Madden et al. 1978 ; fourchette 15-20).
+- Mineuse de la tomate : seuil 8 °C, 440 degrés-jours par génération.
+- Teigne du chou : seuil 7,3 °C, 290 degrés-jours par génération.
+Aucune de ces règles n'est validée au Sénégal : on parle de « conditions favorables » et de
+« surveiller », jamais de maladie déclarée.
+"""
+
+from __future__ import annotations
+
+import datetime as dt
+
+PLAFOND_MILDIOU = 26.6
+TOMCAST = [((13, 18), (7, 16, 21, None)), ((18, 21), (4, 9, 16, 23)),
+           ((21, 26), (3, 6, 13, 21)), ((26, 30), (4, 9, 16, 23))]
+SEUIL_TOMCAST = 15
+RAVAGEURS = {  # risque : (culture, seuil °C, degrés-jours par génération)
+    "tuta_absoluta": ("tomato", 8.0, 440),
+    "plutella_xylostella": ("cabbage", 7.3, 290),
+}
+GENERATION_SURVEILLER = 3  # « surveiller » à partir de la 3e génération depuis le repiquage
+
+
+def note_tomcast(heures_humides: int, t_moy: float) -> int:
+    for (bas, haut), seuils in TOMCAST:
+        if bas <= t_moy < haut:
+            return sum(1 for s in seuils if s is not None and heures_humides >= s)
+    return 0
+
+
+def resume_jours(horaire: dict[dt.date, list[tuple[float, float]]]) -> list[dict]:
+    """Une ligne par jour complet (au moins 20 heures) avec ce qu'il faut pour les règles."""
+    jours = []
+    for jour in sorted(horaire):
+        heures = horaire[jour]
+        if len(heures) < 20:
+            continue
+        humides = [t for t, h in heures if h >= 90]
+        jours.append({
+            "date": jour,
+            "tmin": min(t for t, _ in heures),
+            "h90_frais": sum(1 for t in humides if t <= PLAFOND_MILDIOU),
+            "dsv": note_tomcast(len(humides), sum(humides) / len(humides)) if humides else 0,
+        })
+    return jours
+
+
+def jours_hutton(jours: list[dict]) -> list[dt.date]:
+    """Jours où le critère Hutton plafonné est rempli (avec la veille)."""
+    ok = lambda j: j["tmin"] >= 10 and j["h90_frais"] >= 6  # noqa: E731
+    return [b["date"] for a, b in zip(jours, jours[1:])
+            if ok(a) and ok(b) and (b["date"] - a["date"]).days == 1]
+
+
+def generations(journalier: dict[dt.date, tuple[float, float]], seuil: float, dd_generation: float) -> float:
+    """Générations bouclées depuis le premier jour de la série (méthode de la moyenne)."""
+    dd = sum(max(0.0, (tmin + tmax) / 2 - seuil) for tmin, tmax in journalier.values())
+    return dd / dd_generation
