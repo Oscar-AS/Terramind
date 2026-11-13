@@ -1,4 +1,5 @@
 cle,usage,voix,texte_fr,texte_wo,statut,relu_par
+choix_langue,"au démarrage, avant le choix de la langue (toujours envoyé)",humaine,"Bienvenue sur TerraMind. Pour que je te parle en wolof, touche le bouton Wolof.",,a_traduire,
 accueil,après le choix du wolof,humaine,"Bonjour, je suis TerraMind, ton assistant pour le maraîchage. Je peux te dire quoi planter selon ton sol, surveiller ta culture avec la météo, et examiner la photo d'une feuille malade. Pour commencer, touche le bouton qui envoie la position de ton champ. Je ne donne jamais de produit chimique : pour un traitement, je t'envoie vers un agent agricole.",,a_traduire,
 demande_position,position nécessaire,humaine,"Pour t'aider, j'ai besoin de connaître ton champ. Touche le bouton qui envoie la position de ton champ, de préférence quand tu es dans ton champ.",,a_traduire,
 position_recue,position reçue,humaine,"Merci, j'ai bien reçu la position de ton champ. Je regarde maintenant ton sol et la saison. Attends un petit moment.",,a_traduire,

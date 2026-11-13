@@ -1,7 +1,8 @@
-# Seuls engine/ et le modèle de diagnostic entrent dans l'image : tout le reste (données, modèles, secrets) en est exclu.
+# Seuls engine/, les fiches, les notes vocales wolof et le modèle de diagnostic entrent dans l'image : tout le reste (données, modèles, secrets) en est exclu.
 *
 !engine/
 !content/fiches/
+!content/audio/wo/
 !modeles/diagnostic/
 engine/tests/
 **/__pycache__

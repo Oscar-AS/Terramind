@@ -14,9 +14,11 @@ WORKDIR /home/user/app
 COPY --chown=user engine/requirements.txt engine/requirements.txt
 RUN pip install --no-cache-dir --user -r engine/requirements.txt
 COPY --chown=user engine/ engine/
-# Modèle de diagnostic v0 (ONNX + étiquettes), produit par ml/training/ ; hors Git.
 # Fiches du RAG (D8).
 COPY --chown=user content/fiches/ content/fiches/
+# Notes vocales wolof préparées à l'avance (D10) ; le dossier peut être vide au début.
+COPY --chown=user content/audio/wo/ content/audio/wo/
+# Modèle de diagnostic (ONNX + étiquettes + calibration), produit par ml/training/ ; hors Git.
 COPY --chown=user modeles/diagnostic/ modeles/diagnostic/
 
 CMD ["sh", "-c", "uvicorn engine.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

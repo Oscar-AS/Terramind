@@ -22,6 +22,8 @@ H = "humaine"
 S = "synthese"
 MESSAGES = [
     # --- Guide : voix humaine (accueil et messages sensibles) ---
+    ("choix_langue", "au démarrage, avant le choix de la langue (toujours envoyé)", H,
+     "Bienvenue sur TerraMind. Pour que je te parle en wolof, touche le bouton Wolof."),
     ("accueil", "après le choix du wolof", H,
      "Bonjour, je suis TerraMind, ton assistant pour le maraîchage. Je peux te dire quoi planter selon ton sol, "
      "surveiller ta culture avec la météo, et examiner la photo d'une feuille malade. Pour commencer, touche le "
