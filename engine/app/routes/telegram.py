@@ -123,6 +123,27 @@ def _photo(chat: int, file_id: str, culture: str | None):
     else:
         envoyer(chat, f"⚠️ Cela ressemble à : {top['libelle']} ({round(top['confiance'] * 100)} %).\n"
                       f"Ce n'est qu'une première indication, pas un diagnostic sûr. {AGENT}")
+        texte = texte_fiche(top["etiquette"], top.get("culture"))
+        envoyer(chat, texte or "Je n'ai pas encore de fiche sur ce problème. Montre ta plante à un agent agricole.")
+
+
+def texte_fiche(etiquette: str, culture: str | None) -> str | None:
+    """La fiche en 4 parties (ce que c'est, pourquoi, que faire, éviter), puis ses sources."""
+    from .v1 import PARTIES_FICHE, fiche_simple
+
+    fiche = fiche_simple(etiquette, culture)
+    if not fiche:
+        return None
+    emojis = {"ce_que_c_est": "🔎", "pourquoi": "💡", "que_faire": "🩹", "eviter": "🛡️"}
+    blocs, n = [], 0
+    for cle, titre in PARTIES_FICHE.items():
+        if fiche.get(cle):
+            n += 1
+            lignes = [l.lstrip("- ").strip() for l in fiche[cle].split("\n") if l.strip()]
+            blocs.append(f"{emojis[cle]} {n}. {titre}\n" + "\n".join(f"• {l}" for l in lignes))
+    documents = sorted({s["document"].split(",")[0] for s in fiche["sources"]})
+    blocs.append("📚 Sources : " + " ; ".join(documents))
+    return "\n\n".join(blocs)
 
 
 def traiter(maj: dict):

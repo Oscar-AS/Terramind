@@ -82,7 +82,14 @@ Le moteur est le seul endroit où vit la logique agricole. WhatsApp, l'appli web
     {"culture": "tomato", "etiquette": "alternaria", "categorie": "maladie", "libelle": "Alternariose", "confiance": 0.11}
   ],
   "seuil_incertain": 0.6,
-  "fiche": "tomate-mildiou",
+  "fiche": {
+    "fiche": "maladie-mildiou",
+    "titre": "Mildiou (tomate, pomme de terre)",
+    "ce_que_c_est": "- C'est une maladie causée par un champignon microscopique.\n- …",
+    "pourquoi": "- Le champignon se développe très vite quand l'air est très humide.\n- …",
+    "que_faire": "- Dès les premiers symptômes, enlever les parties atteintes et les brûler. …",
+    "eviter": "- Espacer les plants et arroser au pied, pas en pluie sur le feuillage. …"
+  },
   "questions_suivi": []
 }
 ```
@@ -91,6 +98,7 @@ Le moteur est le seul endroit où vit la logique agricole. WhatsApp, l'appli web
   - `predictions` : les 3 classes les plus probables ;
   - `etiquette` et `categorie` (`maladie`, `ravageur`, `sain`, `abiotique`, `mixte`) reprennent `data/label_mapping.csv` ;
   - `seuil_incertain` est fixé par Oscar après évaluation, et peut être plus strict pour les petites classes.
+- **`fiche`** : la fiche de `content/fiches/` en 4 parties, dans l'ordre où un malade se pose les questions : ce que c'est, pourquoi c'est arrivé, que faire maintenant, pour que ça ne revienne pas. Les lignes réservées à une autre culture que celle de la photo sont retirées. `null` si la maladie n'a pas encore de fiche (la façade le dit, sans rien inventer) ; les sources de la fiche s'ajoutent à `sources`.
 - **Sous le seuil :** `statut = incertain` avec la réponse type « je ne suis pas sûr, voici un agent agricole ». Aucune maladie n'est annoncée.
 - **Ravageurs que la photo ne reconnaît pas** (mineuse de la tomate, teigne du chou, D11 et stratégie § 1) : `questions_suivi` contient les questions oui/non du manuel de la DPV, que la façade pose ensuite à l'agriculteur.
 

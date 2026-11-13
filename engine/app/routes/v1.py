@@ -131,11 +131,9 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
     if not certain:
         return enveloppe("incertain", "Je ne suis pas sûr de ce que je vois. Reprends la photo d'une seule "
                          "feuille, de près, à la lumière du jour. " + AGENT, r, source)
-    r["explication"] = explication_fiche(top["etiquette"])
-    r["conseils"] = conseils_fiche(top["etiquette"])
-    for partie in (r["explication"], r["conseils"]):
-        if partie:
-            source += [s for s in partie["sources"] if s not in source]
+    r["fiche"] = fiche_simple(top["etiquette"], top.get("culture"))
+    if r["fiche"]:
+        source += [s for s in r["fiche"].pop("sources") if s not in source]
     if top["categorie"] == "sain":
         texte = "Cette feuille semble saine."
     else:
@@ -144,45 +142,57 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
     return enveloppe("ok", texte, r, source)
 
 
-# Étiquette du modèle → fiche de content/fiches/ dont on montre la prévention.
+# Étiquette du modèle → fiche de content/fiches/.
 FICHES_ETIQUETTES = {
     "alternaria": "maladie-alternariose", "late_blight": "maladie-mildiou", "leaf_mold": "maladie-cladosporiose",
     "bacterial_spot": "maladie-tache-bacterienne", "leaf_curl": "maladie-viroses-tomate",
     "mosaic_virus": "maladie-viroses-tomate", "virosis": "maladie-viroses-tomate",
+    "fusarium": "maladie-fusariose", "bacterial_wilt": "maladie-fletrissement-bacterien",
+    "helicoverpa_armigera": "ravageur-noctuelle-tomate", "caterpillars": "ravageur-chenilles-oignon",
+    "mites": "ravageur-acariose-tomate", "blossom_end_rot": "accident-necrose-apicale",
+    "sunburn": "accident-coup-de-soleil",
+}
+
+# Les 4 questions qu'on se pose quand on est malade, dans l'ordre (sections communes des fiches).
+PARTIES_FICHE = {
+    "ce_que_c_est": "Ce que c'est",
+    "pourquoi": "Pourquoi c'est arrivé",
+    "que_faire": "Que faire maintenant",
+    "eviter": "Pour que ça ne revienne pas",
 }
 
 
-# Explication simple (« C'est quoi ? ») : section « En bref » de la fiche, ou section dédiée
-# d'une fiche qui regroupe plusieurs ravageurs.
-EXPLICATIONS_SECTIONS = {
-    "helicoverpa_armigera": ("ravageurs-autres", "Noctuelle de la tomate (ver du fruit)"),
-    "mites": ("ravageurs-autres", "Acariose bronzée de la tomate"),
+# Débuts de ligne qui réservent une ligne de fiche à une culture (« Oignon : … », « Sur la tomate : … »).
+PREFIXES_CULTURE = {
+    "onion": ("oignon :", "sur l'oignon"), "tomato": ("tomate :", "sur la tomate"),
+    "potato": ("pomme de terre :", "sur la pomme de terre"), "pepper": ("poivron :", "pour le poivron"),
 }
 
 
-def explication_fiche(etiquette: str) -> Optional[dict]:
-    from ..modules.rag import fiches
-
-    nom, section = EXPLICATIONS_SECTIONS.get(etiquette) or (FICHES_ETIQUETTES.get(etiquette), "En bref")
-    if not nom:
-        return None
-    ps = [p for p in fiches.passages() if p.fiche == nom and p.section == section]
-    if not ps:
-        return None
-    return {"fiche": nom, "texte": ps[0].texte, "sources": fiches.sources_de(ps)}
+def garder_culture(texte: str, culture: Optional[str]) -> str:
+    """Retire les lignes réservées à une autre culture que celle de la photo."""
+    if culture not in PREFIXES_CULTURE:
+        return texte
+    autres = tuple(p for c, ps in PREFIXES_CULTURE.items() if c != culture for p in ps)
+    lignes = [l for l in texte.split("\n") if not l.lstrip("- ").lower().startswith(autres)]
+    return "\n".join(lignes)
 
 
-def conseils_fiche(etiquette: str) -> Optional[dict]:
+def fiche_simple(etiquette: str, culture: Optional[str] = None) -> Optional[dict]:
+    """Fiche d'une étiquette en 4 parties ; chaque partie vaut None si la fiche ne l'a pas."""
     from ..modules.rag import fiches
 
     nom = FICHES_ETIQUETTES.get(etiquette)
     if not nom:
         return None
-    ps = [p for p in fiches.passages() if p.fiche == nom]
-    choisis = [p for p in ps if p.section.lower().startswith(("prévention", "que faire"))]
-    if not choisis:
+    ps = {p.section: p for p in fiches.passages() if p.fiche == nom}
+    parties = {cle: ps.get(section) for cle, section in PARTIES_FICHE.items()}
+    trouves = [p for p in parties.values() if p]
+    if not trouves:
         return None
-    return {"fiche": nom, "titre": choisis[0].titre, "texte": choisis[0].texte, "sources": fiches.sources_de(choisis)}
+    resultat = {"fiche": nom, "titre": trouves[0].titre, "sources": fiches.sources_de(trouves)}
+    resultat.update({cle: (garder_culture(p.texte, culture).replace("*", "") if p else None) for cle, p in parties.items()})
+    return resultat
 
 
 @router.post("/chat")

@@ -6,6 +6,7 @@ Abréviations utilisées entre crochets dans chaque fiche.
 |---|---|
 | G87 | Beniest J. et al., *Guide pratique du maraîchage au Sénégal*, ISRA / FAO, CDH Cambérène, 1987. <https://open-library.cirad.fr/files/4/751__Guide_pratique_du_maraichage_au_Senegal.pdf> |
 | LIV | Ministère de l'Agriculture (PIESAN), *Bonnes pratiques de production d'oignon dans les Niayes*, 2022, français et wolof. <https://agriculture.gouv.sn/wp-content/uploads/2022/06/Livret-oignon-francais-wolof.pdf> |
+| POI | PADEN / ISRA-CDH, *Fiche technique de bonnes pratiques de production d'oignons dans la zone des Niayes au Sénégal*, 2015 (pages du PDF, non numérotées). <https://duddal.org/files/original/39a30d91086dcdf5d3705b8973c518d6be6d6356.pdf> |
 | PCH | PADEN, *Bonnes pratiques de production du chou pommé dans les Niayes*, mars 2016, français et wolof (archive Wayback). |
 | PPT | PADEN (A. Seck), *Fiche de production intensive de la pomme de terre*, janvier 2014 (archive Wayback). |
 | RAD | FAO / RADHORT / ISRA-CDH, *Techniques de production de semences de tomate au Sénégal*, 2012. <http://www.fao.org/3/az783f/az783f.pdf> |

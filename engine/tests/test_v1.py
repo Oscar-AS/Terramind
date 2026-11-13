@@ -102,10 +102,27 @@ if __name__ == "__main__":
     unittest.main()
 
 
-def test_explication_simple_des_maladies():
-    from engine.app.routes.v1 import FICHES_ETIQUETTES, explication_fiche
+def test_fiche_en_4_parties_pour_chaque_maladie():
+    from engine.app.routes.v1 import FICHES_ETIQUETTES, PARTIES_FICHE, fiche_simple
+    from engine.app.modules.rag import fiches
 
-    for etiquette in list(FICHES_ETIQUETTES) + ["helicoverpa_armigera", "mites"]:
-        e = explication_fiche(etiquette)
-        assert e and e["texte"] and e["sources"], etiquette
-    assert explication_fiche("fusarium") is None  # pas encore de fiche : rien d'inventé
+    for etiquette in FICHES_ETIQUETTES:
+        f = fiche_simple(etiquette)
+        assert f, etiquette
+        for cle in PARTIES_FICHE:
+            assert f[cle], f"{etiquette} : partie « {PARTIES_FICHE[cle]} » absente"
+        assert f["sources"], etiquette
+    # Pas encore de fiche : rien d'inventé.
+    assert fiche_simple("septoria_leaf_spot") is None
+    # Aucune fiche ne nomme de produit de traitement (TerraMind ne donne ni produit ni dose).
+    interdits = ("mancozèbe", "mancozeb", "cuivre", "deltaméthrine", "abamectine", "endosulfan", "bicarbonate")
+    for p in fiches.passages():
+        assert not any(m in p.texte.lower() for m in interdits), (p.fiche, p.section)
+
+
+def test_fiche_filtree_sur_la_culture_de_la_photo():
+    from engine.app.routes.v1 import fiche_simple
+
+    oignon = fiche_simple("fusarium", "onion")
+    assert "bulbe" in oignon["ce_que_c_est"] and "Sur la tomate" not in oignon["ce_que_c_est"]
+    assert "Tomate :" not in oignon["eviter"] and "Oignon :" in oignon["eviter"]

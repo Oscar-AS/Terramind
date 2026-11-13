@@ -39,8 +39,15 @@ export type Prediction = { culture: string; etiquette: string; categorie: string
 export type Diagnostic = {
   predictions: Prediction[];
   seuil_incertain: number;
-  explication?: { fiche: string; texte: string } | null;
-  conseils?: { fiche: string; titre: string; texte: string } | null;
+  /** Fiche en 4 parties : ce que c'est, pourquoi, que faire maintenant, pour que ça ne revienne pas. */
+  fiche?: {
+    fiche: string;
+    titre: string;
+    ce_que_c_est: string | null;
+    pourquoi: string | null;
+    que_faire: string | null;
+    eviter: string | null;
+  } | null;
 };
 
 export class ErreurReseau extends Error {}

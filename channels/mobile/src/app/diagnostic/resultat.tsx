@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import {
-  CameraPlus, FirstAidKit, FrameCorners, type Icon, Info, Leaf, Question, SealCheck, ShieldCheck, Sun, Warning,
+  CameraPlus, FirstAidKit, FrameCorners, type Icon, Info, Leaf, Lightbulb, Question, SealCheck, ShieldCheck, Sun, Warning,
 } from 'phosphor-react-native';
 import { useEffect, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
@@ -47,6 +47,28 @@ const CONSIGNES: { Icone: Icon; texte: string }[] = [
   { Icone: Sun, texte: 'À la lumière du jour, sans ombre' },
 ];
 
+/** Les 4 questions qu'on se pose quand on est malade, dans l'ordre. */
+const PARTIES: { cle: 'ce_que_c_est' | 'pourquoi' | 'que_faire' | 'eviter'; titre: string; Icone: Icon }[] = [
+  { cle: 'ce_que_c_est', titre: 'Ce que c’est', Icone: Info },
+  { cle: 'pourquoi', titre: 'Pourquoi c’est arrivé', Icone: Lightbulb },
+  { cle: 'que_faire', titre: 'Que faire maintenant', Icone: FirstAidKit },
+  { cle: 'eviter', titre: 'Pour que ça ne revienne pas', Icone: ShieldCheck },
+];
+
+function Partie({ numero, titre, Icone, texte }: { numero: number; titre: string; Icone: Icon; texte: string }) {
+  return (
+    <Carte>
+      <View style={styles.conseilsTete}>
+        <Pastille Icone={Icone} taille={40} />
+        <T v="sousTitre" style={{ flex: 1 }}>{numero}. {titre}</T>
+      </View>
+      {texte.split('\n').filter(Boolean).map((l) => (
+        <T key={l} v="corps" style={{ fontSize: 17 }}>{l.replace(/^-\s*/, '• ')}</T>
+      ))}
+    </Carte>
+  );
+}
+
 // Étape 5b : résultat. Le verdict d'abord, puis ce que l'agriculteur doit faire maintenant.
 export default function Resultat() {
   const { uri, type } = useLocalSearchParams<{ uri: string; type?: string }>();
@@ -84,6 +106,7 @@ export default function Resultat() {
   const incertain = reponse?.statut === 'incertain';
   const top = reponse?.donnees.predictions?.[0];
   const sain = top?.categorie === 'sain';
+  const fiche = reponse?.donnees.fiche;
   const etat = incertain
     ? { Icone: Question, sur: 'Je n’ai pas pu lire ta photo', titre: 'Reprends la photo', fond: couleurs.soleilClair, couleur: '#7A5A12' }
     : sain ? { Icone: SealCheck, sur: 'Bonne nouvelle', titre: top?.libelle ?? '', fond: couleurs.pousse, couleur: couleurs.foret }
@@ -132,24 +155,7 @@ export default function Resultat() {
             </>
           ) : (
             <>
-              {/* 2b. Reconnu : ce que c'est en mots simples, la confiance, puis ce qu'il faut faire. */}
-              {!sain ? (
-                <Apparition ordre={1}>
-                  <Carte>
-                    <View style={styles.conseilsTete}>
-                      <Pastille Icone={Info} taille={40} />
-                      <T v="sousTitre" style={{ flex: 1 }}>C’est quoi ?</T>
-                    </View>
-                    {reponse.donnees.explication ? (
-                      reponse.donnees.explication.texte.split('\n').map((l) => (
-                        <T key={l} v="corps" style={{ fontSize: 17 }}>{l.replace(/^-\s*/, '')}</T>
-                      ))
-                    ) : (
-                      <T v="corps" style={{ fontSize: 17 }}>Je n’ai pas encore d’explication simple sur ce problème. Montre ta plante à un agent agricole.</T>
-                    )}
-                  </Carte>
-                </Apparition>
-              ) : null}
+              {/* 2b. Reconnu : la confiance, puis les 4 questions (ce que c'est, pourquoi, que faire, éviter). */}
               {!sain ? (
                 <Apparition ordre={1}>
                   <Carte>
@@ -158,21 +164,20 @@ export default function Resultat() {
                   </Carte>
                 </Apparition>
               ) : <Apparition ordre={1}><T v="corps">{reponse.message.texte}</T></Apparition>}
-              {reponse.donnees.conseils ? (
+              {!sain && fiche ? PARTIES.filter((p) => fiche[p.cle]).map((p, i) => (
+                <Apparition key={p.cle} ordre={2 + i}>
+                  <Partie numero={i + 1} titre={p.titre} Icone={p.Icone} texte={fiche[p.cle] ?? ''} />
+                </Apparition>
+              )) : null}
+              {!sain && !fiche ? (
                 <Apparition ordre={2}>
                   <Carte>
-                    <View style={styles.conseilsTete}>
-                      <Pastille Icone={ShieldCheck} taille={40} />
-                      <T v="sousTitre" style={{ flex: 1 }}>Ce que tu peux faire</T>
-                    </View>
-                    {reponse.donnees.conseils.texte.split('\n').map((l) => (
-                      <T key={l} v="corps" style={{ fontSize: 17 }}>{l.replace(/^-\s*/, '• ')}</T>
-                    ))}
+                    <T v="corps" style={{ fontSize: 17 }}>Je n’ai pas encore de fiche sur ce problème. Montre ta plante à un agent agricole.</T>
                   </Carte>
                 </Apparition>
               ) : null}
               {!sain ? (
-                <Apparition ordre={3} style={styles.agent}>
+                <Apparition ordre={6} style={styles.agent}>
                   <FirstAidKit size={24} color={couleurs.terre} weight="duotone" />
                   <T v="petit" style={{ flex: 1 }}>Pour un traitement, montre ta plante à un agent agricole. TerraMind ne donne ni produit ni dose.</T>
                 </Apparition>

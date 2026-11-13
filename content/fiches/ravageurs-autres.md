@@ -1,20 +1,13 @@
 ---
 id: ravageurs-autres
-titre: Autres ravageurs (acariens, noctuelle, nématodes, thrips)
+titre: Autres ravageurs (nématodes, thrips)
 cultures: tomato, potato, onion, carrot, bitter_eggplant
 type: ravageur
 statut: brouillon à relire par Rama
 ---
 # Autres ravageurs cités par nos sources
 
-## Acariose bronzée de la tomate
-- Des acariens trop petits pour être vus à l'œil nu. [G87 p. 140]
-- Les feuilles jaunissent puis brunissent, les tiges brunissent. [G87 p. 140]
-- Sur la pomme de terre : le dessous des feuilles devient brillant ; les folioles durcissent, se recroquevillent vers le haut et brunissent. [G87 p. 134]
-- C'est un grand problème de la saison fraîche. [RAD]
-
-## Noctuelle de la tomate (ver du fruit)
-- *Helicoverpa armigera* : sa chenille attaque la tomate. [G87 p. 138 et 140]
+L'acariose bronzée et la noctuelle ont maintenant leur propre fiche.
 
 ## Nématodes à galles
 - Des petites boules (galles) sur les racines. [G87 p. 140-141]

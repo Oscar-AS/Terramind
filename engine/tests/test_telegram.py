@@ -50,3 +50,13 @@ class Telegram(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_fiche_telegram_en_4_parties():
+    from engine.app.routes.telegram import texte_fiche
+
+    t = texte_fiche("bacterial_wilt", "tomato")
+    for titre in ("1. Ce que c'est", "2. Pourquoi c'est arrivé", "3. Que faire maintenant", "4. Pour que ça ne revienne pas"):
+        assert titre in t
+    assert "Sources" in t
+    assert texte_fiche("target_spot", "tomato") is None
