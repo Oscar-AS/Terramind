@@ -24,7 +24,7 @@ Abréviations utilisées entre crochets dans chaque fiche.
 | FAOPI | FAO / CDH Cambérène (RADHORT, projet GCP/RAF/244/BEL), *La production et protection intégrées appliquée aux cultures maraîchères en Afrique soudano-sahélienne*, Dakar, 2012 ; tableaux de synthèse tomate p. 26-27. <https://openknowledge.fao.org/server/api/core/bitstreams/7d4cf9dc-0eb8-44e8-9b1a-44f875045245/content> |
 | EPHS | Blancard D., Ephytia (INRAE), *Tomate : septoriose*, pages « symptômes » (20872), « biologie » (20873) et « protection » (20874). <https://ephytia.inrae.fr/fr/C/20874> |
 | TROP | Blancard D., Ephytia Tropilég (INRAE), *Corynesporiose* : « fiche » générale (22967) et « tomate » (22970). <https://ephytia.inrae.fr/fr/C/22970> |
-| PPP | Jackson G., Pacific Pests, Pathogens & Weeds, fiche 163 « Tomato target spot », 2020. <https://apps.lucidcentral.org/ppp_v9/text/web_full/entities/tomato_target_spot_163.htm> |
+| PPP | Jackson G., Pacific Pests, Pathogens & Weeds, fiche 163 « Tomato target spot » (copyright 2020, date de publication non indiquée). <https://apps.lucidcentral.org/ppp_v9/text/web_full/entities/tomato_target_spot_163.htm> |
 | PWKE | Plantwise / CABI, *Factsheets for farmers : Septoria on tomato*, Kenya, 2012 (CC BY-SA 4.0). <https://factsheetadmin.plantwise.org/Uploads/PDFs/20137804217.pdf> |
 | CORN | Zitter T. A., *Septoria leaf spot of tomato*, Cornell Cooperative Extension, fiche 735.80, 1987. <https://hdl.handle.net/1813/43299> |
 | UKY | Spry C., *Tomato « blight » leaf diseases*, University of Kentucky, PPFS-VG-38, 2025. <https://plantpathology.mgcafe.uky.edu/files/PPFS-VG-38.pdf> |

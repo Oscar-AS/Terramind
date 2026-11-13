@@ -15,13 +15,14 @@ Champignon *Septoria lycopersici*. On l'appelle aussi « Septoria leaf spot ».
 
 ## Au Sénégal
 - La FAO et le CDH (centre horticole de l’ISRA) la citent parmi les principaux ennemis de la tomate en Afrique soudano-sahélienne. [FAOPI p. 26]
+- Le guide maraîcher du Sénégal de 1987 en montre une photo sur feuille de tomate. [G87 p. 137]
 - Nous n'avons trouvé aucun relevé récent de cette maladie au Sénégal : TerraMind reste prudent.
 
 ## Comment la reconnaître
 - De petites taches rondes de 2 à 6 mm, d'abord sur les vieilles feuilles du bas. [EPHS symptômes]
 - Leur centre devient clair, presque blanc, avec un bord brun ; on y voit de minuscules points noirs, à l'œil ou à la loupe. [EPHS symptômes ; CORN p. 1]
 - Le fruit est rarement touché. [CORN p. 1]
-- Ne pas confondre avec l'alternariose : la septoriose fait des taches plus petites, avec des points noirs au centre et sans cercles en cible. [CORN p. 1]
+- Ne pas confondre avec l'alternariose : la septoriose fait des taches plus petites (2 à 6 mm, contre environ 1 cm), avec des points noirs au centre et sans cercles en cible. Au tout début, les deux se ressemblent. [CORN p. 1 ; EPHS symptômes ; RAD p. 8]
 
 ## Pourquoi c'est arrivé
 - Le champignon se garde dans les débris de plantes malades restés au sol, sur des mauvaises herbes de la même famille comme la morelle noire, sur les tuteurs et sur des semences contaminées. [EPHS biologie]
@@ -41,4 +42,4 @@ Champignon *Septoria lycopersici*. On l'appelle aussi « Septoria leaf spot ».
 - Éliminer les mauvaises herbes qui peuvent abriter le champignon. [EPHS protection]
 - Tuteurer pour que les feuilles ne touchent pas le sol, pailler, ne pas planter trop serré. [EPHS protection ; UKY p. 3]
 - Arroser au pied ou au goutte-à-goutte plutôt qu'en pluie, et pas le soir. [PANT p. 74 ; UKY p. 3]
-- Aucune variété résistante n'est connue dans nos sources. [EPHS protection ; CORN p. 1]
+- Des variétés résistantes existent ailleurs, mais elles sont rares, et nos sources n'en citent aucune disponible au Sénégal : demander à un agent agricole. [EPHS protection ; CORN p. 1 ; UKY p. 3]

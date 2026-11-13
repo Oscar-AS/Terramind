@@ -30,13 +30,13 @@ Champignon *Corynespora cassiicola*. On l'appelle aussi « corynesporiose » ou 
 
 ## Que faire maintenant
 - Dès les premières taches, enlever les feuilles du bas, et quelques branches basses pour que l'air circule. [PPP]
-- Ne pas laisser les feuilles malades sur le sol. [TROP tomate]
+- Enlever les vieilles feuilles malades, surtout au moment de la récolte, et ne pas les laisser sur le sol. [TROP fiche]
 - Ne pas arroser par-dessus les feuilles. [PPP]
 - Pour un traitement, demander conseil à un agent agricole : TerraMind ne donne ni produit ni dose.
 
 ## Pour que ça ne revienne pas
-- Faire une rotation longue, sans cultures sensibles : laisser environ 3 ans avant de remettre de la tomate au même endroit. [TROP tomate ; PPP]
-- Ne pas installer une nouvelle culture à côté d'une culture malade ou sensible. [TROP tomate ; PPP]
+- Faire une rotation longue, sans cultures sensibles : laisser environ 3 ans avant de remettre de la tomate au même endroit. [TROP fiche ; PPP]
+- Ne pas installer une nouvelle culture à côté d'une culture malade ou sensible. [TROP fiche ; PPP]
 - En pépinière, vérifier les plants et jeter ceux qui ont des taches. [PPP]
 - Désherber : certaines mauvaises herbes abritent le champignon. [PPP]
 - Les variétés résistantes connues sont surtout des variétés de concombre, pas de tomate. [TROP fiche]
