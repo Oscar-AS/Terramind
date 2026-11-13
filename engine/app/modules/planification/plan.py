@@ -26,12 +26,12 @@ def evaluer(culture: str, mois: int, sol_: dict, eau_salee: str, bas_fond: str) 
     adaptation = "conseillee"
 
     if mois in c["mois_semis"]:
-        raisons.append(f"C'est la bonne période : {c['periode']}.")
+        raisons.append("C'est la bonne période pour semer ou planter.")
         if mois in c.get("hivernage", []):
             avertissements.append("En cette saison, prends une variété d'hivernage.")
     else:
         adaptation = "deconseillee"
-        raisons.append(f"Ce n'est pas la période : {c['periode']}.")
+        raisons.append("Ce n'est pas la période pour semer ou planter.")
 
     if c["sel"] == "tres_sensible":
         if eau_salee == "oui":

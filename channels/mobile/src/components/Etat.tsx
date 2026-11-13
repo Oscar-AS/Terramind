@@ -45,7 +45,7 @@ export function Sources({ sources }: { sources: Source[] }) {
       <Text style={styles.sourcesTitre}>Sources</Text>
       {uniques.map((s) => (
         <Text key={`${s.document}-${s.page}`} style={styles.source}>
-          • {s.document}, p. {s.page}
+          • {s.document}{/^\d/.test(s.page) ? `, p. ${s.page}` : ` (${s.page})`}
         </Text>
       ))}
     </View>
