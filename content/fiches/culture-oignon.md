@@ -29,6 +29,6 @@ statut: brouillon à relire par Rama
 - Engrais : le livret le souligne, ne jamais utiliser d'urée sur l'oignon. [LIV p. 17, 20-22]
 
 ## Récolte
-- Arrêter l'arrosage quand 30 % des feuilles jaunies sont couchées ; récolter 10 à 15 jours après. [LIV p. 24-29]
+- Arrêter progressivement l'arrosage quand 30 % des feuilles jaunies sont couchées ; récolter 10 à 15 jours après. [LIV p. 24-29]
 - Le cycle dure 70 à 120 jours selon la variété. [LIV p. 24-29]
 - Sécher 1 à 2 jours au champ, puis stocker dans un endroit sec, frais et aéré. [LIV p. 24-29]

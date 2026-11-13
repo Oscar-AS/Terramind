@@ -16,14 +16,16 @@ Organisme *Phytophthora infestans*. On l'appelle aussi « late blight ».
 - Ne pas confondre avec l'alternariose, qui fait des taches sèches à cercles concentriques. [EPH]
 
 ## Au Sénégal
-- Le mildiou n'est pas décrit dans le guide de 1987, et nous n'avons trouvé aucune étude sénégalaise. [G87]
+- Le manuel de la DPV le décrit sur la pomme de terre et la tomate dans les Niayes. [DPV p. 88-90]
+- Il n'est pas décrit dans le guide de 1987, et nous n'avons trouvé aucune étude chiffrée au Sénégal.
 - Des maraîchers de Notto Gouye Diama ont signalé une maladie de ce type en février 2026, non confirmée par un laboratoire. [PRESSE]
 
 ## Quand
 - Le risque monte après deux jours de suite avec une température minimale d'au moins 10 °C et au moins 6 heures d'humidité très forte (90 % ou plus) : ce sont les critères Hutton. [SEU]
-- Au-dessus d'environ 27 °C, le champignon produit peu ou pas de spores. [SEU]
+- Vers 27 à 28 °C, le champignon produit peu ou pas de spores. [SEU]
 - Ces règles viennent d'Europe : elles ne sont pas validées au Sénégal. TerraMind parle donc de « conditions favorables », pas de maladie certaine.
 
 ## Prévention sans produit, et traitement
-- Ne pas mouiller le feuillage et arroser le matin. [G87 p. 5]
-- Pour un traitement, contacter un agent agricole dès les premiers symptômes. TerraMind ne donne ni produit ni dose. [G87 p. 5]
+- Arroser au pied, pas en pluie sur le feuillage. [DPV p. 90-91 ; KCOA p. 3]
+- Arroser de préférence tôt le matin. [G87 p. 5]
+- Pour un traitement, contacter un agent agricole dès les premiers symptômes. TerraMind ne donne ni produit ni dose.

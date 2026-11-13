@@ -57,6 +57,11 @@ def repondre(question: str) -> dict:
     if not trouves:
         return {"statut": "je_ne_sais_pas", "texte": None, "passages": [], "sources": [], "mode": "aucun"}
     ps = [p for _, p in trouves]
+    # La fiche la plus pertinente apporte aussi sa section « Prévention » : une question sur un
+    # symptôme appelle presque toujours « que faire ? ».
+    prevention = [p for p in fiches.passages() if p.fiche == ps[0].fiche
+                  and p.section.lower().startswith(("prévention", "que faire")) and p not in ps]
+    ps += prevention[:1]
     redige = _gemini(question, ps)
     if redige and "JE_NE_SAIS_PAS" in redige:
         return {"statut": "je_ne_sais_pas", "texte": None, "passages": [], "sources": [], "mode": "gemini"}

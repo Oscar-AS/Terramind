@@ -19,4 +19,4 @@ Abréviations utilisées entre crochets dans chaque fiche.
 | SAL | Diallo et al. 2015, *African Crop Science Journal* 23(2):101-111 ; *European Scientific Journal*, 2022 (salinité dans les Niayes). |
 | ARP | *Arthropod pest complex and associated damage in field-grown tomato in Senegal* (enquête 2012-2014). <https://www.researchgate.net/publication/326608949> |
 | PRESSE | Thiesinfo, « Zone des Niayes : des maraîchers alertent sur une maladie qui menace leurs récoltes », 17 févr. 2026. <https://www.thiesinfo.com/Zone-des-Niayes-des-maraichers-alertent-sur-une-maladie-qui-menace-leurs-recoltes_a13075.html> |
-| CIR | Rapport CIRAD 2016 citant un conseiller ANCAR (puits salés dans les Niayes), relevé dans research/base-de-travail-agronomique.md § 2. |
+| DPV | Direction de la Protection des Végétaux / PADEN, manuel des ravageurs et maladies des cultures maraîchères des Niayes (archive Wayback, source `paden` de scripts/donnees/telecharger_sources.py). |

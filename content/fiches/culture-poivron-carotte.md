@@ -21,4 +21,5 @@ statut: brouillon à relire par Rama
 - Il lui faut la saison fraîche : la chaleur donne des racines courtes et fibreuses. [G87 p. 85-86]
 - Sol sableux, bien ameubli, assez profond, sans obstacle pour la racine ; pH de 5,5 à 6,8. [G87 p. 85-86 ; p. 11]
 - **Elle supporte très mal le sel**, dans le sol comme dans l'eau d'arrosage. [G87 p. 5]
-- Cycle de 90 à 110 jours ; variétés Chantenay, Nantaise améliorée, Touchon. [CNRADA]
+- Récolte après 100 à 120 jours. [G87 p. 86 ; CNRADA]
+- Variétés : Chantenay, Nantaise améliorée, Touchon. [CNRADA]

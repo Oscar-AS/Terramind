@@ -25,4 +25,5 @@ statut: brouillon à relire par Rama
 - 75 à 100 jours. [G87 p. 133-135]
 
 ## À surveiller
-- Alternariose, mildiou, acariens (face inférieure des feuilles bronzée). [G87 p. 134]
+- Alternariose et acariens : le dessous des feuilles devient brillant et les folioles se recroquevillent. [G87 p. 134]
+- Mildiou. [DPV p. 88-90]

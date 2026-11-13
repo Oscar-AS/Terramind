@@ -131,12 +131,36 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
     if not certain:
         return enveloppe("incertain", "Je ne suis pas sûr de ce que je vois. Reprends la photo d'une seule "
                          "feuille, de près, à la lumière du jour. " + AGENT, r, source)
+    r["conseils"] = conseils_fiche(top["etiquette"])
+    if r["conseils"]:
+        source += r["conseils"]["sources"]
     if top["categorie"] == "sain":
         texte = "Cette feuille semble saine."
     else:
         texte = (f"Cela ressemble à : {top['libelle']}. Ce n'est qu'une première indication, "
                  "pas un diagnostic sûr. " + AGENT)
     return enveloppe("ok", texte, r, source)
+
+
+# Étiquette du modèle → fiche de content/fiches/ dont on montre la prévention.
+FICHES_ETIQUETTES = {
+    "alternaria": "maladie-alternariose", "late_blight": "maladie-mildiou", "leaf_mold": "maladie-cladosporiose",
+    "bacterial_spot": "maladie-tache-bacterienne", "leaf_curl": "maladie-viroses-tomate",
+    "mosaic_virus": "maladie-viroses-tomate", "virosis": "maladie-viroses-tomate",
+}
+
+
+def conseils_fiche(etiquette: str) -> Optional[dict]:
+    from ..modules.rag import fiches
+
+    nom = FICHES_ETIQUETTES.get(etiquette)
+    if not nom:
+        return None
+    ps = [p for p in fiches.passages() if p.fiche == nom]
+    choisis = [p for p in ps if p.section.lower().startswith(("prévention", "que faire"))]
+    if not choisis:
+        return None
+    return {"fiche": nom, "titre": choisis[0].titre, "texte": choisis[0].texte, "sources": fiches.sources_de(choisis)}
 
 
 @router.post("/chat")

@@ -18,4 +18,5 @@ Bactéries *Xanthomonas*. On l'appelle aussi « galle bactérienne » ou « bact
 - Surtout en hivernage. [G87 p. 140]
 
 ## Que faire
-- Nos sources ne donnent pas de geste de prévention sans produit pour cette maladie. Demander conseil à un agent agricole.
+- Utiliser des semences saines ou désinfectées : la FAO cite la désinfection à l'eau chaude (56 °C pendant 30 minutes). [RAD p. 8]
+- Pour un traitement, demander conseil à un agent agricole.

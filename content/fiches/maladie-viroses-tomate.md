@@ -8,7 +8,7 @@ statut: brouillon à relire par Rama
 # Viroses de la tomate
 
 ## Le virus des feuilles jaunes en cuillère (TYLCV)
-- Il est transmis par l'aleurode (*Bemisia tabaci*), une petite mouche blanche. [G87 p. 140]
+- Il est transmis par l'aleurode (*Bemisia tabaci*), une petite mouche blanche, dans les pépinières. [RAD p. 8]
 - Il a été signalé dans des champs de tomate des Niayes (enquête sur 98 champs, 2012-2014). [ARP]
 - La FAO le cite aussi parmi les problèmes de la tomate au Sénégal. [RAD]
 

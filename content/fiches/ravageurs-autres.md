@@ -10,7 +10,7 @@ statut: brouillon à relire par Rama
 ## Acariose bronzée de la tomate
 - Des acariens trop petits pour être vus à l'œil nu. [G87 p. 140]
 - Les feuilles jaunissent puis brunissent, les tiges brunissent. [G87 p. 140]
-- Sur la pomme de terre : le dessous des feuilles devient bronzé et les folioles se recroquevillent. [G87 p. 134]
+- Sur la pomme de terre : le dessous des feuilles devient brillant ; les folioles durcissent, se recroquevillent vers le haut et brunissent. [G87 p. 134]
 - C'est un grand problème de la saison fraîche. [RAD]
 
 ## Noctuelle de la tomate (ver du fruit)
@@ -20,7 +20,8 @@ statut: brouillon à relire par Rama
 - Des petites boules (galles) sur les racines. [G87 p. 140-141]
 - Choisir des variétés résistantes et faire une rotation des cultures. [G87 p. 140-141]
 - Ils sont fréquents en sol sableux, notamment sur le jaxatu. [CNRADA]
-- Variétés de tomate du CDH résistantes aux nématodes : Xina, Romitel, Tropiva 3. [RAD p. 11-13]
+- Variétés de tomate du CDH présentées comme résistantes aux nématodes : Xina, Romitel, Tropiva 3. [RAD p. 11-13]
+- Attention : le guide de 1987 conseillait au contraire de ne cultiver Xina qu'en l'absence de nématodes. Demander à un agent agricole. [G87 p. 139]
 
 ## Thrips de l'oignon
 - Des taches argentées sur les feuilles, et le bout des feuilles qui sèche. [G87 p. 120]
