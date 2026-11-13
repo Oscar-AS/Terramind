@@ -17,8 +17,8 @@ TerraMind aide les petits maraîchers des Niayes (Sénégal) à **choisir quoi p
 |---|---|---|---|
 | 🌱 | partage la position de son champ | les cultures conseillées ce mois-ci, avec les avertissements (sel, acidité) | carte des sols iSDAsoil + guide ISRA 1987 |
 | 🔔 | déclare sa culture et sa date de repiquage | les risques de la semaine : mildiou, alternariose, mineuse, teigne | météo NASA POWER au point du champ |
-| 📷 | photographie une feuille | la maladie probable et quoi faire, ou « je ne suis pas sûr » | modèle de diagnostic + fiches sourcées |
-| 💬 | pose une question | une réponse tirée uniquement des fiches, ou « je ne sais pas » | 14 fiches vérifiées + Gemini |
+| 📷 | photographie une feuille | la maladie probable expliquée en 4 temps (ce que c'est, pourquoi, que faire, comment éviter), ou « je ne suis pas sûr » | modèle de diagnostic + fiches sourcées |
+| 💬 | pose une question | une réponse tirée uniquement des fiches, ou « je ne sais pas » | 23 fiches vérifiées + Gemini |
 
 ## Comment ça marche : un moteur, deux façades
 
@@ -38,7 +38,7 @@ flowchart TB
       SOL["iSDAsoil<br/>sol à 30 m"]
       MET["NASA POWER<br/>météo horaire"]
       MOD["Modèle MobileNetV3<br/>TOM2024 · PlantVillage · PlantDoc"]
-      FIC["14 fiches sourcées<br/>ISRA · PADEN · DPV · FAO"]
+      FIC["23 fiches sourcées<br/>ISRA · PADEN · DPV · FAO"]
     end
     APP --> PL & AL & DI & CH
     TG --> PL & AL & DI & CH
@@ -60,7 +60,7 @@ L'application et le bot n'ont **aucune logique agricole** : ils appellent le mê
 | Que planter | ✅ réel | 6 cultures, règles du guide ISRA 1987, sol lu au point du champ |
 | Alertes météo | ✅ réel | 4 risques ; règles testées sur la météo 2020-2025 |
 | Diagnostic photo | ✅ modèle v1 | **91,7 %** sur 1 058 photos de terrain africaines (TOM2024) ; **56,9 %** sur 102 photos PlantDoc ; « je ne suis pas sûr » sous le seuil |
-| Questions libres | ✅ réel | 14 fiches ; vérification indépendante : 118 affirmations confirmées sur environ 150, 25 corrigées |
+| Questions libres | ✅ réel | 23 fiches ; 3 passes de vérification indépendante (environ 320 affirmations, 51 corrigées) |
 | Application mobile | ✅ écrans branchés | Expo SDK 58 ; Android (APK) et web |
 | Bot Telegram | ✅ prêt | même moteur que l'application |
 | Wolof (voix et texte) | 🚧 | normalisation et contrôle de la voix faits ; pas encore branché |
@@ -74,7 +74,7 @@ Détail des résultats du modèle : [ml/eval/diagnostic_v1.md](ml/eval/diagnosti
 |---|---|---|
 | ⚙️ | [**engine/**](engine/) | Le moteur : plan, alertes, diagnostic, questions (RAG), bot Telegram |
 | 💬 | [**channels/**](channels/) | Les façades, dont l'[application mobile](channels/mobile/) |
-| 📝 | [**content/**](content/) | Le savoir du bot : 14 fiches sourcées, lexique wolof |
+| 📝 | [**content/**](content/) | Le savoir du bot : 23 fiches sourcées, lexique wolof |
 | 🧠 | [**ml/**](ml/) | Le modèle de diagnostic : entraînement, évaluation honnête |
 | 🗂️ | [**data/**](data/) | Les données ouvertes et le registre de provenance |
 | 🔎 | [**research/**](research/) | La base agronomique, les itinéraires par culture, les tests |

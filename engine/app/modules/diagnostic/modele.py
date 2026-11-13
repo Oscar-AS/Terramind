@@ -32,7 +32,7 @@ LIBELLES = {
     "bacterial_spot": ("maladie", "Tache bactérienne"),
     "leaf_mold": ("maladie", "Cladosporiose"),
     "septoria_leaf_spot": ("maladie", "Septoriose"),
-    "target_spot": ("maladie", "Corynesporiose"),
+    "target_spot": ("maladie", "Tache cible (corynesporiose)"),
     "leaf_curl": ("maladie", "Enroulement jaune (virus TYLCV)"),
     "mosaic_virus": ("maladie", "Mosaïque (virus)"),
     "mites": ("ravageur", "Acariens"),
@@ -41,8 +41,8 @@ LIBELLES = {
     "fusarium": ("maladie", "Fusariose"),
     "caterpillars": ("ravageur", "Chenilles"),
     "helicoverpa_armigera": ("ravageur", "Noctuelle de la tomate"),
-    "blossom_end_rot": ("abiotique", "Pourriture apicale (fruit)"),
-    "sunburn": ("abiotique", "Coup de soleil (fruit)"),
+    "blossom_end_rot": ("abiotique", "Cul noir du fruit (nécrose apicale)"),
+    "sunburn": ("abiotique", "Coup de soleil sur le fruit"),
     "healthy_fruit": ("sain", "Fruit sain"),
 }
 CULTURES_FR = {"tomato": "tomate", "potato": "pomme de terre", "pepper": "poivron", "onion": "oignon"}
