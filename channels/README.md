@@ -36,6 +36,7 @@ sequenceDiagram
 | Dossier | Façade | Pour qui | État |
 |---|---|---|---|
 | [`whatsapp/`](whatsapp/) | Bot WhatsApp : reçoit les messages par webhook, répond par l'API WhatsApp Cloud de Meta | Les agriculteurs | 🚧 App Meta créée, numéro de test actif, jeton permanent en place ; webhook prévu au jalon J1 (3 nov) |
+| [`mobile/`](mobile/) | App React Native (Expo) : APK Android téléchargeable et version web pour l'iPhone, sans passer par les stores | Les agriculteurs | 🚧 Squelette : 10 écrans du parcours, navigation, sans données (décision du 11 nov) |
 | [`pwa/`](pwa/) | Appli web installable sur le téléphone | Plan B si la validation de Meta tarde | 📅 Jalon J2 (10 nov) |
 
 ## Sécurité
