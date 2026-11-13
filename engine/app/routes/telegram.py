@@ -5,7 +5,7 @@ X-Telegram-Bot-Api-Secret-Token doit valoir TELEGRAM_WEBHOOK_SECRET (défini à
 l'enregistrement du webhook) : sinon, refus.
 
 Ton : un conseiller qui accompagne pas à pas. Chaque message répond d'abord, puis structure
-(titres en gras), puis propose la suite (« Et maintenant ? »). Pas d'émoji, texte en HTML Telegram.
+(titres en gras), puis propose la suite (« Ce que tu peux faire ensuite »). Pas d'émoji, texte en HTML Telegram.
 
 Parcours :
 - /start ou « Aide » : présentation et clavier ;
@@ -57,11 +57,11 @@ ACCUEIL = (
     "<b>Bonjour, je suis TerraMind.</b>\n"
     "Je suis ton assistant pour le maraîchage dans les Niayes. Je t'accompagne pas à pas, à partir de "
     "documents agricoles publiés (ISRA, FAO, DPV) et de la météo réelle de ton champ.\n\n"
-    "<b>Je peux t'aider de trois façons</b>\n"
+    "<b>Ce que je peux faire pour toi</b>\n"
     "1. Te dire quoi planter ce mois-ci, selon le sol de ton champ.\n"
     "2. Surveiller ta culture et te dire si la météo de la semaine favorise une maladie ou un ravageur.\n"
     "3. Examiner la photo d'une feuille malade et t'expliquer quoi faire.\n\n"
-    "<b>Pour commencer</b>\n"
+    "<b>Par où commencer</b>\n"
     f"Partage la position de ton champ avec le bouton « {B_POSITION} », en bas de l'écran. "
     "Tu peux aussi m'envoyer directement la photo d'une feuille, ou m'écrire ta question.\n\n"
     "<i>Je ne donne jamais de nom de produit ni de dose : pour un traitement, je t'oriente vers "
@@ -74,7 +74,7 @@ CONSEILS_PHOTO = (
 )
 DEMANDE_POSITION = (
     "Pour cela, j'ai besoin de connaître ton champ.\n\n"
-    "<b>Et maintenant ?</b>\n"
+    "<b>Ce que tu peux faire ensuite</b>\n"
     f"Touche le bouton « {B_POSITION} » en bas de l'écran, de préférence quand tu es dans ton champ."
 )
 
@@ -150,22 +150,22 @@ def _plan(chat: int):
     for c in d["cultures"]:
         groupes[c["adaptation"]].append(c)
 
-    blocs = ["<b>Ton sol</b>\n"
+    blocs = ["<b>Ce qu'il faut savoir sur ton sol</b>\n"
              f"D'après la carte des sols iSDAsoil, ton champ contient environ {s['sable_pct']} % de sable "
              f"et son pH est de {s['ph']}."]
     if groupes["conseillee"]:
-        blocs.append("<b>Bon moment pour semer ou planter</b>\n" + "\n".join(
+        blocs.append("<b>Ce que tu peux planter maintenant</b>\n" + "\n".join(
             f"• {escape(c['libelle'])} : {escape(c['periode_semis'])}"
             + "".join(f"\n   <i>{escape(a)}</i>" for a in c["avertissements"]) for c in groupes["conseillee"]))
     if groupes["possible"]:
-        blocs.append("<b>Possible, avec précaution</b>\n" + "\n".join(
+        blocs.append("<b>Ce que tu peux planter, avec quelques précautions</b>\n" + "\n".join(
             f"• {escape(c['libelle'])} : {escape(c['periode_semis'])}"
             + "".join(f"\n   <i>{escape(a)}</i>" for a in c["avertissements"]) for c in groupes["possible"]))
     if groupes["deconseillee"]:
-        blocs.append("<b>Pas le bon moment</b>\n"
+        blocs.append("<b>Ce qu'il vaut mieux ne pas planter ce mois-ci</b>\n"
                      + escape(", ".join(c["libelle"] for c in groupes["deconseillee"])) + ".")
-    blocs.append("<b>Bon à savoir</b>\nSi l'eau de ton puits est salée, évite l'oignon et la carotte.")
-    blocs.append("<b>Et maintenant ?</b>\n"
+    blocs.append("<b>Une précaution importante</b>\nSi l'eau de ton puits est salée, évite l'oignon et la carotte.")
+    blocs.append("<b>Ce que tu peux faire ensuite</b>\n"
                  f"Si une culture est déjà en place, touche « {B_ALERTES} » : je regarde si la météo de la "
                  "semaine favorise une maladie. Si une feuille a des taches, envoie-moi sa photo.")
     blocs.append("<i>Sources : Guide pratique du maraîchage au Sénégal (ISRA, 1987) ; carte des sols iSDAsoil.</i>")
@@ -183,14 +183,14 @@ def _alertes(chat: int):
     actives = [a["conseil"] for a in d["alertes"] if a["niveau"] != "aucun" and a["conseil"]]
     debut, fin = d["meteo"]["periode"]
     culture = CULTURES[e["culture"]]["libelle"].lower()
-    blocs = [f"<b>Ta culture cette semaine : {escape(culture)}</b>\n"
+    blocs = [f"<b>Ce que la météo annonce pour ta culture ({escape(culture)}) cette semaine</b>\n"
              f"J'ai regardé la météo de ton champ du {escape(str(debut))} au {escape(str(fin))}."]
     if actives:
-        blocs.append("<b>À surveiller</b>\n" + _liste(actives))
+        blocs.append("<b>Ce qu'il faut surveiller</b>\n" + _liste(actives))
     else:
-        blocs.append("<b>Rien d'inquiétant</b>\nLa météo de cette semaine ne favorise aucune des maladies "
+        blocs.append("<b>Bonne nouvelle : rien d'inquiétant cette semaine</b>\nLa météo de cette semaine ne favorise aucune des maladies "
                      "ni aucun des ravageurs que je surveille pour cette culture.")
-    blocs.append("<b>Et maintenant ?</b>\n"
+    blocs.append("<b>Ce que tu peux faire ensuite</b>\n"
                  f"Reviens me demander la semaine prochaine avec le bouton « {B_ALERTES} ». "
                  "Si tu vois des taches sur une feuille, envoie-moi sa photo.")
     blocs.append("<i>Météo : NASA POWER. Ces règles viennent d'études faites hors du Sénégal : je parle de "
@@ -220,21 +220,21 @@ def _photo(chat: int, file_id: str, culture: str | None):
     if not res["certain"]:
         envoyer(chat, "<b>Je ne suis pas sûr de ce que je vois.</b>\n"
                       "Plutôt que de te donner une mauvaise réponse, je préfère que tu reprennes la photo.\n\n"
-                      "<b>Pour que je puisse t'aider</b>\n" + CONSEILS_PHOTO + "\n\n"
+                      "<b>Comment reprendre la photo</b>\n" + CONSEILS_PHOTO + "\n\n"
                       f"<i>Si la plante va mal, montre-la aussi à {AGENT}.</i>", reply_markup=CLAVIER)
         return
     if top["categorie"] == "sain":
         envoyer(chat, "<b>Bonne nouvelle : cette feuille semble saine.</b>\n"
                       "Je ne vois pas de signe de maladie sur cette photo.\n\n"
-                      "<b>Et maintenant ?</b>\nSi d'autres plants ont des taches, envoie-moi leur photo.",
+                      "<b>Ce que tu peux faire ensuite</b>\nSi d'autres plants ont des taches, envoie-moi leur photo.",
                 reply_markup=CLAVIER)
         return
-    tete = ("<b>Ce que je vois</b>\n"
+    tete = ("<b>Ce que je vois sur ta feuille</b>\n"
             f"Ta feuille ressemble à : <b>{escape(top['libelle'])}</b> "
             f"(confiance du modèle : {round(top['confiance'] * 100)} %).\n"
             "C'est une première indication, pas un diagnostic sûr.")
     fiche = texte_fiche(top["etiquette"], top.get("culture"))
-    suite = ("<b>Et maintenant ?</b>\n"
+    suite = ("<b>Ce que tu peux faire ensuite</b>\n"
              f"Pour confirmer, montre ta plante à {AGENT}. "
              "Tu peux aussi m'écrire une question sur ce problème.")
     if not fiche:
@@ -289,7 +289,7 @@ def traiter(maj: dict):
             ETATS.setdefault(chat, {})["culture"] = culture
             ETATS[chat]["attend_date"] = True
             envoyer(chat, f"C'est noté : {escape(CULTURES[culture]['libelle'].lower())}.\n\n"
-                          "<b>Dernière question</b>\nÀ quelle date l'as-tu repiquée ? "
+                          "<b>Une dernière question pour bien te conseiller</b>\nÀ quelle date l'as-tu repiquée ? "
                           "Écris-la comme ceci : <b>15/10</b> pour le 15 octobre. "
                           "Si tu ne sais plus, écris : <b>je ne sais pas</b>.")
         return
@@ -313,7 +313,7 @@ def traiter(maj: dict):
     elif texte == B_PHOTO:
         envoyer(chat, "<b>Envoie-moi la photo d'une feuille malade.</b>\n"
                       "Touche le trombone en bas de l'écran, puis l'appareil photo.\n\n"
-                      "<b>Pour une bonne photo</b>\n" + CONSEILS_PHOTO, reply_markup=CLAVIER)
+                      "<b>Comment bien prendre la photo</b>\n" + CONSEILS_PHOTO, reply_markup=CLAVIER)
     elif texte == B_PLAN:
         if "lat" in etat:
             _plan(chat)
