@@ -32,11 +32,6 @@ def valeur(cle, defaut=""):
     return os.environ.get(cle, defaut).strip()
 
 
-WHATSAPP_TOKEN = valeur("WHATSAPP_TOKEN")
-WHATSAPP_PHONE_NUMBER_ID = valeur("WHATSAPP_PHONE_NUMBER_ID")
-WHATSAPP_APP_SECRET = valeur("WHATSAPP_APP_SECRET")
-WHATSAPP_VERIFY_TOKEN = valeur("WHATSAPP_VERIFY_TOKEN")
-WHATSAPP_API_VERSION = valeur("WHATSAPP_API_VERSION") or "v27.0"
 
 # Bot Telegram (D12) : jeton de @BotFather et secret partagé de l'en-tête du webhook.
 TELEGRAM_BOT_TOKEN = valeur("TELEGRAM_BOT_TOKEN")

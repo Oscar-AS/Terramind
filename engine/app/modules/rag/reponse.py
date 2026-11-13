@@ -19,7 +19,7 @@ from ... import config  # noqa: F401  (charge .env avant de lire la clé)
 from . import fiches
 
 journal = logging.getLogger("terramind.rag")
-SCORE_MIN = 2.5
+SCORE_MIN = 3.5  # voir docs/seuils-et-parametres.md (mesure sur 20 questions)
 GEMINI = "https://generativelanguage.googleapis.com/v1beta/models/{modele}:generateContent"
 CONSIGNE = (
     "Tu es TerraMind, assistant pour les petits maraîchers des Niayes (Sénégal), souvent peu lettrés. "

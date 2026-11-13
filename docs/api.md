@@ -188,8 +188,8 @@ Le moteur est le seul endroit où vit la logique agricole. WhatsApp, l'appli web
 | Point d'entrée | Rôle | État |
 |---|---|---|
 | `GET /sante` | Le service répond | ✅ fait (J1) |
-| `GET /webhook/whatsapp` | Vérification de l'adresse par Meta | ✅ fait (J1) |
-| `POST /webhook/whatsapp` | Messages WhatsApp entrants. Signature `X-Hub-Signature-256` obligatoire ; sans secret configuré, refus (503) | ✅ fait (J1), écho de démonstration ; en extension (D12) |
+| `GET /webhook/whatsapp` | Vérification de l'adresse par Meta | 🗄️ archivé (D12) : `archives/whatsapp/` |
+| `POST /webhook/whatsapp` | Messages WhatsApp entrants. Signature `X-Hub-Signature-256` obligatoire ; sans secret configuré, refus (503) | 🗄️ archivé (D12) : `archives/whatsapp/` |
 | `POST /webhook/telegram` | Messages du bot Telegram. En-tête `X-Telegram-Bot-Api-Secret-Token` obligatoire ; sans jeton ni secret configurés, refus (503) | ✅ fait (13 nov) |
 
 ### État des points d'entrée métier (13 nov 2026)
