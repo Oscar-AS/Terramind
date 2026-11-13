@@ -94,16 +94,16 @@ export default function Resultat() {
       {erreur ? <Erreur texte={erreur} onReessayer={analyser} /> : null}
       {reponse && top ? (
         <>
-          {/* 1. Le verdict, avec la photo en vignette (l'agriculteur la connaît déjà). */}
+          {/* 1. Le verdict sur sa propre photo, en grand : l'agriculteur reconnaît sa feuille. */}
           <Apparition ordre={0}>
             <View style={[styles.verdict, { backgroundColor: etat.fond }]}>
               <View>
-                <Image source={{ uri }} style={styles.vignette} accessibilityLabel="Ta photo" />
+                <Image source={{ uri }} style={styles.photoVerdict} resizeMode="cover" accessibilityLabel="Ta photo" />
                 <View style={[styles.badgeVignette, { backgroundColor: etat.couleur }]}>
-                  <etat.Icone size={18} color={couleurs.blanc} weight="bold" />
+                  <etat.Icone size={22} color={couleurs.blanc} weight="bold" />
                 </View>
               </View>
-              <View style={{ flex: 1, gap: 2 }}>
+              <View style={{ gap: 2, paddingHorizontal: 4 }}>
                 <T v="etiquette" style={{ color: etat.couleur }}>{etat.sur}</T>
                 <T style={styles.verdictTitre}>{etat.titre}</T>
               </View>
@@ -174,10 +174,10 @@ const styles = StyleSheet.create({
   cadrePhoto: { borderRadius: 28, overflow: 'hidden', backgroundColor: couleurs.pousse },
   photo: { width: '100%', aspectRatio: 1 },
   ligne: { position: 'absolute', left: 0, right: 0, height: 4, backgroundColor: couleurs.soleil, shadowColor: couleurs.soleil, shadowOpacity: 0.9, shadowRadius: 10 },
-  verdict: { flexDirection: 'row', alignItems: 'center', gap: 16, borderRadius: 24, padding: 14 },
-  vignette: { width: 84, height: 84, borderRadius: 18, backgroundColor: couleurs.carte },
+  verdict: { gap: 14, borderRadius: 24, padding: 12, paddingBottom: 16 },
+  photoVerdict: { width: '100%', aspectRatio: 4 / 3, borderRadius: 18, backgroundColor: couleurs.carte },
   badgeVignette: {
-    position: 'absolute', right: -6, bottom: -6, width: 30, height: 30, borderRadius: 15, alignItems: 'center',
+    position: 'absolute', right: 10, bottom: 10, width: 40, height: 40, borderRadius: 20, alignItems: 'center',
     justifyContent: 'center', borderWidth: 3, borderColor: couleurs.sable,
   },
   verdictTitre: { fontFamily: polices.titre, fontSize: 25, letterSpacing: -0.4, color: couleurs.encre },
