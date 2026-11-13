@@ -86,11 +86,12 @@ CHOIX_LANGUE = ("<b>Bienvenue sur TerraMind.</b>\n"
 CLAVIER_LANGUE = {"inline_keyboard": [[{"text": "Wolof", "callback_data": "langue:wo"},
                                        {"text": "Français", "callback_data": "langue:fr"}]]}
 
-# Notes vocales en wolof (D10), préparées à l'avance : content/audio/wo/<clé>.ogg, textes dans
+# Notes vocales en wolof (D10), préparées à l'avance : content/audio/wo/<clé>.ogg (ou .mp3, .m4a), textes dans
 # content/voix/messages_wolof.csv. Phrases générales et sensibles : voix humaine ; contenu choisi par
 # le modèle (fiche de la maladie reconnue, alerte, culture) : voix de synthèse contrôlée.
 AUDIO_WO = Path(__file__).resolve().parents[3] / "content" / "audio" / "wo"
-VOIX_DEJA_ENVOYEES: dict[str, str] = {}  # clé → file_id Telegram, pour ne pas renvoyer le fichier
+VOIX_DEJA_ENVOYEES: dict[str, str] = {}
+TYPES_AUDIO = {".ogg": "audio/ogg", ".mp3": "audio/mpeg", ".m4a": "audio/mp4"}  # clé → file_id Telegram, pour ne pas renvoyer le fichier
 
 ETATS: dict[int, dict] = {}
 
@@ -151,7 +152,7 @@ def _envoyer_fichier(methode: str, chat: int, champ: str, chemin: Path) -> dict:
     borne = uuid.uuid4().hex
     corps = (f"--{borne}\r\nContent-Disposition: form-data; name=\"chat_id\"\r\n\r\n{chat}\r\n"
              f"--{borne}\r\nContent-Disposition: form-data; name=\"{champ}\"; filename=\"{chemin.name}\"\r\n"
-             "Content-Type: audio/ogg\r\n\r\n").encode() + chemin.read_bytes() + f"\r\n--{borne}--\r\n".encode()
+             f"Content-Type: {TYPES_AUDIO.get(chemin.suffix, 'audio/ogg')}\r\n\r\n").encode() + chemin.read_bytes() + f"\r\n--{borne}--\r\n".encode()
     req = urllib.request.Request(API.format(jeton=config.TELEGRAM_BOT_TOKEN, methode=methode), data=corps,
                                  headers={"Content-Type": f"multipart/form-data; boundary={borne}"})
     with urllib.request.urlopen(req, timeout=60) as r:
@@ -163,8 +164,9 @@ def dire(chat: int, cle: str, toujours: bool = False):
     le texte suit de toute façon."""
     if not toujours and ETATS.get(chat, {}).get("langue") != "wo":
         return
-    chemin = AUDIO_WO / f"{cle}.ogg"
-    if not chemin.exists():
+    # Telegram accepte les notes vocales en OGG (Opus), MP3 ou M4A.
+    chemin = next((AUDIO_WO / f"{cle}.{ext}" for ext in ("ogg", "mp3", "m4a") if (AUDIO_WO / f"{cle}.{ext}").exists()), None)
+    if chemin is None:
         journal.info("note vocale wolof pas encore enregistrée : %s", cle)
         return
     try:

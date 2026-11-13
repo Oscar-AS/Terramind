@@ -101,7 +101,7 @@ def test_voix_wolof_seulement_en_wolof(tmp_path=None):
     from engine.app.routes import telegram as tg
 
     with tempfile.TemporaryDirectory() as d:
-        Path(d, "accueil.ogg").write_bytes(b"OggS")
+        Path(d, "accueil.mp3").write_bytes(b"ID3")
         with mock.patch.object(tg, "AUDIO_WO", Path(d)), \
                 mock.patch.object(tg, "_envoyer_fichier", return_value={"result": {"voice": {"file_id": "F"}}}) as f, \
                 mock.patch.object(tg, "_appel") as appel:

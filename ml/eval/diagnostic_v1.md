@@ -39,3 +39,18 @@ Garde-fous inchangés : sous le seuil, aucune maladie n'est nommée ; au-dessus,
 
 - ConvNeXt-Tiny (plus robuste, mais 7 fois plus lourd) : en cours d'entraînement, à comparer.
 - Ajouter CCMT (Ghana) pour la tomate ; des photos consenties des Niayes pour un vrai test local.
+
+## Comparaison avec ConvNeXt-Tiny (13 nov 2026)
+
+Même données, même protocole, 8 époques (`ml/eval/diagnostic_v1_convnext_tiny.json`).
+
+| | MobileNetV3-Large | ConvNeXt-Tiny |
+|---|---|---|
+| Validation terrain | 84,2 % | 86,0 % |
+| Test PlantDoc (102 photos variées) | 56,9 % | 58,8 % |
+| Test TOM2024 (1 058 photos de terrain) | 91,7 % | 91,8 % |
+| PlantDoc au seuil 0,4 (couverture / précision) | 84,3 % / 61,6 % | 90,2 % / 59,8 % |
+| Taille du modèle ONNX | 17 Mo | 111 Mo |
+| Temps par photo (1 cœur du Mac) | 15 ms | 126 ms |
+
+**Décision : MobileNetV3 reste le modèle en ligne.** Le gain de ConvNeXt est faible (environ 2 points) et mitigé au seuil retenu, alors que le modèle est 6,6 fois plus lourd et 8 fois plus lent. L'hébergement gratuit (Render : 512 Mo de mémoire, une petite fraction de processeur) laisse peu de marge, et une panne de mémoire pendant la démonstration coûterait plus cher que 2 points de précision. ConvNeXt est gardé hors Git (`modeles/diagnostic_v1_convnext_tiny/`) pour un hébergement plus puissant.
