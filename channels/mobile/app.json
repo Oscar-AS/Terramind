@@ -27,7 +27,21 @@
     "plugins": [
       "expo-router",
       "expo-status-bar",
-      "expo-notifications"
+      "expo-notifications",
+      "expo-sqlite",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "TerraMind utilise ta position pour connaître le sol et la météo de ton champ."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "TerraMind utilise l'appareil photo pour examiner une feuille de ta plante.",
+          "photosPermission": "TerraMind lit la photo de feuille que tu choisis."
+        }
+      ]
     ],
     "scheme": "terramind",
     "experiments": {
