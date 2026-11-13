@@ -14,12 +14,12 @@ Le modèle de TerraMind reconnaît des chenilles sur l'oignon, sans dire de quel
 - Le manuel de la DPV cite la chenille légionnaire (*Spodoptera littoralis*) parmi celles qui attaquent l'oignon. [DPV p. 16-17]
 
 ## Comment les reconnaître
-- Les jeunes chenilles restent en groupe et mangent le dessous des feuilles ; les plus grosses mangent tout, sauf les nervures. [DPV p. 17]
-- Elles mangent la nuit et tôt le matin ; le jour, elles se cachent dans le sol au pied des plantes. [DPV p. 17]
+- Pour la chenille légionnaire : les jeunes chenilles restent en groupe et mangent le dessous des feuilles ; les plus grosses mangent tout, sauf les nervures. [DPV p. 17]
+- Pour la chenille légionnaire : elle mange la nuit et tôt le matin ; le jour, elle se cache dans le sol au pied des plantes. [DPV p. 17]
 - La chenille légionnaire est grise, noire, brune ou rougeâtre, avec 2 taches noires en triangle au bout du corps ; elle mesure environ 3 cm. [DPV p. 16]
 
 ## Pourquoi c'est arrivé
-- Ces chenilles attaquent beaucoup de cultures : haricot, oignon, pomme de terre. [DPV p. 17]
+- La chenille légionnaire attaque beaucoup de cultures : haricot, oignon, pomme de terre. [DPV p. 17]
 - Les chenilles et les thrips sont les principaux ravageurs de l'oignon en pépinière. [POI p. 3]
 
 ## Que faire maintenant

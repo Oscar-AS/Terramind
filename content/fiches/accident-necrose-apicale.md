@@ -10,11 +10,11 @@ statut: brouillon à relire par Rama
 ## Ce que c'est
 - Ce n'est pas une maladie contagieuse : ni microbe ni insecte. La plante n'arrive pas à prendre assez de calcium. [DPV p. 97]
 - Une tache noire et ronde, qui ressemble à du cuir, apparaît à la base du fruit. [DPV p. 97]
+- Le fruit abîmé peut ensuite être attaqué par un champignon du sol, celui de la pourriture charbonneuse. [DPV p. 86]
 
 ## Pourquoi c'est arrivé
 - Un sol qui manque de calcium (sol acide ou argileux). [DPV p. 97]
 - Des arrosages irréguliers. [DPV p. 97]
-- Les fruits abîmés peuvent ensuite être envahis par des champignons du sol. [DPV p. 86]
 
 ## Que faire maintenant
 - Arroser de façon régulière. [DPV p. 98]

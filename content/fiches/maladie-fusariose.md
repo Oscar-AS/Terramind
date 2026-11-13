@@ -29,12 +29,12 @@ Champignons du genre *Fusarium*. On l'appelle aussi « flétrissure fusarienne �
 
 ## Que faire maintenant
 - Arracher et éliminer les plantes malades. [DPV p. 72]
-- Sur la tomate, aucun produit n'est efficace contre ce champignon : tout se joue dans la prévention. [RAD p. 19]
+- Sur la tomate, la FAO indique qu'aucun produit n'est efficace contre ce champignon une fois installé : la prévention est la meilleure arme. [RAD p. 19]
 - Montrer la plante à un agent agricole. TerraMind ne donne ni produit ni dose.
 
 ## Pour que ça ne revienne pas
 - Oignon : faire une rotation longue, au moins 3 à 5 ans sans oignon, ail ni poireau sur la parcelle. [POI p. 5]
-- Tomate : attendre au moins 4 ans avant de replanter une culture sensible au même endroit. [DPV p. 72]
+- Attendre au moins 4 ans avant de replanter une culture sensible au même endroit. [DPV p. 72]
 - Utiliser des bulbes et des semences saines. [POI p. 5 ; DPV p. 72]
 - Choisir des variétés résistantes ; pour la tomate, la FAO cite Xina, variété du CDH résistante à la fusariose. [RAD p. 9 et 11]
 - Ne pas blesser les racines, éviter que l'eau stagne dans le sol, espacer les plants. [DPV p. 72]

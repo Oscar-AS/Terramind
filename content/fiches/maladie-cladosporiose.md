@@ -10,7 +10,7 @@ statut: brouillon à relire par Rama
 Champignon *Passalora fulva* (ancien nom *Cladosporium fulvum*). On l'appelle aussi « leaf mold ».
 
 ## Ce que c'est
-- C'est un champignon de la tomate. Il fait des taches jaunâtres sur le dessus des feuilles et un duvet brun ou violet en dessous. [G87 p. 140 ; DPV p. 91]
+- C'est un champignon de la tomate. Il fait des taches jaunâtres sur le dessus des feuilles et un duvet brun ou violet en dessous. [G87 p. 140]
 
 ## Comment la reconnaître
 - Sur le dessus des feuilles : des taches vert pâle à jaunâtres. [G87 p. 140]

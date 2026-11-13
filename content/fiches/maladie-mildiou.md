@@ -10,25 +10,25 @@ statut: brouillon à relire par Rama
 Organisme *Phytophthora infestans*. On l'appelle aussi « late blight ».
 
 ## Ce que c'est
-- C'est une maladie causée par un champignon microscopique. [DPV p. 88]
-- Elle fait des taches huileuses qui brunissent, et le feuillage sèche très vite. [EPH]
+- C'est une maladie causée par un organisme microscopique proche des champignons. [DPV p. 88 ; EPH]
+- Elle fait sur les feuilles des taches mal délimitées, d'abord mouillées, qui brunissent ; par temps très humide, le feuillage sèche vite. [EPH ; DPV p. 89]
 - Un fruit ou un tubercule atteint pourrit vite et sent fort. [DPV p. 89]
 
 ## Comment le reconnaître
-- Des taches d'aspect huileux qui brunissent. [EPH]
-- Parfois un duvet blanc sous la feuille. [EPH]
-- Le feuillage sèche très vite. [EPH]
-- Ne pas confondre avec l'alternariose, qui fait des taches sèches à cercles concentriques. [EPH]
+- Des taches aux bords flous, d'abord vert foncé puis grises et enfin brunes, qui grandissent vite. [DPV p. 89]
+- Par temps humide, un léger duvet blanc peut apparaître sous les taches ou sur leur bord. [DPV p. 89 ; EPH]
+- Par temps très humide, le feuillage brunit et sèche vite. [EPH]
+- Ne pas confondre avec l'alternariose : le mildiou fait des taches aux bords flous qui grandissent vite ; l'alternariose fait des taches rondes à cercles, comme une cible. [DPV p. 89 ; G87 p. 140]
 
 ## Au Sénégal
-- Le manuel de la DPV le décrit sur la pomme de terre et la tomate dans les Niayes. [DPV p. 88-90]
-- Il n'est pas décrit dans le guide de 1987, et nous n'avons trouvé aucune étude chiffrée au Sénégal.
+- Le manuel de la DPV pour les Niayes le décrit sur la pomme de terre et la tomate. [DPV p. 88-90]
+- Le guide de 1987 ne le cite pas parmi les maladies de la tomate et de la pomme de terre [G87 p. 134 et 140], et nous n'avons trouvé aucune étude chiffrée au Sénégal.
 - Des maraîchers de Notto Gouye Diama ont signalé une maladie de ce type en février 2026, non confirmée par un laboratoire. [PRESSE]
 
 ## Pourquoi c'est arrivé
 - Le champignon se développe très vite quand l'air est très humide. [DPV p. 88]
 - Le risque monte après deux jours de suite avec une température minimale d'au moins 10 °C et au moins 6 heures d'humidité très forte (90 % ou plus) : ce sont les critères Hutton. [SEU]
-- Vers 27 à 28 °C, le champignon produit peu ou pas de spores. [SEU]
+- Vers 28 °C, il ne forme presque plus de spores, et vers 27 °C certaines souches ne germent plus. [SEU]
 - Ces règles viennent d'Europe : elles ne sont pas validées au Sénégal. TerraMind parle donc de « conditions favorables », pas de maladie certaine.
 
 ## Que faire maintenant

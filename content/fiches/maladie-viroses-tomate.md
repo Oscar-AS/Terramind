@@ -17,10 +17,11 @@ statut: brouillon à relire par Rama
 
 ## Le virus des feuilles jaunes en cuillère (TYLCV)
 - Il a été signalé dans des champs de tomate des Niayes (enquête sur 98 champs, 2012-2014). [ARP]
-- La FAO le cite aussi parmi les problèmes de la tomate au Sénégal. [RAD]
+- La FAO le cite parmi les principaux problèmes de la tomate cultivée pour les semences en saison fraîche au Sénégal. [RAD p. 7]
 
 ## Pourquoi c'est arrivé
-- Le virus est apporté par une petite mouche blanche, l'aleurode (*Bemisia tabaci*), souvent dès la pépinière. [RAD p. 8]
+- Le virus des feuilles jaunes en cuillère est apporté par une petite mouche blanche, l'aleurode (*Bemisia tabaci*), souvent dès la pépinière. [RAD p. 8]
+- Sur le poivron et le piment, la plupart des virus sont apportés par les pucerons. [G87 p. 130]
 - Cette mouche est surtout présente de septembre à décembre. [RAD p. 8]
 
 ## Que faire maintenant
@@ -29,6 +30,6 @@ statut: brouillon à relire par Rama
 
 ## Pour que ça ne revienne pas
 - Lutter contre les insectes qui transmettent le virus dès la pépinière. [G87 p. 140]
-- Protéger la pépinière sous un voile ou une moustiquaire. [RAD p. 8 ; KCOA]
+- Protéger la pépinière sous un voile ou une moustiquaire. [RAD p. 8 ; KCOA p. 2]
 - Éviter la taille. [G87 p. 140]
 - Les variétés tolérantes disponibles aujourd'hui au Sénégal ne sont pas dans nos sources : demander à un agent agricole.

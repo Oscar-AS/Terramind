@@ -20,7 +20,6 @@ Papillon *Helicoverpa armigera* (ancien nom *Heliothis*). Sa chenille est le « 
 ## Pourquoi c'est arrivé
 - Ce papillon attaque beaucoup de plantes potagères : tomate, piment, gombo, haricot, courges. [DPV p. 52]
 - Les chenilles peuvent venir des bordures pleines d'herbes autour du champ. [DPV p. 52-53]
-- Le coton et le maïs attirent beaucoup ce papillon. [DPV p. 53]
 
 ## Que faire maintenant
 - Biner le sol pour éliminer les chenilles et les chrysalides qui s'y cachent. [DPV p. 52]
@@ -29,4 +28,5 @@ Papillon *Helicoverpa armigera* (ancien nom *Heliothis*). Sa chenille est le « 
 ## Pour que ça ne revienne pas
 - Désherber autour du champ. [DPV p. 52-53]
 - Faire une rotation d'au moins 3 ans. [DPV p. 53]
+- Des plantes pièges autour du champ, comme le coton ou le maïs, attirent les papillons qui vont y pondre. [DPV p. 53]
 - Des pièges à phéromones permettent de voir arriver les premiers papillons. [DPV p. 53]
