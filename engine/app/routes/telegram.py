@@ -4,12 +4,15 @@ Telegram appelle POST /webhook/telegram à chaque message. L'en-tête
 X-Telegram-Bot-Api-Secret-Token doit valoir TELEGRAM_WEBHOOK_SECRET (défini à
 l'enregistrement du webhook) : sinon, refus.
 
+Ton : un conseiller qui accompagne pas à pas. Chaque message répond d'abord, puis structure
+(titres en gras), puis propose la suite (« Et maintenant ? »). Pas d'émoji, texte en HTML Telegram.
+
 Parcours :
-- /start : présentation et clavier à 4 boutons ;
+- /start ou « Aide » : présentation et clavier ;
 - position partagée : enregistrée, puis plan de culture ;
-- photo : diagnostic ;
-- « Alertes » : choix de la culture, puis date de repiquage (JJ/MM), puis alertes de la semaine ;
-- autre texte : question libre (réponse honnête tant que les fiches ne sont pas prêtes).
+- photo : diagnostic, puis la fiche en 4 temps ;
+- « Surveiller ma culture » : choix de la culture, puis date de repiquage (JJ/MM), puis alertes de la semaine ;
+- autre texte : question libre, réponse tirée des fiches (D8).
 
 État par conversation gardé en mémoire (position arrondie à 0,01°, culture, date) : il est
 perdu au redémarrage du service, ce qui suffit pour la démonstration. Aucun numéro, aucun nom.
@@ -22,7 +25,9 @@ import hmac
 import json
 import logging
 import re
+import urllib.error
 import urllib.request
+from html import escape as _echapper
 
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
 
@@ -37,20 +42,56 @@ journal = logging.getLogger("terramind.telegram")
 router = APIRouter()
 API = "https://api.telegram.org/bot{jeton}/{methode}"
 FICHIER = "https://api.telegram.org/file/bot{jeton}/{chemin}"
+LIMITE = 4000  # Telegram refuse les messages de plus de 4096 caractères
 
-B_POSITION, B_PLAN, B_ALERTES, B_AIDE = "📍 Envoyer ma position", "🌱 Que planter ?", "🔔 Alertes", "❓ Aide"
-CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}], [{"text": B_PLAN}, {"text": B_ALERTES}],
-                        [{"text": B_AIDE}]], "resize_keyboard": True}
-BADGE = {"conseillee": "✅", "possible": "⚠️", "deconseillee": "⛔"}
-AGENT = "Pour être sûr, montre ta plante à un agent agricole (ANCAR, service départemental de l'agriculture)."
-ACCUEIL = ("Bienvenue sur TerraMind 🌱\n\n"
-           "📷 Envoie la photo d'une feuille malade : je te dis ce que ça peut être.\n"
-           "📍 Partage ta position : je te dis quoi planter ce mois-ci, selon ton sol.\n"
-           "🔔 Déclare ta culture : je te préviens quand la météo favorise une maladie ou un ravageur.\n\n"
-           "Je réponds en français pour l'instant. Mes conseils viennent de documents publiés "
-           "(ISRA, PADEN) ; je ne donne jamais de produit ni de dose.")
+B_POSITION = "Envoyer la position de mon champ"
+B_PHOTO, B_PLAN = "Examiner une feuille", "Que planter ?"
+B_ALERTES, B_AIDE = "Surveiller ma culture", "Aide"
+CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}],
+                        [{"text": B_PHOTO}, {"text": B_PLAN}],
+                        [{"text": B_ALERTES}, {"text": B_AIDE}]],
+           "resize_keyboard": True}
+AGENT = "un agent agricole (ANCAR, service départemental de l'agriculture)"
+
+ACCUEIL = (
+    "<b>Bonjour, je suis TerraMind.</b>\n"
+    "Je suis ton assistant pour le maraîchage dans les Niayes. Je t'accompagne pas à pas, à partir de "
+    "documents agricoles publiés (ISRA, FAO, DPV) et de la météo réelle de ton champ.\n\n"
+    "<b>Je peux t'aider de trois façons</b>\n"
+    "1. Te dire quoi planter ce mois-ci, selon le sol de ton champ.\n"
+    "2. Surveiller ta culture et te dire si la météo de la semaine favorise une maladie ou un ravageur.\n"
+    "3. Examiner la photo d'une feuille malade et t'expliquer quoi faire.\n\n"
+    "<b>Pour commencer</b>\n"
+    f"Partage la position de ton champ avec le bouton « {B_POSITION} », en bas de l'écran. "
+    "Tu peux aussi m'envoyer directement la photo d'une feuille, ou m'écrire ta question.\n\n"
+    "<i>Je ne donne jamais de nom de produit ni de dose : pour un traitement, je t'oriente vers "
+    f"{AGENT}.</i>"
+)
+CONSEILS_PHOTO = (
+    "1. Une seule feuille, celle qui est malade.\n"
+    "2. De près : la feuille doit remplir la photo.\n"
+    "3. À la lumière du jour, sans ombre."
+)
+DEMANDE_POSITION = (
+    "Pour cela, j'ai besoin de connaître ton champ.\n\n"
+    "<b>Et maintenant ?</b>\n"
+    f"Touche le bouton « {B_POSITION} » en bas de l'écran, de préférence quand tu es dans ton champ."
+)
 
 ETATS: dict[int, dict] = {}
+
+
+def escape(texte: str) -> str:
+    """Échappe <, > et & pour le HTML de Telegram (les apostrophes restent lisibles)."""
+    return _echapper(texte, quote=False)
+
+
+def _court(document: str) -> str:
+    """Nom court d'une source : avant la première virgule, sans parenthèse laissée ouverte."""
+    nom = document.split(",")[0].strip()
+    if nom.count("(") > nom.count(")"):
+        nom = nom[:nom.rfind("(")].strip()
+    return nom
 
 
 def _appel(methode: str, **donnees) -> dict:
@@ -60,29 +101,75 @@ def _appel(methode: str, **donnees) -> dict:
         return json.loads(r.read())
 
 
+def _morceaux(texte: str) -> list[str]:
+    """Coupe un long message aux lignes vides, pour rester sous la limite de Telegram."""
+    morceaux, courant = [], ""
+    for bloc in texte.split("\n\n"):
+        if courant and len(courant) + len(bloc) + 2 > LIMITE:
+            morceaux.append(courant)
+            courant = bloc
+        else:
+            courant = f"{courant}\n\n{bloc}" if courant else bloc
+    return [m[:LIMITE] for m in morceaux + [courant]]
+
+
 def envoyer(chat: int, texte: str, **extra):
-    try:
-        _appel("sendMessage", chat_id=chat, text=texte[:4000], **extra)
-    except Exception as e:  # Telegram indisponible : on journalise sans le contenu
-        journal.warning("envoi Telegram échoué : %s", type(e).__name__)
+    """Envoie un message en HTML Telegram ; le clavier éventuel accompagne le dernier morceau."""
+    morceaux = _morceaux(texte)
+    for i, m in enumerate(morceaux):
+        options = extra if i == len(morceaux) - 1 else {}
+        try:
+            _appel("sendMessage", chat_id=chat, text=m, parse_mode="HTML", **options)
+        except urllib.error.HTTPError as e:
+            # 400 : balisage refusé par Telegram. On renvoie le même texte sans mise en forme.
+            journal.warning("envoi Telegram refusé (%s) : nouvel essai en texte simple", e.code)
+            brut = re.sub(r"</?[bi]>", "", m).replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
+            try:
+                _appel("sendMessage", chat_id=chat, text=brut, **options)
+            except Exception as e2:
+                journal.warning("envoi Telegram échoué : %s", type(e2).__name__)
+        except Exception as e:  # Telegram indisponible : on journalise sans le contenu
+            journal.warning("envoi Telegram échoué : %s", type(e).__name__)
+
+
+def _liste(lignes: list[str]) -> str:
+    return "\n".join(f"• {escape(l)}" for l in lignes)
 
 
 def _plan(chat: int):
     e = ETATS[chat]
-    envoyer(chat, "Je regarde ton sol et la saison… (cela peut prendre une demi-minute)")
+    envoyer(chat, "Je regarde maintenant le sol de ton champ et la saison. Cela prend environ 30 secondes.")
     try:
         d, _ = planifier(e["lat"], e["lon"], dt.date.today(), "ne_sait_pas", "ne_sait_pas")
     except sol_module.SolIndisponible:
-        envoyer(chat, "Je n'arrive pas à lire le sol à cet endroit. Réessaie plus tard.")
+        envoyer(chat, "Je n'arrive pas à lire la carte des sols à cet endroit pour le moment. "
+                      "Réessaie dans quelques minutes avec le bouton « Que planter ? ».", reply_markup=CLAVIER)
         return
     s = d["sol"]
-    lignes = [f"🟫 Ton sol : {s['sable_pct']} % de sable, pH {s['ph']} (carte iSDAsoil).", ""]
+    groupes = {"conseillee": [], "possible": [], "deconseillee": []}
     for c in d["cultures"]:
-        lignes.append(f"{BADGE[c['adaptation']]} {c['libelle']} : {c['periode_semis']}")
-        lignes += [f"   ⚠️ {a}" for a in c["avertissements"]]
-    lignes += ["", "Source : Guide pratique du maraîchage au Sénégal (ISRA, 1987).",
-               "Si l'eau de ton puits est salée, évite l'oignon et la carotte."]
-    envoyer(chat, "\n".join(lignes), reply_markup=CLAVIER)
+        groupes[c["adaptation"]].append(c)
+
+    blocs = ["<b>Ton sol</b>\n"
+             f"D'après la carte des sols iSDAsoil, ton champ contient environ {s['sable_pct']} % de sable "
+             f"et son pH est de {s['ph']}."]
+    if groupes["conseillee"]:
+        blocs.append("<b>Bon moment pour semer ou planter</b>\n" + "\n".join(
+            f"• {escape(c['libelle'])} : {escape(c['periode_semis'])}"
+            + "".join(f"\n   <i>{escape(a)}</i>" for a in c["avertissements"]) for c in groupes["conseillee"]))
+    if groupes["possible"]:
+        blocs.append("<b>Possible, avec précaution</b>\n" + "\n".join(
+            f"• {escape(c['libelle'])} : {escape(c['periode_semis'])}"
+            + "".join(f"\n   <i>{escape(a)}</i>" for a in c["avertissements"]) for c in groupes["possible"]))
+    if groupes["deconseillee"]:
+        blocs.append("<b>Pas le bon moment</b>\n"
+                     + escape(", ".join(c["libelle"] for c in groupes["deconseillee"])) + ".")
+    blocs.append("<b>Bon à savoir</b>\nSi l'eau de ton puits est salée, évite l'oignon et la carotte.")
+    blocs.append("<b>Et maintenant ?</b>\n"
+                 f"Si une culture est déjà en place, touche « {B_ALERTES} » : je regarde si la météo de la "
+                 "semaine favorise une maladie. Si une feuille a des taches, envoie-moi sa photo.")
+    blocs.append("<i>Sources : Guide pratique du maraîchage au Sénégal (ISRA, 1987) ; carte des sols iSDAsoil.</i>")
+    envoyer(chat, "\n\n".join(blocs), reply_markup=CLAVIER)
 
 
 def _alertes(chat: int):
@@ -90,60 +177,106 @@ def _alertes(chat: int):
     try:
         d = calculer(e["lat"], e["lon"], e["culture"], dt.date.today(), e.get("repiquage"))
     except meteo.MeteoIndisponible:
-        envoyer(chat, "La météo est momentanément indisponible. Réessaie plus tard.")
+        envoyer(chat, "La météo est momentanément indisponible. Réessaie dans quelques minutes.",
+                reply_markup=CLAVIER)
         return
-    actives = [a["conseil"] for a in d["alertes"] if a["niveau"] != "aucun"]
+    actives = [a["conseil"] for a in d["alertes"] if a["niveau"] != "aucun" and a["conseil"]]
     debut, fin = d["meteo"]["periode"]
-    texte = "\n\n".join(f"🔔 {a}" for a in actives) if actives else "😌 Pas d'alerte cette semaine pour ta culture."
-    envoyer(chat, f"{texte}\n\nMétéo du {debut} au {fin} (NASA POWER).", reply_markup=CLAVIER)
+    culture = CULTURES[e["culture"]]["libelle"].lower()
+    blocs = [f"<b>Ta culture cette semaine : {escape(culture)}</b>\n"
+             f"J'ai regardé la météo de ton champ du {escape(str(debut))} au {escape(str(fin))}."]
+    if actives:
+        blocs.append("<b>À surveiller</b>\n" + _liste(actives))
+    else:
+        blocs.append("<b>Rien d'inquiétant</b>\nLa météo de cette semaine ne favorise aucune des maladies "
+                     "ni aucun des ravageurs que je surveille pour cette culture.")
+    blocs.append("<b>Et maintenant ?</b>\n"
+                 f"Reviens me demander la semaine prochaine avec le bouton « {B_ALERTES} ». "
+                 "Si tu vois des taches sur une feuille, envoie-moi sa photo.")
+    blocs.append("<i>Météo : NASA POWER. Ces règles viennent d'études faites hors du Sénégal : je parle de "
+                 "conditions favorables, pas de maladie certaine.</i>")
+    envoyer(chat, "\n\n".join(blocs), reply_markup=CLAVIER)
 
 
 def _photo(chat: int, file_id: str, culture: str | None):
     from ..modules.diagnostic import modele
 
-    envoyer(chat, "J'examine ta feuille… 🔎")
+    envoyer(chat, "Merci, je regarde ta photo. Cela prend quelques secondes.")
     try:
         chemin = _appel("getFile", file_id=file_id)["result"]["file_path"]
         with urllib.request.urlopen(FICHIER.format(jeton=config.TELEGRAM_BOT_TOKEN, chemin=chemin), timeout=30) as r:
             contenu = r.read()
         res = modele.diagnostiquer(contenu, culture)
     except modele.ModeleAbsent:
-        envoyer(chat, "Le diagnostic photo est momentanément indisponible.")
+        envoyer(chat, "L'examen des photos est momentanément indisponible. Réessaie plus tard.",
+                reply_markup=CLAVIER)
         return
     except Exception as e:
         journal.info("photo Telegram illisible : %s", type(e).__name__)
-        envoyer(chat, "Je n'arrive pas à lire cette photo. Reprends-la, bien nette.")
+        envoyer(chat, "Je n'arrive pas à lire cette photo. Peux-tu la reprendre, bien nette ?\n\n"
+                      + CONSEILS_PHOTO, reply_markup=CLAVIER)
         return
     top = res["predictions"][0]
     if not res["certain"]:
-        envoyer(chat, "🤔 Je ne suis pas sûr de ce que je vois. Reprends la photo d'une seule feuille, de près, "
-                      "à la lumière du jour. " + AGENT)
-    elif top["categorie"] == "sain":
-        envoyer(chat, "✅ Cette feuille semble saine.")
-    else:
-        envoyer(chat, f"⚠️ Cela ressemble à : {top['libelle']} ({round(top['confiance'] * 100)} %).\n"
-                      f"Ce n'est qu'une première indication, pas un diagnostic sûr. {AGENT}")
-        texte = texte_fiche(top["etiquette"], top.get("culture"))
-        envoyer(chat, texte or "Je n'ai pas encore de fiche sur ce problème. Montre ta plante à un agent agricole.")
+        envoyer(chat, "<b>Je ne suis pas sûr de ce que je vois.</b>\n"
+                      "Plutôt que de te donner une mauvaise réponse, je préfère que tu reprennes la photo.\n\n"
+                      "<b>Pour que je puisse t'aider</b>\n" + CONSEILS_PHOTO + "\n\n"
+                      f"<i>Si la plante va mal, montre-la aussi à {AGENT}.</i>", reply_markup=CLAVIER)
+        return
+    if top["categorie"] == "sain":
+        envoyer(chat, "<b>Bonne nouvelle : cette feuille semble saine.</b>\n"
+                      "Je ne vois pas de signe de maladie sur cette photo.\n\n"
+                      "<b>Et maintenant ?</b>\nSi d'autres plants ont des taches, envoie-moi leur photo.",
+                reply_markup=CLAVIER)
+        return
+    tete = ("<b>Ce que je vois</b>\n"
+            f"Ta feuille ressemble à : <b>{escape(top['libelle'])}</b> "
+            f"(confiance du modèle : {round(top['confiance'] * 100)} %).\n"
+            "C'est une première indication, pas un diagnostic sûr.")
+    fiche = texte_fiche(top["etiquette"], top.get("culture"))
+    suite = ("<b>Et maintenant ?</b>\n"
+             f"Pour confirmer, montre ta plante à {AGENT}. "
+             "Tu peux aussi m'écrire une question sur ce problème.")
+    if not fiche:
+        envoyer(chat, f"{tete}\n\nJe n'ai pas encore de fiche sur ce problème.\n\n{suite}", reply_markup=CLAVIER)
+        return
+    corps, sources = fiche
+    envoyer(chat, f"{tete}\n\n{corps}\n\n{suite}\n\n{sources}", reply_markup=CLAVIER)
 
 
-def texte_fiche(etiquette: str, culture: str | None) -> str | None:
-    """La fiche en 4 parties (ce que c'est, pourquoi, que faire, éviter), puis ses sources."""
+def texte_fiche(etiquette: str, culture: str | None) -> tuple[str, str] | None:
+    """La fiche en 4 parties (ce que c'est, pourquoi, que faire, éviter) en HTML, et la ligne des sources."""
     from .v1 import PARTIES_FICHE, fiche_simple
 
     fiche = fiche_simple(etiquette, culture)
     if not fiche:
         return None
-    emojis = {"ce_que_c_est": "🔎", "pourquoi": "💡", "que_faire": "🩹", "eviter": "🛡️"}
     blocs, n = [], 0
     for cle, titre in PARTIES_FICHE.items():
         if fiche.get(cle):
             n += 1
             lignes = [l.lstrip("- ").strip() for l in fiche[cle].split("\n") if l.strip()]
-            blocs.append(f"{emojis[cle]} {n}. {titre}\n" + "\n".join(f"• {l}" for l in lignes))
-    documents = sorted({s["document"].split(",")[0] for s in fiche["sources"]})
-    blocs.append("📚 Sources : " + " ; ".join(documents))
-    return "\n\n".join(blocs)
+            blocs.append(f"<b>{n}. {escape(titre)}</b>\n" + _liste(lignes))
+    documents = sorted({_court(s["document"]) for s in fiche["sources"]})
+    return "\n\n".join(blocs), "<i>Sources : " + escape(" ; ".join(documents)) + "</i>"
+
+
+def _question(chat: int, texte: str):
+    from ..modules.rag.reponse import repondre
+
+    r = repondre(texte)
+    if r["statut"] != "ok":
+        envoyer(chat, "Je n'ai pas trouvé la réponse dans mes fiches, et je préfère ne pas inventer.\n"
+                      f"Pour cette question, le mieux est de demander à {AGENT}.\n\n"
+                      "<b>Ce que je sais faire</b>\n"
+                      "• Te dire quoi planter, selon ton sol.\n"
+                      "• Surveiller ta culture selon la météo.\n"
+                      "• Examiner la photo d'une feuille malade.", reply_markup=CLAVIER)
+        return
+    sources = " ; ".join(_court(s["document"]) + (f", p. {s['page']}" if s["page"][:1].isdigit() else "")
+                         for s in r["sources"][:3])
+    reponse = escape(r["texte"].replace("**", ""))
+    envoyer(chat, f"{reponse}\n\n<i>Sources : {escape(sources)}</i>", reply_markup=CLAVIER)
 
 
 def traiter(maj: dict):
@@ -155,8 +288,10 @@ def traiter(maj: dict):
         if culture in CULTURES:
             ETATS.setdefault(chat, {})["culture"] = culture
             ETATS[chat]["attend_date"] = True
-            envoyer(chat, f"C'est noté : {CULTURES[culture]['libelle'].lower()}. "
-                          "Quand as-tu repiqué ? Écris la date comme ceci : 15/10")
+            envoyer(chat, f"C'est noté : {escape(CULTURES[culture]['libelle'].lower())}.\n\n"
+                          "<b>Dernière question</b>\nÀ quelle date l'as-tu repiquée ? "
+                          "Écris-la comme ceci : <b>15/10</b> pour le 15 octobre. "
+                          "Si tu ne sais plus, écris : <b>je ne sais pas</b>.")
         return
     msg = maj.get("message") or {}
     chat = (msg.get("chat") or {}).get("id")
@@ -168,45 +303,51 @@ def traiter(maj: dict):
     if "location" in msg:
         etat["lat"] = round(msg["location"]["latitude"], 2)
         etat["lon"] = round(msg["location"]["longitude"], 2)
+        envoyer(chat, "Merci, j'ai bien reçu la position de ton champ. Je la garde arrondie à environ 1 km, "
+                      "sans ton nom ni ton numéro.")
         _plan(chat)
     elif msg.get("photo"):
         _photo(chat, msg["photo"][-1]["file_id"], etat.get("culture"))
     elif texte.startswith("/start") or texte == B_AIDE:
         envoyer(chat, ACCUEIL, reply_markup=CLAVIER)
+    elif texte == B_PHOTO:
+        envoyer(chat, "<b>Envoie-moi la photo d'une feuille malade.</b>\n"
+                      "Touche le trombone en bas de l'écran, puis l'appareil photo.\n\n"
+                      "<b>Pour une bonne photo</b>\n" + CONSEILS_PHOTO, reply_markup=CLAVIER)
     elif texte == B_PLAN:
         if "lat" in etat:
             _plan(chat)
         else:
-            envoyer(chat, "Partage d'abord ta position avec le bouton 📍 (depuis ton champ).", reply_markup=CLAVIER)
+            envoyer(chat, "Je peux te dire quoi planter ce mois-ci, selon le sol de ton champ. "
+                          + DEMANDE_POSITION, reply_markup=CLAVIER)
     elif texte == B_ALERTES:
         if "lat" not in etat:
-            envoyer(chat, "Partage d'abord ta position avec le bouton 📍.", reply_markup=CLAVIER)
+            envoyer(chat, "Je peux surveiller ta culture avec la météo de ton champ. "
+                          + DEMANDE_POSITION, reply_markup=CLAVIER)
         elif "culture" in etat and not etat.get("attend_date"):
             _alertes(chat)
         else:
             boutons = [[{"text": c["libelle"], "callback_data": f"culture:{k}"}] for k, c in CULTURES.items()]
-            envoyer(chat, "Qu'est-ce que tu as planté ?", reply_markup={"inline_keyboard": boutons})
+            envoyer(chat, "<b>Quelle culture veux-tu que je surveille ?</b>\nChoisis-la dans la liste.",
+                    reply_markup={"inline_keyboard": boutons})
+    elif etat.get("attend_date") and re.fullmatch(r"(je )?ne sais (pas|plus)\.?", texte.lower()):
+        etat["repiquage"], etat["attend_date"] = None, False
+        envoyer(chat, "Pas de souci, je fais sans la date.")
+        if "lat" in etat:
+            _alertes(chat)
     elif etat.get("attend_date") and (m := re.fullmatch(r"(\d{1,2})[/.\- ](\d{1,2})", texte)):
         aujourdhui = dt.date.today()
         jour, mois = int(m.group(1)), int(m.group(2))
         try:
             date = dt.date(aujourdhui.year - (mois > aujourdhui.month), mois, jour)
         except ValueError:
-            envoyer(chat, "Je n'ai pas compris la date. Écris-la comme ceci : 15/10")
+            envoyer(chat, "Je n'ai pas compris la date. Écris-la comme ceci : <b>15/10</b> pour le 15 octobre.")
             return
         etat["repiquage"], etat["attend_date"] = date, False
         if "lat" in etat:
             _alertes(chat)
     elif texte:
-        from ..modules.rag.reponse import repondre
-
-        r = repondre(texte)
-        if r["statut"] != "ok":
-            envoyer(chat, "Je n'ai pas la réponse dans mes fiches. " + AGENT, reply_markup=CLAVIER)
-        else:
-            src = "\n".join(f"• {s['document']}" + (f", p. {s['page']}" if s["page"][:1].isdigit() else "")
-                             for s in r["sources"][:3])
-            envoyer(chat, f"{r['texte']}\n\nSources :\n{src}", reply_markup=CLAVIER)
+        _question(chat, texte)
 
 
 def _appel_silencieux(methode: str, **donnees):
