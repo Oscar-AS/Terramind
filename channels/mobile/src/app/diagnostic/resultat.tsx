@@ -1,5 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { ArrowsClockwise, FirstAidKit, Question, SealCheck, ShieldCheck, Warning } from 'phosphor-react-native';
+import {
+  CameraPlus, FirstAidKit, FrameCorners, type Icon, Leaf, Question, SealCheck, ShieldCheck, Sun, Warning,
+} from 'phosphor-react-native';
 import { useEffect, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
 
@@ -38,7 +40,14 @@ function Jauge({ valeur }: { valeur: number }) {
   );
 }
 
-// Étape 5b : résultat. Sous le seuil de confiance, on le dit et on n'annonce aucune maladie.
+/** Consignes pour une meilleure photo : une icône, une phrase courte. */
+const CONSIGNES: { Icone: Icon; texte: string }[] = [
+  { Icone: Leaf, texte: 'Une seule feuille malade' },
+  { Icone: FrameCorners, texte: 'De près : la feuille remplit la photo' },
+  { Icone: Sun, texte: 'À la lumière du jour, sans ombre' },
+];
+
+// Étape 5b : résultat. Le verdict d'abord, puis ce que l'agriculteur doit faire maintenant.
 export default function Resultat() {
   const { uri, type } = useLocalSearchParams<{ uri: string; type?: string }>();
   const [reponse, setReponse] = useState<Reponse<Diagnostic> | null>(null);
@@ -58,69 +67,121 @@ export default function Resultat() {
     setReponse(null);
     setEssai((e) => e + 1);
   };
+  const reprendre = () => router.back();
+
+  // Pendant l'analyse : la photo en grand, balayée (on montre que ça travaille).
+  if (!erreur && !reponse) {
+    return (
+      <Ecran titre="J’examine ta feuille…">
+        <View style={styles.cadrePhoto}>
+          <Image source={{ uri }} style={styles.photo} accessibilityLabel="Ta photo" />
+          <Balayage />
+        </View>
+      </Ecran>
+    );
+  }
 
   const incertain = reponse?.statut === 'incertain';
   const top = reponse?.donnees.predictions?.[0];
   const sain = top?.categorie === 'sain';
   const etat = incertain
-    ? { Icone: Question, titre: 'Je ne suis pas sûr', fond: couleurs.soleilClair, couleur: '#7A5A12' }
-    : sain ? { Icone: SealCheck, titre: top?.libelle ?? '', fond: couleurs.pousse, couleur: couleurs.foret }
-      : { Icone: Warning, titre: top?.libelle ?? '', fond: couleurs.terreClair, couleur: couleurs.terre };
-  const enCours = !erreur && !reponse;
+    ? { Icone: Question, sur: 'Je n’ai pas pu lire ta photo', titre: 'Reprends la photo', fond: couleurs.soleilClair, couleur: '#7A5A12' }
+    : sain ? { Icone: SealCheck, sur: 'Bonne nouvelle', titre: top?.libelle ?? '', fond: couleurs.pousse, couleur: couleurs.foret }
+      : { Icone: Warning, sur: 'Cela ressemble à', titre: top?.libelle ?? '', fond: couleurs.terreClair, couleur: couleurs.terre };
 
   return (
-    <Ecran titre={enCours ? 'J’examine ta feuille…' : 'Résultat'}>
-      <View style={styles.cadrePhoto}>
-        <Image source={{ uri }} style={styles.photo} accessibilityLabel="Ta photo" />
-        {enCours ? <Balayage /> : null}
-      </View>
+    <Ecran titre="Résultat">
       {erreur ? <Erreur texte={erreur} onReessayer={analyser} /> : null}
       {reponse && top ? (
         <>
+          {/* 1. Le verdict, avec la photo en vignette (l'agriculteur la connaît déjà). */}
           <Apparition ordre={0}>
             <View style={[styles.verdict, { backgroundColor: etat.fond }]}>
-              <Pastille Icone={etat.Icone} couleur={etat.couleur} fond={couleurs.carte} taille={56} />
-              <View style={{ flex: 1 }}>
-                <T v="etiquette" style={{ color: etat.couleur }}>{incertain ? 'Résultat incertain' : sain ? 'Bonne nouvelle' : 'Cela ressemble à'}</T>
-                <T style={[styles.verdictTitre, { color: couleurs.encre }]}>{etat.titre}</T>
+              <View>
+                <Image source={{ uri }} style={styles.vignette} accessibilityLabel="Ta photo" />
+                <View style={[styles.badgeVignette, { backgroundColor: etat.couleur }]}>
+                  <etat.Icone size={18} color={couleurs.blanc} weight="bold" />
+                </View>
+              </View>
+              <View style={{ flex: 1, gap: 2 }}>
+                <T v="etiquette" style={{ color: etat.couleur }}>{etat.sur}</T>
+                <T style={styles.verdictTitre}>{etat.titre}</T>
               </View>
             </View>
           </Apparition>
-          <Apparition ordre={1}><T v="corps">{reponse.message.texte}</T></Apparition>
-          {!incertain && !sain ? <Apparition ordre={2}><Carte><Jauge valeur={top.confiance} /></Carte></Apparition> : null}
-          {reponse.donnees.conseils ? (
-            <Apparition ordre={3}>
-              <Carte>
-                <View style={styles.conseilsTete}>
-                  <Pastille Icone={ShieldCheck} taille={40} />
-                  <T v="sousTitre" style={{ flex: 1 }}>Ce que tu peux faire</T>
-                </View>
-                {reponse.donnees.conseils.texte.split('\n').map((l) => (
-                  <T key={l} v="corps" style={{ fontSize: 17 }}>{l.replace(/^-\s*/, '• ')}</T>
-                ))}
-              </Carte>
-            </Apparition>
-          ) : null}
-          {!sain ? (
-            <Apparition ordre={4} style={styles.agent}>
-              <FirstAidKit size={24} color={couleurs.terre} weight="duotone" />
-              <T v="petit" style={{ flex: 1 }}>Pour un traitement, montre ta plante à un agent agricole. TerraMind ne donne ni produit ni dose.</T>
-            </Apparition>
-          ) : null}
+
+          {/* 2a. Incertain : comment faire une meilleure photo, puis le bouton pour recommencer. */}
+          {incertain ? (
+            <>
+              <Apparition ordre={1}>
+                <Carte>
+                  <T v="corpsGras">Pour que je puisse t’aider :</T>
+                  {CONSIGNES.map((c) => (
+                    <View key={c.texte} style={styles.consigne}>
+                      <Pastille Icone={c.Icone} taille={44} />
+                      <T v="corps" style={{ flex: 1 }}>{c.texte}</T>
+                    </View>
+                  ))}
+                </Carte>
+              </Apparition>
+              <Apparition ordre={2}><Bouton libelle="Reprendre la photo" Icone={CameraPlus} onPress={reprendre} /></Apparition>
+              <Apparition ordre={3} style={styles.agent}>
+                <FirstAidKit size={24} color={couleurs.terre} weight="duotone" />
+                <T v="petit" style={{ flex: 1 }}>Si la plante va mal, montre-la aussi à un agent agricole (ANCAR, service de l’agriculture).</T>
+              </Apparition>
+            </>
+          ) : (
+            <>
+              {/* 2b. Reconnu : confiance, puis ce qu'il faut faire. */}
+              {!sain ? (
+                <Apparition ordre={1}>
+                  <Carte>
+                    <T v="corps">Ce n’est qu’une première indication, pas un diagnostic sûr.</T>
+                    <Jauge valeur={top.confiance} />
+                  </Carte>
+                </Apparition>
+              ) : <Apparition ordre={1}><T v="corps">{reponse.message.texte}</T></Apparition>}
+              {reponse.donnees.conseils ? (
+                <Apparition ordre={2}>
+                  <Carte>
+                    <View style={styles.conseilsTete}>
+                      <Pastille Icone={ShieldCheck} taille={40} />
+                      <T v="sousTitre" style={{ flex: 1 }}>Ce que tu peux faire</T>
+                    </View>
+                    {reponse.donnees.conseils.texte.split('\n').map((l) => (
+                      <T key={l} v="corps" style={{ fontSize: 17 }}>{l.replace(/^-\s*/, '• ')}</T>
+                    ))}
+                  </Carte>
+                </Apparition>
+              ) : null}
+              {!sain ? (
+                <Apparition ordre={3} style={styles.agent}>
+                  <FirstAidKit size={24} color={couleurs.terre} weight="duotone" />
+                  <T v="petit" style={{ flex: 1 }}>Pour un traitement, montre ta plante à un agent agricole. TerraMind ne donne ni produit ni dose.</T>
+                </Apparition>
+              ) : null}
+              <Bouton libelle="Photographier une autre feuille" Icone={CameraPlus} onPress={reprendre} variante="clair" />
+            </>
+          )}
           <Sources sources={reponse.sources} />
         </>
       ) : null}
-      <Bouton libelle="Reprendre la photo" Icone={ArrowsClockwise} onPress={() => router.back()} variante="clair" />
     </Ecran>
   );
 }
 
 const styles = StyleSheet.create({
   cadrePhoto: { borderRadius: 28, overflow: 'hidden', backgroundColor: couleurs.pousse },
-  photo: { width: '100%', aspectRatio: 1.15 },
+  photo: { width: '100%', aspectRatio: 1 },
   ligne: { position: 'absolute', left: 0, right: 0, height: 4, backgroundColor: couleurs.soleil, shadowColor: couleurs.soleil, shadowOpacity: 0.9, shadowRadius: 10 },
-  verdict: { flexDirection: 'row', alignItems: 'center', gap: 14, borderRadius: 24, padding: 16 },
-  verdictTitre: { fontFamily: polices.titre, fontSize: 26, letterSpacing: -0.4 },
+  verdict: { flexDirection: 'row', alignItems: 'center', gap: 16, borderRadius: 24, padding: 14 },
+  vignette: { width: 84, height: 84, borderRadius: 18, backgroundColor: couleurs.carte },
+  badgeVignette: {
+    position: 'absolute', right: -6, bottom: -6, width: 30, height: 30, borderRadius: 15, alignItems: 'center',
+    justifyContent: 'center', borderWidth: 3, borderColor: couleurs.sable,
+  },
+  verdictTitre: { fontFamily: polices.titre, fontSize: 25, letterSpacing: -0.4, color: couleurs.encre },
+  consigne: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   jaugeTete: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   jauge: { height: 10, borderRadius: 5, backgroundColor: couleurs.sableFonce, overflow: 'hidden' },
   jaugeRemplie: { height: 10, borderRadius: 5, backgroundColor: couleurs.soleil },
