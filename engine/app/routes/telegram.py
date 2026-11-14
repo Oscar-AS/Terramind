@@ -65,7 +65,8 @@ ACCUEIL = (
     "3. Examiner la photo d'une feuille malade et t'expliquer quoi faire.\n\n"
     "<b>Par où commencer</b>\n"
     f"Partage la position de ton champ avec le bouton « {B_POSITION} », en bas de l'écran. "
-    "Tu peux aussi m'envoyer directement la photo d'une feuille, ou m'écrire ta question.\n\n"
+    "Tu peux aussi m'envoyer directement la photo d'une feuille, ou me poser ta question par écrit "
+    "ou en message vocal, en wolof ou en français.\n\n"
     "<i>Je ne donne jamais de nom de produit ni de dose : pour un traitement, je t'oriente vers "
     f"{AGENT}.</i>"
 )
@@ -231,6 +232,14 @@ def _alertes(chat: int):
         envoyer(chat, "La météo est momentanément indisponible. Réessaie dans quelques minutes.",
                 reply_markup=CLAVIER)
         return
+    culture = CULTURES[e["culture"]]["libelle"].lower()
+    if not d["alertes"]:  # aucune règle météo pour cette culture : ne pas dire « rien d'inquiétant »
+        dire(chat, "alerte_pas_de_regle")
+        envoyer(chat, f"<b>Pour ta culture ({escape(culture)}), je ne surveille pas encore la météo.</b>\n"
+                      "Je n'ai pas de règle sourcée qui relie le temps aux maladies de cette culture.\n\n"
+                      "<b>Ce que tu peux faire</b>\nSi une feuille a des taches, envoie-moi sa photo.",
+                reply_markup=CLAVIER)
+        return
     actives = [a["conseil"] for a in d["alertes"] if a["niveau"] != "aucun" and a["conseil"]]
     if actives:
         dire(chat, "alerte_intro")
@@ -240,7 +249,6 @@ def _alertes(chat: int):
     else:
         dire(chat, "alerte_rien")
     debut, fin = d["meteo"]["periode"]
-    culture = CULTURES[e["culture"]]["libelle"].lower()
     blocs = [f"<b>Ce que la météo annonce pour ta culture ({escape(culture)}) cette semaine</b>\n"
              f"J'ai regardé la météo de ton champ du {escape(str(debut))} au {escape(str(fin))}."]
     if actives:

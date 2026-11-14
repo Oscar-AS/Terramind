@@ -28,7 +28,7 @@ MESSAGES = [
     ("accueil", "après le choix du wolof", H,
      "Bonjour, je suis TerraMind, ton assistant pour le maraîchage. Je peux te dire quoi planter selon ton sol, "
      "surveiller ta culture avec la météo, et examiner la photo d'une feuille malade. Pour commencer, touche le "
-     "bouton qui envoie la position de ton champ. Je ne donne jamais de produit chimique : pour un traitement, "
+     "bouton qui envoie la position de ton champ. Tu peux aussi me poser ta question en message vocal. Je ne donne jamais de produit chimique : pour un traitement, "
      "je t'envoie vers un agent agricole."),
     ("demande_position", "position nécessaire", H,
      "Pour t'aider, j'ai besoin de connaître ton champ. Touche le bouton qui envoie la position de ton champ, "
@@ -75,6 +75,8 @@ MESSAGES = [
     ("alerte_rien", "aucune alerte", H,
      "Bonne nouvelle : la météo de cette semaine ne favorise aucune des maladies que je surveille pour ta "
      "culture. Reviens me demander la semaine prochaine."),
+    ("alerte_pas_de_regle", "culture sans règle météo (oignon, carotte, poivron, piment, jaxatu)", H,
+     "Pour cette culture, je ne surveille pas encore la météo. Si une feuille a des taches, envoie-moi sa photo."),
     ("alerte_intro", "avant les alertes", H,
      "Attention : la météo de cette semaine demande de surveiller ta culture."),
     ("eau_salee", "fin du plan de culture", H,

@@ -131,3 +131,14 @@ def test_toutes_les_cles_du_bot_sont_au_catalogue():
         {f"culture_{k}_{a}" for k in CULTURES for a in ("conseillee", "possible")} | \
         {f"alerte_{r}" for r in ("late_blight", "alternaria", "tuta_absoluta", "plutella_xylostella")}
     assert attendues <= catalogue, sorted(attendues - catalogue)
+
+
+def test_culture_sans_regle_meteo_pas_de_faux_rien_a_signaler():
+    telegram.ETATS.clear()
+    telegram.ETATS[9] = {"langue": "fr", "lat": 14.7, "lon": -17.2, "culture": "onion"}
+    vide = {"alertes": [], "meteo": {"source": "NASA POWER", "periode": ["2026-11-01", "2026-11-08"]}}
+    with mock.patch.object(telegram, "calculer", return_value=vide), mock.patch.object(telegram, "envoyer") as envoyer:
+        telegram._alertes(9)
+    texte = envoyer.call_args.args[1]
+    assert "je ne surveille pas encore la météo" in texte
+    assert "Bonne nouvelle" not in texte
