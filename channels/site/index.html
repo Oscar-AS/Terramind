@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TerraMind : le conseiller agricole des maraîchers des Niayes</title>
+  <meta name="description" content="Diagnostic photo, plan de culture, alertes météo et réponses sourcées, en français et en wolof, sur Telegram et sur Android.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            foret: '#1F4D3A', feuille: '#2F6B4A', pousse: '#DCEBD9', sable: '#F5EFE3', sablef: '#EADFC9',
+            carte: '#FFFCF6', soleil: '#E3A72F', soleilc: '#FBEFCF', terre: '#B4532A', encre: '#1B2620',
+            encred: '#4E5A52', trait: '#E2D8C4', voile: '#35604D', clair: '#CFE3D3', sombre2: '#2C3A32',
+            fondimg: '#FAF6EE', grisc: '#F0E9DA',
+          },
+          fontFamily: { sans: ['"Inter Tight"', 'system-ui', 'sans-serif'] },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { -webkit-font-smoothing: antialiased; }
+    .titre { letter-spacing: -0.055em; font-weight: 500; }
+    .titre-m { letter-spacing: -0.035em; font-weight: 500; }
+    details > summary { list-style: none; cursor: pointer; }
+    details > summary::-webkit-details-marker { display: none; }
+    .ecran::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-foret font-sans text-encre">
+
+<!-- Motif de la bande ondulée (un carreau de 78,6 px répété) -->
+<svg width="0" height="0" class="absolute" aria-hidden="true">
+  <defs>
+    <symbol id="carreau" viewBox="0 0 78.6 118">
+      <path d="M0 39 C36 39 44 0 69 0 Q74 0 74 5 L74 33 Q74 38 69 38 L52 38 C28 38 24 76 5 76 Q0 76 0 71 Z"/>
+      <path d="M0 117 C36 117 44 80 69 80 Q74 80 74 85 L74 118 L0 118 Z"/>
+      <rect x="73" y="111" width="6.6" height="7.5"/><rect x="0" y="116" width="78.6" height="2.5"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============ EN-TÊTE + HÉROS ============ -->
+<header class="bg-foret">
+  <div class="flex items-center justify-between px-10 pt-7 md:pt-8">
+    <a href="#" class="flex items-center gap-2.5 text-white" aria-label="TerraMind, accueil">
+      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#F5EFE3"/>
+        <path d="M6 27L19 14" stroke="#1F4D3A" stroke-width="2.6" stroke-linecap="round"/>
+      </svg>
+      <span class="text-[30px] leading-none titre-m" style="letter-spacing:-0.04em">terramind</span>
+    </a>
+    <button class="mr-0 md:mr-[110px] p-2 text-white" aria-label="Menu" onclick="document.getElementById('menu').classList.toggle('hidden')">
+      <svg width="22" height="14" viewBox="0 0 22 14" fill="none"><path d="M1 1h20M1 13h20" stroke="currentColor" stroke-width="1.6"/></svg>
+    </button>
+  </div>
+  <nav id="menu" class="hidden absolute right-6 md:right-[130px] top-20 z-30 w-60 rounded-xl bg-white p-2 text-[15px] shadow-xl">
+    <a class="block rounded-lg px-3 py-2 hover:bg-sablef" href="#fonctions">Ce que fait TerraMind</a>
+    <a class="block rounded-lg px-3 py-2 hover:bg-sablef" href="#sources">Nos sources</a>
+    <a class="block rounded-lg px-3 py-2 hover:bg-sablef" href="#faq">Questions fréquentes</a>
+    <a class="block rounded-lg px-3 py-2 hover:bg-sablef" href="https://t.me/TerraMindAfriqueBot">Ouvrir le bot Telegram</a>
+  </nav>
+</header>
+
+<section class="relative bg-foret">
+  <div class="mx-auto grid max-w-[1440px] items-center gap-12 px-10 pb-20 pt-16 md:grid-cols-2 md:px-10 md:pb-[150px] md:pl-[160px] md:pt-[188px]">
+    <div>
+      <div class="inline-flex items-center gap-2 rounded-md bg-voile px-3 py-[9px] text-[12px] text-clair">
+        <svg width="14" height="14" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#F5EFE3"/></svg>
+        <span><b class="font-semibold text-white">Demande à TerraMind.</b> Par où commencer ?</span>
+      </div>
+      <h1 class="titre mt-7 max-w-[540px] text-[44px] leading-[1.02] text-sable md:text-[72px] md:leading-[72px]">Un conseiller agricole qui répond vraiment aux maraîchers</h1>
+      <p class="mt-7 max-w-[480px] text-[18px] leading-[28px] text-clair md:text-[19px]">Envoie la photo d'une feuille, la position de ton champ ou ta question, en français ou en wolof. TerraMind te répond à partir de documents agricoles publiés et de la vraie météo de ton champ.</p>
+      <div class="mt-8 flex flex-wrap gap-2.5">
+        <a href="https://t.me/TerraMindAfriqueBot" class="inline-flex h-12 items-center gap-3 rounded-lg bg-white px-6 text-[17px] font-medium text-foret">Ouvrir le bot Telegram
+          <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 7h17M12 1l6 6-6 6" stroke="currentColor" stroke-width="1.6"/></svg></a>
+        <a data-apk href="#telecharger" class="inline-flex h-12 items-center rounded-lg bg-sable px-6 text-[17px] font-medium text-foret">Télécharger l'app</a>
+      </div>
+      <p data-apk-note class="mt-3 hidden text-[13px] text-clair"></p>
+    </div>
+
+    <!-- Téléphone : une vraie conversation avec le bot -->
+    <div class="relative mx-auto w-[270px] md:w-[300px]">
+      <div class="rounded-[44px] border-[7px] border-[#111] bg-white p-3 shadow-2xl">
+        <div class="mx-auto mb-3 h-6 w-28 rounded-full bg-[#111]"></div>
+        <div class="flex items-center gap-1.5 border-b border-gray-100 pb-2 text-[10px] font-semibold text-encre">
+          <span class="grid h-4 w-4 place-items-center rounded bg-foret"><svg width="9" height="9" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#fff"/></svg></span>
+          @TerraMindAfriqueBot
+        </div>
+        <div class="space-y-2.5 py-3 text-[9.5px] leading-[1.45]">
+          <div class="flex items-center gap-1 text-[9px] font-semibold"><span class="grid h-3.5 w-3.5 place-items-center rounded bg-foret"><svg width="7" height="7" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#fff"/></svg></span>TerraMind</div>
+          <div class="w-fit rounded-lg bg-gray-100 px-2.5 py-1.5">Envoie-moi la photo d'une feuille malade.</div>
+          <div class="ml-auto text-right text-[9px] font-semibold">Moussa</div>
+          <div class="ml-auto w-[62%] overflow-hidden rounded-lg bg-foret p-1">
+            <img src="https://placehold.co/300x200/3f8f5f/ffffff?text=Feuille+de+tomate" alt="Photo d'une feuille envoyée au bot" class="h-[70px] w-full rounded object-cover">
+          </div>
+          <div class="flex items-center gap-1 text-[9px] font-semibold"><span class="grid h-3.5 w-3.5 place-items-center rounded bg-foret"><svg width="7" height="7" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#fff"/></svg></span>TerraMind</div>
+          <div class="w-[88%] rounded-lg bg-gray-100 px-2.5 py-1.5">Cela ressemble à : Mildiou. Ce n'est qu'une première indication, pas un diagnostic sûr. Voici ce qu'il faut savoir, en 4 temps.</div>
+          <div class="ml-auto w-fit rounded-lg bg-foret px-2.5 py-1.5 text-white">Merci, je regarde le dessous des feuilles !</div>
+        </div>
+        <div class="flex items-center justify-between rounded-lg border border-gray-200 px-2.5 py-2 text-[9px] text-gray-400">Écris ou envoie un vocal…
+          <span class="grid h-4 w-4 place-items-center rounded bg-gray-200 text-gray-500">↑</span></div>
+        <p class="mt-2 text-center text-[8px] text-gray-400">Français ou wolof · gratuit</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bande ondulée : bleu → rose -->
+<div class="relative h-[118px] overflow-hidden bg-foret text-sable" aria-hidden="true">
+  <svg class="absolute inset-0 h-full w-full"><defs><pattern id="v1" width="78.6" height="118" patternUnits="userSpaceOnUse"><use href="#carreau" width="78.6" height="118" fill="currentColor"/></pattern></defs><rect width="100%" height="100%" fill="url(#v1)"/></svg>
+</div>
+
+<!-- ============ FONCTIONS (rose) ============ -->
+<section id="fonctions" class="relative z-10 rounded-b-[20px] bg-sable">
+  <div class="mx-auto max-w-[1440px] px-10 pt-20 md:px-20">
+    <div class="inline-flex items-center gap-2 rounded-md bg-sablef px-3 py-[9px] text-[12px] text-feuille">
+      <svg width="14" height="14" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#1F4D3A"/></svg>
+      <span><b class="font-semibold">Demande à TerraMind.</b> Qu'est-ce que tu sais faire ?</span>
+    </div>
+    <p class="mt-4 max-w-[1240px] text-[18px] leading-[28px] text-feuille md:text-[19px]">Aider chaque maraîcher des Niayes sans attendre le passage d'un agent : quoi planter selon ton sol et la saison, quelles maladies la météo de la semaine favorise, et ce qu'a ta plante quand une feuille se tache.</p>
+  </div>
+
+  <div class="mx-[10px] mt-[100px] rounded-[20px] bg-white px-10 py-10 md:px-[70px] md:py-[50px]" id="accordeon">
+    <details open class="border-b border-trait pb-10">
+      <summary class="text-[24px] font-medium tracking-[-0.02em]">Diagnostic photo</summary>
+      <p class="mt-3 text-[17px] leading-[26px]">Photographie une feuille malade. TerraMind reconnaît 20 problèmes de la tomate, de l'oignon, de la pomme de terre et du poivron, et t'explique en 4 temps : ce que c'est, pourquoi c'est arrivé, que faire maintenant, comment éviter que ça revienne. S'il n'est pas sûr, il te le dit.</p>
+      <a href="https://t.me/TerraMindAfriqueBot" class="mt-6 inline-flex h-12 w-[181px] items-center rounded-lg bg-foret px-6 text-[17px] font-medium text-white">Essayer</a>
+    </details>
+    <details class="border-b border-trait py-8">
+      <summary class="text-[24px] font-medium tracking-[-0.02em]">Plan de culture</summary>
+      <p class="mt-3 text-[17px] leading-[26px]">Partage la position de ton champ : TerraMind lit la carte des sols iSDAsoil et le guide de l'ISRA pour te dire quoi planter ce mois-ci parmi 8 cultures (tomate, pomme de terre, oignon, chou pommé, poivron, carotte, piment, jaxatu), avec les précautions pour le sel et l'acidité.</p>
+    </details>
+    <details class="border-b border-trait py-8">
+      <summary class="text-[24px] font-medium tracking-[-0.02em]">Alertes météo</summary>
+      <p class="mt-3 text-[17px] leading-[26px]">Dis-moi ta culture et sa date de plantation : la météo NASA POWER au point de ton champ indique chaque semaine si elle favorise le mildiou, l'alternariose, la mineuse, la teigne ou la noctuelle.</p>
+    </details>
+    <details class="border-b border-trait py-8">
+      <summary class="text-[24px] font-medium tracking-[-0.02em]">Questions libres</summary>
+      <p class="mt-3 text-[17px] leading-[26px]">Pose ta question par écrit ou en message vocal. La réponse vient uniquement des fiches de TerraMind ; si elles ne contiennent pas la réponse, il te le dit et t'oriente vers un agent agricole.</p>
+    </details>
+    <details class="border-b border-trait py-8">
+      <summary class="text-[24px] font-medium tracking-[-0.02em]">En wolof</summary>
+      <p class="mt-3 text-[17px] leading-[26px]">Le bot comprend les messages vocaux en wolof et te répond à voix haute. Les boutons sont numérotés, pour ceux qui ne lisent pas.</p>
+    </details>
+    <details class="pt-8">
+      <summary class="text-[24px] font-medium tracking-[-0.02em]">Sources</summary>
+      <p class="mt-3 text-[17px] leading-[26px]">Chaque conseil cite le document et la page d'où il vient : guide de l'ISRA et de la FAO, manuel de la Direction de la protection des végétaux, fiches du PADEN, INRAE…</p>
+    </details>
+  </div>
+
+  <div class="mx-auto max-w-[1440px] px-10 pt-[90px] md:px-20">
+    <span class="inline-block rounded-full border border-trait px-3 py-[5px] text-[12px] font-semibold text-feuille">Problème résolu</span>
+    <h2 class="titre mt-6 text-[52px] leading-[1.02] text-foret md:text-[64px] md:leading-[72px]">Des solutions concrètes,<br class="hidden md:block"> pas juste des réponses.</h2>
+    <p class="mt-7 max-w-[660px] text-[18px] leading-[28px] text-feuille md:text-[19px]">Un agent agricole ne peut pas passer dans chaque champ. TerraMind regarde ta feuille, ta météo et ton sol, puis te dit quoi faire maintenant, sans jamais donner de produit chimique ni de dose.</p>
+
+    <div class="mt-[70px] grid gap-[10px] md:grid-cols-2 md:items-start">
+      <!-- Carte blanche : le chemin d'une photo -->
+      <div class="grid min-h-[460px] place-items-center rounded-xl bg-white p-8 md:h-[740px]">
+        <div class="w-full max-w-[300px] text-[11px]">
+          <div class="flex items-center gap-1.5 font-semibold text-foret"><span class="grid h-4 w-4 place-items-center rounded bg-foret"><svg width="8" height="8" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#fff"/></svg></span>TerraMind</div>
+          <div class="mt-1.5 w-fit rounded-md bg-pousse px-2.5 py-1.5 text-foret">Envoie-moi la photo d'une feuille.</div>
+          <div class="mt-3 text-right font-semibold text-foret">Awa</div>
+          <div class="ml-auto mt-1 w-[70%] rounded-md bg-foret px-2.5 py-1.5 text-white">Mes feuilles de tomate ont des taches brunes. Voici la photo.</div>
+          <div class="mx-auto my-2 h-5 w-px bg-pousse"></div>
+          <div class="text-[10px] text-gray-400">○ Analyse</div>
+          <div class="mt-1.5 space-y-1.5">
+            <div class="flex justify-between rounded border border-pousse px-2 py-1.5 text-foret"><span>▣ Modèle photo</span><span class="text-[9px]">26 cas appris</span></div>
+            <div class="flex justify-between rounded border border-pousse px-2 py-1.5 text-foret"><span>◔ Seuil de confiance</span><span class="text-[9px]">sinon « je ne suis pas sûr »</span></div>
+            <div class="flex justify-between rounded border border-pousse px-2 py-1.5 text-foret"><span>▤ Fiche</span><span class="text-[9px]">Mildiou</span></div>
+            <div class="flex justify-between rounded border border-pousse px-2 py-1.5 text-foret"><span>✕ Produit ou dose</span><span class="text-[9px]">jamais</span></div>
+          </div>
+          <div class="mx-auto my-2 h-5 w-px bg-pousse"></div>
+          <div class="flex items-center gap-1.5 font-semibold text-foret"><span class="grid h-4 w-4 place-items-center rounded bg-foret"><svg width="8" height="8" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#fff"/></svg></span>TerraMind</div>
+          <div class="mt-1.5 rounded-md bg-pousse px-2.5 py-1.5 text-foret">Cela ressemble à : Mildiou. Ce n'est qu'une première indication, pas un diagnostic sûr. Pour un traitement, demande conseil à un agent agricole.</div>
+        </div>
+      </div>
+      <!-- Carte bleue : une réponse avec ses sources -->
+      <div class="rounded-xl bg-foret p-6 md:h-[535px] md:p-8">
+        <div class="ml-auto w-fit rounded-lg bg-sable px-3 py-2 text-[12px] text-foret">Comment éviter le mildiou ?</div>
+        <div class="mt-4 flex items-center gap-1.5 text-[12px] font-semibold text-white"><svg width="16" height="16" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#F5EFE3"/></svg>TerraMind</div>
+        <div class="mt-2 rounded-lg bg-white px-4 py-3 text-[12px] leading-[1.6] text-foret">Espace tes plants et arrose au pied, pas en pluie sur le feuillage, de préférence tôt le matin. Ne plante pas la tomate et la pomme de terre côte à côte, et fais tourner tes cultures.</div>
+        <div class="mt-5 text-[11px] text-clair">Sources</div>
+        <div class="mt-2 flex flex-col items-start gap-1.5 text-[11px] text-clair">
+          <span class="rounded bg-white/10 px-2 py-1">▤ Manuel DPV / PADEN, p. 90-91</span>
+          <span class="rounded bg-white/10 px-2 py-1">▤ Guide pratique du maraîchage au Sénégal (ISRA / FAO, 1987), p. 5</span>
+          <span class="rounded bg-white/10 px-2 py-1">▤ KCOA-Africa, production biologique de la tomate, p. 3</span>
+        </div>
+        <div class="ml-auto mt-5 w-fit rounded-lg bg-sable px-3 py-2 text-[12px] text-foret">Merci, c'est très clair !</div>
+      </div>
+    </div>
+
+    <h3 class="mt-[60px] text-[24px] font-medium tracking-[-0.02em] text-foret">Fini les réponses au hasard, place aux fiches vérifiées.</h3>
+    <p class="mt-3 max-w-[1280px] pb-20 text-[18px] leading-[28px] text-feuille md:text-[19px]">Les réponses de TerraMind viennent de 23 fiches écrites à partir de documents publiés, chacune avec sa source et sa page. Ce qui n'est pas dans une fiche, TerraMind ne l'invente pas.</p>
+  </div>
+</section>
+
+<!-- ============ BLEU : une minute ============ -->
+<section class="-mt-5 bg-foret">
+  <div class="mx-auto max-w-[1440px] px-10 pb-[70px] pt-[100px] md:px-20">
+    <svg width="44" height="15" viewBox="0 0 236 80" fill="#F5EFE3" aria-hidden="true"><use href="#carreau" x="0" width="78.6" height="118"/><use href="#carreau" x="78.6" width="78.6" height="118"/><use href="#carreau" x="157.2" width="78.6" height="118"/></svg>
+    <h2 class="titre-m mt-5 text-[34px] leading-[1.08] text-sable md:text-[44px] md:leading-[47px]">Prêt en une minute, sur le<br class="hidden md:block"> téléphone que tu as déjà</h2>
+    <p class="mt-6 max-w-[480px] text-[18px] leading-[28px] text-clair md:text-[19px]">Pas de compte à créer : ouvre Telegram, partage la position de ton champ, et TerraMind te répond. L'application Android fait la même chose.</p>
+  </div>
+
+  <!-- ============ SOURCES (carte blanche) ============ -->
+  <div id="sources" class="mx-[10px] rounded-[20px] bg-white px-10 pb-20 pt-20 md:px-[70px]">
+    <span class="inline-block rounded-full border border-pousse px-3 py-[5px] text-[12px] font-semibold text-feuille">Sources vérifiées</span>
+    <h2 class="titre mt-6 text-[52px] leading-[1.02] text-foret md:text-[64px] md:leading-[72px]">Des fiches écrites une fois.<br class="hidden md:block"> Vérifiées à chaque ligne.</h2>
+    <p class="mt-7 max-w-[660px] text-[18px] leading-[28px] text-feuille md:text-[19px]">Chaque phrase d'une fiche porte sa référence. Un vérificateur indépendant a ensuite relu les fiches contre leurs sources : 129 affirmations contrôlées au premier passage, 21 corrigées.</p>
+
+    <!-- Schéma : des documents publiés vers les deux façades -->
+    <div class="mt-[80px] grid min-h-[420px] place-items-center rounded-[20px] bg-fondimg p-6 md:h-[686px]">
+      <div class="grid w-full max-w-[900px] items-center gap-6 md:grid-cols-[1fr_auto_1fr]">
+        <div class="rounded-xl bg-white p-4 text-[12px] shadow-sm">
+          <div class="mb-2 text-[10px] font-semibold text-foret">● Documents publiés</div>
+          <ul class="space-y-1.5 text-encre">
+            <li>☑ Guide du maraîchage au Sénégal, ISRA / FAO</li>
+            <li>☑ Manuel des ravageurs des Niayes, DPV</li>
+            <li>☑ Fiches oignon et chou, PADEN / ISRA-CDH</li>
+            <li>☑ Ephytia, INRAE</li>
+            <li>☑ Carte des sols iSDAsoil</li>
+            <li>☑ Météo NASA POWER</li>
+          </ul>
+        </div>
+        <div class="mx-auto grid h-20 w-20 place-items-center rounded-full bg-pousse">
+          <div class="grid h-12 w-12 place-items-center rounded-full bg-foret"><svg width="22" height="22" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#fff"/></svg></div>
+        </div>
+        <div class="space-y-3">
+          <div class="rounded-xl bg-white p-4 text-[12px] shadow-sm"><div class="mb-1 text-[10px] font-semibold text-foret">● Bot Telegram</div>Réponses écrites et vocales, français ou wolof</div>
+          <div class="rounded-xl bg-white p-4 text-[12px] shadow-sm"><div class="mb-1 text-[10px] font-semibold text-foret">● Application Android</div>Plan, alertes, diagnostic photo</div>
+        </div>
+      </div>
+    </div>
+    <p class="mt-[70px] max-w-[720px] text-[24px] leading-[37px] text-encre">Un seul moteur lit les fiches, la carte des sols et la météo de ton champ, et sert à la fois le bot Telegram et l'application.</p>
+  </div>
+
+  <div class="mx-auto max-w-[1440px] px-10 pb-[85px] pt-[90px] md:px-20">
+    <svg width="44" height="15" viewBox="0 0 236 80" fill="#F5EFE3" aria-hidden="true"><use href="#carreau" x="0" width="78.6" height="118"/><use href="#carreau" x="78.6" width="78.6" height="118"/><use href="#carreau" x="157.2" width="78.6" height="118"/></svg>
+    <h2 class="titre-m mt-5 text-[34px] leading-[1.08] text-sable md:text-[44px] md:leading-[47px]">Le ton d'un conseiller,<br class="hidden md:block"> la langue de chez toi.</h2>
+    <p class="mt-6 max-w-[440px] text-[18px] leading-[28px] text-clair md:text-[19px]">TerraMind te tutoie et t'explique pas à pas, sans jargon, en français ou en wolof.</p>
+  </div>
+</section>
+
+<!-- Bande ondulée : bleu → gris -->
+<div class="relative h-[118px] overflow-hidden bg-foret text-sablef" aria-hidden="true">
+  <svg class="absolute inset-0 h-full w-full"><defs><pattern id="v2" width="78.6" height="118" patternUnits="userSpaceOnUse"><use href="#carreau" width="78.6" height="118" fill="currentColor"/></pattern></defs><rect width="100%" height="100%" fill="url(#v2)"/></svg>
+</div>
+
+<!-- ============ GRIS : la bibliothèque ============ -->
+<section class="bg-sablef">
+  <div class="mx-auto max-w-[1440px] px-10 pt-20 md:px-20">
+    <span class="inline-block rounded-full border border-trait px-3 py-[5px] text-[12px] font-semibold text-feuille">Bibliothèque partagée</span>
+    <h2 class="titre mt-6 text-[52px] leading-[1.02] md:text-[64px] md:leading-[72px]">Un espace où les agronomes<br class="hidden md:block"> et l'IA travaillent ensemble</h2>
+    <p class="mt-7 max-w-[660px] text-[18px] leading-[28px] md:text-[19px]">Les fiches sont écrites à partir des documents des agronomes et relues par l'équipe ; l'IA s'en sert seulement pour formuler la réponse. Elle ne peut rien ajouter : si la réponse n'est pas dans une fiche, elle le dit.</p>
+    <a href="#faq" class="mt-7 inline-flex h-12 items-center rounded-lg bg-foret px-6 text-[17px] font-medium text-white">Voir les questions</a>
+
+    <!-- Tablette : la vraie liste des fiches -->
+    <div class="mt-[90px] rounded-[40px] bg-[#111] p-[10px] md:p-[38px] md:pb-[38px]">
+      <div class="ecran overflow-x-auto rounded-[22px] bg-white">
+        <div class="flex min-w-[860px] text-[12.5px]">
+          <aside class="w-[230px] shrink-0 border-r border-gray-100 bg-carte p-4">
+            <div class="mb-4 flex items-center gap-2 font-medium"><span class="grid h-5 w-5 place-items-center rounded bg-foret"><svg width="10" height="10" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#fff"/></svg></span>Fiches</div>
+            <div class="flex justify-between rounded-md bg-gray-100 px-2 py-1.5"><span>Toutes</span><span class="text-gray-400">23</span></div>
+            <div class="flex justify-between px-2 py-1.5 text-gray-600"><span>Maladies</span><span class="text-gray-400">9</span></div>
+            <div class="flex justify-between px-2 py-1.5 text-gray-600"><span>Ravageurs</span><span class="text-gray-400">6</span></div>
+            <div class="flex justify-between px-2 py-1.5 text-gray-600"><span>Accidents</span><span class="text-gray-400">2</span></div>
+            <div class="flex justify-between px-2 py-1.5 text-gray-600"><span>Cultures</span><span class="text-gray-400">5</span></div>
+            <div class="flex justify-between px-2 py-1.5 text-gray-600"><span>Sol et eau</span><span class="text-gray-400">1</span></div>
+          </aside>
+          <div class="flex-1">
+            <div class="flex gap-6 border-b border-gray-100 px-6 py-3 text-gray-500"><span>≡ Filtrer</span><span>⇅ Trier</span></div>
+            <div id="liste-fiches"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-[90px] space-y-[10px] pb-[85px]">
+      <div class="rounded-xl border border-trait bg-grisc px-10 pb-14 text-center">
+        <div class="grid min-h-[300px] place-items-center md:min-h-[480px]"><div class="mx-auto w-full max-w-[420px] rounded-xl border-2 border-foret bg-white p-3 text-left text-[11px] shadow-sm">
+          <div class="flex gap-2 text-[10px] text-gray-500"><span class="rounded bg-gray-100 px-1.5">Telegram ⌄</span><span>à Fatou</span></div>
+          <p class="mt-2">Ton sol contient surtout du sable. Ce mois-ci, tu peux planter la tomate, l'oignon et le chou.</p>
+          <div class="mt-2 border-t border-gray-100 pt-2 font-medium">🌿 TerraMind prépare ta réponse…</div>
+        </div></div>
+        <h3 class="text-[18px] font-medium">Une réponse sur Telegram ou dans l'app</h3>
+        <p class="mx-auto mt-2 max-w-[900px] text-[16px]">Un seul moteur pour les deux : la même réponse, la même source, que tu passes par le bot ou par l'application.</p>
+      </div>
+      <div class="rounded-xl border border-trait bg-grisc px-10 pb-14 text-center">
+        <div class="grid min-h-[300px] place-items-center md:min-h-[480px]"><div class="mx-auto w-full max-w-[420px] rounded-xl bg-white p-3 text-left text-[11px] shadow-sm">
+          <div class="font-semibold">Moussa <span class="font-normal text-gray-400">· il y a 2 min</span></div>
+          <p class="mt-1 text-gray-600">Quel produit je dois mettre sur ma tomate, et combien ?</p>
+          <div class="mt-3 border-t border-gray-100 pt-2 font-semibold">TerraMind</div>
+          <p class="mt-1 text-gray-600">Je ne donne jamais de nom de produit ni de dose : une erreur peut tuer ta plante. Pour un traitement, demande conseil à un agent agricole (ANCAR, service départemental de l'agriculture).</p>
+        </div></div>
+        <h3 class="text-[18px] font-medium">Une indication, jamais un traitement</h3>
+        <p class="mx-auto mt-2 max-w-[900px] text-[16px]">TerraMind t'aide à comprendre et à prévenir. Pour soigner avec un produit, il t'oriente toujours vers un agent agricole.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bande ondulée : gris → bleu -->
+<div class="relative h-[118px] overflow-hidden bg-sablef text-foret" aria-hidden="true">
+  <svg class="absolute inset-0 h-full w-full"><defs><pattern id="v3" width="78.6" height="118" patternUnits="userSpaceOnUse"><use href="#carreau" width="78.6" height="118" fill="currentColor"/></pattern></defs><rect width="100%" height="100%" fill="url(#v3)"/></svg>
+</div>
+
+<!-- ============ BLEU : modèle économique ============ -->
+<section class="bg-foret">
+  <div class="mx-auto max-w-[1440px] px-10 pb-20 pt-[85px] text-center md:px-20">
+    <h2 class="titre text-[52px] leading-[1.02] text-sable md:text-[64px] md:leading-[72px]">Gratuit pour les agriculteurs.<br class="hidden md:block"> Financé par les données.</h2>
+    <p class="mt-6 text-[18px] text-clair md:text-[19px]">Le modèle visé : les instituts s'abonnent à des données anonymes, les maraîchers ne paient rien.</p>
+    <a href="#faq" class="mt-7 inline-flex h-12 items-center gap-3 rounded-lg bg-sable px-6 text-[17px] font-medium text-foret">Comprendre le modèle
+      <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 7h17M12 1l6 6-6 6" stroke="currentColor" stroke-width="1.6"/></svg></a>
+  </div>
+
+  <!-- ============ CARTE BLANCHE : démarrer ============ -->
+  <div id="telecharger" class="mx-[10px] overflow-hidden rounded-[20px] bg-white px-10 pb-20 pt-20 md:px-[70px]">
+    <span class="inline-block rounded-full border border-pousse px-3 py-[5px] text-[12px] font-semibold text-feuille">Rien à installer</span>
+    <h2 class="titre mt-6 text-[52px] leading-[1.02] md:text-[64px] md:leading-[72px]">Prêt en une minute.<br> Sans rien installer.</h2>
+    <p class="mt-6 max-w-[420px] text-[18px] leading-[28px] md:text-[19px]">Ouvre @TerraMindAfriqueBot sur Telegram, choisis ta langue et partage la position de ton champ. C'est tout.</p>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="https://t.me/TerraMindAfriqueBot" class="inline-flex h-12 items-center gap-3 rounded-lg bg-foret px-6 text-[17px] font-medium text-white">Commencer
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 7h17M12 1l6 6-6 6" stroke="currentColor" stroke-width="1.6"/></svg></a>
+      <a href="#faq" class="inline-flex h-12 items-center rounded-lg bg-pousse px-6 text-[17px] font-medium text-foret">En savoir plus</a>
+    </div>
+
+    <!-- Téléphone incliné sur une forme rose -->
+    <div class="relative mx-auto mt-10 h-[520px] max-w-[1120px] md:-mt-[90px] md:h-[900px]">
+      <div class="absolute bottom-0 left-[5%] right-[5%] top-[18%] rounded-[44%_56%_40%_60%/55%_45%_55%_45%] bg-sable md:left-[7%] md:right-[12%]"></div>
+      <div class="absolute left-1/2 top-[4%] w-[250px] -translate-x-1/2 rotate-[14deg] md:left-[58%] md:w-[360px]">
+        <div class="rounded-[48px] border-[9px] border-[#C9C2B8] bg-black p-4 text-white shadow-2xl">
+          <div class="flex items-center gap-1.5 text-[11px] font-semibold"><span class="grid h-4 w-4 place-items-center rounded bg-foret"><svg width="8" height="8" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#fff"/></svg></span>TerraMind</div>
+          <div class="mt-4 space-y-3 text-[11px] italic leading-[1.5] md:text-[12px]">
+            <div class="ml-auto w-fit text-right font-semibold not-italic">Aminata</div>
+            <div class="ml-auto w-fit rounded-xl bg-white px-3 py-2 text-black">Que planter dans mon champ ?</div>
+            <div class="rounded-xl bg-[#2A2A2A] px-3 py-2">Envoie-moi d'abord la position de ton champ, avec le bouton en bas de l'écran.</div>
+            <div class="text-center text-gray-400">Position reçue.</div>
+            <div class="rounded-xl bg-[#2A2A2A] px-3 py-2">Voici ce que tu peux planter ce mois-ci, selon le sol de ton champ et la saison.</div>
+            <div class="ml-auto w-fit rounded-xl bg-white px-3 py-2 text-black">Et pour l'oignon ?</div>
+            <div class="w-fit rounded-xl bg-[#2A2A2A] px-3 py-2 text-gray-400">En train d'écrire…</div>
+          </div>
+          <div class="mt-6 rounded-xl border border-white/20 px-3 py-2 text-[11px] text-gray-400">Écris ou envoie un vocal…</div>
+          <p class="mt-3 text-center text-[9px] text-gray-500">Réponses tirées de fiches sourcées</p>
+        </div>
+      </div>
+      <div class="absolute bottom-[14%] right-[2%] hidden w-[560px] rounded-xl bg-white p-4 text-[13px] shadow-[0_8px_30px_rgba(0,0,0,0.12)] md:block">
+        <div class="flex items-center gap-3 border-b border-gray-100 pb-3 text-gray-500"><span class="rounded-md bg-gray-100 px-2 py-1 text-encre">Telegram ⌄</span>à Aminata</div>
+        <p class="mt-3 leading-[1.7]">Pour l'oignon : c'est la bonne période pour semer ou planter. Une précaution : si l'eau de ton puits est salée, évite l'oignon et la carotte.</p>
+        <div class="mt-3 flex items-center gap-2 border-t border-gray-100 pt-3 font-medium"><svg width="22" height="22" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#1F4D3A"/></svg>TerraMind prépare ta réponse…</div>
+      </div>
+    </div>
+
+    <h3 class="mt-[60px] text-[24px] font-medium tracking-[-0.02em] text-foret">En ligne en une minute, utile dès le premier jour.</h3>
+    <p class="mt-4 max-w-[1280px] text-[22px] leading-[32px] md:text-[28px] md:leading-[36px]">Le moteur de TerraMind tourne déjà en ligne : le bot Telegram répond à toute heure. La première demande peut prendre environ une minute, le temps que le serveur gratuit se réveille.</p>
+  </div>
+
+  <!-- ============ FAQ ============ -->
+  <div id="faq" class="mx-auto max-w-[1440px] px-10 pb-20 pt-[90px] md:px-20">
+    <h2 class="text-[28px] font-medium tracking-[-0.02em] text-sable">Questions fréquentes</h2>
+    <div id="liste-faq" class="mt-8 space-y-[10px]"></div>
+  </div>
+</section>
+
+<!-- ============ SOMBRE : sécurité ============ -->
+<section class="-mt-px rounded-t-[20px] bg-encre">
+  <div class="mx-auto max-w-[1440px] px-10 pb-20 pt-20 md:px-20">
+    <div class="inline-flex items-center gap-2 rounded-md bg-sombre2 px-3 py-[9px] text-[12px] text-sable">
+      <svg width="14" height="14" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#F5EFE3"/></svg>
+      <span><b class="font-semibold text-white">Demande à TerraMind.</b> Mes données sont-elles protégées ?</span>
+    </div>
+    <h2 class="titre-m mt-6 text-[34px] leading-[1.1] text-sable md:text-[44px]">Code ouvert, données protégées.</h2>
+    <p class="mt-6 max-w-[360px] text-[16px] leading-[22px] text-sable">Ni numéro ni photo conservés, position arrondie à environ 1 km, secrets hors du code. Le code est sous licence MIT.</p>
+    <a href="#faq-securite" class="mt-7 inline-flex h-12 items-center rounded-lg bg-sombre2 px-6 text-[17px] font-medium text-sable">Comment on te protège</a>
+  </div>
+</section>
+
+<!-- ============ BLANC : appel final + pied de page ============ -->
+<section class="-mt-5 rounded-t-[20px] bg-white">
+  <div class="mx-auto max-w-[1440px] px-10 pb-16 pt-20 md:px-20">
+    <h2 class="titre text-[52px] leading-[1.02] text-foret md:text-[64px] md:leading-[72px]">Tu as vu comment ça marche.<br> À toi de l'essayer.</h2>
+    <p class="mt-7 max-w-[640px] text-[18px] leading-[28px] md:text-[19px]">Ouvre TerraMind sur Telegram et pose ta première question, en français ou en wolof. C'est gratuit.</p>
+    <a href="https://t.me/TerraMindAfriqueBot" class="mt-7 inline-flex h-12 items-center rounded-lg bg-foret px-6 text-[17px] font-medium text-white">Ouvrir le bot</a>
+
+    <footer class="mt-[130px] space-y-12 text-[16px]">
+      <div>
+        <div class="text-[18px] font-medium">Produit</div>
+        <ul class="mt-4 space-y-2">
+          <li><a href="#fonctions">Diagnostic photo</a></li>
+          <li><a href="#fonctions">Plan de culture</a></li>
+          <li><a href="#fonctions">Alertes météo</a></li>
+          <li><a href="#fonctions">Questions libres</a></li>
+          <li><a href="#fonctions">En wolof</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="text-[18px] font-medium">Ressources</div>
+        <ul class="mt-4 space-y-2">
+          <li><a href="#sources">Nos sources</a></li>
+          <li><a href="#faq">Questions fréquentes</a></li>
+          <li><a href="https://t.me/TerraMindAfriqueBot">Bot Telegram</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="text-[18px] font-medium">TerraMind Afrique</div>
+        <p class="mt-4 text-gray-600">PAS Challenge 2026 · SALTIS<br>Maraîchage dans les Niayes, Sénégal</p>
+      </div>
+    </footer>
+  </div>
+</section>
+
+<!-- Bouton rond flottant (comme le lanceur de discussion de la maquette) -->
+<a href="https://t.me/TerraMindAfriqueBot" class="fixed bottom-6 right-4 z-40 grid h-12 w-12 place-items-center rounded-full border-2 border-white/80 bg-encre shadow-lg md:right-4" aria-label="Discuter avec TerraMind sur Telegram">
+  <svg width="22" height="22" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#fff"/><path d="M6 27L19 14" stroke="#1B2620" stroke-width="2.6" stroke-linecap="round"/></svg>
+</a>
+
+<script>
+  // Lien de l'APK : à remplir quand l'APK sera compilé (compte Expo de l'équipe). Vide = pas encore disponible.
+  const APK_URL = '';
+
+  // Le bouton « Télécharger l'app » : APK sur Android si le lien existe ; sinon, on dit honnêtement où on en est.
+  (function () {
+    const android = /Android/i.test(navigator.userAgent);
+    document.querySelectorAll('[data-apk]').forEach((a) => {
+      const note = document.querySelector('[data-apk-note]');
+      if (APK_URL && android) { a.href = APK_URL; a.setAttribute('download', ''); return; }
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        note.textContent = APK_URL
+          ? "L'application est pour Android : ouvre cette page sur ton téléphone Android pour la télécharger. Sinon, utilise le bot Telegram."
+          : "L'application Android arrive bientôt. En attendant, tout marche déjà sur le bot Telegram.";
+        note.classList.remove('hidden');
+      });
+    });
+  })();
+
+  // Accordéon des fonctions : une seule section ouverte à la fois.
+  document.querySelectorAll('#accordeon details').forEach((d) => {
+    d.addEventListener('toggle', () => {
+      if (d.open) document.querySelectorAll('#accordeon details').forEach((o) => { if (o !== d) o.open = false; });
+    });
+  });
+
+  // La vraie liste des fiches (content/fiches/, titres et sources principales).
+  const FICHES = [
+    ['Maladies', 9, '#E8467C', [
+      ['Mildiou (tomate, pomme de terre)', 'Taches brunes aux bords flous, duvet blanc dessous', 'DPV, ISRA / FAO'],
+      ['Alternariose (tomate, pomme de terre)', 'Taches rondes à cercles, comme une cible', 'DPV, ISRA / FAO'],
+      ['Flétrissement bactérien de la tomate', 'Les feuilles ramollissent et se fanent, d\'abord les plus jeunes', 'FAO / ISRA-CDH'],
+    ]],
+    ['Ravageurs', 6, '#E8A53A', [
+      ['Mineuse de la tomate (Tuta absoluta)', 'Galeries claires dans les feuilles et les fruits', 'DPV, thèse Sylla'],
+      ['Teigne du chou (Plutella xylostella)', 'Feuilles mangées en « fenêtres » par-dessous', 'DPV, ISRA-CDH'],
+    ]],
+    ['Accidents', 2, '#5BB8E8', [
+      ['Nécrose apicale (cul noir)', 'Tache noire et ronde à la base du fruit', 'DPV'],
+      ['Coup de soleil sur les fruits', 'Brûlure du fruit sur la partie exposée au soleil', 'DPV'],
+    ]],
+    ['Cultures', 5, '#9CA3AF', [
+      ['Cultiver l\'oignon', 'Semis, sol, pépinière, récolte', 'Ministère de l\'Agriculture, ISRA / FAO'],
+      ['Cultiver le chou pommé', 'Quand, variétés, sol, ravageurs', 'PADEN, ISRA / FAO'],
+    ]],
+  ];
+  document.getElementById('liste-fiches').innerHTML = FICHES.map(([groupe, n, couleur, lignes]) => `
+    <div class="flex items-center gap-3 border-b border-gray-100 bg-carte px-6 py-2.5">
+      <span class="text-gray-400">⌄</span><span style="color:${couleur}">||||</span><b class="font-medium">${groupe}</b><span class="text-gray-400">· ${n}</span>
+    </div>` + lignes.map(([t, d, s]) => `
+    <div class="flex items-center gap-4 border-b border-gray-100 px-6 py-3">
+      <span class="h-3.5 w-3.5 rounded border border-gray-300"></span><span style="color:${couleur}">||||</span>
+      <span class="w-[270px] shrink-0 truncate font-medium underline decoration-gray-200 underline-offset-4">${t}</span>
+      <span class="flex-1 truncate text-gray-500">${d}</span>
+      <span class="shrink-0 text-gray-500">${s}</span>
+    </div>`).join('')).join('');
+
+  // Questions fréquentes (liste voulue par Salam ; chaque réponse vérifiée dans le code et les fiches).
+  const FAQ = [
+    ['Quel est votre pitch en une phrase ?', "TerraMind aide les petits maraîchers des Niayes à choisir quoi planter selon leur sol et la saison, à anticiper les maladies grâce à la météo et à reconnaître une maladie sur la photo d'une feuille, en citant pour chaque conseil le document d'où il vient."],
+    ['Pourquoi un bot Telegram plutôt que WhatsApp, plus utilisé ?', "Pour faire répondre un bot sur WhatsApp, Meta exige le statut officiel d'entreprise. TerraMind est encore un projet de hackathon et n'a pas ce statut ; Telegram permet de servir les agriculteurs dès maintenant."],
+    ['Pourquoi faire confiance à ce que TerraMind dit ?', "Le bot fonctionne par génération augmentée par la recherche (RAG) : il cherche d'abord le passage utile dans ses fiches, puis l'IA reformule ce passage, sans rien ajouter. Les fiches viennent de documents publiés (guide ISRA / FAO de 1987, manuel de la DPV, fiches du PADEN et de l'ISRA-CDH, FAO, INRAE…) ; chaque phrase porte sa source, et un vérificateur indépendant les a relues contre ces sources."],
+    ['Quel est l\'impact du climat dans ce projet ?', "La météo réelle de ton champ (NASA POWER) sert à prévenir : chaque semaine, TerraMind regarde si l'humidité et la température favorisent le mildiou ou l'alternariose, et calcule les générations de ravageurs comme la mineuse ou la teigne. Ces règles viennent d'études faites hors du Sénégal : TerraMind parle de conditions favorables, pas de maladie certaine."],
+    ['Et si TerraMind n\'a pas la réponse ?', "Il le dit, et t'oriente vers un agent agricole (ANCAR, service départemental de l'agriculture). Il ne devine pas."],
+    ['Et si TerraMind donne un traitement qui tue nos plantes ?', "Il ne peut pas : TerraMind ne propose jamais de nom de produit chimique ni de dose, parce qu'une erreur de produit peut tuer la plante. Pour un traitement, il renvoie toujours vers un agent agricole."],
+    ['TerraMind est-il rentable ?', "C'est le modèle visé : l'application reste gratuite pour les agriculteurs, et des instituts paieraient un abonnement pour accéder à des données agrégées et anonymes (maladies signalées, risques météo). Ces données aideraient à orienter les politiques agricoles et resteraient au Sénégal. Ce service n'a pas encore de clients : il est en préparation."],
+    ['TerraMind marche-t-il pour toutes les cultures et toutes les zones ?', "Non. Pour le hackathon, TerraMind couvre la zone des Niayes et 8 cultures : tomate, pomme de terre, oignon, chou pommé, poivron, carotte, piment et jaxatu. Le diagnostic photo reconnaît des problèmes de la tomate, de l'oignon, de la pomme de terre et du poivron."],
+    ['Sous quels formats TerraMind est-il disponible ?', "Pour les agriculteurs : le bot Telegram @TerraMindAfriqueBot, disponible dès maintenant, et une application Android à télécharger."],
+    ['Comment les clients accèdent-ils aux données ?', "Le modèle prévu est un tableau de bord en ligne, accessible par abonnement mensuel. Il est en cours de conception."],
+    ['Quelle est la suite ?', "Si TerraMind est retenu, deux choses seront nécessaires pour l'ouvrir au grand public : le statut d'entreprise officielle, pour proposer aussi le bot sur WhatsApp, et un forfait d'hébergement cloud payant, pour que le serveur ne se mette plus en veille et réponde vite à beaucoup d'agriculteurs à la fois."],
+    ['La sécurité de TerraMind est-elle garantie ?', "Aucun système n'est sûr à 100 %, mais nous limitons ce que nous gardant au strict nécessaire : la position du champ est arrondie à environ 1 km, aucun numéro ni aucune photo ne sont conservés, les journaux du serveur n'enregistrent pas le contenu des messages, les webhooks sont protégés par un jeton secret, et les clés d'accès restent hors du code et de l'image du serveur.", 'faq-securite'],
+    ['Pourquoi le bot met-il environ une minute à répondre parfois ?', "Le moteur est hébergé sur l'offre gratuite de Render, qui met le serveur en veille quand personne ne l'utilise. La première demande le réveille (environ une minute), les suivantes sont rapides. Le forfait d'hébergement cloud prévu pour l'ouverture au grand public supprimera ce délai."],
+  ];
+  document.getElementById('liste-faq').innerHTML = FAQ.map(([q, r, id]) => `
+    <details ${id ? `id="${id}"` : ''} class="group rounded-xl border border-white/25 px-3 py-3">
+      <summary class="flex items-center gap-4">
+        <span class="grid h-[62px] w-[62px] shrink-0 place-items-center rounded-lg bg-white/10">
+          <svg width="22" height="22" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#F5EFE3"/></svg></span>
+        <span><span class="block text-[16px] font-medium text-white">${q}</span>
+        <span class="block text-[14px] text-clair group-open:hidden">Voir la réponse</span></span>
+      </summary>
+      <p class="ml-[78px] mt-2 max-w-[900px] pb-2 text-[15px] leading-[24px] text-clair">${r}</p>
+    </details>`).join('');
+</script>
+</body>
+</html>
