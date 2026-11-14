@@ -1,0 +1,45 @@
+source,classe,images,licence
+plantvillage,"Pepper,_bell___Bacterial_spot",997,CC BY-SA 3.0
+plantvillage,"Pepper,_bell___healthy",1478,CC BY-SA 3.0
+plantvillage,Potato___Early_blight,1000,CC BY-SA 3.0
+plantvillage,Potato___Late_blight,1000,CC BY-SA 3.0
+plantvillage,Potato___healthy,152,CC BY-SA 3.0
+plantvillage,Tomato___Bacterial_spot,2127,CC BY-SA 3.0
+plantvillage,Tomato___Early_blight,1000,CC BY-SA 3.0
+plantvillage,Tomato___Late_blight,1909,CC BY-SA 3.0
+plantvillage,Tomato___Leaf_Mold,952,CC BY-SA 3.0
+plantvillage,Tomato___Septoria_leaf_spot,1771,CC BY-SA 3.0
+plantvillage,Tomato___Spider_mites Two-spotted_spider_mite,1676,CC BY-SA 3.0
+plantvillage,Tomato___Target_Spot,1404,CC BY-SA 3.0
+plantvillage,Tomato___Tomato_Yellow_Leaf_Curl_Virus,5357,CC BY-SA 3.0
+plantvillage,Tomato___Tomato_mosaic_virus,373,CC BY-SA 3.0
+plantvillage,Tomato___healthy,1591,CC BY-SA 3.0
+plantdoc,test/Bell_pepper leaf,8,CC BY 4.0
+plantdoc,test/Bell_pepper leaf spot,9,CC BY 4.0
+plantdoc,test/Potato leaf early blight,8,CC BY 4.0
+plantdoc,test/Potato leaf late blight,8,CC BY 4.0
+plantdoc,test/Tomato Early blight leaf,9,CC BY 4.0
+plantdoc,test/Tomato Septoria leaf spot,11,CC BY 4.0
+plantdoc,test/Tomato leaf,8,CC BY 4.0
+plantdoc,test/Tomato leaf bacterial spot,9,CC BY 4.0
+plantdoc,test/Tomato leaf late blight,10,CC BY 4.0
+plantdoc,test/Tomato leaf mosaic virus,10,CC BY 4.0
+plantdoc,test/Tomato leaf yellow virus,6,CC BY 4.0
+plantdoc,test/Tomato mold leaf,6,CC BY 4.0
+plantdoc,train/Bell_pepper leaf,53,CC BY 4.0
+plantdoc,train/Bell_pepper leaf spot,62,CC BY 4.0
+plantdoc,train/Potato leaf early blight,108,CC BY 4.0
+plantdoc,train/Potato leaf late blight,97,CC BY 4.0
+plantdoc,train/Tomato Early blight leaf,79,CC BY 4.0
+plantdoc,train/Tomato Septoria leaf spot,140,CC BY 4.0
+plantdoc,train/Tomato leaf,55,CC BY 4.0
+plantdoc,train/Tomato leaf bacterial spot,101,CC BY 4.0
+plantdoc,train/Tomato leaf late blight,101,CC BY 4.0
+plantdoc,train/Tomato leaf mosaic virus,44,CC BY 4.0
+plantdoc,train/Tomato leaf yellow virus,70,CC BY 4.0
+plantdoc,train/Tomato mold leaf,85,CC BY 4.0
+plantdoc,train/Tomato two spotted spider mites leaf,2,CC BY 4.0
+chou_mendeley,alternariose,70,CC BY 4.0
+chou_mendeley,mildiou,28,CC BY 4.0
+chou_mendeley,pourriture_noire,37,CC BY 4.0
+chou_mendeley,sain,68,CC BY 4.0

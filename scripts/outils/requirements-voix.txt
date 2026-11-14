@@ -1,0 +1,8 @@
+# Environnement de l'essai de voix wolof (Python 3.9, Mac arm64), vérifié le 4 nov 2026.
+#   python3 -m venv .venv && .venv/bin/pip install -r scripts/outils/requirements-voix.txt
+# TTS 0.19 déclare transformers==4.33.* mais la voix VITS n'en dépend pas ; la 4.46.3 est
+# nécessaire pour charger M-Kiriku-ASR (Whisper large-v3). bangla 0.0.2 : les versions
+# récentes exigent Python 3.10.
+TTS==0.19.0
+bangla==0.0.2
+transformers==4.46.3

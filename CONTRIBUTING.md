@@ -12,7 +12,7 @@
 - Le modèle de PR (checklist) doit être rempli.
 
 ## Push direct sur `main`
-Toléré **uniquement** pour leur responsable dans :
+Tant que `main` n'est pas protégée techniquement (voir `scripts/protect_main.sh`), toléré **uniquement** pour leur responsable dans :
 - `content/`
 - `research/`
 - `docs/rapports-hebdo/`

@@ -1,0 +1,13 @@
+zone,pays,latitude,longitude,t_moy_annuelle_c,t_moy_saison_fraiche_c,hr_saison_fraiche_pct,pluie_annuelle_mm,sable_pct,argile_pct,ph,carbone_org_g_kg,cec_cmol_kg,texture,ecart_climat,ecart_sol,ecart_total
+Rufisque (Niayes),Niayes,14.7593,-17.2054,24.3,22.7,74.0,515,60.748,21.912,6.943,6.322,8.253,Sandy Clay Loam,0.9,0.71,0.8
+Thiès (Niayes),Niayes,14.7459,-16.8698,26.2,24.6,47.7,558,73.116,15.98,6.371,4.192,5.317,Sandy Loam,0.3,0.2,0.25
+Tivaouane (Niayes),Niayes,15.0884,-16.6518,25.7,23.9,51.4,533,80.338,10.878,6.544,2.636,3.917,Sandy Loam,0.06,0.35,0.2
+Kébémer (Niayes),Niayes,15.3042,-16.2611,26.9,24.8,35.8,478,82.866,10.163,6.837,1.931,4.336,Loamy Sand,0.72,0.44,0.58
+"Gandiol (nord des Niayes, Saint-Louis)",Sénégal,15.93,-16.47,26.4,24.2,41.7,380,58.408,26.642,6.631,6.211,12.228,Sandy Clay Loam,0.6,0.9,0.75
+Podor (vallée du fleuve),Sénégal,16.65,-14.96,28.7,25.1,26.0,296,53.567,26.649,6.831,3.544,9.886,Sandy Clay Loam,1.53,0.77,1.15
+"Kaédi (station CNRADA, vallée)",Mauritanie,16.15,-13.5,29.4,26.0,22.0,376,61.156,21.864,6.519,3.208,7.779,Sandy Clay Loam,1.7,0.51,1.1
+"Rosso (Trarza, vallée)",Mauritanie,16.51,-15.81,27.9,24.8,30.0,318,50.145,30.073,6.699,5.025,10.919,Sandy Clay Loam,1.26,0.94,1.1
+Nouakchott (maraîchage périurbain),Mauritanie,18.03,-15.99,23.5,21.3,59.3,150,64.933,20.234,6.848,2.213,3.835,Sandy Loam,1.42,0.47,0.94
+Dosso (Niger),Niger,13.05,3.19,28.6,26.6,20.2,610,63.304,14.923,6.167,3.483,5.698,Sandy Loam,1.63,0.38,1.0
+Maradi (Niger),Niger,13.5,7.1,27.7,25.0,19.0,551,57.9,21.515,6.869,4.518,8.324,Sandy Clay Loam,1.25,0.6,0.93
+Moyenne des 4 points Niayes (référence),Niayes,,,25.8,24.0,52.2,521.0,74.3,14.7,6.7,3.8,5.5,,0,0,0

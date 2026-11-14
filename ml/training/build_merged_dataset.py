@@ -1,6 +1,6 @@
 """Construit la base fusionnée TerraMind (TOM2024 raw + CCMT Raw Data) depuis les copies locales.
 
-Étapes (décisions D7 et D8 de docs/decisions.md) :
+Étapes (décisions D12 et D13 de docs/decisions.md) :
 1. étiquettes uniformisées avec data/label_mapping.csv ;
 2. exclusion des images illisibles, non JPEG ou dont le petit côté fait moins de MIN_SIDE px ;
 3. doublons exacts (SHA-256) : une seule copie si même classe, toutes exclues si classes différentes ;

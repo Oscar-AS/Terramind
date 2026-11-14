@@ -20,11 +20,11 @@ Jeux publics téléchargés le 2026-10-30 (provenance : [data/README.md](../data
 
 ### CCMT (Ghana) : candidat
 - Raw Data uniquement (jamais la version augmentée) ; Mendeley Data DOI 10.17632/bwh3zbpkpv.1, téléchargé via Kaggle `irakozekelly/crop-pest-and-disease-dataset` ; CC BY 4.0, attribution requise.
-- 25 220 images, 22 classes ; après nettoyage (décision D7) : 24 071 images, soit cajou 6 548, manioc 7 376, maïs 4 822, tomate 5 325.
+- 25 220 images, 22 classes ; après nettoyage (décision D12) : 24 071 images, soit cajou 6 548, manioc 7 376, maïs 4 822, tomate 5 325.
 - Contrôles : les 25 220 images ont été ouvertes ; empreintes de `Tomato/healthy` identiques à celles publiées par Mendeley.
-- Limites : images déjà réduites à 400×400 px ; étiquettes peu fiables entre leaf blight, leaf spot et streak virus chez le maïs (voir D7).
+- Limites : images déjà réduites à 400×400 px ; étiquettes peu fiables entre leaf blight, leaf spot et streak virus chez le maïs (voir D12).
 
-### Base fusionnée terramind_v1 (décision D8)
+### Base fusionnée terramind_v1 (décision D13)
 `data_local/processed/terramind_v1/` : `images/<culture>/<classe>/`, `manifest.csv` (une ligne par image, avec sa source et son étiquette d'origine), `classes.csv`, `exclusions.csv`. Reconstruction : `python ml/training/build_merged_dataset.py`.
 
 35 448 images, 40 classes (classes de 72 à 2 294 images ; seuil : 50 images par classe) :
@@ -43,7 +43,7 @@ Détail par classe : `classes.csv`. Correspondance des étiquettes : [data/label
 ### Remarques
 - Seuls le maïs et la tomate de ces jeux figurent dans la liste provisoire des cultures du projet ; le choix final dépend de la décision du 4 nov 2026.
 - **Biais de source** : la plupart des classes ne viennent que d'un seul jeu (toutes les images CCMT font 400×400 px, celles de TOM2024 ont des tailles variables). Le modèle pourrait apprendre à reconnaître le jeu plutôt que la maladie : redimensionner toutes les images à l'entraînement et mesurer les résultats par source.
-- Absent de la base faute d'images : Tuta absoluta (voir D8). Classes les plus petites, à surveiller : mildiou de la tomate (72), trouble abiotique du maïs (76), rouille du maïs (94).
+- Absent de la base faute d'images : Tuta absoluta (voir D13). Classes les plus petites, à surveiller : mildiou de la tomate (72), trouble abiotique du maïs (76), rouille du maïs (94).
 - La tomate contient deux classes de fruits (`healthy_fruit`, `blossom_end_rot`) : à exclure si le diagnostic se limite aux feuilles.
 - Entraînement / validation / test : TODO (découpage sur terramind_v1)
 - Photos de terrain : TODO

@@ -1,0 +1,9 @@
+# Outils de développement (tests, lint, typage). Versions de ruff et black alignées avec .pre-commit-config.yaml.
+pytest
+pytest-cov
+ruff==0.8.4
+black==24.10.0
+mypy
+httpx
+# Nécessaire à `make setup` pour installer les hooks
+pre-commit

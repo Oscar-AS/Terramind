@@ -16,4 +16,5 @@
 - [ ] Aucune donnée personnelle ni photo ou position GPS d'agriculteur
 - [ ] Aucune donnée inventée ; toute nouvelle source est inscrite dans `data/README.md`
 - [ ] Documentation à jour
+- [ ] J'ai demandé la relecture à un membre qui n'est pas l'auteur
 - [ ] Relue par un autre membre de l'équipe

@@ -42,8 +42,8 @@ ccmt,Maize,healthy,maize,healthy,sain,Maïs sain,fusionné avec TOM2024 Maize/he
 ccmt,Maize,fall armyworm,maize,fall_armyworm,ravageur,Chenille légionnaire,dégâts et chenilles mélangés ; fusionné avec TOM2024 spodoptera-frugiperda
 ccmt,Maize,grasshoper,maize,grasshopper,ravageur,Criquets,coquille corrigée
 ccmt,Maize,leaf beetle,maize,leaf_beetle,ravageur,Chrysomèle,
-ccmt,Maize,leaf blight,maize,leaf_blight,maladie,Brûlure des feuilles,à valider : voir helminthosporiosis ; étiquettes peu fiables (D7)
-ccmt,Maize,leaf spot,maize,leaf_spot,maladie,Taches foliaires,étiquettes peu fiables (D7)
+ccmt,Maize,leaf blight,maize,leaf_blight,maladie,Brûlure des feuilles,à valider : voir helminthosporiosis ; étiquettes peu fiables (D12)
+ccmt,Maize,leaf spot,maize,leaf_spot,maladie,Taches foliaires,étiquettes peu fiables (D12)
 ccmt,Maize,streak virus,maize,streak_virus,maladie,Virus de la striure,à valider : voir stripe
 ccmt,Tomato,healthy,tomato,healthy,sain,Tomate saine (feuille),fusionné avec TOM2024 Tomato/healthy-leaf
 ccmt,Tomato,leaf blight,tomato,leaf_blight,maladie,Brûlure des feuilles,à valider : alternariose ou mildiou ? gardée séparée
