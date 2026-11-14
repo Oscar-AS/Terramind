@@ -36,6 +36,10 @@ MOTS_SECTIONS = {
     "que faire maintenant": "soigner traitement guerir lutter",
     "pour que ça ne revienne pas": "eviter prevention prevenir proteger",
 }
+# Familles de mots : « flétrissent », « flétrit » doivent trouver « flétrissement » (pas de racinisation générale,
+# trop risquée sans contrôle ; seulement les familles repérées sur des questions réelles).
+FAMILLES = (("fletri", "fletrissement"),)
+FORMES = {"fanent": "fane", "faner": "fane", "fanee": "fane", "fanees": "fane", "fanes": "fane"}
 NOMS_CULTURES = {"tomato": "tomate", "onion": "oignon", "cabbage": "chou", "potato": "pomme terre",
                  "pepper": "poivron", "carrot": "carotte", "bitter_eggplant": "jaxatu"}
 
@@ -47,6 +51,8 @@ def normaliser(texte: str) -> list[str]:
     sortie = []
     for m in mots:
         m = SYNONYMES.get(m, m)
+        m = FORMES.get(m, m)
+        m = next((mot for debut, mot in FAMILLES if m.startswith(debut)), m)
         if m in VIDES or len(m) < 2:
             continue
         if len(m) > 4 and m.endswith(("s", "x")):
@@ -63,6 +69,7 @@ class Passage:
     texte: str
     references: list[str] = field(default_factory=list)
     mots: list[str] = field(default_factory=list)
+    mots_titre: set[str] = field(default_factory=set)
 
 
 @lru_cache(maxsize=1)
@@ -112,7 +119,8 @@ def passages() -> list[Passage]:
             # Les fiches sans référence pour une section restent citées par leur titre.
             refs = refs or [f"FICHE {titre}"]
             resultat.append(Passage(chemin.stem, titre, section[3:].strip(), propre, refs,
-                                    normaliser(f"{titre} {noms} {section} {section} {MOTS_SECTIONS.get(section[3:].strip().lower(), '')} {propre}")))
+                                    normaliser(f"{titre} {noms} {section} {section} {MOTS_SECTIONS.get(section[3:].strip().lower(), '')} {propre}"),
+                                    set(normaliser(titre))))
     return resultat
 
 
@@ -136,6 +144,8 @@ def chercher(question: str, n: int = 3, k1: float = 1.4, b: float = 0.75) -> lis
                 continue
             idf = math.log(1 + (len(ps) - df[m] + 0.5) / (df[m] + 0.5))
             s += idf * tf[m] * (k1 + 1) / (tf[m] + k1 * (1 - b + b * len(p.mots) / moyenne))
+            if m in p.mots_titre:  # le mot est le nom même de la fiche (« alternariose ») : elle passe devant
+                s += idf          # celles qui le citent en passant (« ne pas confondre avec l'alternariose »)
         if s > 0:
             scores.append((s, p))
     scores.sort(key=lambda x: -x[0])
