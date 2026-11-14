@@ -1,7 +1,7 @@
 """Télécharge les photos de feuilles utiles au module Diagnostic, sans tout rapatrier.
 
 Usage (depuis la racine du dépôt) :
-    python3 scripts/donnees/telecharger_images.py [plantvillage] [plantdoc]
+    python3 scripts/donnees/telecharger_images.py [plantvillage] [plantdoc] [chou] [ccmt]
 
 - PlantVillage (Mohanty et al. 2016, Hugging Face mohanty/PlantVillage, CC BY-SA 3.0) :
   l'archive data.zip fait 2,2 Go ; on lit son répertoire central par requêtes HTTP
@@ -11,6 +11,10 @@ Usage (depuis la racine du dépôt) :
 - Chou (Ayawli et al. 2025, Mendeley Data DOI 10.17632/sjmgzhwrxv.1, CC BY 4.0, Sunyani
   Technical University, Ghana) : alternariose, pourriture noire, mildiou, sain ; l'archive
   mélange images d'origine et images augmentées (rotation, recadrage, bruit…).
+- CCMT (Mensah et al. 2023, Mendeley Data DOI 10.17632/bwh3zbpkpv.1, CC BY 4.0, Ghana) : on ne
+  garde que la tomate de « Raw Data » (jamais la version augmentée), lue par requêtes Range dans
+  l'archive complète de 8,4 Go. L'API de Mendeley ne liste que 1 000 fichiers par dossier, d'où ce
+  passage par l'archive. Nettoyage : décision D14 (data/exclusions/terramind_v1.csv).
 
 Les images vont dans data/raw/images/ (exclu de Git) ; un inventaire par classe
 est écrit dans data/raw/images/INVENTAIRE.csv et recopié dans data/extraits/.
@@ -21,6 +25,7 @@ import io
 import json
 import shutil
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
@@ -36,6 +41,7 @@ PD_DEPOT = "pratikkayal/PlantDoc-Dataset"
 PD_MOTS = ("Tomato", "Potato", "Bell_pepper")
 CHOU_URL = ("https://data.mendeley.com/public-files/datasets/sjmgzhwrxv/files/"
             "15717f20-a822-48c8-b1f1-cdaf53be636d/file_downloaded")
+CCMT_ZIP = "https://data.mendeley.com/public-api/zip/bwh3zbpkpv/download/1"  # redirige vers un lien S3 de 5 min
 CHOU_SHA256 = "4dba5e7a553b02eb28a17ac4ab2d671ee6b48223f3fa38ffd89163736240cd79"  # publié par Mendeley
 
 
@@ -75,6 +81,51 @@ class FichierDistant(io.RawIOBase):
         d = self.read(len(b))
         b[:len(d)] = d
         return len(d)
+
+
+class ArchiveMendeley(FichierDistant):
+    """Comme FichierDistant, mais le lien signé (valable 5 minutes) est redemandé quand il expire."""
+
+    def __init__(self, url):
+        self.depart, self.pos = url, 0
+        self._resoudre()
+
+    def _resoudre(self):
+        req = urllib.request.Request(self.depart, headers={**UA, "Range": "bytes=0-0"})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            self.url, self.taille = r.url, int(r.headers["Content-Range"].split("/")[-1])
+
+    def read(self, n=-1):
+        try:
+            return super().read(n)
+        except urllib.error.HTTPError as e:
+            if e.code not in (400, 403):
+                raise
+            self._resoudre()
+            return super().read(n)
+
+
+def ccmt():
+    print("CCMT (Mendeley Data, Ghana) : lecture du répertoire de l'archive (8,4 Go, rien n'est téléchargé en entier)…")
+    zf = zipfile.ZipFile(io.BufferedReader(ArchiveMendeley(CCMT_ZIP), buffer_size=4 * 1024 * 1024))
+    prefixe = "Raw Data/CCMT Dataset/Tomato/"
+    entrees = [i for i in zf.infolist() if not i.is_dir() and prefixe in i.filename
+               and i.filename.lower().endswith((".jpg", ".jpeg", ".png"))]
+    if not entrees:
+        raise SystemExit("CCMT : aucun fichier « " + prefixe + " » ; noms vus : "
+                         + ", ".join(sorted({i.filename.split("/")[0] for i in zf.infolist()})[:10]))
+    entrees.sort(key=lambda i: i.header_offset)
+    print(f"  {len(entrees)} images de tomate à extraire ({sum(i.compress_size for i in entrees) / 1e6:.0f} Mo)")
+    for k, info in enumerate(entrees, 1):
+        relatif = info.filename.split(prefixe, 1)[1]
+        cible = SORTIE / "ccmt" / "Tomato" / relatif
+        if cible.exists() and cible.stat().st_size == info.file_size:
+            continue
+        cible.parent.mkdir(parents=True, exist_ok=True)
+        with zf.open(info) as src, cible.open("wb") as dst:
+            shutil.copyfileobj(src, dst)
+        if k % 500 == 0:
+            print(f"  {k}/{len(entrees)}")
 
 
 def plantvillage():
@@ -153,7 +204,7 @@ def chou():
 def inventaire():
     lignes = []
     for source, licence in (("plantvillage", "CC BY-SA 3.0"), ("plantdoc", "CC BY 4.0"),
-                            ("chou_mendeley", "CC BY 4.0")):
+                            ("chou_mendeley", "CC BY 4.0"), ("ccmt", "CC BY 4.0")):
         base = SORTIE / source
         if not base.exists():
             continue
@@ -180,4 +231,6 @@ if __name__ == "__main__":
         plantdoc()
     if "chou" in choix:
         chou()
+    if "ccmt" in choix:  # pas dans la liste par défaut : à demander explicitement
+        ccmt()
     inventaire()
