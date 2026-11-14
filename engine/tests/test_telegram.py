@@ -142,3 +142,41 @@ def test_culture_sans_regle_meteo_pas_de_faux_rien_a_signaler():
     texte = envoyer.call_args.args[1]
     assert "je ne surveille pas encore la météo" in texte
     assert "Bonne nouvelle" not in texte
+
+
+def test_questions_eau_et_bas_fond_avant_le_plan():
+    tg = telegram
+    tg.ETATS.clear()
+    tg.ETATS[11] = {"langue": "fr"}
+    plan = ({"sol": {"sable_pct": 80, "ph": 6.5}, "cultures": []}, [])
+    with mock.patch.object(tg, "envoyer") as envoyer, mock.patch.object(tg, "_appel_silencieux"), \
+            mock.patch.object(tg, "planifier", return_value=plan) as planifier:
+        tg.traiter({"message": {"chat": {"id": 11}, "location": {"latitude": 14.761, "longitude": -17.209}}})
+        assert "puits est-elle salée" in envoyer.call_args.args[1]
+        planifier.assert_not_called()
+        tg.traiter({"callback_query": {"id": "q", "data": "eau:non", "message": {"chat": {"id": 11}}}})
+        assert "bas-fond" in envoyer.call_args.args[1]
+        tg.traiter({"callback_query": {"id": "q", "data": "basfond:oui", "message": {"chat": {"id": 11}}}})
+        assert planifier.call_args.args[3:] == ("non", "oui")
+        assert "eau de ton puits est salée, évite" not in envoyer.call_args.args[1]
+
+
+def test_photo_non_filtree_par_la_culture_surveillee():
+    telegram.ETATS.clear()
+    telegram.ETATS[12] = {"langue": "fr", "culture": "tomato"}
+    with mock.patch.object(telegram, "_photo") as photo:
+        telegram.traiter({"message": {"chat": {"id": 12}, "photo": [{"file_id": "f"}]}})
+    assert photo.call_args.args[2] is None
+
+
+def test_reponse_libre_dite_en_wolof():
+    telegram.ETATS.clear()
+    telegram.ETATS[13] = {"langue": "wo"}
+    r = {"statut": "ok", "texte": "Arrose au pied.", "sources": [], "mode": "gemini", "passages": []}
+    from engine.app.modules import parole
+    with mock.patch("engine.app.modules.rag.reponse.repondre", return_value=r), \
+            mock.patch.object(parole, "dire_en_wolof", return_value=b"mp3") as dire_wo, \
+            mock.patch.object(telegram, "_envoyer_fichier") as fichier, mock.patch.object(telegram, "envoyer"):
+        telegram._question(13, "Comment éviter le mildiou ?")
+    dire_wo.assert_called_once_with("Arrose au pied.")
+    assert fichier.call_args.kwargs["octets"] == b"mp3"

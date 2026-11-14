@@ -18,6 +18,7 @@ COPY --chown=user engine/ engine/
 COPY --chown=user content/fiches/ content/fiches/
 # Notes vocales wolof préparées à l'avance (D10) ; le dossier peut être vide au début.
 COPY --chown=user content/audio/wo/ content/audio/wo/
+COPY --chown=user content/voix/lexique_wolof.csv content/voix/lexique_wolof.csv
 # Modèle de diagnostic (ONNX + étiquettes + calibration), produit par ml/training/ ; hors Git.
 COPY --chown=user modeles/diagnostic/ modeles/diagnostic/
 

@@ -34,8 +34,12 @@ MESSAGES = [
      "Pour t'aider, j'ai besoin de connaître ton champ. Touche le bouton qui envoie la position de ton champ, "
      "de préférence quand tu es dans ton champ."),
     ("position_recue", "position reçue", H,
-     "Merci, j'ai bien reçu la position de ton champ. Je regarde maintenant ton sol et la saison. "
-     "Attends un petit moment."),
+     "Merci, j'ai bien reçu la position de ton champ."),
+    ("question_eau_salee", "avant le plan : eau du puits", H,
+     "L'eau de ton puits est-elle salée ? Touche oui, non, ou je ne sais pas."),
+    ("question_bas_fond", "avant le plan : bas-fond", H,
+     "Ton champ est-il dans un bas-fond, un endroit bas où l'eau reste longtemps après la pluie ? "
+     "Touche oui, non, ou je ne sais pas."),
     ("conseils_photo", "bouton Ma plante est malade", H,
      "Envoie-moi la photo d'une seule feuille malade. Prends-la de près, pour que la feuille remplisse la photo, "
      "à la lumière du jour, sans ombre."),

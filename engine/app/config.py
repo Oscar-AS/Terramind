@@ -46,3 +46,5 @@ OCTOPUS_API_KEY = valeur("OCTOPUS_API_KEY")
 OCTOPUS_PROJECT_ID = valeur("OCTOPUS_PROJECT_ID")
 OCTOPUS_URL = valeur("OCTOPUS_URL", "https://www.octoopus.dev").rstrip("/")
 OCTOPUS_MINUTES_PAR_JOUR = float(valeur("OCTOPUS_MINUTES_PAR_JOUR", "20") or 20)
+# Réponses libres dites en wolof (traduction Gemini + voix Octopus, ~0,02 $ chacune) : plafond par jour.
+OCTOPUS_REPONSES_VOCALES_PAR_JOUR = int(valeur("OCTOPUS_REPONSES_VOCALES_PAR_JOUR", "100") or 100)

@@ -153,12 +153,13 @@ def envoyer(chat: int, texte: str, **extra):
             journal.warning("envoi Telegram échoué : %s", type(e).__name__)
 
 
-def _envoyer_fichier(methode: str, chat: int, champ: str, chemin: Path) -> dict:
-    """Envoie un fichier à Telegram (multipart), sans dépendance externe."""
+def _envoyer_fichier(methode: str, chat: int, champ: str, chemin: Path, octets: bytes | None = None) -> dict:
+    """Envoie un fichier à Telegram (multipart), sans dépendance externe. `octets` : contenu déjà en mémoire."""
     borne = uuid.uuid4().hex
+    contenu = chemin.read_bytes() if octets is None else octets
     corps = (f"--{borne}\r\nContent-Disposition: form-data; name=\"chat_id\"\r\n\r\n{chat}\r\n"
              f"--{borne}\r\nContent-Disposition: form-data; name=\"{champ}\"; filename=\"{chemin.name}\"\r\n"
-             f"Content-Type: {TYPES_AUDIO.get(chemin.suffix, 'audio/ogg')}\r\n\r\n").encode() + chemin.read_bytes() + f"\r\n--{borne}--\r\n".encode()
+             f"Content-Type: {TYPES_AUDIO.get(chemin.suffix, 'audio/ogg')}\r\n\r\n").encode() + contenu + f"\r\n--{borne}--\r\n".encode()
     req = urllib.request.Request(API.format(jeton=config.TELEGRAM_BOT_TOKEN, methode=methode), data=corps,
                                  headers={"Content-Type": f"multipart/form-data; boundary={borne}"})
     with urllib.request.urlopen(req, timeout=60) as r:
@@ -185,15 +186,38 @@ def dire(chat: int, cle: str, toujours: bool = False):
         journal.warning("note vocale non envoyée : %s", type(e).__name__)
 
 
+QUESTIONS_CHAMP = {
+    "eau": ("question_eau_salee", "<b>Une question sur ton eau</b>\nL'eau de ton puits est-elle salée ?"),
+    "basfond": ("question_bas_fond", "<b>Une question sur ton champ</b>\nTon champ est-il dans un bas-fond, "
+                "un endroit bas où l'eau reste longtemps après la pluie ?"),
+}
+CHAMP_ETAT = {"eau": "eau_salee", "basfond": "bas_fond"}
+
+
+def _demander_champ(chat: int) -> bool:
+    """Pose la prochaine question sur le champ (eau salée, puis bas-fond). False si tout est connu."""
+    e = ETATS[chat]
+    for cle, (voix, texte) in QUESTIONS_CHAMP.items():
+        if CHAMP_ETAT[cle] not in e:
+            dire(chat, voix)
+            envoyer(chat, texte, reply_markup={"inline_keyboard": [[
+                {"text": "Oui", "callback_data": f"{cle}:oui"}, {"text": "Non", "callback_data": f"{cle}:non"},
+                {"text": "Je ne sais pas", "callback_data": f"{cle}:ne_sait_pas"}]]})
+            return True
+    return False
+
+
 def _liste(lignes: list[str]) -> str:
     return "\n".join(f"• {escape(l)}" for l in lignes)
 
 
 def _plan(chat: int):
     e = ETATS[chat]
+    if _demander_champ(chat):  # le plan suivra la dernière réponse
+        return
     envoyer(chat, "Je regarde maintenant le sol de ton champ et la saison. Cela prend environ 30 secondes.")
     try:
-        d, _ = planifier(e["lat"], e["lon"], dt.date.today(), "ne_sait_pas", "ne_sait_pas")
+        d, _ = planifier(e["lat"], e["lon"], dt.date.today(), e["eau_salee"], e["bas_fond"])
     except sol_module.SolIndisponible:
         envoyer(chat, "Je n'arrive pas à lire la carte des sols à cet endroit pour le moment. "
                       f"Réessaie dans quelques minutes avec le bouton « {B_PLAN} ».", reply_markup=CLAVIER)
@@ -205,7 +229,8 @@ def _plan(chat: int):
     dire(chat, "plan_intro")
     for c in groupes["conseillee"] + groupes["possible"]:
         dire(chat, f"culture_{c['culture']}_{c['adaptation']}")
-    dire(chat, "eau_salee")
+    if e["eau_salee"] == "ne_sait_pas":
+        dire(chat, "eau_salee")
 
     blocs = ["<b>Ce qu'il faut savoir sur ton sol</b>\n"
              f"D'après la carte des sols iSDAsoil, ton champ contient environ {s['sable_pct']} % de sable "
@@ -221,7 +246,8 @@ def _plan(chat: int):
     if groupes["deconseillee"]:
         blocs.append("<b>Ce qu'il vaut mieux ne pas planter ce mois-ci</b>\n"
                      + escape(", ".join(c["libelle"] for c in groupes["deconseillee"])) + ".")
-    blocs.append("<b>Une précaution importante</b>\nSi l'eau de ton puits est salée, évite l'oignon et la carotte.")
+    if e["eau_salee"] == "ne_sait_pas":
+        blocs.append("<b>Une précaution importante</b>\nSi l'eau de ton puits est salée, évite l'oignon et la carotte.")
     blocs.append("<b>Ce que tu peux faire ensuite</b>\n"
                  f"Si une culture est déjà en place, touche « {B_ALERTES} » : je regarde si la météo de la "
                  "semaine favorise une maladie. Si une feuille a des taches, envoie-moi sa photo.")
@@ -383,6 +409,19 @@ def texte_fiche(etiquette: str, culture: str | None) -> tuple[str, str] | None:
     return "\n\n".join(blocs), "<i>Sources : " + escape(" ; ".join(documents)) + "</i>"
 
 
+def _dire_reponse_wolof(chat: int, texte_fr: str):
+    """Réponse libre dite en wolof (traduite puis lue par Octopus) ; le texte français suit toujours."""
+    from ..modules import parole
+
+    audio = parole.dire_en_wolof(texte_fr.replace("**", ""))
+    if not audio:
+        return
+    try:
+        _envoyer_fichier("sendVoice", chat, "voice", Path("reponse.mp3"), octets=audio)
+    except Exception as e:
+        journal.warning("réponse vocale non envoyée : %s", type(e).__name__)
+
+
 def _question(chat: int, texte: str):
     from ..modules.rag.reponse import repondre
 
@@ -396,6 +435,8 @@ def _question(chat: int, texte: str):
                       "• Surveiller ta culture selon la météo.\n"
                       "• Examiner la photo d'une feuille malade.", reply_markup=CLAVIER)
         return
+    if ETATS.get(chat, {}).get("langue") == "wo":
+        _dire_reponse_wolof(chat, r["texte"])
     sources = " ; ".join(_court(s["document"]) + (f", p. {s['page']}" if s["page"][:1].isdigit() else "")
                          for s in r["sources"][:3])
     reponse = escape(r["texte"].replace("**", ""))
@@ -408,6 +449,12 @@ def traiter(maj: dict):
         chat = q["message"]["chat"]["id"]
         _appel_silencieux("answerCallbackQuery", callback_query_id=q["id"])
         donnee = q.get("data", "")
+        cle, _, reponse = donnee.partition(":")
+        if cle in CHAMP_ETAT and reponse in ("oui", "non", "ne_sait_pas"):
+            ETATS.setdefault(chat, {})[CHAMP_ETAT[cle]] = reponse
+            if "lat" in ETATS[chat]:
+                _plan(chat)
+            return
         if donnee in ("langue:wo", "langue:fr"):
             ETATS.setdefault(chat, {})["langue"] = donnee[-2:]
             dire(chat, "accueil")
@@ -438,7 +485,8 @@ def traiter(maj: dict):
         envoyer(chat, "C'est bon, j'ai bien reçu la position de ton champ.")
         _plan(chat)
     elif msg.get("photo"):
-        _photo(chat, msg["photo"][-1]["file_id"], etat.get("culture"))
+        # Pas de filtre par la culture surveillée : la feuille peut venir d'une autre culture.
+        _photo(chat, msg["photo"][-1]["file_id"], None)
     elif msg.get("voice") or msg.get("audio"):
         _vocal(chat, msg.get("voice") or msg["audio"])
     elif texte.startswith(("/start", "/langue")) or ("langue" not in etat and not etat.get("attend_date")):
