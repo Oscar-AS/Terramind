@@ -3,6 +3,7 @@
 !engine/
 !content/fiches/
 !content/audio/wo/
+!content/voix/lexique_wolof.csv
 !modeles/diagnostic/
 engine/tests/
 **/__pycache__
