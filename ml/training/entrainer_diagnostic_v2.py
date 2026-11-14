@@ -4,9 +4,10 @@ Ce qui change par rapport à la v1 :
 - ajoute les photos de tomate de CCMT Raw Data (Mensah et al. 2023, CC BY 4.0), téléchargées par
   `python3 scripts/donnees/telecharger_images.py ccmt`, avec le travail d'Oscar : étiquettes de
   data/label_mapping.csv et exclusions de data/exclusions/terramind_v1.csv (décisions D14 et D15) ;
-- seules les classes CCMT choisies par --ccmt sont gardées (par défaut : saine, septoriose,
-  enroulement des feuilles). « leaf blight » (mildiou ou alternariose ?) n'est ajoutée que si on
-  sait à quelle maladie elle correspond : --ccmt-leaf-blight late_blight|alternaria ;
+- seules les classes CCMT choisies par --ccmt sont gardées (par défaut : saine et septoriose).
+  L'article de CCMT ne définit ni « leaf blight » (mildiou ou alternariose ?) ni « leaf curl » (notre
+  classe leaf_curl est le virus TYLCV) : voir docs/sources/verification-regles-oscar.md, point 6.
+  « leaf blight » n'est ajoutée que si une source établit la maladie : --ccmt-leaf-blight ;
 - les tests de la v1 (PlantDoc test, 15 % de TOM2024) sont identiques, pour comparer v1 et v2 ;
   nouveau test : 15 % des photos CCMT retenues (jamais vues à l'entraînement).
 Usage : .venv/bin/python ml/training/entrainer_diagnostic_v2.py --arch mobilenet_v3_large
@@ -159,7 +160,7 @@ def main():
     a.add_argument("--arch", choices=ARCHS, default="mobilenet_v3_large")
     a.add_argument("--epoques", type=int, default=10)
     a.add_argument("--graine", type=int, default=2026)
-    a.add_argument("--ccmt", default="healthy,septoria leaf spot,leaf curl",
+    a.add_argument("--ccmt", default="healthy,septoria leaf spot",
                    help="dossiers CCMT Tomato/ à ajouter (étiquettes de data/label_mapping.csv)")
     a.add_argument("--ccmt-leaf-blight", choices=["late_blight", "alternaria"],
                    help="ajouter « leaf blight » sous cette étiquette (seulement si c'est établi par une source)")

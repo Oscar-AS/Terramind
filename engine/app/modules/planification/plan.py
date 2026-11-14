@@ -5,7 +5,9 @@ Règles (proposition de l'équipe à partir du G87, non validée par un agronome
 - eau du puits salée et culture très sensible au sel : « deconseillee » ;
 - pH sous le minimum de la culture : « possible » avec un avertissement ;
 - sol lourd (argile ≥ 35 %) pour une culture qui le craint : « possible » avec un avertissement ;
-- champ en bas-fond ou salinité inconnue : avertissement pour les cultures très sensibles.
+- champ en bas-fond ou salinité inconnue : avertissement pour les cultures très sensibles au sel ;
+- champ en bas-fond pour une culture qui craint les sols trop humides (oignon, pomme de terre, G87 p. 11) :
+  « possible » avec un avertissement.
 Aucun rendement n'est promis.
 """
 
@@ -13,7 +15,7 @@ from __future__ import annotations
 
 import datetime as dt
 
-from .cultures import CULTURES, SOURCE_PH, SOURCE_SEL
+from .cultures import CULTURES, SOURCE_BAS_FOND, SOURCE_PH, SOURCE_SEL
 from .sol import sol
 
 ARGILE_LOURD = 35
@@ -52,6 +54,11 @@ def evaluer(culture: str, mois: int, sol_: dict, eau_salee: str, bas_fond: str) 
         avertissements.append("Ton sol semble lourd (argileux) ; cette culture préfère un sol léger.")
         if adaptation == "conseillee":
             adaptation = "possible"
+    if c.get("craint_bas_fond") and bas_fond == "oui":
+        avertissements.append("Ton champ est en bas-fond : cette culture craint les sols trop humides. "
+                              "Choisis une partie bien drainée, ou une autre culture.")
+        if adaptation == "conseillee":
+            adaptation = "possible"
     if adaptation != "deconseillee":
         raisons.append(c["saison"])
 
@@ -64,6 +71,6 @@ def planifier(lat: float, lon: float, date: dt.date, eau_salee: str, bas_fond: s
     sol_ = sol(round(lat, 2), round(lon, 2))
     cultures = [evaluer(c, date.month, sol_, eau_salee, bas_fond) for c in CULTURES]
     cultures.sort(key=lambda x: (ORDRE[x["adaptation"]], x["libelle"]))
-    sources = [s for c in CULTURES.values() for s in c["sources"]] + [SOURCE_SEL, SOURCE_PH,
+    sources = [s for c in CULTURES.values() for s in c["sources"]] + [SOURCE_SEL, SOURCE_PH, SOURCE_BAS_FOND,
                {"document": "iSDAsoil (iSDA, CC BY 4.0)", "page": "carte 30 m, 0-20 cm"}]
     return {"sol": sol_, "cultures": cultures}, sources
