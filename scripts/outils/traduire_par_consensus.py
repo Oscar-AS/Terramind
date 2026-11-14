@@ -5,7 +5,7 @@ Processus, pour chaque phrase du catalogue (content/voix/messages_wolof.csv) :
    local) et Teranga-Wolof-4B-MT en local (llama.cpp, `llama-server`). Google Traduction était prévu à la place
    de NLLB, abandonné le 14 nov 2026 (carte refusée par Google Cloud) ;
 2. chaque version wolof est retraduite en français par un AUTRE système que celui qui l'a écrite ;
-3. un juge (Gemini) compare chaque retraduction à la phrase de départ : même sens, rien d'ajouté ni
+3. un juge (Qwen3-4B en local, Gemini avant le 14 nov 2026) compare chaque retraduction à la phrase de départ : même sens, rien d'ajouté ni
    d'enlevé ? ;
 4. on mesure la ressemblance des trois versions wolof entre elles (chrF, Popović 2015) ;
 5. la phrase est validée (statut « valide_concordance ») seulement si les trois systèmes ont répondu,
@@ -18,7 +18,13 @@ elle ne remplace pas un locuteur pour les phrases signalées. Tous les candidats
 gardés dans content/voix/traductions_concordance.csv (transparence, relecture).
 
 Configuration (.env) : GEMINI_API_KEY ; NLLB_MODELE (défaut facebook/nllb-200-distilled-600M, téléchargé une fois) ;
-TERANGA_URL (défaut http://127.0.0.1:8090, serveur `llama-server -m Teranga-Wolof-4B-MT-Q4_K_M.gguf`).
+TERANGA_URL (défaut http://127.0.0.1:8090, serveur `llama-server -m Teranga-Wolof-4B-MT-Q4_K_M.gguf`) ;
+JUGE_URL (défaut http://127.0.0.1:8091, serveur
+`llama-server -m modeles/juge/Qwen3-4B-Instruct-2507-Q4_K_M.gguf --port 8091 -c 4096 -ngl 99`).
+
+Depuis le 14 nov 2026 (quota gratuit Gemini de 500 demandes/jour épuisé, partagé avec le bot) : Gemini ne sert
+plus qu'à proposer sa traduction (1 appel par phrase) ; retraductions par NLLB et Teranga, juge local (Qwen3-4B).
+Si le quota est épuisé, le script attend sa remise à zéro (8 h UTC) puis continue.
 
     .venv/bin/python scripts/outils/traduire_par_consensus.py --essai      # quels systèmes répondent
     .venv/bin/python scripts/outils/traduire_par_consensus.py              # tout le catalogue
@@ -65,8 +71,10 @@ CATALOGUE = RACINE / "content" / "voix" / "messages_wolof.csv"
 DETAIL = RACINE / "content" / "voix" / "traductions_concordance.csv"
 SEUIL_CHRF = 50.0  # ressemblance minimale entre deux versions wolof (0-100), à ajuster après le premier passage
 SYSTEMES = ("gemini", "nllb", "teranga")
-# Qui retraduit la version de qui (jamais le même système).
-RETRADUCTEUR = {"gemini": "nllb", "nllb": "teranga", "teranga": "gemini"}
+# Qui retraduit la version de qui (jamais le même système). Depuis le 14 nov 2026, seuls les modèles locaux
+# retraduisent (quota gratuit Gemini : 500 demandes/jour, partagé avec le bot) ; Teranga est le meilleur en
+# wolof → français (FLORES chrF++ 40,6, fiche du modèle), il retraduit Gemini et NLLB.
+RETRADUCTEUR = {"gemini": "teranga", "nllb": "teranga", "teranga": "nllb"}
 CONSIGNE_FR = "Traduis ce texte wolof en français, fidèlement, sans rien ajouter. Réponds uniquement par la traduction."
 CONSIGNE_JUGE = (
     "Tu compares deux phrases françaises : A est le message d'origine, B est une retraduction depuis le wolof. "
@@ -157,10 +165,26 @@ def chrf(a: str, b: str, n_max: int = 6, beta: float = 2.0) -> float:
     return (score(a, b) + score(b, a)) / 2
 
 
+def juge_local(consigne: str, texte: str) -> str | None:
+    """Juge : Qwen3-4B-Instruct-2507 (Apache 2.0, GGUF Q4_K_M d'Unsloth) servi par `llama-server` sur JUGE_URL.
+    Modèle différent des trois traducteurs : il ne se donne pas raison à lui-même."""
+    url = os.environ.get("JUGE_URL", "http://127.0.0.1:8091").rstrip("/")
+    corps = json.dumps({"messages": [{"role": "system", "content": consigne}, {"role": "user", "content": texte}],
+                        "temperature": 0, "max_tokens": 300, "response_format": {"type": "json_object"}}).encode()
+    req = urllib.request.Request(f"{url}/v1/chat/completions", data=corps, headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=180) as r:
+            return json.loads(r.read())["choices"][0]["message"]["content"]
+    except OSError:
+        return None
+
+
 def juger(origine: str, retraduction: str | None) -> tuple[bool, str]:
     if not retraduction:
         return False, "retraduction impossible"
-    r = appel_gemini(CONSIGNE_JUGE, f"A : {origine}\nB : {retraduction}")
+    r = juge_local(CONSIGNE_JUGE, f"A : {origine}\nB : {retraduction}")
+    if r is None:
+        raise SystemExit("Le juge local ne répond pas : lancer llama-server sur JUGE_URL (voir l'en-tête du script).")
     try:
         d = json.loads(r.strip().removeprefix("```json").removesuffix("```").strip())
         return bool(d.get("fidele")), str(d.get("raison", ""))
@@ -188,6 +212,17 @@ def traiter(texte_fr: str) -> dict:
         res["choisi"] = max(presents, key=lambda s: sum(v for p, v in res["chrf"].items() if s in p.split("-")))
     res["problemes"] = problemes
     return res
+
+
+def attendre_quota(cle: str) -> None:
+    """Le quota gratuit Gemini repart à minuit heure du Pacifique (8 h UTC en hiver = 8 h à Dakar) ; marge de 10 min."""
+    import datetime as dt
+    maintenant = dt.datetime.now(dt.timezone.utc)
+    reprise = maintenant.replace(hour=8, minute=10, second=0, microsecond=0)
+    if reprise <= maintenant:
+        reprise += dt.timedelta(days=1)
+    print(f"Gemini ne répond plus (quota ?) avant « {cle} » : attente jusqu'à {reprise:%d/%m %H:%M} UTC.", flush=True)
+    time.sleep((reprise - maintenant).total_seconds())
 
 
 def ecrire(lignes: list[dict], champs: list[str], detail: list[dict]) -> None:
@@ -227,11 +262,15 @@ def main():
             continue
         if args.reprendre and r["statut"] in ("valide_concordance", "a_relire"):
             continue
-        try:
-            res = traiter(r["texte_fr"])
-        except GeminiIndisponible:
-            print(f"\nGemini ne répond plus (quota ?) : arrêt avant « {r['cle']} ». "
-                  "Le travail fait est enregistré ; relancer plus tard avec --reprendre.")
+        res = None
+        for _ in range(2):  # au plus une attente de remise à zéro du quota par phrase
+            try:
+                res = traiter(r["texte_fr"])
+                break
+            except GeminiIndisponible:
+                attendre_quota(r["cle"])
+        if res is None:
+            print(f"\nGemini ne répond toujours pas : arrêt avant « {r['cle']} ». Relancer avec --reprendre.")
             break
         if res.get("choisi"):
             r["texte_wo"] = res["wo"][res["choisi"]]
