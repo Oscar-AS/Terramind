@@ -27,6 +27,7 @@ SYNONYMES = {  # mots courants des agriculteurs → mots des fiches
     "tomates": "tomate", "oignons": "oignon", "choux": "chou", "pdt": "pomme",
     "taches": "tache", "jaunes": "jaune", "trous": "trou", "chenilles": "chenille",
     "semer": "semis", "seme": "semis", "planter": "plantation", "plante": "plantation", "repiquer": "repiquage",
+    "cultiver": "plantation", "cultive": "plantation",
     "arrosage": "arroser", "sale": "sel", "salee": "sel", "salinite": "sel", "traiter": "traitement",
     "soigner": "traitement", "engrais": "engrais", "puit": "puits",
 }
