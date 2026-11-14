@@ -54,7 +54,12 @@ def appel_gemini(consigne: str, texte: str) -> str | None:
         r = _gemini(consigne, texte, delai=60)
         if r:
             return r
-    return None
+    # Quota épuisé ou panne : on s'arrête plutôt que de marquer des phrases « à relire » à tort.
+    raise GeminiIndisponible
+
+
+class GeminiIndisponible(Exception):
+    """Gemini ne répond plus (souvent le quota gratuit journalier : 500 demandes)."""
 
 CATALOGUE = RACINE / "content" / "voix" / "messages_wolof.csv"
 DETAIL = RACINE / "content" / "voix" / "traductions_concordance.csv"
@@ -185,35 +190,7 @@ def traiter(texte_fr: str) -> dict:
     return res
 
 
-def main():
-    a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    a.add_argument("--essai", action="store_true", help="vérifier quels systèmes répondent, sans rien écrire")
-    a.add_argument("--cle", action="append", help="seulement cette clé (répétable)")
-    args = a.parse_args()
-
-    if args.essai:
-        for s in SYSTEMES:
-            print(f"{s:8} → {traduire(s, 'Bonjour, comment vas-tu ?', 'wo')}")
-        return
-
-    lignes = list(csv.DictReader(CATALOGUE.open(encoding="utf-8")))
-    champs = list(lignes[0].keys())
-    detail = []
-    for r in lignes:
-        if args.cle and r["cle"] not in args.cle:
-            continue
-        if r["statut"] == "relu":  # relu par un locuteur : on n'y touche plus
-            continue
-        res = traiter(r["texte_fr"])
-        if res.get("choisi"):
-            r["texte_wo"] = res["wo"][res["choisi"]]
-        r["statut"] = "valide_concordance" if not res["problemes"] else "a_relire"
-        print(f"  {r['cle']:40} {r['statut']:20} {'; '.join(res['problemes'])[:120]}")
-        detail.append({"cle": r["cle"], "texte_fr": r["texte_fr"], "statut": r["statut"],
-                       "choisi": res.get("choisi", ""), "problemes": " | ".join(res["problemes"]),
-                       **{f"wo_{s}": res["wo"].get(s) or "" for s in SYSTEMES},
-                       **{f"retour_{s}": res["retour"].get(s) or "" for s in SYSTEMES},
-                       **{f"chrf_{p}": v for p, v in res["chrf"].items()}})
+def ecrire(lignes: list[dict], champs: list[str], detail: list[dict]) -> None:
     with CATALOGUE.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=champs, lineterminator="\n")
         w.writeheader()
@@ -224,7 +201,49 @@ def main():
             w = csv.DictWriter(f, fieldnames=champs_d, lineterminator="\n")
             w.writeheader()
             w.writerows(detail)
-    n = Counter(d["statut"] for d in detail)
+
+
+def main():
+    a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    a.add_argument("--essai", action="store_true", help="vérifier quels systèmes répondent, sans rien écrire")
+    a.add_argument("--cle", action="append", help="seulement cette clé (répétable)")
+    a.add_argument("--reprendre", action="store_true", help="sauter les phrases déjà passées (après une coupure)")
+    args = a.parse_args()
+
+    if args.essai:
+        for s in SYSTEMES:
+            print(f"{s:8} → {traduire(s, 'Bonjour, comment vas-tu ?', 'wo')}")
+        return
+
+    lignes = list(csv.DictReader(CATALOGUE.open(encoding="utf-8")))
+    champs = list(lignes[0].keys())
+    detail = []
+    if args.reprendre and DETAIL.exists():
+        detail = list(csv.DictReader(DETAIL.open(encoding="utf-8")))
+    for r in lignes:
+        if args.cle and r["cle"] not in args.cle:
+            continue
+        if r["statut"] == "relu":  # relu par un locuteur : on n'y touche plus
+            continue
+        if args.reprendre and r["statut"] in ("valide_concordance", "a_relire"):
+            continue
+        try:
+            res = traiter(r["texte_fr"])
+        except GeminiIndisponible:
+            print(f"\nGemini ne répond plus (quota ?) : arrêt avant « {r['cle']} ». "
+                  "Le travail fait est enregistré ; relancer plus tard avec --reprendre.")
+            break
+        if res.get("choisi"):
+            r["texte_wo"] = res["wo"][res["choisi"]]
+        r["statut"] = "valide_concordance" if not res["problemes"] else "a_relire"
+        print(f"  {r['cle']:40} {r['statut']:20} {'; '.join(res['problemes'])[:120]}")
+        detail.append({"cle": r["cle"], "texte_fr": r["texte_fr"], "statut": r["statut"],
+                       "choisi": res.get("choisi", ""), "problemes": " | ".join(res["problemes"]),
+                       **{f"wo_{s}": res["wo"].get(s) or "" for s in SYSTEMES},
+                       **{f"retour_{s}": res["retour"].get(s) or "" for s in SYSTEMES},
+                       **{f"chrf_{p}": v for p, v in res["chrf"].items()}})
+        ecrire(lignes, champs, detail)  # après chaque phrase : une coupure ne fait plus tout perdre
+    n = Counter(r["statut"] for r in lignes)
     print(f"\n{n.get('valide_concordance', 0)} validées par concordance, {n.get('a_relire', 0)} à relire par un locuteur.")
 
 
