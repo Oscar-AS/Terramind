@@ -37,6 +37,13 @@ PRIX_PHRASE = 0.02
 AGENT = "TerraMind-outils/0.2"  # le pare-feu d'Octopus refuse l'agent par défaut de Python
 
 
+# Messages bilingues, comme un serveur vocal : d'abord une phrase en français (voix française d'Octopus),
+# puis le texte wolof du catalogue. Le message de départ est envoyé avant le choix de la langue.
+EN_FRANCAIS_D_ABORD = {
+    "choix_langue": "Bienvenue sur TerraMind. Pour continuer en français, touche le bouton avec le drapeau de la France.",
+}
+
+
 def jeton() -> str:
     if config.OCTOPUS_API_KEY:
         return config.OCTOPUS_API_KEY
@@ -50,8 +57,8 @@ def empreinte(texte: str) -> str:
     return hashlib.sha256(texte.encode()).hexdigest()[:16]
 
 
-def synthetiser(texte: str, cle_api: str) -> bytes:
-    corps = json.dumps({"text": texte, "language": "wo",
+def synthetiser(texte: str, cle_api: str, langue: str = "wo") -> bytes:
+    corps = json.dumps({"text": texte, "language": langue,
                         "project_id": config.OCTOPUS_PROJECT_ID or "proj-challenge-f0903409d71542feaa95"}).encode()
     entetes = {"Authorization": f"Bearer {cle_api}", "User-Agent": AGENT}
     req = urllib.request.Request(f"{config.OCTOPUS_URL}/api/tts", data=corps,
@@ -103,6 +110,8 @@ def main():
     for i, l in enumerate(a_faire, 1):
         try:
             audio = synthetiser(l["texte_wo"], cle_api)
+            if l["cle"] in EN_FRANCAIS_D_ABORD:  # MP3 mis bout à bout : lisible d'un seul tenant
+                audio = synthetiser(EN_FRANCAIS_D_ABORD[l["cle"]], cle_api, "fr") + audio
         except Exception as e:
             print(f"  [{i}/{len(a_faire)}] {l['cle']} : échec ({type(e).__name__} {getattr(e, 'code', '')})")
             continue

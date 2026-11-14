@@ -5,7 +5,8 @@ X-Telegram-Bot-Api-Secret-Token doit valoir TELEGRAM_WEBHOOK_SECRET (défini à
 l'enregistrement du webhook) : sinon, refus.
 
 Ton : un conseiller qui accompagne pas à pas. Chaque message répond d'abord, puis structure
-(titres en gras), puis propose la suite (« Ce que tu peux faire ensuite »). Pas d'émoji, texte en HTML Telegram.
+(titres en gras), puis propose la suite (« Ce que tu peux faire ensuite »). Pas d'émoji dans les textes ;
+en wolof, les boutons portent un dessin que les notes vocales décrivent. Texte en HTML Telegram.
 
 Parcours :
 - /start ou « Aide » : présentation et clavier ;
@@ -56,6 +57,13 @@ CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}], [{"tex
                         [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_QUESTION}]],
            "resize_keyboard": True}
 # Anciens libellés (claviers encore affichés sur les téléphones) : traités comme les nouveaux.
+# En wolof, beaucoup d'agriculteurs ne lisent pas le français : chaque bouton porte un dessin, que les
+# notes vocales décrivent (« touche le bouton avec l'appareil photo »).
+DESSINS = {B_POSITION: "📍", B_PHOTO: "📷", B_PLAN: "🌱", B_ALERTES: "🌦️", B_QUESTION: "🎤"}
+CLAVIER_WO = {"keyboard": [[dict(b, text=f"{DESSINS[b['text']]} {b['text']}") for b in ligne]
+                           for ligne in CLAVIER["keyboard"]], "resize_keyboard": True}
+DESSINS_CULTURES = {"tomato": "🍅", "potato": "🥔", "onion": "🧅", "cabbage": "🥬", "pepper": "🫑",
+                    "carrot": "🥕", "chili": "🌶️", "bitter_eggplant": "🍆"}
 B_AIDE = "/aide"  # l'accueil reste accessible par /aide et par les anciens boutons d'aide
 ANCIENS_BOUTONS = {"Examiner une feuille": B_PHOTO, "Ma plante est malade : envoyer une photo": B_PHOTO,
                    "Que planter ?": B_PLAN, "Surveiller ma culture": B_ALERTES,
@@ -92,8 +100,8 @@ DEMANDE_POSITION = (
 CHOIX_LANGUE = ("<b>Bienvenue sur TerraMind.</b>\n"
                 "En quelle langue veux-tu que je te parle ? Touche « Wolof » ou « Français ».\n\n"
                 "<i>En wolof, je te réponds par des messages vocaux, avec le texte en français en dessous.</i>")
-CLAVIER_LANGUE = {"inline_keyboard": [[{"text": "Wolof", "callback_data": "langue:wo"},
-                                       {"text": "Français", "callback_data": "langue:fr"}]]}
+CLAVIER_LANGUE = {"inline_keyboard": [[{"text": "🇸🇳 Wolof", "callback_data": "langue:wo"},
+                                       {"text": "🇫🇷 Français", "callback_data": "langue:fr"}]]}
 
 # Notes vocales en wolof (D10), préparées à l'avance : content/audio/wo/<clé>.ogg (ou .mp3, .m4a), textes dans
 # content/voix/messages_wolof.csv. Phrases générales et sensibles : voix humaine ; contenu choisi par
@@ -139,6 +147,8 @@ def _morceaux(texte: str) -> list[str]:
 
 def envoyer(chat: int, texte: str, **extra):
     """Envoie un message en HTML Telegram ; le clavier éventuel accompagne le dernier morceau."""
+    if extra.get("reply_markup") is CLAVIER and ETATS.get(chat, {}).get("langue") == "wo":
+        extra["reply_markup"] = CLAVIER_WO
     morceaux = _morceaux(texte)
     for i, m in enumerate(morceaux):
         options = extra if i == len(morceaux) - 1 else {}
@@ -203,9 +213,11 @@ def _demander_champ(chat: int) -> bool:
     for cle, (voix, texte) in QUESTIONS_CHAMP.items():
         if CHAMP_ETAT[cle] not in e:
             dire(chat, voix)
+            wo = e.get("langue") == "wo"
             envoyer(chat, texte, reply_markup={"inline_keyboard": [[
-                {"text": "Oui", "callback_data": f"{cle}:oui"}, {"text": "Non", "callback_data": f"{cle}:non"},
-                {"text": "Je ne sais pas", "callback_data": f"{cle}:ne_sait_pas"}]]})
+                {"text": "✅ Oui" if wo else "Oui", "callback_data": f"{cle}:oui"},
+                {"text": "❌ Non" if wo else "Non", "callback_data": f"{cle}:non"},
+                {"text": "❓ Je ne sais pas" if wo else "Je ne sais pas", "callback_data": f"{cle}:ne_sait_pas"}]]})
             return True
     return False
 
@@ -255,6 +267,7 @@ def _plan(chat: int):
                  f"Si une culture est déjà en place, touche « {B_ALERTES} » : je regarde si la météo de la "
                  "semaine favorise une maladie. Si une feuille a des taches, envoie-moi sa photo.")
     blocs.append("<i>Sources : Guide pratique du maraîchage au Sénégal (ISRA, 1987) ; carte des sols iSDAsoil.</i>")
+    dire(chat, "plan_suite")
     envoyer(chat, "\n\n".join(blocs), reply_markup=CLAVIER)
 
 
@@ -480,6 +493,9 @@ def traiter(maj: dict):
     etat = ETATS.setdefault(chat, {})
     texte = (msg.get("text") or "").strip()
     texte = ANCIENS_BOUTONS.get(texte, texte)
+    for bouton, dessin in DESSINS.items():  # bouton à dessin (clavier wolof) → même action
+        if texte == f"{dessin} {bouton}":
+            texte = bouton
 
     if "location" in msg:
         etat["lat"] = round(msg["location"]["latitude"], 2)
@@ -522,12 +538,15 @@ def traiter(maj: dict):
         elif "culture" in etat and not etat.get("attend_date"):
             _alertes(chat)
         else:
-            boutons = [[{"text": c["libelle"], "callback_data": f"culture:{k}"}] for k, c in CULTURES.items()]
+            wo = etat.get("langue") == "wo"
+            boutons = [[{"text": f"{DESSINS_CULTURES[k]} {c['libelle']}" if wo else c["libelle"],
+                         "callback_data": f"culture:{k}"}] for k, c in CULTURES.items()]
             dire(chat, "choix_culture")
             envoyer(chat, "<b>Quelle culture veux-tu que je surveille ?</b>\nChoisis-la dans la liste.",
                     reply_markup={"inline_keyboard": boutons})
     elif etat.get("attend_date") and re.fullmatch(r"(je )?ne sais (pas|plus)\.?", texte.lower()):
         etat["repiquage"], etat["attend_date"] = None, False
+        dire(chat, "date_ignoree")
         envoyer(chat, "Pas de souci, je fais sans la date.")
         if "lat" in etat:
             _alertes(chat)
@@ -537,6 +556,7 @@ def traiter(maj: dict):
         try:
             date = dt.date(aujourdhui.year - (mois > aujourdhui.month), mois, jour)
         except ValueError:
+            dire(chat, "date_incomprise")
             envoyer(chat, "Je n'ai pas compris la date. Écris-la comme ceci : <b>15/10</b> pour le 15 octobre.")
             return
         etat["repiquage"], etat["attend_date"] = date, False
