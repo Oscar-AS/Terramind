@@ -19,6 +19,22 @@ from .cultures import CULTURES, SOURCE_BAS_FOND, SOURCE_PH, SOURCE_SEL
 from .sol import sol
 
 ARGILE_LOURD = 35
+# pH en mots, d'après les classes de réaction du sol de l'USDA (Soil Survey Manual, Handbook 18, chap. 3,
+# « Soil reaction ») regroupées en 5 niveaux : ≤ 5,5 « strongly acid » et moins ; 5,6-6,5 « moderately » et
+# « slightly acid » ; 6,6-7,3 « neutral » ; 7,4-8,4 « slightly » et « moderately alkaline » ; ≥ 8,5 plus basique.
+NIVEAUX_PH = ((5.6, "très acide"), (6.6, "un peu acide"), (7.4, "ni acide ni basique"),
+              (8.5, "un peu basique (le contraire d'acide)"), (99, "très basique (le contraire d'acide)"))
+
+
+def ph_en_mots(ph: float | None) -> str | None:
+    """« un peu acide » pour 6,1 ; None si le pH est inconnu."""
+    if ph is None:
+        return None
+    return next(mots for limite, mots in NIVEAUX_PH if ph < limite)
+
+
+def nombre_fr(x: float) -> str:
+    return f"{x:g}".replace(".", ",")
 ORDRE = {"conseillee": 0, "possible": 1, "deconseillee": 2}
 
 
@@ -46,7 +62,8 @@ def evaluer(culture: str, mois: int, sol_: dict, eau_salee: str, bas_fond: str) 
 
     ph = sol_.get("ph")
     if ph is not None and c["ph_min"] is not None and ph < c["ph_min"]:
-        avertissements.append(f"Ton sol est un peu acide (pH {ph}). Demande conseil à un agent agricole.")
+        avertissements.append(f"Ton sol est trop acide pour cette culture (pH {nombre_fr(ph)} ; elle demande au moins "
+                              f"{nombre_fr(c['ph_min'])}). Demande conseil à un agent agricole.")
         if adaptation == "conseillee":
             adaptation = "possible"
     argile = sol_.get("argile_pct")
@@ -68,7 +85,8 @@ def evaluer(culture: str, mois: int, sol_: dict, eau_salee: str, bas_fond: str) 
 
 
 def planifier(lat: float, lon: float, date: dt.date, eau_salee: str, bas_fond: str) -> tuple[dict, list[dict]]:
-    sol_ = sol(round(lat, 2), round(lon, 2))
+    sol_ = dict(sol(round(lat, 2), round(lon, 2)))  # copie : sol() est mis en cache
+    sol_["ph_mots"] = ph_en_mots(sol_.get("ph"))
     cultures = [evaluer(c, date.month, sol_, eau_salee, bas_fond) for c in CULTURES]
     cultures.sort(key=lambda x: (ORDRE[x["adaptation"]], x["libelle"]))
     sources = [s for c in CULTURES.values() for s in c["sources"]] + [SOURCE_SEL, SOURCE_PH, SOURCE_BAS_FOND,

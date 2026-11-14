@@ -38,7 +38,7 @@ from .. import config
 from ..modules import meteo
 from ..modules.planification import sol as sol_module
 from ..modules.planification.cultures import CULTURES
-from ..modules.planification.plan import planifier
+from ..modules.planification.plan import nombre_fr, ph_en_mots, planifier
 from ..modules.prevention.alerte import calculer
 
 journal = logging.getLogger("terramind.telegram")
@@ -247,7 +247,8 @@ def _plan(chat: int):
 
     blocs = ["<b>Ce qu'il faut savoir sur ton sol</b>\n"
              f"D'après la carte des sols iSDAsoil, ton champ contient environ {s['sable_pct']} % de sable "
-             f"et son pH est de {s['ph']}."]
+             + (f"et son pH est de {nombre_fr(s['ph'])} : ton sol est {ph_en_mots(s['ph'])}." if s.get("ph") is not None
+                else "(pH inconnu à cet endroit).")]
     if groupes["conseillee"]:
         blocs.append("<b>Ce que tu peux planter maintenant</b>\n" + "\n".join(
             f"• {escape(c['libelle'])} : {escape(c['periode_semis'])}"

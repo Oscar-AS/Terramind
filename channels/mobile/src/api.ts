@@ -25,7 +25,7 @@ export type CulturePlan = {
   avertissements: string[];
 };
 export type Plan = {
-  sol: { texture: string | null; sable_pct: number | null; argile_pct: number | null; ph: number | null };
+  sol: { texture: string | null; sable_pct: number | null; argile_pct: number | null; ph: number | null; ph_mots?: string | null };
   cultures: CulturePlan[];
 };
 export type Alerte = {

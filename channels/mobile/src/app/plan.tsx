@@ -95,6 +95,7 @@ export default function PlanEcran() {
                 <View style={styles.solChiffre}>
                   <T v="etiquette" style={{ color: '#F3E3CF' }}>pH</T>
                   <T v="sousTitre" style={{ color: couleurs.blanc }}>{nombreFr(sol.ph, 1)}</T>
+                  {sol.ph_mots ? <T v="etiquette" style={{ color: '#F3E3CF', textAlign: 'right' }}>{sol.ph_mots}</T> : null}
                 </View>
               </View>
             </Apparition>
