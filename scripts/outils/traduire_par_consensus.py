@@ -1,8 +1,9 @@
 """Traduction français → wolof par concordance de plusieurs systèmes (demande de Salam, 14 nov 2026).
 
 Processus, pour chaque phrase du catalogue (content/voix/messages_wolof.csv) :
-1. trois systèmes la traduisent en wolof : Gemini, Google Traduction (API Cloud Translation) et
-   Teranga-Wolof-4B-MT en local (llama.cpp, `llama-server`) ;
+1. trois systèmes la traduisent en wolof : Gemini, NLLB-200 de Meta (facebook/nllb-200-distilled-600M, en
+   local) et Teranga-Wolof-4B-MT en local (llama.cpp, `llama-server`). Google Traduction était prévu à la place
+   de NLLB, abandonné le 14 nov 2026 (carte refusée par Google Cloud) ;
 2. chaque version wolof est retraduite en français par un AUTRE système que celui qui l'a écrite ;
 3. un juge (Gemini) compare chaque retraduction à la phrase de départ : même sens, rien d'ajouté ni
    d'enlevé ? ;
@@ -16,7 +17,7 @@ Aucun système n'est « certifié » pour le wolof : la concordance réduit le n
 elle ne remplace pas un locuteur pour les phrases signalées. Tous les candidats et contrôles sont
 gardés dans content/voix/traductions_concordance.csv (transparence, relecture).
 
-Configuration (.env) : GEMINI_API_KEY ; GOOGLE_TRANSLATE_API_KEY (clé Cloud Translation) ;
+Configuration (.env) : GEMINI_API_KEY ; NLLB_MODELE (défaut facebook/nllb-200-distilled-600M, téléchargé une fois) ;
 TERANGA_URL (défaut http://127.0.0.1:8090, serveur `llama-server -m Teranga-Wolof-4B-MT-Q4_K_M.gguf`).
 
     .venv/bin/python scripts/outils/traduire_par_consensus.py --essai      # quels systèmes répondent
@@ -47,9 +48,9 @@ from engine.app.modules.rag.reponse import gemini as appel_gemini  # noqa: E402
 CATALOGUE = RACINE / "content" / "voix" / "messages_wolof.csv"
 DETAIL = RACINE / "content" / "voix" / "traductions_concordance.csv"
 SEUIL_CHRF = 50.0  # ressemblance minimale entre deux versions wolof (0-100), à ajuster après le premier passage
-SYSTEMES = ("gemini", "google", "teranga")
+SYSTEMES = ("gemini", "nllb", "teranga")
 # Qui retraduit la version de qui (jamais le même système).
-RETRADUCTEUR = {"gemini": "google", "google": "teranga", "teranga": "gemini"}
+RETRADUCTEUR = {"gemini": "nllb", "nllb": "teranga", "teranga": "gemini"}
 CONSIGNE_FR = "Traduis ce texte wolof en français, fidèlement, sans rien ajouter. Réponds uniquement par la traduction."
 CONSIGNE_JUGE = (
     "Tu compares deux phrases françaises : A est le message d'origine, B est une retraduction depuis le wolof. "
@@ -65,15 +66,23 @@ def gemini_vers(texte: str, cible: str) -> str | None:
     return appel_gemini(CONSIGNE_FR, texte)
 
 
-def google_vers(texte: str, cible: str) -> str | None:
-    cle = os.environ.get("GOOGLE_TRANSLATE_API_KEY", "").strip()
-    if not cle:
-        return None
-    donnees = urllib.parse.urlencode({"q": texte, "source": "fr" if cible == "wo" else "wo", "target": cible,
-                                      "format": "text", "key": cle}).encode()
-    req = urllib.request.Request("https://translation.googleapis.com/language/translate/v2", data=donnees)
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return json.loads(r.read())["data"]["translations"][0]["translatedText"].strip()
+_NLLB = {}
+
+
+def nllb_vers(texte: str, cible: str) -> str | None:
+    """NLLB-200 (Meta, CC BY-NC 4.0, usage non commercial) : codes FLORES fra_Latn et wol_Latn."""
+    if not _NLLB:
+        from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+
+        nom = os.environ.get("NLLB_MODELE", "facebook/nllb-200-distilled-600M")
+        _NLLB["tok"] = AutoTokenizer.from_pretrained(nom)
+        _NLLB["mod"] = AutoModelForSeq2SeqLM.from_pretrained(nom).eval()
+    tok, mod = _NLLB["tok"], _NLLB["mod"]
+    tok.src_lang = "fra_Latn" if cible == "wo" else "wol_Latn"
+    entree = tok(texte, return_tensors="pt", truncation=True, max_length=400)
+    sortie = mod.generate(**entree, forced_bos_token_id=tok.convert_tokens_to_ids("wol_Latn" if cible == "wo" else "fra_Latn"),
+                          max_new_tokens=400, num_beams=4)
+    return tok.batch_decode(sortie, skip_special_tokens=True)[0].strip()
 
 
 def teranga_vers(texte: str, cible: str) -> str | None:
@@ -92,7 +101,7 @@ def teranga_vers(texte: str, cible: str) -> str | None:
         return None
 
 
-TRADUIRE = {"gemini": gemini_vers, "google": google_vers, "teranga": teranga_vers}
+TRADUIRE = {"gemini": gemini_vers, "nllb": nllb_vers, "teranga": teranga_vers}
 
 
 def traduire(systeme: str, texte: str, cible: str) -> str | None:
