@@ -33,26 +33,31 @@ CONSIGNE = (
 )
 
 
-def _gemini(question: str, ps: list[fiches.Passage]) -> str | None:
+def gemini(consigne: str, texte: str, delai: int = 30) -> str | None:
+    """Appel simple à Gemini (consigne système + un message). None sans clé ou en cas d'échec."""
     cle = os.environ.get("GEMINI_API_KEY", "").strip()
     if not cle:
         return None
     modele = os.environ.get("GEMINI_MODEL", "").strip() or "gemini-3.5-flash-lite"
-    extraits = "\n\n".join(f"[Fiche « {p.titre} », section « {p.section} »]\n{p.texte}" for p in ps)
     corps = {
-        "system_instruction": {"parts": [{"text": CONSIGNE}]},
-        "contents": [{"role": "user", "parts": [{"text": f"Extraits de fiches :\n{extraits}\n\nQuestion : {question}"}]}],
+        "system_instruction": {"parts": [{"text": consigne}]},
+        "contents": [{"role": "user", "parts": [{"text": texte}]}],
     }
     req = urllib.request.Request(GEMINI.format(modele=modele), data=json.dumps(corps).encode(),
                                  headers={"Content-Type": "application/json", "x-goog-api-key": cle})
     try:
-        with urllib.request.urlopen(req, timeout=30) as r:
+        with urllib.request.urlopen(req, timeout=delai) as r:
             d = json.loads(r.read())
-        texte = "".join(p.get("text", "") for p in d["candidates"][0]["content"]["parts"]).strip()
-        return texte or None
-    except Exception as e:  # quota, réseau, modèle indisponible : repli extractif
-        journal.warning("Gemini indisponible (%s) : réponse extractive", type(e).__name__)
+        reponse = "".join(p.get("text", "") for p in d["candidates"][0]["content"]["parts"]).strip()
+        return reponse or None
+    except Exception as e:  # quota, réseau, modèle indisponible
+        journal.warning("Gemini indisponible (%s)", type(e).__name__)
         return None
+
+
+def _gemini(question: str, ps: list[fiches.Passage]) -> str | None:
+    extraits = "\n\n".join(f"[Fiche « {p.titre} », section « {p.section} »]\n{p.texte}" for p in ps)
+    return gemini(CONSIGNE, f"Extraits de fiches :\n{extraits}\n\nQuestion : {question}")
 
 
 def repondre(question: str) -> dict:

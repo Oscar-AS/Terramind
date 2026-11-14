@@ -39,3 +39,10 @@ TELEGRAM_WEBHOOK_SECRET = valeur("TELEGRAM_WEBHOOK_SECRET")
 
 # Modèle de langage du RAG (D8, D9) : Google Gemini.
 GEMINI_API_KEY = valeur("GEMINI_API_KEY")
+
+# Écoute des notes vocales en wolof : Octopus ASR (plateforme du PAS Challenge). Jeton Bearer et
+# projet sponsorisé de l'équipe (les crédits du challenge y sont rattachés). Sans jeton : désactivé.
+OCTOPUS_API_KEY = valeur("OCTOPUS_API_KEY")
+OCTOPUS_PROJECT_ID = valeur("OCTOPUS_PROJECT_ID")
+OCTOPUS_URL = valeur("OCTOPUS_URL", "https://www.octoopus.dev").rstrip("/")
+OCTOPUS_MINUTES_PAR_JOUR = float(valeur("OCTOPUS_MINUTES_PAR_JOUR", "20") or 20)

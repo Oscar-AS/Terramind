@@ -6,7 +6,8 @@ le texte français « pour l'oreille » (phrases courtes, aucun chiffre ni symbo
 le texte wolof (brouillon puis relu par un locuteur) et son statut.
 
 Les résumés oraux des fiches reprennent uniquement le contenu sourcé des fiches (content/fiches/).
-Relancer ce script réécrit les textes français mais conserve les textes wolof déjà saisis.
+Relancer ce script réécrit les textes français et conserve les textes wolof déjà saisis, sauf si le
+texte français de la phrase a changé (la traduction est alors à refaire).
 
     python3 scripts/outils/creer_catalogue_wolof.py
 """
@@ -55,9 +56,16 @@ MESSAGES = [
     ("je_ne_sais_pas", "question sans réponse", H,
      "Je n'ai pas trouvé la réponse dans mes documents, et je préfère ne pas inventer. Pour cette question, "
      "demande à un agent agricole."),
-    ("vocal_non_compris", "note vocale reçue", H,
-     "Je ne comprends pas encore les messages vocaux. Utilise les boutons en bas de l'écran, ou envoie-moi la "
-     "photo d'une feuille malade."),
+    ("vocal_ecoute", "note vocale reçue, avant la réponse", H,
+     "J'écoute ta question. Attends un petit moment."),
+    ("vocal_non_compris", "note vocale incompréhensible", H,
+     "Je n'ai pas bien compris ta question. Peux-tu la redire plus lentement, dans un endroit calme ? "
+     "Tu peux aussi l'écrire."),
+    ("vocal_trop_long", "note vocale de plus d'une minute", H,
+     "Ta question est trop longue pour moi. Pose-la en moins d'une minute."),
+    ("vocal_indisponible", "écoute des notes vocales en panne ou désactivée", H,
+     "Je ne peux pas écouter les messages vocaux pour le moment. Écris ta question, ou utilise les boutons en "
+     "bas de l'écran."),
     ("choix_culture", "bouton Surveiller ma culture", H,
      "Quelle culture veux-tu que je surveille ? Touche son nom dans la liste."),
     ("date_repiquage", "après le choix de la culture", H,
@@ -174,6 +182,8 @@ def main():
         for cle, usage, voix, fr in MESSAGES:
             assert not any(c.isdigit() for c in fr), f"{cle} : pas de chiffre dans un texte lu à voix haute"
             a = anciens.get(cle, {})
+            if a and a.get("texte_fr") != fr:  # texte français modifié : l'ancienne traduction ne vaut plus
+                a = {}
             w.writerow({"cle": cle, "usage": usage, "voix": voix, "texte_fr": fr,
                         "texte_wo": a.get("texte_wo", ""), "statut": a.get("statut") or "a_traduire",
                         "relu_par": a.get("relu_par", "")})

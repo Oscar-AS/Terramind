@@ -256,16 +256,58 @@ def _alertes(chat: int):
     envoyer(chat, "\n\n".join(blocs), reply_markup=CLAVIER)
 
 
+def _telecharger(file_id: str) -> bytes:
+    chemin = _appel("getFile", file_id=file_id)["result"]["file_path"]
+    with urllib.request.urlopen(FICHIER.format(jeton=config.TELEGRAM_BOT_TOKEN, chemin=chemin), timeout=30) as r:
+        return r.read()
+
+
+def _vocal(chat: int, note: dict):
+    """Question dite en wolof : transcription (Octopus), traduction (Gemini), puis réponse des fiches."""
+    from ..modules import ecoute
+
+    ecrire = "Tu peux aussi écrire ta question, ou utiliser les boutons en bas de l'écran."
+    if not ecoute.disponible():
+        dire(chat, "vocal_indisponible")
+        envoyer(chat, f"Je ne peux pas écouter les messages vocaux pour le moment. {ecrire}", reply_markup=CLAVIER)
+        return
+    if (note.get("duration") or 0) > ecoute.DUREE_MAX:
+        dire(chat, "vocal_trop_long")
+        envoyer(chat, "Ta note vocale est trop longue pour moi. Pose ta question en moins d'une minute.",
+                reply_markup=CLAVIER)
+        return
+    dire(chat, "vocal_ecoute")
+    envoyer(chat, "J'écoute ta note vocale. Cela prend quelques secondes.")
+    try:
+        compris = ecoute.comprendre(_telecharger(note["file_id"]), note.get("mime_type") or "audio/ogg",
+                                    note.get("duration"))
+    except ecoute.NoteTropLongue:
+        dire(chat, "vocal_trop_long")
+        envoyer(chat, "Ta note vocale est trop longue pour moi. Pose ta question en moins d'une minute.",
+                reply_markup=CLAVIER)
+        return
+    except Exception as e:  # Octopus indisponible, plafond du jour atteint, fichier illisible
+        journal.info("note vocale non traitée : %s", type(e).__name__)
+        dire(chat, "vocal_indisponible")
+        envoyer(chat, f"Je ne peux pas écouter les messages vocaux pour le moment. {ecrire}", reply_markup=CLAVIER)
+        return
+    if not compris["francais"]:
+        dire(chat, "vocal_non_compris")
+        envoyer(chat, "Je n'ai pas bien compris ta note vocale. Peux-tu la redire plus lentement, dans un "
+                      f"endroit calme ? {ecrire}", reply_markup=CLAVIER)
+        return
+    # L'agriculteur voit ce qui a été compris : s'il y a une erreur, il peut reformuler.
+    envoyer(chat, f"<i>J'ai compris ta question ainsi : « {escape(compris['francais'])} »</i>")
+    _question(chat, compris["francais"])
+
+
 def _photo(chat: int, file_id: str, culture: str | None):
     from ..modules.diagnostic import modele
 
     dire(chat, "attente_photo")
     envoyer(chat, "Merci, je regarde ta photo. Cela prend quelques secondes.")
     try:
-        chemin = _appel("getFile", file_id=file_id)["result"]["file_path"]
-        with urllib.request.urlopen(FICHIER.format(jeton=config.TELEGRAM_BOT_TOKEN, chemin=chemin), timeout=30) as r:
-            contenu = r.read()
-        res = modele.diagnostiquer(contenu, culture)
+        res = modele.diagnostiquer(_telecharger(file_id), culture)
     except modele.ModeleAbsent:
         envoyer(chat, "L'examen des photos est momentanément indisponible. Réessaie plus tard.",
                 reply_markup=CLAVIER)
@@ -385,9 +427,7 @@ def traiter(maj: dict):
     elif msg.get("photo"):
         _photo(chat, msg["photo"][-1]["file_id"], etat.get("culture"))
     elif msg.get("voice") or msg.get("audio"):
-        dire(chat, "vocal_non_compris")
-        envoyer(chat, "Je ne comprends pas encore les messages vocaux. Utilise les boutons en bas de l'écran, "
-                      "ou envoie-moi la photo d'une feuille malade.", reply_markup=CLAVIER)
+        _vocal(chat, msg.get("voice") or msg["audio"])
     elif texte.startswith(("/start", "/langue")) or ("langue" not in etat and not etat.get("attend_date")):
         dire(chat, "choix_langue", toujours=True)  # la question est aussi dite en wolof
         envoyer(chat, CHOIX_LANGUE, reply_markup=CLAVIER_LANGUE)
