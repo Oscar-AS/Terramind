@@ -132,6 +132,8 @@ def traduire(systeme: str, texte: str, cible: str) -> str | None:
     try:
         r = TRADUIRE[systeme](texte, cible)
         return r.strip() if r else None
+    except GeminiIndisponible:
+        raise  # remonte jusqu'à main(), qui attend la remise à zéro du quota
     except Exception as e:
         print(f"    {systeme} : échec ({type(e).__name__})")
         return None
