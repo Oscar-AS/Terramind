@@ -35,12 +35,14 @@ MESSAGES = [
      "de préférence quand tu es dans ton champ."),
     ("position_recue", "position reçue", H,
      "Merci, j'ai bien reçu la position de ton champ."),
+    ("invite_question", "bouton J'ai une question à te poser", H,
+     "Je t'écoute. Pose-moi ta question par écrit, ou envoie-moi un message vocal, en wolof ou en français."),
     ("question_eau_salee", "avant le plan : eau du puits", H,
      "L'eau de ton puits est-elle salée ? Touche oui, non, ou je ne sais pas."),
     ("question_bas_fond", "avant le plan : bas-fond", H,
      "Ton champ est-il dans un bas-fond, un endroit bas où l'eau reste longtemps après la pluie ? "
      "Touche oui, non, ou je ne sais pas."),
-    ("conseils_photo", "bouton Ma plante est malade", H,
+    ("conseils_photo", "bouton Voir si ma plante est malade", H,
      "Envoie-moi la photo d'une seule feuille malade. Prends-la de près, pour que la feuille remplisse la photo, "
      "à la lumière du jour, sans ombre."),
     ("attente_photo", "photo reçue", H, "Merci, je regarde ta photo. Attends quelques secondes."),
@@ -70,10 +72,10 @@ MESSAGES = [
     ("vocal_indisponible", "écoute des notes vocales en panne ou désactivée", H,
      "Je ne peux pas écouter les messages vocaux pour le moment. Écris ta question, ou utilise les boutons en "
      "bas de l'écran."),
-    ("choix_culture", "bouton La météo de la semaine pour ma culture", H,
+    ("choix_culture", "bouton météo de la semaine pour mes plantes", H,
      "Quelle culture veux-tu que je surveille ? Touche son nom dans la liste."),
     ("date_repiquage", "après le choix de la culture", H,
-     "Quel jour as-tu mis cette culture dans ton champ ? Écris le jour et le mois. Si tu ne sais plus, écris : je ne sais pas."),
+     "Tu l'as plantée quand ? Écris-moi le jour et le mois. Si tu ne t'en souviens plus, écris juste : je ne sais pas."),
     ("plan_intro", "avant le plan de culture", H,
      "Voici ce que tu peux planter ce mois-ci, selon le sol de ton champ et la saison."),
     ("alerte_rien", "aucune alerte", H,

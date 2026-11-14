@@ -73,7 +73,7 @@ def test_pas_d_emoji_et_html_valide():
     from engine.app.routes import telegram as tg
 
     textes = [tg.ACCUEIL, tg.CONSEILS_PHOTO, tg.DEMANDE_POSITION, tg.B_POSITION, tg.B_PHOTO, tg.B_PLAN,
-              tg.B_ALERTES, tg.B_AIDE, "".join(tg.texte_fiche("fusarium", "onion"))]
+              tg.B_ALERTES, tg.B_QUESTION, "".join(tg.texte_fiche("fusarium", "onion"))]
     emoji = re.compile("[\U0001F300-\U0001FAFF\u2600-\u27BF]")
     for t in textes:
         assert not emoji.search(t), t[:60]

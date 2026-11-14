@@ -47,17 +47,20 @@ FICHIER = "https://api.telegram.org/file/bot{jeton}/{chemin}"
 LIMITE = 4000  # Telegram refuse les messages de plus de 4096 caractères
 
 B_POSITION = "Envoyer la position de mon champ"
-B_PHOTO = "Ma plante est malade : envoyer une photo"
+B_PHOTO = "Voir si ma plante est malade"
 B_PLAN = "Que planter dans mon champ ?"
-B_ALERTES = "La météo de la semaine pour ma culture"
-B_AIDE = "Comment ça marche ?"
+B_ALERTES = "Que dois-je retenir concernant la météo de cette semaine pour mes plantes ?"
+B_QUESTION = "J'ai une question à te poser"
 # Un bouton par ligne : le libellé reste lisible en entier sur un petit écran.
 CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}], [{"text": B_PHOTO}],
-                        [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_AIDE}]],
+                        [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_QUESTION}]],
            "resize_keyboard": True}
 # Anciens libellés (claviers encore affichés sur les téléphones) : traités comme les nouveaux.
-ANCIENS_BOUTONS = {"Examiner une feuille": B_PHOTO, "Que planter ?": B_PLAN,
-                   "Surveiller ma culture": B_ALERTES, "Aide": B_AIDE}
+B_AIDE = "/aide"  # l'accueil reste accessible par /aide et par les anciens boutons d'aide
+ANCIENS_BOUTONS = {"Examiner une feuille": B_PHOTO, "Ma plante est malade : envoyer une photo": B_PHOTO,
+                   "Que planter ?": B_PLAN, "Surveiller ma culture": B_ALERTES,
+                   "La météo de la semaine pour ma culture": B_ALERTES,
+                   "Aide": B_AIDE, "Comment ça marche ?": B_AIDE}
 AGENT = "un agent agricole (ANCAR, service départemental de l'agriculture)"
 
 ACCUEIL = (
@@ -466,9 +469,9 @@ def traiter(maj: dict):
             ETATS[chat]["attend_date"] = True
             dire(chat, "date_repiquage")
             envoyer(chat, f"C'est noté : {escape(CULTURES[culture]['libelle'].lower())}.\n\n"
-                          "<b>Une dernière question pour bien te conseiller</b>\nQuel jour as-tu mis cette culture dans ton champ ? "
-                          "Écris la date comme ceci : <b>15/10</b> pour le 15 octobre. "
-                          "Si tu ne sais plus, écris : <b>je ne sais pas</b>.")
+                          "<b>Une dernière question pour bien te conseiller</b>\nTu l'as plantée quand ? "
+                          "Écris-moi le jour comme ça : <b>15/10</b> pour le 15 octobre. "
+                          "Si tu ne t'en souviens plus, écris juste : <b>je ne sais pas</b>.")
         return
     msg = maj.get("message") or {}
     chat = (msg.get("chat") or {}).get("id")
@@ -495,6 +498,10 @@ def traiter(maj: dict):
     elif texte == B_AIDE:
         dire(chat, "accueil")
         envoyer(chat, ACCUEIL + "\n\n<i>Pour changer de langue, écris /langue.</i>", reply_markup=CLAVIER)
+    elif texte == B_QUESTION:
+        dire(chat, "invite_question")
+        envoyer(chat, "Je t'écoute. Pose-moi ta question par écrit, ou envoie-moi un message vocal, "
+                      "en wolof ou en français.", reply_markup=CLAVIER)
     elif texte == B_PHOTO:
         dire(chat, "conseils_photo")
         envoyer(chat, "<b>Envoie-moi la photo d'une feuille malade.</b>\n"
