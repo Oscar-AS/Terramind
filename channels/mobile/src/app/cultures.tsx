@@ -69,7 +69,7 @@ export default function Cultures() {
       {culture ? (
         <Apparition>
           <Carte>
-            <T v="sousTitre">Quand as-tu repiqué ?</T>
+            <T v="sousTitre">{"Tu l'as plantée quand ?"}</T>
             <View style={styles.date}>
               <Compteur valeur={String(j)} libelle="Jour"
                 onMoins={() => setJour(j <= 1 ? joursDuMois : j - 1)} onPlus={() => setJour(j >= joursDuMois ? 1 : j + 1)} />

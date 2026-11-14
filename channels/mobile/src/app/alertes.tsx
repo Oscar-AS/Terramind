@@ -67,7 +67,9 @@ export default function AlertesEcran() {
             <Apparition ordre={1}>
               <Carte style={styles.calme}>
                 <Pastille Icone={SealCheck} taille={72} />
-                <T v="sousTitre" style={{ textAlign: 'center' }}>Tout est calme</T>
+                <T v="sousTitre" style={{ textAlign: 'center' }}>
+                  {reponse.donnees.alertes.length === 0 ? 'Pas encore de surveillance' : 'Tout est calme'}
+                </T>
                 <T v="corps" style={{ textAlign: 'center' }}>{reponse.message.texte}</T>
               </Carte>
             </Apparition>

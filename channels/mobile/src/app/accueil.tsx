@@ -52,7 +52,7 @@ export default function Accueil() {
               <LinearGradient colors={['rgba(31,77,58,0.05)', 'rgba(31,77,58,0.92)']} locations={[0.1, 0.75]} style={StyleSheet.absoluteFill} />
               <View style={styles.heroBas}>
                 <T v="etiquette" style={{ color: couleurs.pousse }}>Diagnostic</T>
-                <T v="titre" style={{ color: couleurs.blanc, fontSize: 30 }}>Ta plante est malade ?</T>
+                <T v="titre" style={{ color: couleurs.blanc, fontSize: 30 }}>Voir si ma plante est malade</T>
                 <View style={styles.heroBouton}>
                   <Camera size={26} color={couleurs.foret} weight="duotone" />
                   <T v="corpsGras" style={{ color: couleurs.foret }}>Prendre une feuille en photo</T>
@@ -68,7 +68,7 @@ export default function Accueil() {
               style={({ pressed }) => [styles.alerte, pressed && { opacity: 0.85 }]}>
               <Pastille Icone={Bell} couleur={couleurs.terre} fond={couleurs.carte} />
               <View style={{ flex: 1 }}>
-                <T v="corpsGras">Alertes de la semaine</T>
+                <T v="corpsGras">Que dois-je retenir de la météo de cette semaine ?</T>
                 <T v="petit">{culture.icone} {culture.libelle} · météo de ton champ</T>
               </View>
             </Pressable>
@@ -76,12 +76,12 @@ export default function Accueil() {
         ) : null}
 
         <Apparition ordre={3} style={styles.grille}>
-          <Tuile Icone={Plant} titre="Que planter ?" sous="Selon ton sol et la saison" onPress={() => router.push('/plan')} />
-          <Tuile Icone={ChatCircleText} titre="Poser une question" sous="Réponse tirée des fiches" onPress={() => router.push('/question')} />
+          <Tuile Icone={Plant} titre="Que planter dans mon champ ?" sous="Selon ton sol et la saison" onPress={() => router.push('/plan')} />
+          <Tuile Icone={ChatCircleText} titre="J'ai une question à te poser" sous="Réponse tirée des fiches" onPress={() => router.push('/question')} />
         </Apparition>
         <Apparition ordre={4}>
           <Tuile Icone={CalendarCheck} titre={culture ? 'Changer ma culture' : "J'ai planté"}
-            sous={culture ? `${culture.libelle}, repiquée le ${dateFr(p.dateRepiquage)}` : 'Pour recevoir les alertes'}
+            sous={culture ? `${culture.libelle}, plantée le ${dateFr(p.dateRepiquage)}` : 'Pour recevoir les alertes'}
             onPress={() => router.push('/cultures')} fond={couleurs.pousse} />
         </Apparition>
       </ScrollView>
