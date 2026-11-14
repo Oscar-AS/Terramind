@@ -16,6 +16,8 @@ const RISQUES: Record<string, { Icone: Icon; nom: string }> = {
   alternaria: { Icone: Leaf, nom: 'Alternariose' },
   tuta_absoluta: { Icone: Bug, nom: 'Mineuse de la tomate' },
   plutella_xylostella: { Icone: Bug, nom: 'Teigne du chou' },
+  carrot_alternaria: { Icone: Leaf, nom: 'Alternariose de la carotte' },
+  onion_downy_mildew: { Icone: CloudRain, nom: "Mildiou de l'oignon" },
 };
 
 

@@ -32,16 +32,23 @@ def _lire(pas: str, parametres: str, lat: float, lon: float, debut: dt.date, fin
 
 
 @lru_cache(maxsize=256)
-def horaire(lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict[dt.date, list[tuple[float, float]]]:
-    """{jour: [(température °C, humidité %), …]} ; heures manquantes retirées."""
+def heures(lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict[dt.datetime, tuple[float, float]]:
+    """{date et heure (UTC, = heure du Sénégal) : (température °C, humidité %)} ; heures manquantes retirées."""
     p = _lire("hourly", "T2M,RH2M", lat, lon, debut, fin)
-    jours: dict[dt.date, list[tuple[float, float]]] = {}
+    res = {}
     for cle, t in p["T2M"].items():
         h = p["RH2M"].get(cle, MANQUANT)
         if t <= MANQUANT or h <= MANQUANT:
             continue
-        jour = dt.datetime.strptime(cle[:8], "%Y%m%d").date()
-        jours.setdefault(jour, []).append((t, h))
+        res[dt.datetime.strptime(cle, "%Y%m%d%H")] = (t, h)
+    return res
+
+
+def horaire(lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict[dt.date, list[tuple[float, float]]]:
+    """{jour: [(température °C, humidité %), …]} ; heures manquantes retirées."""
+    jours: dict[dt.date, list[tuple[float, float]]] = {}
+    for moment, th in sorted(heures(lat, lon, debut, fin).items()):
+        jours.setdefault(moment.date(), []).append(th)
     return jours
 
 

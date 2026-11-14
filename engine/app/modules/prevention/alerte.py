@@ -18,8 +18,15 @@ CONSEILS = {
                                      "Regarde s'il y a des galeries claires dans les feuilles.",
     ("plutella_xylostella", "surveiller"): "Une nouvelle génération de teigne du chou est probable. "
                                            "Regarde tes choux de près, surtout le dessous des feuilles.",
+    # Symptômes : Cornell (Carrot Leaf Blight Diseases and their Management in New York) ; UC IPM (onion downy mildew).
+    ("carrot_alternaria", "favorable"): "Le temps de ces derniers jours est favorable à l'alternariose de la carotte. "
+                                        "Regarde les feuilles : petites taches brun foncé, souvent au bord, entourées de jaune.",
+    ("onion_downy_mildew", "favorable"): "Les nuits très humides de ces derniers jours sont favorables au mildiou de "
+                                         "l'oignon. Regarde les feuilles le matin : taches pâles et allongées, avec "
+                                         "un duvet gris-violet.",
 }
-MALADIES = {"late_blight": ("tomato", "potato"), "alternaria": ("tomato", "potato")}
+MALADIES = {"late_blight": ("tomato", "potato"), "alternaria": ("tomato", "potato"),
+            "carrot_alternaria": ("carrot",), "onion_downy_mildew": ("onion",)}
 FENETRE_JOURS = 7
 RETARD_POWER_JOURS = 3  # NASA POWER publie avec quelques jours de retard
 
@@ -29,23 +36,35 @@ def calculer(lat: float, lon: float, culture: str, date: dt.date, date_repiquage
     debut = fin - dt.timedelta(days=FENETRE_JOURS)
     alertes = []
 
-    if any(culture in c for c in MALADIES.values()):
+    risques = [r for r, cultures in MALADIES.items() if culture in cultures]
+    if risques:
+        hh = meteo.heures(lat, lon, debut, fin)
         jours = regles.resume_jours(meteo.horaire(lat, lon, debut, fin))
         if not jours:
             raise meteo.MeteoIndisponible("aucune journée complète dans la période")
         periode = [jours[0]["date"].isoformat(), jours[-1]["date"].isoformat()]
-        hutton = regles.jours_hutton(jours)
-        alertes.append({
-            "risque": "late_blight", "regle": "hutton_plafonne",
-            "niveau": "favorable" if hutton else "aucun",
-            "detail": {"jours_conditions_remplies": len(hutton), "plafond_c": regles.PLAFOND_MILDIOU},
-        })
         dsv = sum(j["dsv"] for j in jours)
-        alertes.append({
-            "risque": "alternaria", "regle": "tomcast",
-            "niveau": "favorable" if dsv >= regles.SEUIL_TOMCAST else "aucun",
-            "detail": {"notes_cumulees": dsv, "seuil": regles.SEUIL_TOMCAST, "fenetre_jours": len(jours)},
-        })
+        if "late_blight" in risques:
+            hutton = regles.jours_hutton(jours)
+            alertes.append({
+                "risque": "late_blight", "regle": "hutton_plafonne",
+                "niveau": "favorable" if hutton else "aucun",
+                "detail": {"jours_conditions_remplies": len(hutton), "plafond_c": regles.PLAFOND_MILDIOU},
+            })
+        for r in ("alternaria", "carrot_alternaria"):
+            if r in risques:
+                alertes.append({
+                    "risque": r, "regle": "tomcast",
+                    "niveau": "favorable" if dsv >= regles.SEUIL_TOMCAST else "aucun",
+                    "detail": {"notes_cumulees": dsv, "seuil": regles.SEUIL_TOMCAST, "fenetre_jours": len(jours)},
+                })
+        if "onion_downy_mildew" in risques:
+            nuits = regles.jours_downcast(hh)
+            alertes.append({
+                "risque": "onion_downy_mildew", "regle": "downcast",
+                "niveau": "favorable" if nuits else "aucun",
+                "detail": {"nuits_favorables": len(nuits)},
+            })
     else:
         periode = [debut.isoformat(), fin.isoformat()]
 

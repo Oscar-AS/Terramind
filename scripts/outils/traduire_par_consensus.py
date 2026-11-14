@@ -43,7 +43,18 @@ RACINE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(RACINE))
 from engine.app import config  # noqa: E402,F401  (charge .env)
 from engine.app.modules.parole import CONSIGNE as CONSIGNE_WO, glossaire  # noqa: E402
-from engine.app.modules.rag.reponse import gemini as appel_gemini  # noqa: E402
+from engine.app.modules.rag.reponse import gemini as _gemini  # noqa: E402
+import time  # noqa: E402
+
+
+def appel_gemini(consigne: str, texte: str) -> str | None:
+    """Gemini avec 4 essais espacés (surcharge ou trop de demandes : erreurs passagères)."""
+    for attente in (0, 5, 15, 40):
+        time.sleep(attente)
+        r = _gemini(consigne, texte, delai=60)
+        if r:
+            return r
+    return None
 
 CATALOGUE = RACINE / "content" / "voix" / "messages_wolof.csv"
 DETAIL = RACINE / "content" / "voix" / "traductions_concordance.csv"

@@ -7,6 +7,11 @@ Seuils et sources : docs/sources/seuils-meteo-maladies-ravageurs.md.
   cumulés (Madden et al. 1978 ; fourchette 15-20).
 - Mineuse de la tomate : seuil 8 °C, 440 degrés-jours par génération.
 - Teigne du chou : seuil 7,3 °C, 290 degrés-jours par génération.
+- Mildiou de l'oignon, DOWNCAST (Jesperson et Sutton 1987, critères repris par AUSVEG VG203/VG402 et
+  Agronomy 10:738, 2020) : la veille, température moyenne de 8 h à 20 h < 24 °C ; nuit (20 h - 6 h) en
+  moyenne entre 4 et 24 °C ; humidité > 95 % de 2 h à 6 h. Le critère « pas de pluie après 1 h » n'est
+  pas appliqué (pas de pluie horaire dans nos données) : la règle est donc un peu plus large.
+- Alternariose de la carotte : TOMCAST, alerte à 15 points cumulés (Plant Disease 90:264, 2006, Michigan).
 Aucune de ces règles n'est validée au Sénégal : on parle de « conditions favorables » et de
 « surveiller », jamais de maladie déclarée.
 """
@@ -61,3 +66,23 @@ def generations(journalier: dict[dt.date, tuple[float, float]], seuil: float, dd
     """Générations bouclées depuis le premier jour de la série (méthode de la moyenne)."""
     dd = sum(max(0.0, (tmin + tmax) / 2 - seuil) for tmin, tmax in journalier.values())
     return dd / dd_generation
+
+
+def jours_downcast(heures: dict[dt.datetime, tuple[float, float]]) -> list[dt.date]:
+    """Jours où les critères DOWNCAST de sporulation du mildiou de l'oignon sont remplis."""
+    par_jour: dict[dt.date, dict[int, tuple[float, float]]] = {}
+    for moment, th in heures.items():
+        par_jour.setdefault(moment.date(), {})[moment.hour] = th
+    favorables = []
+    for jour in sorted(par_jour):
+        veille = par_jour.get(jour - dt.timedelta(days=1), {})
+        aujourd = par_jour[jour]
+        journee = [veille[h][0] for h in range(8, 20) if h in veille]
+        nuit = [veille[h][0] for h in range(20, 24) if h in veille] + [aujourd[h][0] for h in range(0, 6) if h in aujourd]
+        petit_matin = [aujourd[h][1] for h in range(2, 6) if h in aujourd]
+        if len(journee) < 10 or len(nuit) < 8 or len(petit_matin) < 4:
+            continue  # heures manquantes : on ne conclut pas
+        if (sum(journee) / len(journee) < 24 and 4 <= sum(nuit) / len(nuit) <= 24
+                and all(h > 95 for h in petit_matin)):
+            favorables.append(jour)
+    return favorables

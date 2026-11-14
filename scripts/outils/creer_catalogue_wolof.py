@@ -91,7 +91,7 @@ MESSAGES = [
     ("alerte_rien", "aucune alerte", H,
      "Bonne nouvelle : la météo de cette semaine ne favorise aucune des maladies que je surveille pour ta "
      "culture. Reviens me demander la semaine prochaine."),
-    ("alerte_pas_de_regle", "culture sans règle météo (oignon, carotte, poivron, piment, jaxatu)", H,
+    ("alerte_pas_de_regle", "culture sans règle météo (poivron, piment, jaxatu)", H,
      "Pour cette culture, je ne surveille pas encore la météo. Si une feuille a des taches, envoie-moi sa photo."),
     ("alerte_intro", "avant les alertes", H,
      "Attention : la météo de cette semaine demande de surveiller ta culture."),
@@ -105,6 +105,12 @@ MESSAGES = [
     ("alerte_alternaria", "alerte alternariose", S,
      "Le temps de ces derniers jours est favorable à l'alternariose. Regarde les vieilles feuilles : des taches "
      "brunes avec des cercles."),
+    ("alerte_carrot_alternaria", "alerte alternariose de la carotte", S,
+     "Le temps de ces derniers jours est favorable à l'alternariose de la carotte. Regarde les feuilles : de "
+     "petites taches brun foncé, souvent au bord, entourées de jaune."),
+    ("alerte_onion_downy_mildew", "alerte mildiou de l'oignon", S,
+     "Les nuits très humides de ces derniers jours sont favorables au mildiou de l'oignon. Regarde les feuilles "
+     "le matin : des taches pâles et allongées, avec un duvet gris-violet."),
     ("alerte_tuta_absoluta", "alerte mineuse", S,
      "Une nouvelle génération de mineuse de la tomate est probable. Regarde s'il y a des galeries claires dans "
      "les feuilles."),
