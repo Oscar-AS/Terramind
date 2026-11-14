@@ -37,10 +37,26 @@ export function Erreur({ texte, onReessayer }: { texte: string; onReessayer: () 
   );
 }
 
+// Notes destinées à l'équipe (chemins de fichiers, archive, script) : retirées pour l'agriculteur.
+const TECHNIQUE = /`|\.(md|py|csv)\b|archive|scripts?\//i;
+
+/** Nom d'une source lisible par l'agriculteur : sans les parenthèses techniques ni le code. */
+export function nomLisible(document: string): string {
+  let nom = document;
+  let precedent = '';
+  while (nom !== precedent) {
+    precedent = nom;
+    // parenthèses les plus internes d'abord, pour gérer les parenthèses imbriquées
+    nom = nom.replace(/\s*\(([^()]*)\)/g, (tout, dedans: string) => (TECHNIQUE.test(dedans) ? '' : tout));
+  }
+  return nom.replace(/,?\s*`[^`]*`/g, '').replace(/\s+,/g, ',').trim();
+}
+
 /** D'où vient le conseil : toujours montré, discrètement. */
 export function Sources({ sources }: { sources: Source[] }) {
   if (!sources.length) return null;
-  const uniques = [...new Map(sources.map((s) => [`${s.document} ${s.page}`, s])).values()];
+  const lisibles = sources.map((s) => ({ ...s, document: nomLisible(s.document) }));
+  const uniques = [...new Map(lisibles.map((s) => [`${s.document} ${s.page}`, s])).values()];
   return (
     <Carte style={styles.sources}>
       <View style={styles.sourcesTete}>
@@ -49,7 +65,7 @@ export function Sources({ sources }: { sources: Source[] }) {
       </View>
       {uniques.map((s) => (
         <T key={`${s.document}-${s.page}`} v="petit">
-          {s.document}{/^\d/.test(s.page) ? `, p. ${s.page}` : s.page === '—' ? '' : ` (${s.page})`}
+          {s.document}{/^\d/.test(s.page) ? `, p. ${s.page}` : s.page === '—' || TECHNIQUE.test(s.page) ? '' : ` (${s.page})`}
         </T>
       ))}
     </Carte>
