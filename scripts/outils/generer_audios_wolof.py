@@ -1,7 +1,8 @@
 """Génère les notes vocales wolof du bot avec la voix de synthèse d'Octopus (plateforme du PAS Challenge).
 
 Lit content/voix/messages_wolof.csv et écrit content/audio/wo/<cle>.mp3 (le bot accepte OGG, MP3, M4A).
-Par défaut, seules les phrases relues par un locuteur (statut « relu ») sont générées. Une phrase
+Par défaut, seules les phrases relues par un locuteur (« relu ») ou validées par la concordance de trois
+traducteurs (« valide_concordance », scripts/outils/traduire_par_consensus.py) sont générées. Une phrase
 déjà générée n'est pas refaite, sauf avec --forcer ; une phrase dont le texte wolof a changé depuis la
 dernière génération est refaite automatiquement (empreinte gardée dans content/audio/wo/generes.csv).
 
@@ -71,7 +72,7 @@ def main():
     a.add_argument("--essai", action="store_true", help="afficher ce qui serait généré, sans appel")
     args = a.parse_args()
 
-    statuts = {"relu"} | ({"brouillon_gemini"} if args.brouillons else set())
+    statuts = {"relu", "valide_concordance"} | ({"brouillon_gemini", "a_relire"} if args.brouillons else set())
     lignes = list(csv.DictReader(CATALOGUE.open(encoding="utf-8")))
     deja = {}
     if JOURNAL.exists():

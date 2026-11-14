@@ -1,0 +1,210 @@
+"""Traduction français → wolof par concordance de plusieurs systèmes (demande de Salam, 14 nov 2026).
+
+Processus, pour chaque phrase du catalogue (content/voix/messages_wolof.csv) :
+1. trois systèmes la traduisent en wolof : Gemini, Google Traduction (API Cloud Translation) et
+   Teranga-Wolof-4B-MT en local (llama.cpp, `llama-server`) ;
+2. chaque version wolof est retraduite en français par un AUTRE système que celui qui l'a écrite ;
+3. un juge (Gemini) compare chaque retraduction à la phrase de départ : même sens, rien d'ajouté ni
+   d'enlevé ? ;
+4. on mesure la ressemblance des trois versions wolof entre elles (chrF, Popović 2015) ;
+5. la phrase est validée (statut « valide_concordance ») seulement si les trois systèmes ont répondu,
+   si les trois retraductions gardent le sens et si les versions wolof se ressemblent assez
+   (chrF ≥ SEUIL_CHRF pour chaque paire). On garde alors la version la plus proche des deux autres.
+   Sinon : statut « a_relire » avec la raison, pour le locuteur.
+
+Aucun système n'est « certifié » pour le wolof : la concordance réduit le nombre de phrases à relire,
+elle ne remplace pas un locuteur pour les phrases signalées. Tous les candidats et contrôles sont
+gardés dans content/voix/traductions_concordance.csv (transparence, relecture).
+
+Configuration (.env) : GEMINI_API_KEY ; GOOGLE_TRANSLATE_API_KEY (clé Cloud Translation) ;
+TERANGA_URL (défaut http://127.0.0.1:8080, serveur `llama-server -m Teranga-Wolof-4B-MT-Q4_K_M.gguf`).
+
+    .venv/bin/python scripts/outils/traduire_par_consensus.py --essai      # quels systèmes répondent
+    .venv/bin/python scripts/outils/traduire_par_consensus.py              # tout le catalogue
+    .venv/bin/python scripts/outils/traduire_par_consensus.py --cle accueil
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import itertools
+import json
+import os
+import sys
+import unicodedata
+import urllib.parse
+import urllib.request
+from collections import Counter
+from pathlib import Path
+
+RACINE = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(RACINE))
+from engine.app import config  # noqa: E402,F401  (charge .env)
+from engine.app.modules.parole import CONSIGNE as CONSIGNE_WO, glossaire  # noqa: E402
+from engine.app.modules.rag.reponse import gemini as appel_gemini  # noqa: E402
+
+CATALOGUE = RACINE / "content" / "voix" / "messages_wolof.csv"
+DETAIL = RACINE / "content" / "voix" / "traductions_concordance.csv"
+SEUIL_CHRF = 50.0  # ressemblance minimale entre deux versions wolof (0-100), à ajuster après le premier passage
+SYSTEMES = ("gemini", "google", "teranga")
+# Qui retraduit la version de qui (jamais le même système).
+RETRADUCTEUR = {"gemini": "google", "google": "teranga", "teranga": "gemini"}
+CONSIGNE_FR = "Traduis ce texte wolof en français, fidèlement, sans rien ajouter. Réponds uniquement par la traduction."
+CONSIGNE_JUGE = (
+    "Tu compares deux phrases françaises : A est le message d'origine, B est une retraduction depuis le wolof. "
+    "Réponds en JSON {\"fidele\": true|false, \"raison\": \"...\"}. fidele = true seulement si B a le même sens "
+    "que A, sans information ajoutée, enlevée ou changée (un mot différent mais de même sens est accepté)."
+)
+
+
+# --- systèmes -------------------------------------------------------------------------------------
+def gemini_vers(texte: str, cible: str) -> str | None:
+    if cible == "wo":
+        return appel_gemini(CONSIGNE_WO, f"Glossaire :\n{glossaire()}\n\nRéponse à traduire :\n{texte}")
+    return appel_gemini(CONSIGNE_FR, texte)
+
+
+def google_vers(texte: str, cible: str) -> str | None:
+    cle = os.environ.get("GOOGLE_TRANSLATE_API_KEY", "").strip()
+    if not cle:
+        return None
+    donnees = urllib.parse.urlencode({"q": texte, "source": "fr" if cible == "wo" else "wo", "target": cible,
+                                      "format": "text", "key": cle}).encode()
+    req = urllib.request.Request("https://translation.googleapis.com/language/translate/v2", data=donnees)
+    with urllib.request.urlopen(req, timeout=60) as r:
+        return json.loads(r.read())["data"]["translations"][0]["translatedText"].strip()
+
+
+def teranga_vers(texte: str, cible: str) -> str | None:
+    url = os.environ.get("TERANGA_URL", "http://127.0.0.1:8080").rstrip("/")
+    consigne = ("Translate the following French text into Wolof. Answer with the translation only."
+                if cible == "wo" else "Translate the following Wolof text into French. Answer with the translation only.")
+    corps = json.dumps({"messages": [{"role": "user", "content": f"{consigne}\n\n{texte}"}],
+                        "temperature": 0.1, "max_tokens": 400}).encode()
+    req = urllib.request.Request(f"{url}/v1/chat/completions", data=corps, headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=180) as r:
+            return json.loads(r.read())["choices"][0]["message"]["content"].strip()
+    except OSError:
+        return None
+
+
+TRADUIRE = {"gemini": gemini_vers, "google": google_vers, "teranga": teranga_vers}
+
+
+def traduire(systeme: str, texte: str, cible: str) -> str | None:
+    try:
+        r = TRADUIRE[systeme](texte, cible)
+        return r.strip() if r else None
+    except Exception as e:
+        print(f"    {systeme} : échec ({type(e).__name__})")
+        return None
+
+
+# --- contrôles ------------------------------------------------------------------------------------
+def chrf(a: str, b: str, n_max: int = 6, beta: float = 2.0) -> float:
+    """chrF (Popović 2015) sur les caractères, espaces, ponctuation et accents retirés (« dégg » = « degg » : variantes
+    d'écriture, pas un désaccord), moyenne des n-grammes 1 à 6, symétrisé."""
+    def ngrammes(t, n):
+        t = "".join(c for c in unicodedata.normalize("NFD", t.lower()) if not unicodedata.combining(c))
+        t = "".join(c for c in t if c.isalnum())  # ni espaces ni ponctuation
+        return Counter(t[i:i + n] for i in range(len(t) - n + 1))
+
+    def score(h, r):
+        p = rr = 0.0
+        k = 0
+        for n in range(1, n_max + 1):
+            gh, gr = ngrammes(h, n), ngrammes(r, n)
+            if not gh or not gr:
+                continue
+            commun = sum((gh & gr).values())
+            p += commun / sum(gh.values())
+            rr += commun / sum(gr.values())
+            k += 1
+        if not k or not (p or rr):
+            return 0.0
+        p, rr = p / k, rr / k
+        return 100 * (1 + beta**2) * p * rr / (beta**2 * p + rr) if (p or rr) else 0.0
+
+    return (score(a, b) + score(b, a)) / 2
+
+
+def juger(origine: str, retraduction: str | None) -> tuple[bool, str]:
+    if not retraduction:
+        return False, "retraduction impossible"
+    r = appel_gemini(CONSIGNE_JUGE, f"A : {origine}\nB : {retraduction}")
+    try:
+        d = json.loads(r.strip().removeprefix("```json").removesuffix("```").strip())
+        return bool(d.get("fidele")), str(d.get("raison", ""))
+    except Exception:
+        return False, "réponse du juge illisible"
+
+
+def traiter(texte_fr: str) -> dict:
+    wo = {s: traduire(s, texte_fr, "wo") for s in SYSTEMES}
+    res = {"wo": wo, "retour": {}, "fidele": {}, "raison": {}, "chrf": {}}
+    for s, w in wo.items():
+        if w:
+            retour = traduire(RETRADUCTEUR[s], w, "fr")
+            res["retour"][s] = retour
+            res["fidele"][s], res["raison"][s] = juger(texte_fr, retour)
+    presents = [s for s in SYSTEMES if wo[s]]
+    for a, b in itertools.combinations(presents, 2):
+        res["chrf"][f"{a}-{b}"] = round(chrf(wo[a], wo[b]), 1)
+    problemes = []
+    if len(presents) < len(SYSTEMES):
+        problemes.append("systèmes absents : " + ", ".join(s for s in SYSTEMES if not wo[s]))
+    problemes += [f"{s} : sens changé ({res['raison'][s]})" for s in presents if not res["fidele"].get(s)]
+    problemes += [f"versions trop différentes ({p} : {v})" for p, v in res["chrf"].items() if v < SEUIL_CHRF]
+    if presents:
+        res["choisi"] = max(presents, key=lambda s: sum(v for p, v in res["chrf"].items() if s in p.split("-")))
+    res["problemes"] = problemes
+    return res
+
+
+def main():
+    a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    a.add_argument("--essai", action="store_true", help="vérifier quels systèmes répondent, sans rien écrire")
+    a.add_argument("--cle", action="append", help="seulement cette clé (répétable)")
+    args = a.parse_args()
+
+    if args.essai:
+        for s in SYSTEMES:
+            print(f"{s:8} → {traduire(s, 'Bonjour, comment vas-tu ?', 'wo')}")
+        return
+
+    lignes = list(csv.DictReader(CATALOGUE.open(encoding="utf-8")))
+    champs = list(lignes[0].keys())
+    detail = []
+    for r in lignes:
+        if args.cle and r["cle"] not in args.cle:
+            continue
+        if r["statut"] == "relu":  # relu par un locuteur : on n'y touche plus
+            continue
+        res = traiter(r["texte_fr"])
+        if res.get("choisi"):
+            r["texte_wo"] = res["wo"][res["choisi"]]
+        r["statut"] = "valide_concordance" if not res["problemes"] else "a_relire"
+        print(f"  {r['cle']:40} {r['statut']:20} {'; '.join(res['problemes'])[:120]}")
+        detail.append({"cle": r["cle"], "texte_fr": r["texte_fr"], "statut": r["statut"],
+                       "choisi": res.get("choisi", ""), "problemes": " | ".join(res["problemes"]),
+                       **{f"wo_{s}": res["wo"].get(s) or "" for s in SYSTEMES},
+                       **{f"retour_{s}": res["retour"].get(s) or "" for s in SYSTEMES},
+                       **{f"chrf_{p}": v for p, v in res["chrf"].items()}})
+    with CATALOGUE.open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=champs, lineterminator="\n")
+        w.writeheader()
+        w.writerows(lignes)
+    if detail:
+        champs_d = list(dict.fromkeys(k for d in detail for k in d))
+        with DETAIL.open("w", encoding="utf-8", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=champs_d, lineterminator="\n")
+            w.writeheader()
+            w.writerows(detail)
+    n = Counter(d["statut"] for d in detail)
+    print(f"\n{n.get('valide_concordance', 0)} validées par concordance, {n.get('a_relire', 0)} à relire par un locuteur.")
+
+
+if __name__ == "__main__":
+    main()
