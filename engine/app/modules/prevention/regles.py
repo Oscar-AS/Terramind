@@ -9,8 +9,10 @@ Seuils et sources : docs/sources/seuils-meteo-maladies-ravageurs.md.
 - Teigne du chou : seuil 7,3 °C, 290 degrés-jours par génération.
 - Mildiou de l'oignon, DOWNCAST (Jesperson et Sutton 1987, critères repris par AUSVEG VG203/VG402 et
   Agronomy 10:738, 2020) : la veille, température moyenne de 8 h à 20 h < 24 °C ; nuit (20 h - 6 h) en
-  moyenne entre 4 et 24 °C ; humidité > 95 % de 2 h à 6 h. Le critère « pas de pluie après 1 h » n'est
-  pas appliqué (pas de pluie horaire dans nos données) : la règle est donc un peu plus large.
+  moyenne entre 4 et 24 °C ; humidité > 95 % de 2 h à 6 h ; pas plus de 1 mm de pluie de 23 h à 4 h (la
+  pluie lave les spores ; seuil chiffré de la version du Queensland, AUSVEG VG97024 p. 3 et VG402 p. 10-11).
+- Noctuelle des fruits (Helicoverpa armigera) : seuil 10,7 °C, 521 degrés-jours par génération (43 + 287 +
+  191, Jung et al. 2023, J. Econ. Entomol. 116:1689, laboratoire + validation en semi-champ, Corée).
 - Alternariose de la carotte : TOMCAST, alerte à 15 points cumulés (Plant Disease 90:264, 2006, Michigan).
 Aucune de ces règles n'est validée au Sénégal : on parle de « conditions favorables » et de
 « surveiller », jamais de maladie déclarée.
@@ -24,10 +26,12 @@ PLAFOND_MILDIOU = 26.6
 TOMCAST = [((13, 18), (7, 16, 21, None)), ((18, 21), (4, 9, 16, 23)),
            ((21, 26), (3, 6, 13, 21)), ((26, 30), (4, 9, 16, 23))]
 SEUIL_TOMCAST = 15
-RAVAGEURS = {  # risque : (culture, seuil °C, degrés-jours par génération)
-    "tuta_absoluta": ("tomato", 8.0, 440),
-    "plutella_xylostella": ("cabbage", 7.3, 290),
+RAVAGEURS = {  # risque : (cultures, seuil °C, degrés-jours par génération)
+    "tuta_absoluta": (("tomato",), 8.0, 440),
+    "plutella_xylostella": (("cabbage",), 7.3, 290),
+    "helicoverpa_armigera": (("tomato", "pepper", "chili", "bitter_eggplant"), 10.7, 521),
 }
+PLUIE_MAX_NUIT_MM = 1.0  # DOWNCAST, version du Queensland
 GENERATION_SURVEILLER = 3  # « surveiller » à partir de la 3e génération depuis le repiquage
 
 
@@ -68,8 +72,9 @@ def generations(journalier: dict[dt.date, tuple[float, float]], seuil: float, dd
     return dd / dd_generation
 
 
-def jours_downcast(heures: dict[dt.datetime, tuple[float, float]]) -> list[dt.date]:
-    """Jours où les critères DOWNCAST de sporulation du mildiou de l'oignon sont remplis."""
+def jours_downcast(heures: dict[dt.datetime, tuple], ecartes_pluie: list | None = None) -> list[dt.date]:
+    """Jours où les critères DOWNCAST de sporulation du mildiou de l'oignon sont remplis. Les nuits qui
+    remplissaient tout sauf la pluie sont ajoutées à `ecartes_pluie` (transparence : pluie du modèle)."""
     par_jour: dict[dt.date, dict[int, tuple[float, float]]] = {}
     for moment, th in heures.items():
         par_jour.setdefault(moment.date(), {})[moment.hour] = th
@@ -84,5 +89,11 @@ def jours_downcast(heures: dict[dt.datetime, tuple[float, float]]) -> list[dt.da
             continue  # heures manquantes : on ne conclut pas
         if (sum(journee) / len(journee) < 24 and 4 <= sum(nuit) / len(nuit) <= 24
                 and all(h > 95 for h in petit_matin)):
+            pluie = sum(th[2] for th in ([veille[23]] if 23 in veille else []) + [aujourd[h] for h in range(0, 4) if h in aujourd]
+                        if len(th) > 2)
+            if pluie > PLUIE_MAX_NUIT_MM:
+                if ecartes_pluie is not None:
+                    ecartes_pluie.append(jour)
+                continue
             favorables.append(jour)
     return favorables

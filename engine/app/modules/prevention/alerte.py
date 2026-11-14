@@ -21,6 +21,12 @@ CONSEILS = {
     # Symptômes : Cornell (Carrot Leaf Blight Diseases and their Management in New York) ; UC IPM (onion downy mildew).
     ("carrot_alternaria", "favorable"): "Le temps de ces derniers jours est favorable à l'alternariose de la carotte. "
                                         "Regarde les feuilles : petites taches brun foncé, souvent au bord, entourées de jaune.",
+    # Symptômes : fiche content/fiches/ravageur-noctuelle-tomate.md (DPV p. 51-52 ; FAO/RADHORT p. 7).
+    ("helicoverpa_armigera", "surveiller"): "Une nouvelle génération de noctuelle (le ver des fruits) est probable. "
+                                            "Regarde les fruits et les fleurs : fruits troués, fleurs coupées, "
+                                            "chenilles brunes, vertes ou jaunes.",
+    ("date_requise", "date_requise"): "Pour surveiller les insectes de ta culture, j'ai besoin de savoir quand tu "
+                                      "l'as plantée.",
     ("onion_downy_mildew", "favorable"): "Les nuits très humides de ces derniers jours sont favorables au mildiou de "
                                          "l'oignon. Regarde les feuilles le matin : taches pâles et allongées, avec "
                                          "un duvet gris-violet.",
@@ -59,17 +65,25 @@ def calculer(lat: float, lon: float, culture: str, date: dt.date, date_repiquage
                     "detail": {"notes_cumulees": dsv, "seuil": regles.SEUIL_TOMCAST, "fenetre_jours": len(jours)},
                 })
         if "onion_downy_mildew" in risques:
-            nuits = regles.jours_downcast(hh)
+            pluie: list = []
+            nuits = regles.jours_downcast(hh, pluie)
             alertes.append({
                 "risque": "onion_downy_mildew", "regle": "downcast",
                 "niveau": "favorable" if nuits else "aucun",
-                "detail": {"nuits_favorables": len(nuits)},
+                "detail": {"nuits_favorables": len(nuits), "nuits_ecartees_pluie": len(pluie),
+                           "pluie_max_mm": regles.PLUIE_MAX_NUIT_MM},
             })
     else:
         periode = [debut.isoformat(), fin.isoformat()]
 
-    for risque, (cible, seuil, dd_gen) in regles.RAVAGEURS.items():
-        if culture != cible or date_repiquage is None or date_repiquage >= fin:
+    ravageurs = [r for r, (cibles, *_) in regles.RAVAGEURS.items() if culture in cibles]
+    if ravageurs and (date_repiquage is None or date_repiquage >= fin):
+        # Les générations se comptent depuis la plantation : sans date, on le dit au lieu de se taire.
+        alertes.append({"risque": "date_requise", "regle": "degres_jours", "niveau": "date_requise",
+                        "detail": {"ravageurs": ravageurs}})
+        ravageurs = []
+    for risque, (cibles, seuil, dd_gen) in regles.RAVAGEURS.items():
+        if risque not in ravageurs:
             continue
         serie = meteo.journalier(lat, lon, date_repiquage, fin)
         gen = regles.generations(serie, seuil, dd_gen)

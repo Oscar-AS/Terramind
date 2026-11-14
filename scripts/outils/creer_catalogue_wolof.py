@@ -91,7 +91,7 @@ MESSAGES = [
     ("alerte_rien", "aucune alerte", H,
      "Bonne nouvelle : la météo de cette semaine ne favorise aucune des maladies que je surveille pour ta "
      "culture. Reviens me demander la semaine prochaine."),
-    ("alerte_pas_de_regle", "culture sans règle météo (poivron, piment, jaxatu)", H,
+    ("alerte_pas_de_regle", "culture sans règle météo", H,
      "Pour cette culture, je ne surveille pas encore la météo. Si une feuille a des taches, envoie-moi sa photo."),
     ("alerte_intro", "avant les alertes", H,
      "Attention : la météo de cette semaine demande de surveiller ta culture."),
@@ -111,6 +111,11 @@ MESSAGES = [
     ("alerte_onion_downy_mildew", "alerte mildiou de l'oignon", S,
      "Les nuits très humides de ces derniers jours sont favorables au mildiou de l'oignon. Regarde les feuilles "
      "le matin : des taches pâles et allongées, avec un duvet gris-violet."),
+    ("alerte_helicoverpa_armigera", "alerte noctuelle (poivron, piment, jaxatu, tomate)", S,
+     "Une nouvelle génération de noctuelle, le ver des fruits, est probable. Regarde les fruits et les fleurs : "
+     "des fruits troués, des fleurs coupées, des chenilles brunes, vertes ou jaunes."),
+    ("alerte_date_requise", "ravageurs : date de plantation inconnue", S,
+     "Pour surveiller les insectes de ta culture, j'ai besoin de savoir quand tu l'as plantée."),
     ("alerte_tuta_absoluta", "alerte mineuse", S,
      "Une nouvelle génération de mineuse de la tomate est probable. Regarde s'il y a des galeries claires dans "
      "les feuilles."),

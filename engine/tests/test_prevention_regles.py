@@ -25,3 +25,20 @@ def test_downcast_nuit_humide_et_fraiche():
 def test_downcast_refuse_si_journee_chaude_ou_matin_sec():
     assert regles.jours_downcast(_heures(26, 18, 97)) == []
     assert regles.jours_downcast(_heures(22, 18, 93)) == []
+
+
+def test_downcast_pluie_de_nuit_ecarte():
+    h = _heures(22, 18, 97)
+    jour = dt.date(2026, 11, 2)
+    h = {k: v + ((0.5,) if k.date() == jour and k.hour in (1, 2, 3) else (0.0,)) for k, v in h.items()}
+    ecartes = []
+    assert regles.jours_downcast(h, ecartes) == [] and ecartes == [jour]  # 1,5 mm de 23 h à 4 h
+
+
+def test_date_requise_pour_les_ravageurs():
+    from unittest import mock
+    from engine.app.modules.prevention import alerte
+    with mock.patch.object(alerte.meteo, "journalier", return_value={}):
+        d = alerte.calculer(14.7, -17.2, "pepper", dt.date(2026, 11, 14), None)
+    assert [(a["risque"], a["niveau"]) for a in d["alertes"]] == [("date_requise", "date_requise")]
+    assert "quand tu l'as plantée" in d["alertes"][0]["conseil"]

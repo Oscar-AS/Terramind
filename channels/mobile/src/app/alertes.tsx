@@ -18,6 +18,8 @@ const RISQUES: Record<string, { Icone: Icon; nom: string }> = {
   plutella_xylostella: { Icone: Bug, nom: 'Teigne du chou' },
   carrot_alternaria: { Icone: Leaf, nom: 'Alternariose de la carotte' },
   onion_downy_mildew: { Icone: CloudRain, nom: "Mildiou de l'oignon" },
+  helicoverpa_armigera: { Icone: Bug, nom: 'Noctuelle (ver des fruits)' },
+  date_requise: { Icone: Bug, nom: 'Insectes de ta culture' },
 };
 
 
@@ -85,12 +87,13 @@ export default function AlertesEcran() {
                     <Pastille Icone={r.Icone} couleur={couleurs.terre} fond={couleurs.terreClair} taille={56} />
                     <View style={{ flex: 1, gap: 6 }}>
                       <T v="sousTitre">{r.nom}</T>
-                      <Badge Icone={r.Icone} texte={a.niveau === 'favorable' ? 'Conditions favorables' : 'À surveiller'}
+                      <Badge Icone={r.Icone} texte={a.niveau === 'favorable' ? 'Conditions favorables'
+                        : a.niveau === 'date_requise' ? 'Date de plantation manquante' : 'À surveiller'}
                         couleur={couleurs.terre} fond={couleurs.terreClair} />
                     </View>
                   </View>
                   <T v="corps">{a.conseil}</T>
-                  {retours[a.id] ? <T v="corpsGras" style={{ color: couleurs.feuille }}>{"Merci, c'est noté."}</T> : (
+                  {a.niveau === 'date_requise' ? null : retours[a.id] ? <T v="corpsGras" style={{ color: couleurs.feuille }}>{"Merci, c'est noté."}</T> : (
                     <>
                       <T v="petit">As-tu vu des signes dans ton champ ?</T>
                       <View style={styles.boutons}>

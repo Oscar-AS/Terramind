@@ -33,14 +33,16 @@ def _lire(pas: str, parametres: str, lat: float, lon: float, debut: dt.date, fin
 
 @lru_cache(maxsize=256)
 def heures(lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict[dt.datetime, tuple[float, float]]:
-    """{date et heure (UTC, = heure du Sénégal) : (température °C, humidité %)} ; heures manquantes retirées."""
-    p = _lire("hourly", "T2M,RH2M", lat, lon, debut, fin)
+    """{date et heure (UTC, = heure du Sénégal) : (température °C, humidité %, pluie mm)} ; heures manquantes
+    retirées. Pluie : PRECTOTCORR (mm/h), corrigée par CMAP en Afrique ; bruine et valeurs aberrantes possibles."""
+    p = _lire("hourly", "T2M,RH2M,PRECTOTCORR", lat, lon, debut, fin)
     res = {}
     for cle, t in p["T2M"].items():
         h = p["RH2M"].get(cle, MANQUANT)
         if t <= MANQUANT or h <= MANQUANT:
             continue
-        res[dt.datetime.strptime(cle, "%Y%m%d%H")] = (t, h)
+        pluie = p.get("PRECTOTCORR", {}).get(cle, MANQUANT)
+        res[dt.datetime.strptime(cle, "%Y%m%d%H")] = (t, h, pluie if pluie > MANQUANT else 0.0)
     return res
 
 
@@ -48,7 +50,7 @@ def horaire(lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict[dt.dat
     """{jour: [(température °C, humidité %), …]} ; heures manquantes retirées."""
     jours: dict[dt.date, list[tuple[float, float]]] = {}
     for moment, th in sorted(heures(lat, lon, debut, fin).items()):
-        jours.setdefault(moment.date(), []).append(th)
+        jours.setdefault(moment.date(), []).append(th[:2])
     return jours
 
 

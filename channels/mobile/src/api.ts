@@ -31,7 +31,7 @@ export type Plan = {
 export type Alerte = {
   id: string;
   risque: string;
-  niveau: 'aucun' | 'surveiller' | 'favorable';
+  niveau: 'aucun' | 'surveiller' | 'favorable' | 'date_requise';
   conseil: string | null;
 };
 export type Alertes = { alertes: Alerte[]; meteo: { source: string; periode: [string, string] } };
