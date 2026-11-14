@@ -40,7 +40,7 @@ AGENT = "TerraMind-outils/0.2"  # le pare-feu d'Octopus refuse l'agent par défa
 # Messages bilingues, comme un serveur vocal : d'abord une phrase en français (voix française d'Octopus),
 # puis le texte wolof du catalogue. Le message de départ est envoyé avant le choix de la langue.
 EN_FRANCAIS_D_ABORD = {
-    "choix_langue": "Bienvenue sur TerraMind. Pour continuer en français, touche le bouton avec le drapeau de la France.",
+    "choix_langue": "Bienvenue sur TerraMind. Pour continuer en français, appuie sur Français.",
 }
 
 

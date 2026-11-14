@@ -6,7 +6,7 @@ l'enregistrement du webhook) : sinon, refus.
 
 Ton : un conseiller qui accompagne pas à pas. Chaque message répond d'abord, puis structure
 (titres en gras), puis propose la suite (« Ce que tu peux faire ensuite »). Pas d'émoji dans les textes ;
-en wolof, les boutons portent un dessin que les notes vocales décrivent. Texte en HTML Telegram.
+en wolof, les boutons portent un numéro que les notes vocales citent. Texte en HTML Telegram.
 
 Parcours :
 - /start ou « Aide » : présentation et clavier ;
@@ -57,13 +57,11 @@ CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}], [{"tex
                         [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_QUESTION}]],
            "resize_keyboard": True}
 # Anciens libellés (claviers encore affichés sur les téléphones) : traités comme les nouveaux.
-# En wolof, beaucoup d'agriculteurs ne lisent pas le français : chaque bouton porte un dessin, que les
-# notes vocales décrivent (« touche le bouton avec l'appareil photo »).
-DESSINS = {B_POSITION: "📍", B_PHOTO: "📷", B_PLAN: "🌱", B_ALERTES: "🌦️", B_QUESTION: "🎤"}
-CLAVIER_WO = {"keyboard": [[dict(b, text=f"{DESSINS[b['text']]} {b['text']}") for b in ligne]
+# En wolof, beaucoup d'agriculteurs ne lisent pas le français : chaque bouton porte un numéro, que les
+# notes vocales citent (« appuie sur le 2 ») ; l'agriculteur peut réécouter la note autant qu'il veut.
+NUMEROS = {B_POSITION: 1, B_PHOTO: 2, B_PLAN: 3, B_ALERTES: 4, B_QUESTION: 5}
+CLAVIER_WO = {"keyboard": [[dict(b, text=f"{NUMEROS[b['text']]}. {b['text']}") for b in ligne]
                            for ligne in CLAVIER["keyboard"]], "resize_keyboard": True}
-DESSINS_CULTURES = {"tomato": "🍅", "potato": "🥔", "onion": "🧅", "cabbage": "🥬", "pepper": "🫑",
-                    "carrot": "🥕", "chili": "🌶️", "bitter_eggplant": "🍆"}
 B_AIDE = "/aide"  # l'accueil reste accessible par /aide et par les anciens boutons d'aide
 ANCIENS_BOUTONS = {"Examiner une feuille": B_PHOTO, "Ma plante est malade : envoyer une photo": B_PHOTO,
                    "Que planter ?": B_PLAN, "Surveiller ma culture": B_ALERTES,
@@ -100,8 +98,8 @@ DEMANDE_POSITION = (
 CHOIX_LANGUE = ("<b>Bienvenue sur TerraMind.</b>\n"
                 "En quelle langue veux-tu que je te parle ? Touche « Wolof » ou « Français ».\n\n"
                 "<i>En wolof, je te réponds par des messages vocaux, avec le texte en français en dessous.</i>")
-CLAVIER_LANGUE = {"inline_keyboard": [[{"text": "🇸🇳 Wolof", "callback_data": "langue:wo"},
-                                       {"text": "🇫🇷 Français", "callback_data": "langue:fr"}]]}
+CLAVIER_LANGUE = {"inline_keyboard": [[{"text": "Wolof", "callback_data": "langue:wo"},
+                                       {"text": "Français", "callback_data": "langue:fr"}]]}
 
 # Notes vocales en wolof (D10), préparées à l'avance : content/audio/wo/<clé>.ogg (ou .mp3, .m4a), textes dans
 # content/voix/messages_wolof.csv. Phrases générales et sensibles : voix humaine ; contenu choisi par
@@ -215,9 +213,9 @@ def _demander_champ(chat: int) -> bool:
             dire(chat, voix)
             wo = e.get("langue") == "wo"
             envoyer(chat, texte, reply_markup={"inline_keyboard": [[
-                {"text": "✅ Oui" if wo else "Oui", "callback_data": f"{cle}:oui"},
-                {"text": "❌ Non" if wo else "Non", "callback_data": f"{cle}:non"},
-                {"text": "❓ Je ne sais pas" if wo else "Je ne sais pas", "callback_data": f"{cle}:ne_sait_pas"}]]})
+                {"text": "1. Oui" if wo else "Oui", "callback_data": f"{cle}:oui"},
+                {"text": "2. Non" if wo else "Non", "callback_data": f"{cle}:non"},
+                {"text": "3. Je ne sais pas" if wo else "Je ne sais pas", "callback_data": f"{cle}:ne_sait_pas"}]]})
             return True
     return False
 
@@ -493,8 +491,8 @@ def traiter(maj: dict):
     etat = ETATS.setdefault(chat, {})
     texte = (msg.get("text") or "").strip()
     texte = ANCIENS_BOUTONS.get(texte, texte)
-    for bouton, dessin in DESSINS.items():  # bouton à dessin (clavier wolof) → même action
-        if texte == f"{dessin} {bouton}":
+    for bouton, numero in NUMEROS.items():  # bouton numéroté (clavier wolof) → même action
+        if texte in (f"{numero}. {bouton}", str(numero)):
             texte = bouton
 
     if "location" in msg:
@@ -539,8 +537,8 @@ def traiter(maj: dict):
             _alertes(chat)
         else:
             wo = etat.get("langue") == "wo"
-            boutons = [[{"text": f"{DESSINS_CULTURES[k]} {c['libelle']}" if wo else c["libelle"],
-                         "callback_data": f"culture:{k}"}] for k, c in CULTURES.items()]
+            boutons = [[{"text": f"{i}. {c['libelle']}" if wo else c["libelle"], "callback_data": f"culture:{k}"}]
+                       for i, (k, c) in enumerate(CULTURES.items(), 1)]
             dire(chat, "choix_culture")
             envoyer(chat, "<b>Quelle culture veux-tu que je surveille ?</b>\nChoisis-la dans la liste.",
                     reply_markup={"inline_keyboard": boutons})

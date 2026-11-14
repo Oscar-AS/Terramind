@@ -17,7 +17,7 @@ elle ne remplace pas un locuteur pour les phrases signalées. Tous les candidats
 gardés dans content/voix/traductions_concordance.csv (transparence, relecture).
 
 Configuration (.env) : GEMINI_API_KEY ; GOOGLE_TRANSLATE_API_KEY (clé Cloud Translation) ;
-TERANGA_URL (défaut http://127.0.0.1:8080, serveur `llama-server -m Teranga-Wolof-4B-MT-Q4_K_M.gguf`).
+TERANGA_URL (défaut http://127.0.0.1:8090, serveur `llama-server -m Teranga-Wolof-4B-MT-Q4_K_M.gguf`).
 
     .venv/bin/python scripts/outils/traduire_par_consensus.py --essai      # quels systèmes répondent
     .venv/bin/python scripts/outils/traduire_par_consensus.py              # tout le catalogue
@@ -77,15 +77,17 @@ def google_vers(texte: str, cible: str) -> str | None:
 
 
 def teranga_vers(texte: str, cible: str) -> str | None:
-    url = os.environ.get("TERANGA_URL", "http://127.0.0.1:8080").rstrip("/")
-    consigne = ("Translate the following French text into Wolof. Answer with the translation only."
-                if cible == "wo" else "Translate the following Wolof text into French. Answer with the translation only.")
-    corps = json.dumps({"messages": [{"role": "user", "content": f"{consigne}\n\n{texte}"}],
-                        "temperature": 0.1, "max_tokens": 400}).encode()
-    req = urllib.request.Request(f"{url}/v1/chat/completions", data=corps, headers={"Content-Type": "application/json"})
+    """Teranga-Wolof-4B-MT servi par `llama-server` ; gabarit ChatML avec la réflexion coupée (<think></think>
+    vide), comme à l'entraînement (Modelfile du modèle) ; consigne de la fiche du modèle : « Traduis en wolof : … »."""
+    url = os.environ.get("TERANGA_URL", "http://127.0.0.1:8090").rstrip("/")
+    consigne = "Traduis en wolof : " if cible == "wo" else "Traduis en français : "
+    invite = (f"<|im_start|>user\n{consigne}{texte}<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n")
+    corps = json.dumps({"prompt": invite, "temperature": 0, "repeat_penalty": 1.05, "n_predict": 400,
+                        "stop": ["<|im_end|>", "<|im_start|>"]}).encode()
+    req = urllib.request.Request(f"{url}/completion", data=corps, headers={"Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=180) as r:
-            return json.loads(r.read())["choices"][0]["message"]["content"].strip()
+            return json.loads(r.read())["content"].strip()
     except OSError:
         return None
 

@@ -24,27 +24,25 @@ S = "synthese"
 MESSAGES = [
     # --- Guide : voix humaine (accueil et messages sensibles) ---
     ("choix_langue", "au démarrage, avant le choix de la langue (toujours envoyé)", H,
-     "Pour continuer en wolof, touche le bouton avec le drapeau du Sénégal."),
+     "Pour continuer en wolof, appuie sur Wolof."),
     ("accueil", "après le choix du wolof", H,
-     "Bonjour, je suis TerraMind, ton assistant pour le maraîchage. Je vais te parler de tes boutons, en bas de "
-     "l'écran. Le bouton avec l'épingle rouge m'envoie la position de ton champ : commence par lui. Le bouton avec "
-     "l'appareil photo sert à voir si ta plante est malade. Le bouton avec la petite plante te dit quoi planter. "
-     "Le bouton avec le soleil et le nuage te dit ce que la météo de la semaine annonce pour tes plantes. Le bouton "
-     "avec le micro sert à me poser une question : tu peux me parler en wolof. Je ne donne jamais de produit "
+     "Bonjour, je suis TerraMind, ton assistant pour le maraîchage. En bas de l'écran, tu as cinq boutons "
+     "numérotés. Le un m'envoie la position de ton champ : commence par lui. Le deux sert à voir si ta plante est "
+     "malade. Le trois te dit quoi planter. Le quatre te dit ce que la météo de la semaine annonce pour tes "
+     "plantes. Le cinq sert à me poser une question : tu peux me parler en wolof. Je ne donne jamais de produit "
      "chimique : pour un traitement, je t'envoie vers un agent agricole."),
     ("demande_position", "position nécessaire", H,
-     "Pour t'aider, j'ai besoin de connaître ton champ. Touche le bouton avec l'épingle rouge, "
+     "Pour t'aider, j'ai besoin de connaître ton champ. Appuie sur le un, "
      "de préférence quand tu es dans ton champ."),
     ("position_recue", "position reçue", H,
      "Merci, j'ai bien reçu la position de ton champ."),
     ("invite_question", "bouton J'ai une question à te poser", H,
      "Je t'écoute. Pour me parler, garde le doigt appuyé sur le micro, en bas à droite, pendant que tu parles."),
     ("question_eau_salee", "avant le plan : eau du puits", H,
-     "L'eau de ton puits est-elle salée ? Touche le bouton vert pour oui, la croix rouge pour non, "
-     "ou le point d'interrogation si tu ne sais pas."),
+     "L'eau de ton puits est-elle salée ? Appuie sur un pour oui, deux pour non, trois si tu ne sais pas."),
     ("question_bas_fond", "avant le plan : bas-fond", H,
      "Ton champ est-il dans un bas-fond, un endroit bas où l'eau reste longtemps après la pluie ? "
-     "Touche le bouton vert pour oui, la croix rouge pour non, ou le point d'interrogation si tu ne sais pas."),
+     "Appuie sur un pour oui, deux pour non, trois si tu ne sais pas."),
     ("conseils_photo", "bouton Voir si ma plante est malade", H,
      "Envoie-moi la photo d'une seule feuille malade. Touche le trombone en bas de l'écran, puis l'appareil "
      "photo. Prends la feuille de près, pour qu'elle remplisse la photo, à la lumière du jour, sans ombre."),
@@ -76,13 +74,14 @@ MESSAGES = [
      "Je ne peux pas écouter les messages vocaux pour le moment. Écris ta question, ou utilise les boutons en "
      "bas de l'écran."),
     ("choix_culture", "bouton météo de la semaine pour mes plantes", H,
-     "Quelle culture veux-tu que je surveille ? Touche le dessin de ta culture : la tomate, la pomme de terre, "
-     "l'oignon, le chou, le poivron, la carotte, le piment ou le jaxatu."),
+     "Quelle culture veux-tu que je surveille ? Appuie sur son numéro. Un : la tomate. Deux : la pomme de "
+     "terre. Trois : l'oignon. Quatre : le chou. Cinq : le poivron. Six : la carotte. Sept : le piment. "
+     "Huit : le jaxatu."),
     ("date_repiquage", "après le choix de la culture", H,
      "Tu l'as plantée quand ? Écris-moi le jour et le mois. Si tu ne t'en souviens plus, écris juste : je ne sais pas."),
     ("plan_suite", "après le plan de culture", H,
-     "Si tu as déjà planté, touche le bouton avec le soleil et le nuage : je te dirai ce que la météo annonce "
-     "pour tes plantes. Si une feuille a des taches, touche le bouton avec l'appareil photo."),
+     "Si tu as déjà planté, appuie sur le quatre : je te dirai ce que la météo annonce pour tes plantes. "
+     "Si une feuille a des taches, appuie sur le deux."),
     ("date_ignoree", "date de plantation inconnue", H, "Pas de souci, je fais sans la date."),
     ("date_incomprise", "date de plantation illisible", H,
      "Je n'ai pas compris la date. Écris le jour, une barre, puis le mois. Par exemple quinze barre dix, pour le "

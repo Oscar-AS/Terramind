@@ -182,19 +182,26 @@ def test_reponse_libre_dite_en_wolof():
     assert fichier.call_args.kwargs["octets"] == b"mp3"
 
 
-def test_mode_wolof_boutons_a_dessins():
+def test_mode_wolof_boutons_numerotes():
     tg = telegram
     tg.ETATS.clear()
     tg.ETATS[14] = {"langue": "wo"}
     with mock.patch.object(tg, "_appel") as appel:
         tg.envoyer(14, "texte", reply_markup=tg.CLAVIER)
     clavier = appel.call_args.kwargs["reply_markup"]
-    assert clavier is tg.CLAVIER_WO and clavier["keyboard"][1][0]["text"].startswith("📷")
-    # un bouton à dessin déclenche la même action que le bouton texte
-    with mock.patch.object(tg, "envoyer") as envoyer:
-        tg.traiter({"message": {"chat": {"id": 14}, "text": "📷 " + tg.B_PHOTO}})
-    assert "photo d'une feuille" in envoyer.call_args.args[1]
+    assert clavier is tg.CLAVIER_WO and clavier["keyboard"][1][0]["text"] == "2. " + tg.B_PHOTO
+    # « 2. … » ou « 2 » tout court déclenchent la même action que le bouton texte
+    for saisi in ("2. " + tg.B_PHOTO, "2"):
+        with mock.patch.object(tg, "envoyer") as envoyer:
+            tg.traiter({"message": {"chat": {"id": 14}, "text": saisi}})
+        assert "photo d'une feuille" in envoyer.call_args.args[1]
     with mock.patch.object(tg, "envoyer") as envoyer:
         tg.traiter({"message": {"chat": {"id": 14}, "location": {"latitude": 14.7, "longitude": -17.2}}})
     boutons = envoyer.call_args.kwargs["reply_markup"]["inline_keyboard"][0]
-    assert [b["text"][0] for b in boutons] == ["✅", "❌", "❓"]
+    assert [b["text"][:2] for b in boutons] == ["1.", "2.", "3."]
+
+
+def test_ordre_des_cultures_dit_par_la_voix():
+    # la note vocale « choix_culture » énumère les cultures dans cet ordre
+    from engine.app.modules.planification.cultures import CULTURES
+    assert list(CULTURES) == ["tomato", "potato", "onion", "cabbage", "pepper", "carrot", "chili", "bitter_eggplant"]
