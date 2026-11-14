@@ -32,3 +32,9 @@ Règles en ligne : `engine/app/modules/planification/cultures.py` et `plan.py`.
 4. Sensibilité du poivron au sel : agronome.
 5. Bas-fond pour la carotte et le jaxatu (rien dans le G87 ; PROTA : le jaxatu ne supporte pas l'engorgement) : Rama ou agronome.
 6. CCMT (Ghana, Mensah et al., *Data in Brief* 49, 2023) : l'article ne définit ni « leaf blight » (mildiou ? alternariose ?) ni « leaf curl » (quel virus ?). Ces classes ne sont pas fusionnées avec nos maladies ; « leaf blight » n'entre pas dans le modèle v2. À demander aux auteurs (University of Energy and Natural Resources, Sunyani) ou à un phytopathologiste (ISRA, DPV) sur un échantillon d'images.
+
+## Complément : « leaf blight » et « leaf curl » de CCMT (2e recherche, 14 nov 2026)
+
+- **leaf blight : non tranché.** Aucune source primaire. Seule une équipe tierce (Sun et al., BMC Plant Biology 2024, doi:10.1186/s12870-024-05797-9) l'appelle « early blight », sans justification. Contexte ghanéen : l'alternariose est la maladie fongique de la tomate la plus citée (Opoku et al., Ghana J. Agric. Sci. 56(2), 2021, doi:10.4314/gjas.v56i2.5) ; aucune source ghanéenne sur le mildiou. Indice visuel seulement (20 images au hasard) : 1 ressemble au mildiou, 3 à l'alternariose, 15 ambiguës (nécroses de bord, jaunissements) → classe probablement « fourre-tout ». **Décision : exclue du modèle** (ni mildiou, ni alternariose).
+- **leaf curl : probablement l'enroulement viral (begomovirus transmis par l'aleurode ; au Ghana : ToLCGhV, ToLCKuV, Osei et al., Plant Disease 92:1585, 2008), non confirmé pour ce jeu** ; indice visuel : 3 images sur 7 montrent un enroulement. **Décision : exclue** (notre classe leaf_curl = TYLCV de PlantVillage).
+- **Pour confirmer** : écrire à l'auteur correspondant, Kwabena Adu (adresse publique dans l'article, UENR Sunyani) : pathogène retenu pour « leaf blight » (diagnostic visuel ou laboratoire ?) et virus de « leaf curl » (PCR ?).
