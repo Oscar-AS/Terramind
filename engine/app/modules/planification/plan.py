@@ -43,7 +43,7 @@ def evaluer(culture: str, mois: int, sol_: dict, eau_salee: str, bas_fond: str) 
         avertissements.append("Le sel gêne les jeunes plants : fais vérifier l'eau de ton puits.")
 
     ph = sol_.get("ph")
-    if ph is not None and ph < c["ph_min"]:
+    if ph is not None and c["ph_min"] is not None and ph < c["ph_min"]:
         avertissements.append(f"Ton sol est un peu acide (pH {ph}). Demande conseil à un agent agricole.")
         if adaptation == "conseillee":
             adaptation = "possible"

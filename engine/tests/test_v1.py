@@ -68,7 +68,7 @@ class Routes(unittest.TestCase):
         self.assertEqual(corps["statut"], "ok")
         self.assertFalse(corps["mock"])
         self.assertTrue(corps["sources"])
-        self.assertEqual(len(corps["donnees"]["cultures"]), 6)
+        self.assertEqual(len(corps["donnees"]["cultures"]), 8)
 
     def test_alerte_sans_culture(self):
         r = self.c.post("/v1/alert", json={**COMMUN, "lat": 14.76, "lon": -17.21})

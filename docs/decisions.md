@@ -73,3 +73,26 @@ Format : une entrée par décision. On ne réécrit pas une décision passée : 
 - Pourquoi : un nom seul (« Fusariose ») n'apprend rien à un agriculteur. Il doit comprendre ce qu'a sa plante, la cause, ce qu'il peut faire tout de suite et comment l'éviter la prochaine fois.
 - Garde-fous : aucune fiche ne nomme de produit ni de dose (test automatique) ; 3 passes de vérification indépendante phrase par phrase contre les sources (environ 320 affirmations, 51 corrigées) ; relecture par Rama à faire.
 - Point ouvert : la fiche « tache bactérienne » cite la désinfection des graines à l'eau chaude (56 °C pendant 30 minutes, FAO). Ce n'est pas un produit, mais c'est une consigne chiffrée : à garder ou à remplacer par un renvoi vers un agent agricole (décision d'équipe).
+
+### D14. Nettoyage de CCMT (Raw Data) avant tout entraînement
+- Date : 30 oct 2026 (validée par Oscar)
+- Décision : sur les 25 220 images de CCMT Raw Data (DOI 10.17632/bwh3zbpkpv.1), exclure 1 149 fichiers, listés dans [data/exclusions/terramind_v1.csv](../data/exclusions/terramind_v1.csv) (lignes source = ccmt). Il reste 24 071 images.
+  - 94 images illisibles (JPEG corrompus à la source), toutes chez le maïs et la tomate.
+  - 604 copies en trop de doublons exacts dans une même classe : on garde une seule copie, la première par ordre alphabétique du chemin.
+  - 451 images de 224 groupes de doublons exacts portant des étiquettes différentes : toutes exclues, car au moins une étiquette est fausse et on ne sait pas laquelle (dont 219 groupes chez le maïs : leaf blight, leaf spot, streak virus).
+- Pourquoi : des images cassées faussent l'entraînement ; un doublon peut se retrouver à la fois en entraînement et en test et gonfler la précision ; une même image sous deux maladies apprend au modèle à les confondre.
+- Conséquences : le découpage entraînement / validation / test se fait APRÈS ces exclusions. Les 451 images en conflit peuvent être réintégrées si un agronome les réétiquette (nouvelle décision à inscrire ici).
+- Méthode de détection : ouverture complète de chaque image avec Pillow ; doublons = empreinte SHA-256 identique.
+- Intégration : écrite par Oscar sur la branche `ml/dataset-merge` sous le numéro D12 ; renumérotée D14 le 14 nov 2026 (D12 et D13 étaient déjà prises sur la branche principale de travail).
+
+### D15. Base fusionnée terramind_v1 (TOM2024 + CCMT)
+- Date : 30 oct 2026 (validée par Oscar)
+- Décision : fusionner TOM2024 (raw) et CCMT (Raw Data) en une seule base de 35 448 images, 5 cultures et 40 classes, construite par [ml/training/build_merged_dataset.py](../ml/training/build_merged_dataset.py).
+  - Étiquettes uniformisées par [data/label_mapping.csv](../data/label_mapping.csv) : noms en anglais snake_case, coquilles corrigées. Fusions limitées aux cas sûrs : healthy (maïs, tomate) et chenille légionnaire (TOM2024 -a = dégâts, -p = chenille, CCMT all armyworm) en all_armyworm. Les cas douteux restent séparés et marqués « à valider ».
+  - Mêmes règles de nettoyage pour les deux jeux (étend D14 à TOM2024) : illisibles (94), petit côté < 64 px (142, tous dans TOM2024), doublons exacts dans une même classe (936 copies), doublons à étiquettes différentes (515 images).
+  - Classes de moins de 50 images retirées (167 images, 7 classes, toutes de TOM2024) : coup de soleil (49), excès d'azote (42), pourriture du bulbe (29), fusariose de la tomate (18), Tuta absoluta (17), alternariose et acariens (8), pucerons (4). Seuil abaissé de 100 à 50 pour garder le mildiou de la tomate (72), la rouille du maïs (94) et le trouble abiotique du maïs (76).
+  - Images copiées sans réencodage ; liste complète des 1 854 exclusions : [data/exclusions/terramind_v1.csv](../data/exclusions/terramind_v1.csv).
+- Pourquoi : une seule base cohérente pour le diagnostic, reproductible à l'identique.
+- Conséquences : le diagnostic ne reconnaîtra pas Tuta absoluta tant qu'on n'aura pas au moins 50 images (photos de terrain ou autre jeu sourcé). Le mildiou (72 images) et la rouille du maïs (94) restent les classes les plus petites : leurs résultats seront à surveiller. Les fusions « à valider » sont à revoir avec l'agronome. Le découpage entraînement / validation / test reste à faire sur cette base.
+- Intégration : écrite par Oscar sur la branche `ml/dataset-merge` sous le numéro D13 ; renumérotée D15 le 14 nov 2026 (D12 et D13 étaient déjà prises sur la branche principale de travail).
+- Statut au 14 nov 2026 : le modèle déployé (MobileNetV3 v1, [ml/eval/diagnostic_v1.md](../ml/eval/diagnostic_v1.md)) n'a **pas** été entraîné sur cette base (PlantVillage, PlantDoc et TOM2024). terramind_v1 sert de point de départ pour ajouter CCMT (tomate du Ghana) et renforcer le mildiou de la tomate.

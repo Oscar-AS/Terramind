@@ -160,7 +160,8 @@ MESSAGES = [
 
 # --- Plan de culture : une phrase par culture et par cas (voix de synthèse) ---
 CULTURES = {"tomato": "la tomate", "potato": "la pomme de terre", "onion": "l'oignon",
-            "cabbage": "le chou", "pepper": "le poivron", "carrot": "la carotte"}
+            "cabbage": "le chou", "pepper": "le poivron", "carrot": "la carotte",
+            "chili": "le piment", "bitter_eggplant": "le jaxatu"}
 for k, nom in CULTURES.items():
     MESSAGES += [
         (f"culture_{k}_conseillee", f"plan : {nom} conseillée", S, f"Pour {nom}, c'est le bon moment pour planter."),

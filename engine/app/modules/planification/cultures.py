@@ -55,6 +55,24 @@ CULTURES = {
         "saison": "La chaleur donne des racines courtes et fibreuses : semer en saison fraîche.",
         "sources": [{"document": G87, "page": "85-86"}],
     },
+    # Ajoutées le 14 nov 2026 à partir de la proposition d'Oscar (content/regles_sol_culture.csv, branche
+    # ml/dataset-merge), en ne gardant que ce que dit le G87 : il n'indique pas de pH pour ces deux cultures
+    # (tableau 3, p. 11), donc pas de contrôle du pH. La fiche CNRADA du piment place au contraire les
+    # meilleurs résultats en décembre-février : on suit le G87, qui reste la source de toutes les cultures.
+    "chili": {
+        "libelle": "Piment", "mois_semis": list(range(1, 13)),
+        "periode": "semis en pépinière toute l'année", "cycle_jours": [180, 240],
+        "ph_min": None, "sel": "moins_sensible", "sol_lourd_deconseille": False,
+        "saison": "Les meilleurs résultats viennent en hivernage ; le froid de décembre à février freine sa croissance.",
+        "sources": [{"document": G87, "page": "127-128"}],
+    },
+    "bitter_eggplant": {
+        "libelle": "Jaxatu", "mois_semis": list(range(1, 13)),
+        "periode": "semis en pépinière toute l'année", "cycle_jours": [130, 200],
+        "ph_min": None, "sel": "moins_sensible", "sol_lourd_deconseille": True,
+        "saison": "Il pousse toute l'année ; les meilleurs résultats viennent en saison fraîche et sèche, avec irrigation.",
+        "sources": [{"document": G87, "page": "107-108"}],
+    },
 }
 SOURCE_SEL = {"document": G87, "page": "5 (tableau 1, salinité)"}
 SOURCE_PH = {"document": G87, "page": "11 (tableau 3, pH)"}

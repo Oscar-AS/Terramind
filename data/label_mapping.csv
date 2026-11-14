@@ -1,0 +1,52 @@
+source,crop_src,label_src,crop,label,categorie,libelle_fr,note
+tom2024,Maize,healthy-leaf,maize,healthy,sain,Maïs sain,fusionné avec CCMT Maize/healthy
+tom2024,Maize,abiotic-disease-d,maize,abiotic_disorder,abiotique,Trouble abiotique,
+tom2024,Maize,aphids-p,maize,aphids,ravageur,Pucerons,
+tom2024,Maize,curvulariosis-d,maize,curvularia_leaf_spot,maladie,Curvulariose,
+tom2024,Maize,helminthosporiosis-d,maize,helminthosporiosis,maladie,Helminthosporiose,à valider : peut-être la même maladie que CCMT Maize/leaf blight ; gardées séparées
+tom2024,Maize,rust-d,maize,rust,maladie,Rouille,
+tom2024,Maize,spodoptera-frugiperda-a,maize,fall_armyworm,ravageur,Chenille légionnaire,images de dégâts sur feuille (observation visuelle) ; fusionné
+tom2024,Maize,spodoptera-frugiperda-p,maize,fall_armyworm,ravageur,Chenille légionnaire,images de la chenille (observation visuelle) ; fusionné
+tom2024,Maize,stripe-d,maize,stripe,maladie,Stries (stripe),à valider : ressemble à CCMT Maize/streak virus mais virus différent ; gardées séparées
+tom2024,Onion,healthy-leaf,onion,healthy,sain,Oignon sain,
+tom2024,Onion,alternaria-d,onion,alternaria,maladie,Alternariose,
+tom2024,Onion,bulb-blight-d,onion,bulb_blight,maladie,Pourriture du bulbe,
+tom2024,Onion,caterpillar-p,onion,caterpillars,ravageur,Chenilles,
+tom2024,Onion,fusarium-d,onion,fusarium,maladie,Fusariose,
+tom2024,Onion,virosis-d,onion,virosis,maladie,Virose,
+tom2024,Tomato,healthy-leaf,tomato,healthy,sain,Tomate saine (feuille),fusionné avec CCMT Tomato/healthy
+tom2024,Tomato,healthy-fruit,tomato,healthy_fruit,sain,Fruit de tomate sain,photo de fruit et non de feuille
+tom2024,Tomato,alternaria-d,tomato,alternaria,maladie,Alternariose,
+tom2024,Tomato,alternaria-mite-d,tomato,alternaria_and_mites,mixte,Alternariose et acariens,
+tom2024,Tomato,bacterial-floundering-d,tomato,bacterial_wilt,maladie,Flétrissement bactérien,
+tom2024,Tomato,blossom-end-rot-d,tomato,blossom_end_rot,abiotique,Pourriture apicale,photo de fruit ; trouble physiologique et non maladie
+tom2024,Tomato,excess-nitrogen-d,tomato,excess_nitrogen,abiotique,Excès d'azote,
+tom2024,Tomato,fusarium-d,tomato,fusarium,maladie,Fusariose,
+tom2024,Tomato,helicoverpa-armigera-p,tomato,helicoverpa_armigera,ravageur,Noctuelle de la tomate (Helicoverpa),
+tom2024,Tomato,mite-d,tomato,mites,ravageur,Acariens,suffixe -d dans la source mais ravageur
+tom2024,Tomato,sunburn-d,tomato,sunburn,abiotique,Coup de soleil,
+tom2024,Tomato,tomato-late-blight-d,tomato,late_blight,maladie,Mildiou,
+tom2024,Tomato,tuta-absoluta-p,tomato,tuta_absoluta,ravageur,Mineuse de la tomate (Tuta),
+tom2024,Tomato,virosis-d,tomato,virosis,maladie,Virose,
+ccmt,Cashew,healthy,cashew,healthy,sain,Cajou sain,
+ccmt,Cashew,anthracnose,cashew,anthracnose,maladie,Anthracnose,
+ccmt,Cashew,gumosis,cashew,gummosis,maladie,Gommose,
+ccmt,Cashew,leaf miner,cashew,leaf_miner,ravageur,Mineuse des feuilles,
+ccmt,Cashew,red rust,cashew,red_rust,maladie,Rouille rouge,
+ccmt,Cassava,healthy,cassava,healthy,sain,Manioc sain,
+ccmt,Cassava,bacterial blight,cassava,bacterial_blight,maladie,Bactériose,
+ccmt,Cassava,brown spot,cassava,brown_spot,maladie,Taches brunes,
+ccmt,Cassava,green mite,cassava,green_mite,ravageur,Acarien vert,
+ccmt,Cassava,mosaic,cassava,mosaic,maladie,Mosaïque,
+ccmt,Maize,healthy,maize,healthy,sain,Maïs sain,fusionné avec TOM2024 Maize/healthy-leaf
+ccmt,Maize,fall armyworm,maize,fall_armyworm,ravageur,Chenille légionnaire,dégâts et chenilles mélangés ; fusionné avec TOM2024 spodoptera-frugiperda
+ccmt,Maize,grasshoper,maize,grasshopper,ravageur,Criquets,coquille corrigée
+ccmt,Maize,leaf beetle,maize,leaf_beetle,ravageur,Chrysomèle,
+ccmt,Maize,leaf blight,maize,leaf_blight,maladie,Brûlure des feuilles,à valider : voir helminthosporiosis ; étiquettes peu fiables (D14)
+ccmt,Maize,leaf spot,maize,leaf_spot,maladie,Taches foliaires,étiquettes peu fiables (D14)
+ccmt,Maize,streak virus,maize,streak_virus,maladie,Virus de la striure,à valider : voir stripe
+ccmt,Tomato,healthy,tomato,healthy,sain,Tomate saine (feuille),fusionné avec TOM2024 Tomato/healthy-leaf
+ccmt,Tomato,leaf blight,tomato,leaf_blight,maladie,Brûlure des feuilles,à valider : alternariose ou mildiou ? gardée séparée
+ccmt,Tomato,leaf curl,tomato,leaf_curl,maladie,Enroulement des feuilles,
+ccmt,Tomato,septoria leaf spot,tomato,septoria_leaf_spot,maladie,Septoriose,
+ccmt,Tomato,verticulium wilt,tomato,verticillium_wilt,maladie,Verticilliose,coquille corrigée
