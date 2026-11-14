@@ -11,7 +11,7 @@ Parcours :
 - /start ou « Aide » : présentation et clavier ;
 - position partagée : enregistrée, puis plan de culture ;
 - photo : diagnostic, puis la fiche en 4 temps ;
-- « Surveiller ma culture » : choix de la culture, puis date de repiquage (JJ/MM), puis alertes de la semaine ;
+- « La météo de la semaine pour ma culture » : choix de la culture, puis date de mise en place (JJ/MM), puis alertes ;
 - autre texte : question libre, réponse tirée des fiches (D8).
 
 État par conversation gardé en mémoire (position arrondie à 0,01°, culture, date) : il est
@@ -47,12 +47,17 @@ FICHIER = "https://api.telegram.org/file/bot{jeton}/{chemin}"
 LIMITE = 4000  # Telegram refuse les messages de plus de 4096 caractères
 
 B_POSITION = "Envoyer la position de mon champ"
-B_PHOTO, B_PLAN = "Examiner une feuille", "Que planter ?"
-B_ALERTES, B_AIDE = "Surveiller ma culture", "Aide"
-CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}],
-                        [{"text": B_PHOTO}, {"text": B_PLAN}],
-                        [{"text": B_ALERTES}, {"text": B_AIDE}]],
+B_PHOTO = "Ma plante est malade : envoyer une photo"
+B_PLAN = "Que planter dans mon champ ?"
+B_ALERTES = "La météo de la semaine pour ma culture"
+B_AIDE = "Comment ça marche ?"
+# Un bouton par ligne : le libellé reste lisible en entier sur un petit écran.
+CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}], [{"text": B_PHOTO}],
+                        [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_AIDE}]],
            "resize_keyboard": True}
+# Anciens libellés (claviers encore affichés sur les téléphones) : traités comme les nouveaux.
+ANCIENS_BOUTONS = {"Examiner une feuille": B_PHOTO, "Que planter ?": B_PLAN,
+                   "Surveiller ma culture": B_ALERTES, "Aide": B_AIDE}
 AGENT = "un agent agricole (ANCAR, service départemental de l'agriculture)"
 
 ACCUEIL = (
@@ -191,7 +196,7 @@ def _plan(chat: int):
         d, _ = planifier(e["lat"], e["lon"], dt.date.today(), "ne_sait_pas", "ne_sait_pas")
     except sol_module.SolIndisponible:
         envoyer(chat, "Je n'arrive pas à lire la carte des sols à cet endroit pour le moment. "
-                      "Réessaie dans quelques minutes avec le bouton « Que planter ? ».", reply_markup=CLAVIER)
+                      f"Réessaie dans quelques minutes avec le bouton « {B_PLAN} ».", reply_markup=CLAVIER)
         return
     s = d["sol"]
     groupes = {"conseillee": [], "possible": [], "deconseillee": []}
@@ -414,8 +419,8 @@ def traiter(maj: dict):
             ETATS[chat]["attend_date"] = True
             dire(chat, "date_repiquage")
             envoyer(chat, f"C'est noté : {escape(CULTURES[culture]['libelle'].lower())}.\n\n"
-                          "<b>Une dernière question pour bien te conseiller</b>\nÀ quelle date l'as-tu repiquée ? "
-                          "Écris-la comme ceci : <b>15/10</b> pour le 15 octobre. "
+                          "<b>Une dernière question pour bien te conseiller</b>\nQuel jour as-tu mis cette culture dans ton champ ? "
+                          "Écris la date comme ceci : <b>15/10</b> pour le 15 octobre. "
                           "Si tu ne sais plus, écris : <b>je ne sais pas</b>.")
         return
     msg = maj.get("message") or {}
@@ -424,13 +429,13 @@ def traiter(maj: dict):
         return
     etat = ETATS.setdefault(chat, {})
     texte = (msg.get("text") or "").strip()
+    texte = ANCIENS_BOUTONS.get(texte, texte)
 
     if "location" in msg:
         etat["lat"] = round(msg["location"]["latitude"], 2)
         etat["lon"] = round(msg["location"]["longitude"], 2)
         dire(chat, "position_recue")
-        envoyer(chat, "Merci, j'ai bien reçu la position de ton champ. Je la garde arrondie à environ 1 km, "
-                      "sans ton nom ni ton numéro.")
+        envoyer(chat, "C'est bon, j'ai bien reçu la position de ton champ.")
         _plan(chat)
     elif msg.get("photo"):
         _photo(chat, msg["photo"][-1]["file_id"], etat.get("culture"))

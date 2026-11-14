@@ -36,7 +36,7 @@ MESSAGES = [
     ("position_recue", "position reçue", H,
      "Merci, j'ai bien reçu la position de ton champ. Je regarde maintenant ton sol et la saison. "
      "Attends un petit moment."),
-    ("conseils_photo", "bouton Examiner une feuille", H,
+    ("conseils_photo", "bouton Ma plante est malade", H,
      "Envoie-moi la photo d'une seule feuille malade. Prends-la de près, pour que la feuille remplisse la photo, "
      "à la lumière du jour, sans ombre."),
     ("attente_photo", "photo reçue", H, "Merci, je regarde ta photo. Attends quelques secondes."),
@@ -66,10 +66,10 @@ MESSAGES = [
     ("vocal_indisponible", "écoute des notes vocales en panne ou désactivée", H,
      "Je ne peux pas écouter les messages vocaux pour le moment. Écris ta question, ou utilise les boutons en "
      "bas de l'écran."),
-    ("choix_culture", "bouton Surveiller ma culture", H,
+    ("choix_culture", "bouton La météo de la semaine pour ma culture", H,
      "Quelle culture veux-tu que je surveille ? Touche son nom dans la liste."),
     ("date_repiquage", "après le choix de la culture", H,
-     "À quelle date l'as-tu repiquée ? Écris le jour et le mois. Si tu ne sais plus, écris : je ne sais pas."),
+     "Quel jour as-tu mis cette culture dans ton champ ? Écris le jour et le mois. Si tu ne sais plus, écris : je ne sais pas."),
     ("plan_intro", "avant le plan de culture", H,
      "Voici ce que tu peux planter ce mois-ci, selon le sol de ton champ et la saison."),
     ("alerte_rien", "aucune alerte", H,
