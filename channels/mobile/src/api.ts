@@ -109,8 +109,7 @@ export async function diagnostiquer(uri: string, mimeType: string | null) {
     // Android / iOS : React Native lit le fichier à partir de son adresse.
     form.append('photo', { uri, name: 'feuille.jpg', type: mimeType ?? 'image/jpeg' } as unknown as Blob);
   }
-  const culture = profil.lire().culture;
-  if (culture) form.append('culture', culture);
+  // Pas de culture envoyée : la feuille peut venir d'une autre culture que celle surveillée.
   Object.entries(c).forEach(([k, v]) => form.append(k, v));
   return appeler<Diagnostic>('/v1/diagnose', { method: 'POST', body: form });
 }
