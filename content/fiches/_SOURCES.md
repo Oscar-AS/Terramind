@@ -15,6 +15,8 @@ Abréviations utilisées entre crochets dans chaque fiche.
 | STDF | STDF / AUMN, rapport du projet PG 302 (chou dans les Niayes). <https://www.standardsfacility.org/sites/default/files/PG_302_ProjectActivities_Report.pdf> |
 | EPH | Ephytia (INRAE), Tomate, mildiou. <https://ephytia.inrae.fr/fr/C/5086/Tomate-Mildiou-Phytophthora-infestans> |
 | SYL | Sylla S., thèse sur la mineuse de la tomate, UCAD / CIRAD. <https://agritrop.cirad.fr/590299/1/Th%C3%A8se_Serigne_VF.pdf> |
+| TUT | DPV / PADEN, dépliant *Mineuse de la tomate, Tuta absoluta* (2 pages, non numérotées ; archive Wayback, source `paden` de scripts/donnees/telecharger_sources.py). |
+| FCH | PADEN / ISRA-CDH, *Fiche technique de bonnes pratiques de production du chou dans la zone des Niayes au Sénégal* (pages du PDF ; archive Wayback, source `paden`). |
 | PFE | Pfeiffer D. G. et al., « First Record of *Tuta absoluta* in Senegal », *Florida Entomologist*, 2013. |
 | SEU | Seuils météo des maladies et ravageurs, `docs/sources/seuils-meteo-maladies-ravageurs.md` (Hutton, TOMCAST, degrés-jours, avec leurs sources). |
 | SAL | Diallo et al. 2015, *African Crop Science Journal* 23(2):101-111 ; *European Scientific Journal*, 2022 (salinité dans les Niayes). |
