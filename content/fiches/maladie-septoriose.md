@@ -26,8 +26,8 @@ Champignon *Septoria lycopersici*. On l'appelle aussi « Septoria leaf spot ».
 
 ## Pourquoi c'est arrivé
 - Le champignon se garde dans les débris de plantes malades restés au sol, sur des mauvaises herbes de la même famille comme la morelle noire, sur les tuteurs et sur des semences contaminées. [EPHS biologie]
-- Les éclaboussures de pluie ou d'arrosage par aspersion projettent ses spores ; les mains, les habits et les outils les transportent quand les feuilles sont mouillées. [EPHS biologie ; CORN p. 1]
-- Il aime les feuilles mouillées longtemps et des températures de 20 à 25 °C. [EPHS biologie]
+- Les gouttes de pluie ou d'arrosage en pluie qui rebondissent l'envoient d'une feuille à l'autre ; les mains, les habits et les outils le transportent aussi quand les feuilles sont mouillées. [EPHS biologie ; CORN p. 1]
+- Il aime les feuilles qui restent mouillées longtemps, par temps doux. [EPHS biologie]
 
 ## Que faire maintenant
 - Arracher et sortir du champ les plants très atteints. [FAOPI p. 27]

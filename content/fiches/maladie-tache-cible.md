@@ -25,8 +25,8 @@ Champignon *Corynespora cassiicola*. On l'appelle aussi « corynesporiose » ou 
 
 ## Pourquoi c'est arrivé
 - Le champignon se garde plus de 2 ans dans les débris de culture. Il vit aussi sur d'autres cultures (poivron, aubergine, melon, concombre, certains haricots…) et sur des mauvaises herbes. [TROP fiche]
-- Le vent, la pluie et les éclaboussures transportent ses spores. [TROP fiche]
-- Il aime les fortes pluies, l'humidité qui dure, et la chaleur : 24 à 31 °C. [TROP fiche]
+- Le vent, la pluie et les gouttes qui rebondissent le transportent d'une plante à l'autre. [TROP fiche]
+- Il aime les fortes pluies, l'humidité qui dure, et la chaleur. [TROP fiche]
 
 ## Que faire maintenant
 - Dès les premières taches, enlever les feuilles du bas, et quelques branches basses pour que l'air circule. [PPP]

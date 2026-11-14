@@ -20,7 +20,7 @@ Le modèle de TerraMind reconnaît des chenilles sur l'oignon, sans dire de quel
 
 ## Pourquoi c'est arrivé
 - La chenille légionnaire attaque beaucoup de cultures : haricot, oignon, pomme de terre. [DPV p. 17]
-- Les chenilles et les thrips sont les principaux ravageurs de l'oignon en pépinière. [POI p. 3]
+- Les chenilles et les thrips (de tout petits insectes) sont les principaux ravageurs de l'oignon en pépinière. [POI p. 3]
 
 ## Que faire maintenant
 - Ramasser à la main les feuilles qui portent des œufs ou des groupes de jeunes chenilles. [DPV p. 18]

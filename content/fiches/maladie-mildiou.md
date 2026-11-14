@@ -26,10 +26,10 @@ Organisme *Phytophthora infestans*. On l'appelle aussi « late blight ».
 - Des maraîchers de Notto Gouye Diama ont signalé une maladie de ce type en février 2026, non confirmée par un laboratoire. [PRESSE]
 
 ## Pourquoi c'est arrivé
-- Le champignon se développe très vite quand l'air est très humide. [DPV p. 88]
-- Le risque monte après deux jours de suite avec une température minimale d'au moins 10 °C et au moins 6 heures d'humidité très forte (90 % ou plus) : ce sont les critères Hutton. [SEU]
-- Vers 28 °C, il ne forme presque plus de spores, et vers 27 °C certaines souches ne germent plus. [SEU]
-- Ces règles viennent d'Europe : elles ne sont pas validées au Sénégal. TerraMind parle donc de « conditions favorables », pas de maladie certaine.
+- La maladie se développe très vite quand l'air est très humide. [DPV p. 88]
+- Le risque monte quand l'air reste très humide pendant plusieurs heures (brouillard, rosée, pluie), deux jours de suite. [SEU]
+- Quand il fait plus de 28 degrés environ, la maladie se répand beaucoup moins. [SEU]
+- Ces repères viennent d'études faites en Europe, pas au Sénégal. C'est pourquoi TerraMind parle de temps « favorable » à la maladie, jamais de maladie certaine.
 
 ## Que faire maintenant
 - Dès les premiers symptômes, enlever les parties atteintes et les brûler. Ne pas les mettre au compost. [DPV p. 91]

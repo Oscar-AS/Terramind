@@ -22,7 +22,7 @@ Champignons du genre *Fusarium*. On l'appelle aussi « flétrissure fusarienne �
 ## Pourquoi c'est arrivé
 - Le champignon reste dans le sol plusieurs années, même quand les conditions lui sont défavorables. [DPV p. 69]
 - Il entre par les racines, notamment par de petites blessures. [DPV p. 69]
-- Il aime la chaleur : environ 27 °C pour l'oignon, 28 °C pour la tomate. [POI p. 5 ; RAD p. 9]
+- Il aime la chaleur. [POI p. 5 ; RAD p. 9]
 - Il peut venir de semences déjà malades. [POI p. 5 ; RAD p. 9]
 - Un sol léger et acide, et une plante qui manque d'azote ou de calcium, le favorisent. [DPV p. 72 ; RAD p. 18]
 - Sur l'oignon, elle va souvent avec la maladie des racines roses. [POI p. 5]

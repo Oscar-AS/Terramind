@@ -18,7 +18,7 @@ Bactérie *Ralstonia solanacearum* (ancien nom *Pseudomonas solanacearum*).
 - Dans la tige coupée, l'intérieur est brun clair ou jaunâtre ; les racines pourrissent. [RAD p. 18]
 
 ## Pourquoi c'est arrivé
-- La bactérie aime un sol très humide et chaud (21 à 35 °C dans le sol) : on la voit surtout en saison des pluies. [RAD p. 18]
+- La bactérie aime un sol très mouillé et chaud : on la voit surtout en saison des pluies. [RAD p. 18]
 
 ## Que faire maintenant
 - Aucun produit n'est efficace contre cette bactérie. [RAD p. 19]

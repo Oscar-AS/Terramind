@@ -20,7 +20,7 @@ statut: brouillon à relire par Rama
 - La FAO le cite parmi les principaux problèmes de la tomate cultivée pour les semences en saison fraîche au Sénégal. [RAD p. 7]
 
 ## Pourquoi c'est arrivé
-- Le virus des feuilles jaunes en cuillère est apporté par une petite mouche blanche, l'aleurode (*Bemisia tabaci*), souvent dès la pépinière. [RAD p. 8]
+- Le virus des feuilles jaunes en cuillère est apporté par une toute petite mouche blanche, l'aleurode, souvent dès la pépinière. [RAD p. 8]
 - Sur le poivron et le piment, la plupart des virus sont apportés par les pucerons. [G87 p. 130]
 - Cette mouche est surtout présente de septembre à décembre. [RAD p. 8]
 

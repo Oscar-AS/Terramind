@@ -20,12 +20,12 @@ Champignon *Alternaria solani*. On l'appelle aussi « early blight ».
 - Ne pas confondre avec le mildiou : sur les feuilles, l'alternariose fait des taches rondes à cercles, comme une cible ; le mildiou fait des taches aux bords flous qui grandissent vite. [G87 p. 140 ; DPV p. 89]
 
 ## Pourquoi c'est arrivé
-- Le champignon aime l'humidité élevée et des températures de 18 à 25 °C. [RAD p. 8]
+- Le champignon aime l'air humide et un temps doux, ni froid ni très chaud. [RAD p. 8]
 - Il profite d'une alternance de périodes humides et de périodes ensoleillées. [DPV p. 80]
 - Il peut venir de graines déjà malades. [RAD p. 8]
 - Les plantes mal nourries ou très chargées en fruits seraient plus fragiles. [RAD p. 8]
 - La FAO la cite parmi les principaux problèmes de la tomate en saison fraîche au Sénégal. [RAD p. 7]
-- TerraMind surveille ce temps favorable avec la règle TOMCAST (heures d'humidité et température). [SEU]
+- TerraMind surveille ce temps chaque jour : il compte les heures où l'air est resté très humide et regarde la température. [SEU]
 
 ## Que faire maintenant
 - Retirer les parties brunes atteintes, en portant des gants. [KCOA p. 5]
