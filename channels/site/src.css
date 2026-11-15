@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+  :focus-visible { outline: 2px solid #E3A72F; outline-offset: 3px; }
+  details > summary { list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+}
+
+@layer components {
+  .titre { @apply font-titre font-semibold; letter-spacing: -0.045em; text-wrap: balance; }
+  .titre-m { @apply font-titre font-medium; letter-spacing: -0.035em; text-wrap: balance; }
+  .bouton { @apply inline-flex min-h-[48px] cursor-pointer items-center gap-2.5 rounded-xl px-6 text-[16px] font-medium transition-colors duration-200; }
+  .bouton[aria-disabled="true"] { @apply opacity-80; }
+  .etiquette { @apply inline-flex items-center rounded-full border border-trait bg-carte px-3 py-1 text-[13px] font-medium text-vert; }
+  .lien-nav { @apply rounded-lg px-3 py-2 transition-colors duration-200 hover:bg-white/10 hover:text-sable; }
+  .lien-nav.actif { @apply bg-white/10 text-sable; }
+  .lien-pied { @apply transition-colors duration-200 hover:text-foret; }
+  .tuile { @apply rounded-[24px] p-7; }
+  .etape { @apply flex items-start gap-4 rounded-2xl border border-trait bg-white p-4 text-[15px] text-foret; }
+  .etape > span { @apply flex flex-col gap-0.5; }
+  .etape > span > b { @apply font-medium text-encre; }
+  .etape > span > span { @apply text-encred; }
+  .etape > svg { @apply mt-0.5 shrink-0; }
+  .liste-coche { @apply relative pl-6; }
+  .liste-coche::before { content: ""; @apply absolute left-0 top-[5px] h-3.5 w-3.5 rounded-full bg-pousse; box-shadow: inset 0 0 0 4px #DCEBD9, inset 0 0 0 10px #3F8F5F; }
+  .numero { @apply grid h-8 w-8 shrink-0 place-items-center rounded-full bg-foret font-titre text-[15px] font-semibold text-sable; }
+
+  /* iPhone 16 : boîtier 71,6 × 147,6 mm, écran 393 × 852 points (Apple). Bordure = 4,5 % de la largeur. */
+  .iphone { width: var(--w, 280px); aspect-ratio: 71.6 / 147.6; padding: calc(var(--w, 280px) * .045); border-radius: calc(var(--w, 280px) * .17);
+    background: linear-gradient(150deg, #3a3d3b, #121413 45%, #2a2c2b); position: relative;
+    box-shadow: inset 0 0 0 1.5px #55595699, 0 2px 0 #00000040, 0 30px 60px -18px rgba(10, 24, 17, .55); }
+  .iphone::before, .iphone::after { content: ""; position: absolute; background: #2a2c2b; border-radius: 2px; width: calc(var(--w, 280px) * .012); }
+  .iphone::before { left: calc(var(--w, 280px) * -.01); top: 24%; height: 12%; box-shadow: 0 calc(var(--w, 280px) * .3) 0 #2a2c2b; }
+  .iphone::after { right: calc(var(--w, 280px) * -.01); top: 30%; height: 17%; }
+  .iphone .ecran { position: relative; height: 100%; overflow: hidden; display: flex; flex-direction: column; background: #F5EFE3; border-radius: calc(var(--w, 280px) * .125); }
+  .iphone .ile { position: absolute; z-index: 3; top: calc(var(--w, 280px) * .028); left: 50%; transform: translateX(-50%); width: 31%; height: calc(var(--w, 280px) * .082); border-radius: 999px; background: #000; }
+  .iphone .statut { flex: none; height: 6.3%; display: flex; align-items: center; justify-content: space-between; padding: 0 9% 0 11%; color: #1B2620;
+    font: 600 calc(var(--w, 280px) * .04) / 1 -apple-system, "SF Pro Text", system-ui, sans-serif; }
+  .iphone .statut .icones { height: 34%; display: flex; }
+  .iphone .ecran > img { flex: 1; min-height: 0; width: 100%; object-fit: cover; object-position: top; }
+
+  /* Écran Telegram (textes réels du bot), tailles proportionnelles au téléphone */
+  .telegram { background: #E6EBDF !important; font-size: calc(var(--w, 280px) * .037); font-family: -apple-system, system-ui, sans-serif; }
+  .telegram .statut { background: #fff; }
+  .tg-tete { display: flex; align-items: center; gap: .6em; padding: .5em 1em .7em; background: #fff; border-bottom: 1px solid #0000000f; }
+  .tg-tete b { display: block; font-weight: 600; } .tg-tete small { color: #8a938d; font-size: .8em; }
+  .tg-avatar { display: grid; place-items: center; width: 2.4em; height: 2.4em; border-radius: 999px; background: #1F4D3A; }
+  .tg-fil { flex: 1; display: flex; flex-direction: column; gap: .55em; padding: .9em .8em; overflow: hidden; line-height: 1.4; }
+  .tg-fil p { max-width: 82%; padding: .55em .8em; border-radius: 1.1em; box-shadow: 0 1px 0 #0000001a; }
+  .tg-fil .moi { align-self: flex-end; background: #EEFFDE; border-bottom-right-radius: .3em; }
+  .tg-fil .bot { align-self: flex-start; background: #fff; border-bottom-left-radius: .3em; }
+  .tg-fil .info { align-self: center; max-width: none; background: #00000026; color: #fff; box-shadow: none; padding: .25em .8em; font-size: .85em; }
+  .tg-fil .ecrit { display: flex; gap: .3em; padding: .8em 1em; }
+  .tg-fil .ecrit span { width: .45em; height: .45em; border-radius: 999px; background: #8a938d; animation: point 1.2s infinite ease-in-out; }
+  .tg-fil .ecrit span:nth-child(2) { animation-delay: .15s; } .tg-fil .ecrit span:nth-child(3) { animation-delay: .3s; }
+  .tg-saisie { display: flex; align-items: center; justify-content: space-between; margin: 0 .6em 1.4em; padding: .7em 1em; border-radius: 999px; background: #fff; color: #8a938d; }
+
+  /* Bandes ondulées : le motif glisse doucement (une période = 78,6 px) */
+  .vague { position: relative; height: 118px; overflow: hidden; }
+  .vague svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .defile { animation: defile 9s linear infinite; }
+}
+
+@layer utilities {
+  .apparait, .revele { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2, .7, .2, 1), transform .7s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--d, 0ms); }
+  .apparait.visible, .revele.visible { opacity: 1; transform: none; }
+  .flotte { animation: flotte 6s ease-in-out infinite; }
+  .flotte-lente { animation: flotte 8s ease-in-out infinite; }
+  .pulse { animation: pulse 1.6s ease-in-out infinite; }
+}
+
+@keyframes defile { to { transform: translateX(-78.6px); } }
+@keyframes flotte { 50% { translate: 0 -10px; } }
+@keyframes point { 0%, 60%, 100% { opacity: .35; transform: none; } 30% { opacity: 1; transform: translateY(-25%); } }
+@keyframes pulse { 50% { opacity: .35; } }
+
+/* Moins de mouvement si le visiteur l'a demandé à son système */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition-duration: 0s !important; }
+  .apparait, .revele { opacity: 1; transform: none; }
+}
