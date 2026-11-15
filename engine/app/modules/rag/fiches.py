@@ -170,10 +170,19 @@ def sources_de(ps: list[Passage]) -> list[dict]:
 
 
 def ranger_pages(pages: list[str]) -> list[str]:
-    """« 90-91, 91, 89, 88 » → « 88, 89, 90-91 » : ordre croissant, pages déjà comprises dans un intervalle retirées."""
-    def bornes(p):
+    """« 90-91, 91, 89, 88 » → « 88-91 » : ordre croissant, pages qui se touchent ou se chevauchent fusionnées.
+    Une page sans numéro (ex. « annexe ») est gardée telle quelle, à la fin."""
+    intervalles, autres = [], []
+    for p in pages:
         nombres = [int(x) for x in re.findall(r"\d+", p)]
-        return (nombres[0], nombres[-1]) if nombres else (10**9, 10**9)
-    intervalles = [bornes(p) for p in pages if "-" in p]
-    gardees = [p for p in pages if "-" in p or not any(a <= bornes(p)[0] <= b for a, b in intervalles)]
-    return sorted(dict.fromkeys(gardees), key=bornes)
+        if nombres:
+            intervalles.append([nombres[0], nombres[-1]])
+        elif p not in autres:
+            autres.append(p)
+    fusion: list[list[int]] = []
+    for a, b in sorted(intervalles):
+        if fusion and a <= fusion[-1][1] + 1:
+            fusion[-1][1] = max(fusion[-1][1], b)
+        else:
+            fusion.append([a, b])
+    return [f"{a}-{b}" if a != b else str(a) for a, b in fusion] + autres

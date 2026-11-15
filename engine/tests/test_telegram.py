@@ -229,3 +229,10 @@ def test_phrase_ph_negation():
     from app.routes.telegram import phrase_ph
     assert phrase_ph(6.8) == "ton sol n'est ni acide ni basique"
     assert phrase_ph(6.1) == "ton sol est un peu acide"
+
+
+def test_ranger_pages_fusionne():
+    from app.modules.rag.fiches import ranger_pages
+    assert ranger_pages(["90-91", "91", "89", "88"]) == ["88-91"]
+    assert ranger_pages(["88-90", "91", "140"]) == ["88-91", "140"]
+    assert ranger_pages(["12", "30", "12"]) == ["12", "30"]
