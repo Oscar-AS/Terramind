@@ -260,7 +260,7 @@ def _plan(chat: int):
         dire(chat, "eau_salee")
 
     blocs = ["<b>Ce qu'il faut savoir sur ton sol</b>\n"
-             f"D'après la carte des sols iSDAsoil, ton champ contient environ {s['sable_pct']} % de sable "
+             f"D'après la carte des sols iSDAsoil, ton champ contient environ {round(s['sable_pct'])} % de sable "
              + (f"et son pH est de {nombre_fr(s['ph'])} : ton sol est {ph_en_mots(s['ph'])}." if s.get("ph") is not None
                 else "(pH inconnu à cet endroit).")]
     if groupes["conseillee"]:
