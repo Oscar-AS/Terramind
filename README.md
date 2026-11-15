@@ -11,6 +11,14 @@
 
 TerraMind aide les petits maraîchers des Niayes (Sénégal) à **choisir quoi planter selon leur sol et la saison**, à **anticiper les maladies grâce à la météo** et à **reconnaître une maladie sur la photo d'une feuille**. Chaque conseil cite le document d'où il vient.
 
+## L'application en images
+
+<p align="center">
+  <img src="docs/assets/captures/app/bienvenue.webp" width="13.5%" alt="Bienvenue"> <img src="docs/assets/captures/app/langue.webp" width="13.5%" alt="Wolof ou français"> <img src="docs/assets/captures/app/accueil.webp" width="13.5%" alt="Accueil"> <img src="docs/assets/captures/app/resultat.webp" width="13.5%" alt="Diagnostic : Mildiou, 93 %"> <img src="docs/assets/captures/app/resultat2.webp" width="13.5%" alt="Expliqué en 4 temps"> <img src="docs/assets/captures/app/plan.webp" width="13.5%" alt="Que planter ce mois-ci"> <img src="docs/assets/captures/app/alertes.webp" width="13.5%" alt="Alertes météo de la semaine">
+</p>
+
+<sub>Vraies captures de l'application branchée sur le moteur (écran d'iPhone 16, 393 × 852 points), 15 nov 2026. Bienvenue → langue → accueil → diagnostic → explication → plan → alertes. Photo du diagnostic : jeu de test de TOM2024 (CC BY 4.0), jamais vue à l'entraînement. Le visage des écrans de bienvenue et d'accueil est une image générée par IA.</sub>
+
 ## Ce que l'agriculteur peut faire
 
 | | Il fait… | TerraMind répond… | À partir de… |
@@ -73,7 +81,8 @@ Détail des résultats du modèle : [ml/eval/diagnostic_v1.md](ml/eval/diagnosti
 | | Dossier | Ce qu'on y trouve |
 |---|---|---|
 | ⚙️ | [**engine/**](engine/) | Le moteur : plan, alertes, diagnostic, questions (RAG), bot Telegram |
-| 💬 | [**channels/**](channels/) | Les façades, dont l'[application mobile](channels/mobile/) |
+| 💬 | [**channels/**](channels/) | Les façades : l'[application mobile](channels/mobile/) et le [site vitrine](channels/site/) |
+| 🚀 | [**deploy/**](deploy/) | La mise en ligne du moteur (image Docker, Render) |
 | 📝 | [**content/**](content/) | Le savoir du bot : 23 fiches sourcées, lexique wolof |
 | 🧠 | [**ml/**](ml/) | Le modèle de diagnostic : entraînement, évaluation honnête |
 | 🗂️ | [**data/**](data/) | Les données ouvertes et le registre de provenance |
@@ -89,7 +98,7 @@ Détail des résultats du modèle : [ml/eval/diagnostic_v1.md](ml/eval/diagnosti
 # 1. Moteur (Python 3.9 ou plus) : copier .env.example en .env puis remplir les clés
 python3 -m venv .venv && .venv/bin/pip install -r engine/requirements.txt
 .venv/bin/uvicorn engine.app.main:app --reload --port 8000
-.venv/bin/python -m unittest discover engine/tests      # 24 tests
+.venv/bin/python -m unittest discover engine/tests      # 48 tests
 
 # 2. Application mobile (Node.js, Expo)
 cd channels/mobile && npm install

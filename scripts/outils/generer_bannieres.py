@@ -40,6 +40,12 @@ ICONES = {
     "scripts": """<rect x="14" y="22" width="92" height="76" rx="10" fill="none" stroke="#fff" stroke-width="7"/>
       <path d="M32 48 l16 12 l-16 12" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
       <line x1="56" y1="74" x2="86" y2="74" stroke="#fff" stroke-width="7" stroke-linecap="round"/>""",
+    "deploy": """<path d="M34 84 h-6 a18 18 0 0 1 -2 -36 a26 26 0 0 1 50 -6 a20 20 0 0 1 14 38 h-8" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M60 100 v-40 M46 72 l14 -14 l14 14" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>""",
+    "site": """<rect x="14" y="22" width="92" height="76" rx="10" fill="none" stroke="#fff" stroke-width="7"/>
+      <line x1="14" y1="42" x2="106" y2="42" stroke="#fff" stroke-width="7"/>
+      <circle cx="27" cy="32" r="3.5" fill="#fff"/><circle cx="39" cy="32" r="3.5" fill="#fff"/>
+      <path d="M40 80 c0 -14 8 -22 22 -24 c0 14 -8 22 -22 24z M40 80 l12 -12" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>""",
 }
 
 BANNIERES = {
@@ -52,6 +58,8 @@ BANNIERES = {
     "ml": ("ml/", "L'intelligence artificielle", "Le modèle qui reconnaît une maladie sur la photo d'une feuille"),
     "research": ("research/", "Le terrain", "Base agronomique, tests avec les agriculteurs, consentement"),
     "scripts": ("scripts/", "Les outils", "Scripts qui collectent et vérifient les données, reproductibles"),
+    "deploy": ("deploy/", "La mise en ligne", "Le conteneur du moteur, publié sur ghcr.io et servi par Render"),
+    "site": ("channels/site/", "Le site vitrine", "Présenter TerraMind, ouvrir le bot, télécharger l'application"),
 }
 
 

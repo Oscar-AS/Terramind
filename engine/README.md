@@ -3,7 +3,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.9%2B-1f4d3a?logo=python&logoColor=white" alt="Python 3.9 et plus">
   <img src="https://img.shields.io/badge/FastAPI-moteur-3f8f5f?logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/tests-24%20OK-3f8f5f" alt="24 tests">
+  <img src="https://img.shields.io/badge/tests-48%20OK-3f8f5f" alt="24 tests">
   <img src="https://img.shields.io/badge/hébergement-Render-d08a2e" alt="Render">
 </p>
 
