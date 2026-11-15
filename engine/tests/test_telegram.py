@@ -194,7 +194,7 @@ def test_mode_wolof_boutons_numerotes():
     for saisi in ("2. " + tg.B_PHOTO, "2"):
         with mock.patch.object(tg, "envoyer") as envoyer:
             tg.traiter({"message": {"chat": {"id": 14}, "text": saisi}})
-        assert "photo d'une feuille" in envoyer.call_args.args[1]
+        assert "une photo de ta plante" in envoyer.call_args.args[1]
     with mock.patch.object(tg, "envoyer") as envoyer:
         tg.traiter({"message": {"chat": {"id": 14}, "location": {"latitude": 14.7, "longitude": -17.2}}})
     boutons = envoyer.call_args.kwargs["reply_markup"]["inline_keyboard"][0]

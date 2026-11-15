@@ -44,18 +44,19 @@ MESSAGES = [
      "Ton champ est-il dans un bas-fond, un endroit bas où l'eau reste longtemps après la pluie ? "
      "Appuie sur un pour oui, deux pour non, trois si tu ne sais pas."),
     ("conseils_photo", "bouton Voir si ma plante est malade", H,
-     "Envoie-moi la photo d'une seule feuille malade. Touche le petit bouton rond tout à gauche de la case "
-     "Message, juste au-dessus des grands boutons. Choisis ensuite Appareil photo, ou une photo déjà prise dans ta "
-     "galerie. Prends la feuille de près, pour qu'elle remplisse la photo, à la lumière du jour, sans ombre."),
+     "Envoie-moi une photo de ta plante, là où quelque chose t'inquiète : une feuille, un fruit, une tige ou "
+     "toute la plante. Touche le petit bouton rond tout à gauche de la case Message, juste au-dessus des grands "
+     "boutons. Choisis ensuite Appareil photo, ou une photo déjà prise dans ta galerie. Approche-toi, pour que je "
+     "voie bien les taches ou les trous, à la lumière du jour, sans ombre."),
     ("attente_photo", "photo reçue", H, "Merci, je regarde ta photo. Attends quelques secondes."),
     ("photo_incertaine", "diagnostic incertain", H,
      "Je ne suis pas sûr de ce que je vois. Plutôt que de te donner une mauvaise réponse, je préfère que tu "
-     "reprennes la photo : une seule feuille, de près, à la lumière du jour. Si la plante va mal, montre-la "
+     "reprennes la photo : de plus près, à la lumière du jour. Si la plante va mal, montre-la "
      "aussi à un agent agricole."),
     ("photo_illisible", "photo illisible", H,
      "Je n'arrive pas à lire cette photo. Reprends-la, bien nette, de près, à la lumière du jour."),
-    ("photo_saine", "feuille saine", H,
-     "Bonne nouvelle : cette feuille semble saine. Si d'autres plants ont des taches, envoie-moi leur photo."),
+    ("photo_saine", "plante saine", H,
+     "Bonne nouvelle : ce que je vois semble sain. Si d'autres plants ont des taches, envoie-moi leur photo."),
     ("diagnostic_prudence", "après chaque diagnostic", H,
      "Ce n'est qu'une première indication, pas un diagnostic sûr. Pour confirmer, montre ta plante à un agent "
      "agricole."),
@@ -82,7 +83,7 @@ MESSAGES = [
      "Tu l'as plantée quand ? Écris-moi le jour et le mois. Si tu ne t'en souviens plus, écris juste : je ne sais pas."),
     ("plan_suite", "après le plan de culture", H,
      "Si tu as déjà planté, appuie sur le quatre : je te dirai ce que la météo annonce pour tes plantes. "
-     "Si une feuille a des taches, appuie sur le deux."),
+     "Si tu vois des taches sur ta plante, appuie sur le deux."),
     ("date_ignoree", "date de plantation inconnue", H, "Pas de souci, je fais sans la date."),
     ("date_incomprise", "date de plantation illisible", H,
      "Je n'ai pas compris la date. Écris le jour, une barre, puis le mois. Par exemple quinze barre dix, pour le "
@@ -93,7 +94,7 @@ MESSAGES = [
      "Bonne nouvelle : la météo de cette semaine ne favorise aucune des maladies que je surveille pour ta "
      "culture. Reviens me demander la semaine prochaine."),
     ("alerte_pas_de_regle", "culture sans règle météo", H,
-     "Pour cette culture, je ne surveille pas encore la météo. Si une feuille a des taches, envoie-moi sa photo."),
+     "Pour cette culture, je ne surveille pas encore la météo. Si tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo."),
     ("alerte_intro", "avant les alertes", H,
      "Attention : la météo de cette semaine demande de surveiller ta culture."),
     ("eau_salee", "fin du plan de culture", H,

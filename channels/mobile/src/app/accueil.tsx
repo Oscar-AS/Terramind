@@ -23,7 +23,7 @@ function Tuile({ Icone, titre, sous, onPress, fond = couleurs.carte }: { Icone: 
   );
 }
 
-// Accueil : l'action principale (photo d'une feuille) en grand, le reste en tuiles.
+// Accueil : l'action principale (photo de la plante) en grand, le reste en tuiles.
 export default function Accueil() {
   const [p, setP] = useState(profil.lire());
   useFocusEffect(useCallback(() => setP(profil.lire()), []));
@@ -55,7 +55,7 @@ export default function Accueil() {
                 <T v="titre" style={{ color: couleurs.blanc, fontSize: 30 }}>Voir si ma plante est malade</T>
                 <View style={styles.heroBouton}>
                   <Camera size={26} color={couleurs.foret} weight="duotone" />
-                  <T v="corpsGras" style={{ color: couleurs.foret }}>Prendre une feuille en photo</T>
+                  <T v="corpsGras" style={{ color: couleurs.foret }}>Prendre ma plante en photo</T>
                 </View>
               </View>
             </ImageBackground>

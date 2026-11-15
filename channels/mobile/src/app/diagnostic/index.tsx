@@ -29,7 +29,7 @@ function Viseur() {
   );
 }
 
-// Étape 5a : photo d'une feuille. Appareil photo du téléphone (cadrage carré), galerie en secours.
+// Étape 5a : photo de ce qui inquiète (feuille, fruit, tige ou plante entière). Appareil photo du téléphone (cadrage carré), galerie en secours.
 export default function Photo() {
   const [message, setMessage] = useState<string | null>(null);
 
@@ -52,7 +52,7 @@ export default function Photo() {
     <Ecran titre="Ma plante est malade">
       <Apparition ordre={0}><Viseur /></Apparition>
       <Apparition ordre={1} style={styles.conseils}>
-        <View style={styles.conseil}><Leaf size={22} color={couleurs.foret} weight="duotone" /><T v="corps" style={{ flex: 1 }}>Une seule feuille, de près</T></View>
+        <View style={styles.conseil}><Leaf size={22} color={couleurs.foret} weight="duotone" /><T v="corps" style={{ flex: 1 }}>Feuille, fruit ou toute la plante, de près</T></View>
         <View style={styles.conseil}><Sun size={22} color={couleurs.soleil} weight="duotone" /><T v="corps" style={{ flex: 1 }}>À la lumière du jour</T></View>
       </Apparition>
       {message ? <T v="corpsGras" style={{ color: couleurs.terre }}>{message}</T> : null}

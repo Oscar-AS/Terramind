@@ -42,8 +42,8 @@ function Jauge({ valeur }: { valeur: number }) {
 
 /** Consignes pour une meilleure photo : une icône, une phrase courte. */
 const CONSIGNES: { Icone: Icon; texte: string }[] = [
-  { Icone: Leaf, texte: 'Une seule feuille malade' },
-  { Icone: FrameCorners, texte: 'De près : la feuille remplit la photo' },
+  { Icone: Leaf, texte: 'Ce qui t\'inquiète : feuille, fruit, tige ou toute la plante' },
+  { Icone: FrameCorners, texte: 'De près, pour bien voir les taches' },
   { Icone: Sun, texte: 'À la lumière du jour, sans ombre' },
 ];
 
@@ -182,7 +182,7 @@ export default function Resultat() {
                   <T v="petit" style={{ flex: 1 }}>Pour un traitement, montre ta plante à un agent agricole. TerraMind ne donne ni produit ni dose.</T>
                 </Apparition>
               ) : null}
-              <Bouton libelle="Photographier une autre feuille" Icone={CameraPlus} onPress={reprendre} variante="clair" />
+              <Bouton libelle="Envoyer une autre photo" Icone={CameraPlus} onPress={reprendre} variante="clair" />
             </>
           )}
           <Sources sources={reponse.sources} />

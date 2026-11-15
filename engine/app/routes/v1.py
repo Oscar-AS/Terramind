@@ -106,7 +106,7 @@ def alerte(d: DemandeAlerte):
     actives = [a["conseil"] for a in donnees["alertes"] if a["niveau"] != "aucun"]
     if not donnees["alertes"]:  # aucune règle météo sourcée pour cette culture
         texte = ("Pour cette culture, je ne surveille pas encore la météo. "
-                 "Si une feuille a des taches, prends-la en photo.")
+                 "Si tu vois des taches sur ta plante (feuille, fruit, tige), prends-la en photo.")
     else:
         texte = " ".join(actives) if actives else "Pas d'alerte cette semaine pour ta culture."
     return enveloppe("ok", texte, donnees, [SOURCE_SEUILS,

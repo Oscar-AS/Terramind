@@ -90,17 +90,17 @@ ACCUEIL = (
     "<b>Ce que je peux faire pour toi</b>\n"
     "1. Te dire quoi planter ce mois-ci, selon le sol de ton champ.\n"
     "2. Surveiller ta culture et te dire si la météo de la semaine favorise une maladie ou un ravageur.\n"
-    "3. Examiner la photo d'une feuille malade et t'expliquer quoi faire.\n\n"
+    "3. Regarder la photo de ta plante malade et t'expliquer quoi faire.\n\n"
     "<b>Par où commencer</b>\n"
     f"Partage la position de ton champ avec le bouton « {B_POSITION} », en bas de l'écran. "
-    "Tu peux aussi m'envoyer directement la photo d'une feuille, ou me poser ta question par écrit "
+    "Tu peux aussi m'envoyer directement une photo de ta plante, ou me poser ta question par écrit "
     "ou en message vocal, en wolof ou en français.\n\n"
     "<i>Je ne donne jamais de nom de produit ni de dose : pour un traitement, je t'oriente vers "
     f"{AGENT}.</i>"
 )
 CONSEILS_PHOTO = (
-    "1. Une seule feuille, celle qui est malade.\n"
-    "2. De près : la feuille doit remplir la photo.\n"
+    "1. Montre ce qui t'inquiète : une feuille, un fruit, une tige ou toute la plante.\n"
+    "2. Approche-toi, pour que je voie bien les taches ou les trous.\n"
     "3. À la lumière du jour, sans ombre."
 )
 DEMANDE_POSITION = (
@@ -300,7 +300,7 @@ def _plan(chat: int):
         blocs.append("<b>Une précaution importante</b>\nSi l'eau de ton puits est salée, évite l'oignon et la carotte.")
     blocs.append("<b>Ce que tu peux faire ensuite</b>\n"
                  f"Si une culture est déjà en place, touche « {B_ALERTES} » : je regarde si la météo de la "
-                 "semaine favorise une maladie. Si une feuille a des taches, envoie-moi sa photo.")
+                 "semaine favorise une maladie. Si tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo.")
     blocs.append("<i>Sources : Guide pratique du maraîchage au Sénégal (ISRA, 1987) ; carte des sols iSDAsoil.</i>")
     dire(chat, "plan_suite")
     envoyer(chat, "\n\n".join(blocs), reply_markup=CLAVIER)
@@ -331,7 +331,7 @@ def _alertes(chat: int):
         dire(chat, "alerte_pas_de_regle")
         envoyer(chat, f"<b>Pour ta culture ({escape(culture)}), je ne surveille pas encore la météo.</b>\n"
                       "Je n'ai pas de règle sourcée qui relie le temps aux maladies de cette culture.\n\n"
-                      "<b>Ce que tu peux faire</b>\nSi une feuille a des taches, envoie-moi sa photo.",
+                      "<b>Ce que tu peux faire</b>\nSi tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo.",
                 reply_markup=CLAVIER)
         return
     actives = [a["conseil"] for a in d["alertes"] if a["niveau"] != "aucun" and a["conseil"]]
@@ -353,7 +353,7 @@ def _alertes(chat: int):
                      "des maladies ni aucun des ravageurs que je surveille pour cette culture.")
     blocs.append("<b>Ce que tu peux faire ensuite</b>\n"
                  f"Reviens me demander la semaine prochaine avec le bouton « {B_ALERTES} ». "
-                 "Si tu vois des taches sur une feuille, envoie-moi sa photo.")
+                 "Si tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo.")
     blocs.append("<i>Météo : NASA POWER. Ces règles viennent d'études faites hors du Sénégal : je parle de "
                  "conditions favorables, pas de maladie certaine.</i>")
     envoyer(chat, "\n\n".join(blocs), reply_markup=CLAVIER)
@@ -431,7 +431,7 @@ def _photo(chat: int, file_id: str, culture: str | None):
         return
     if top["categorie"] == "sain":
         dire(chat, "photo_saine")
-        envoyer(chat, "<b>Bonne nouvelle : cette feuille semble saine.</b>\n"
+        envoyer(chat, "<b>Bonne nouvelle : ce que je vois semble sain.</b>\n"
                       "Je ne vois pas de signe de maladie sur cette photo.\n\n"
                       "<b>Ce que tu peux faire ensuite</b>\nSi d'autres plants ont des taches, envoie-moi leur photo.",
                 reply_markup=CLAVIER)
@@ -497,7 +497,7 @@ def _question(chat: int, texte: str):
                       "<b>Ce que je sais faire</b>\n"
                       "• Te dire quoi planter, selon ton sol.\n"
                       "• Surveiller ta culture selon la météo.\n"
-                      "• Examiner la photo d'une feuille malade.", reply_markup=CLAVIER)
+                      "• Regarder la photo de ta plante malade.", reply_markup=CLAVIER)
         return
     if ETATS.get(chat, {}).get("langue") == "wo":
         _dire_reponse_wolof(chat, r["texte"])
@@ -574,10 +574,10 @@ def traiter(maj: dict):
                       "en wolof ou en français.", reply_markup=CLAVIER)
     elif texte == B_PHOTO:
         dire(chat, "conseils_photo")
-        envoyer(chat, "<b>Envoie-moi la photo d'une feuille malade.</b>\n"
+        envoyer(chat, "<b>Envoie-moi une photo de ta plante, là où quelque chose t'inquiète.</b>\n"
                       "Touche le petit bouton rond tout à gauche de la case « Message », juste au-dessus des grands boutons. "
                       "Choisis ensuite « Appareil photo » pour prendre la photo maintenant, ou une photo déjà prise dans ta galerie.\n\n"
-                      "<b>Comment bien prendre la photo</b>\n" + CONSEILS_PHOTO, reply_markup=CLAVIER)
+                      "<b>Pour une photo bien lisible</b>\n" + CONSEILS_PHOTO, reply_markup=CLAVIER)
     elif texte == B_PLAN:
         if "lat" in etat:
             _plan(chat)

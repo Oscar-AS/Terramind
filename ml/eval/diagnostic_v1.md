@@ -54,3 +54,17 @@ Même données, même protocole, 8 époques (`ml/eval/diagnostic_v1_convnext_tin
 | Temps par photo (1 cœur du Mac) | 15 ms | 126 ms |
 
 **Décision : MobileNetV3 reste le modèle en ligne.** Le gain de ConvNeXt est faible (environ 2 points) et mitigé au seuil retenu, alors que le modèle est 6,6 fois plus lourd et 8 fois plus lent. L'hébergement gratuit (Render : 512 Mo de mémoire, une petite fraction de processeur) laisse peu de marge, et une panne de mémoire pendant la démonstration coûterait plus cher que 2 points de précision. ConvNeXt est gardé hors Git (`modeles/diagnostic_v1_convnext_tiny/`) pour un hébergement plus puissant.
+
+## Feuilles, fruits ou plante entière ? (vérifié le 15 nov 2026)
+
+Planches contact des images TOM2024 tomate (toutes les images de chaque classe, entraînement + validation + test) regardées une à une par classe :
+
+| Ce que montrent les photos | Classes (images TOM2024) |
+|---|---|
+| **Fruits** | mildiou `late_blight` (72, quasiment que des fruits), `healthy_fruit` (527), `blossom_end_rot` (114), `helicoverpa_armigera` (272), `sunburn` (49), `alternaria` (317, surtout des fruits, quelques feuilles) |
+| **Feuilles ou plante entière** | `healthy` (764), `virosis` (1 498), `mites` (380), `bacterial_wilt` (250), souvent des vues larges de plusieurs plants |
+
+PlantVillage et PlantDoc ne contiennent que des feuilles. Conséquences :
+
+- Le modèle a appris sur des feuilles, des fruits et des plantes entières. La consigne photo n'impose donc plus « une seule feuille » : l'agriculteur montre ce qui l'inquiète (feuille, fruit, tige ou toute la plante).
+- Le mildiou de la tomate est appris surtout sur feuilles (PlantVillage 600 + PlantDoc 83 en entraînement) et sur peu de fruits (environ 48 en entraînement). Sur les fruits du test TOM2024, il ne reconnaît le mildiou qu'une fois sur deux (50 %, tableau plus haut). Un bon score sur une photo de démonstration ne prouve pas que le modèle soit fiable sur les fruits.
