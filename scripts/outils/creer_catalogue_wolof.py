@@ -44,8 +44,9 @@ MESSAGES = [
      "Ton champ est-il dans un bas-fond, un endroit bas où l'eau reste longtemps après la pluie ? "
      "Appuie sur un pour oui, deux pour non, trois si tu ne sais pas."),
     ("conseils_photo", "bouton Voir si ma plante est malade", H,
-     "Envoie-moi la photo d'une seule feuille malade. Touche le trombone en bas de l'écran, puis l'appareil "
-     "photo. Prends la feuille de près, pour qu'elle remplisse la photo, à la lumière du jour, sans ombre."),
+     "Envoie-moi la photo d'une seule feuille malade. Touche le petit bouton rond tout à gauche de la case "
+     "Message, juste au-dessus des grands boutons. Choisis ensuite Appareil photo, ou une photo déjà prise dans ta "
+     "galerie. Prends la feuille de près, pour qu'elle remplisse la photo, à la lumière du jour, sans ombre."),
     ("attente_photo", "photo reçue", H, "Merci, je regarde ta photo. Attends quelques secondes."),
     ("photo_incertaine", "diagnostic incertain", H,
      "Je ne suis pas sûr de ce que je vois. Plutôt que de te donner une mauvaise réponse, je préfère que tu "

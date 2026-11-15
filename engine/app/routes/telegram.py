@@ -553,7 +553,8 @@ def traiter(maj: dict):
     elif texte == B_PHOTO:
         dire(chat, "conseils_photo")
         envoyer(chat, "<b>Envoie-moi la photo d'une feuille malade.</b>\n"
-                      "Touche le trombone en bas de l'écran, puis l'appareil photo.\n\n"
+                      "Touche le petit bouton rond tout à gauche de la case « Message », juste au-dessus des grands boutons. "
+                      "Choisis ensuite « Appareil photo » pour prendre la photo maintenant, ou une photo déjà prise dans ta galerie.\n\n"
                       "<b>Comment bien prendre la photo</b>\n" + CONSEILS_PHOTO, reply_markup=CLAVIER)
     elif texte == B_PLAN:
         if "lat" in etat:
