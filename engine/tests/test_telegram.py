@@ -218,3 +218,8 @@ def test_bouton_position_test_donne_une_position_des_niayes():
     assert (tg.ETATS[13]["lat"], tg.ETATS[13]["lon"]) == (14.76, -17.21)
     assert "Position test : Rufisque" in envoyer.call_args.args[1]
     plan.assert_called_once()
+
+
+def test_periode_meteo_en_francais():
+    assert telegram.periode_fr("2026-11-05", "2026-11-12") == "du 5 au 12 novembre"
+    assert telegram.periode_fr("2026-10-28", "2026-11-04") == "du 28 octobre au 4 novembre"

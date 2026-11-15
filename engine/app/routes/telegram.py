@@ -284,6 +284,18 @@ def _plan(chat: int):
     envoyer(chat, "\n\n".join(blocs), reply_markup=CLAVIER)
 
 
+MOIS_FR = ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
+           "novembre", "décembre")
+
+
+def periode_fr(debut, fin) -> str:
+    """« du 5 au 12 novembre » (ou « du 28 octobre au 4 novembre ») au lieu de « 2026-11-05 au 2026-11-12 »."""
+    d, f = (x if isinstance(x, dt.date) else dt.date.fromisoformat(str(x)[:10]) for x in (debut, fin))
+    if d.month == f.month:
+        return f"du {d.day} au {f.day} {MOIS_FR[f.month - 1]}"
+    return f"du {d.day} {MOIS_FR[d.month - 1]} au {f.day} {MOIS_FR[f.month - 1]}"
+
+
 def _alertes(chat: int):
     e = ETATS[chat]
     try:
@@ -309,13 +321,14 @@ def _alertes(chat: int):
     else:
         dire(chat, "alerte_rien")
     debut, fin = d["meteo"]["periode"]
-    blocs = [f"<b>Ce que la météo annonce pour ta culture ({escape(culture)}) cette semaine</b>\n"
-             f"J'ai regardé la météo de ton champ du {escape(str(debut))} au {escape(str(fin))}."]
+    # NASA POWER donne la météo MESURÉE (avec quelques jours de retard), pas une prévision : le titre le dit.
+    blocs = [f"<b>Ce que la météo de ces derniers jours dit pour ta culture ({escape(culture)})</b>\n"
+             f"J'ai regardé la météo mesurée à ton champ {periode_fr(debut, fin)}."]
     if actives:
         blocs.append("<b>Ce qu'il faut surveiller</b>\n" + _liste(actives))
     else:
-        blocs.append("<b>Bonne nouvelle : rien d'inquiétant cette semaine</b>\nLa météo de cette semaine ne favorise aucune des maladies "
-                     "ni aucun des ravageurs que je surveille pour cette culture.")
+        blocs.append("<b>Bonne nouvelle : rien d'inquiétant pour le moment</b>\nLa météo de ces derniers jours ne favorise aucune "
+                     "des maladies ni aucun des ravageurs que je surveille pour cette culture.")
     blocs.append("<b>Ce que tu peux faire ensuite</b>\n"
                  f"Reviens me demander la semaine prochaine avec le bouton « {B_ALERTES} ». "
                  "Si tu vois des taches sur une feuille, envoie-moi sa photo.")
