@@ -166,4 +166,14 @@ def sources_de(ps: list[Passage]) -> list[dict]:
             liste = pages.setdefault(s["document"], [])
             if s["page"] != "—" and s["page"] not in liste:
                 liste.append(s["page"])
-    return [{"document": d, "page": ", ".join(pg) if pg else "—"} for d, pg in pages.items()]
+    return [{"document": d, "page": ", ".join(ranger_pages(pg)) if pg else "—"} for d, pg in pages.items()]
+
+
+def ranger_pages(pages: list[str]) -> list[str]:
+    """« 90-91, 91, 89, 88 » → « 88, 89, 90-91 » : ordre croissant, pages déjà comprises dans un intervalle retirées."""
+    def bornes(p):
+        nombres = [int(x) for x in re.findall(r"\d+", p)]
+        return (nombres[0], nombres[-1]) if nombres else (10**9, 10**9)
+    intervalles = [bornes(p) for p in pages if "-" in p]
+    gardees = [p for p in pages if "-" in p or not any(a <= bornes(p)[0] <= b for a, b in intervalles)]
+    return sorted(dict.fromkeys(gardees), key=bornes)
