@@ -414,8 +414,8 @@ def _photo(chat: int, file_id: str, culture: str | None):
                       "<b>Ce que tu peux faire ensuite</b>\nSi d'autres plants ont des taches, envoie-moi leur photo.",
                 reply_markup=CLAVIER)
         return
-    tete = ("<b>Ce que je vois sur ta feuille</b>\n"
-            f"Ta feuille ressemble à : <b>{escape(top['libelle'])}</b> "
+    tete = ("<b>Ce que je vois sur ta photo</b>\n"
+            f"Cela ressemble à : <b>{escape(top['libelle'])}</b> "
             f"(confiance du modèle : {round(top['confiance'] * 100)} %).\n"
             "C'est une première indication, pas un diagnostic sûr.")
     from .v1 import FICHES_ETIQUETTES
