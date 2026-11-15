@@ -345,7 +345,7 @@ def _alertes(chat: int):
     debut, fin = d["meteo"]["periode"]
     # NASA POWER donne la météo MESURÉE (avec quelques jours de retard), pas une prévision : le titre le dit.
     blocs = [f"<b>Ce que la météo de ces derniers jours dit pour ta culture ({escape(culture)})</b>\n"
-             f"J'ai regardé la météo mesurée à ton champ {periode_fr(debut, fin)}."]
+             f"J'ai regardé la météo de la zone de ton champ {periode_fr(debut, fin)}."]
     if actives:
         blocs.append("<b>Ce qu'il faut surveiller</b>\n" + _liste(actives))
     else:
