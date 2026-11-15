@@ -130,8 +130,24 @@ def escape(texte: str) -> str:
     return _echapper(texte, quote=False)
 
 
-def _court(document: str) -> str:
+# Noms lisibles par un agriculteur pour les sources dont le nom court serait un nom d'auteur ou un document interne.
+NOMS_LISIBLES = {"Beniest J. et al.": "Guide pratique du maraîchage au Sénégal (ISRA / FAO)",
+                 "Sylla S.": "Thèse sur la mineuse de la tomate (UCAD / CIRAD)",
+                 "Pfeiffer D. G. et al.": "Florida Entomologist (2013)",
+                 "Diallo et al. 2015": "African Crop Science Journal (2015)",
+                 "Blancard D.": "Ephytia (INRAE)", "Zitter T. A.": "Université Cornell",
+                 "Spry C.": "Université du Kentucky", "Jackson G.": "Pacific Pests (fiche 163)",
+                 "Panthee D. R.": "International Journal of Vegetable Science"}
+SOURCES_INTERNES = ("Seuils météo des maladies et ravageurs",)  # nos notes de travail, pas des sources publiées
+
+
+def _court(document: str) -> str | None:
     """Nom court d'une source : avant la première virgule, sans parenthèse laissée ouverte."""
+    if document.startswith(SOURCES_INTERNES):
+        return None
+    for auteur, lisible in NOMS_LISIBLES.items():
+        if document.startswith(auteur):
+            return lisible
     nom = document.split(",")[0].strip()
     if nom.count("(") > nom.count(")"):
         nom = nom[:nom.rfind("(")].strip()
@@ -447,7 +463,7 @@ def texte_fiche(etiquette: str, culture: str | None) -> tuple[str, str] | None:
             n += 1
             lignes = [l.lstrip("- ").strip() for l in fiche[cle].split("\n") if l.strip()]
             blocs.append(f"<b>{n}. {escape(titre)}</b>\n" + _liste(lignes))
-    documents = sorted({_court(s["document"]) for s in fiche["sources"]})
+    documents = sorted({c for s in fiche["sources"] if (c := _court(s["document"]))})
     return "\n\n".join(blocs), "<i>Sources : " + escape(" ; ".join(documents)) + "</i>"
 
 
@@ -480,7 +496,7 @@ def _question(chat: int, texte: str):
     if ETATS.get(chat, {}).get("langue") == "wo":
         _dire_reponse_wolof(chat, r["texte"])
     sources = " ; ".join(_court(s["document"]) + (f", p. {s['page']}" if s["page"][:1].isdigit() else "")
-                         for s in r["sources"][:3])
+                         for s in [x for x in r["sources"] if _court(x["document"])][:3])
     reponse = escape(r["texte"].replace("**", ""))
     envoyer(chat, f"{reponse}\n\n<i>Sources : {escape(sources)}</i>", reply_markup=CLAVIER)
 
