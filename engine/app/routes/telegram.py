@@ -25,6 +25,7 @@ import datetime as dt
 import hmac
 import json
 import logging
+import os
 import re
 import urllib.error
 import urllib.request
@@ -52,8 +53,16 @@ B_PHOTO = "Voir si ma plante est malade"
 B_PLAN = "Que planter dans mon champ ?"
 B_ALERTES = "Que dois-je retenir concernant la météo de cette semaine pour mes plantes ?"
 B_QUESTION = "J'ai une question à te poser"
+# Démonstration (décision de Salam, 15 nov 2026) : la zone de test est pour l'instant les Niayes. Ce bouton envoie
+# une position fixe des Niayes (Rufisque, centroïde du département, geoBoundaries ; même zone pilote que l'app),
+# pour que le jury essaie sans révéler où il se trouve. À retirer si TerraMind est retenu (base sur tout le
+# Sénégal) : mettre BOUTON_POSITION_TEST=0 dans les variables de Render.
+B_POSITION_TEST = "Envoyer une position test"
+POSITION_TEST = {"nom": "Rufisque", "lat": 14.76, "lon": -17.21}
+AVEC_POSITION_TEST = os.environ.get("BOUTON_POSITION_TEST", "1") != "0"
 # Un bouton par ligne : le libellé reste lisible en entier sur un petit écran.
-CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}], [{"text": B_PHOTO}],
+CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}]]
+                        + ([[{"text": B_POSITION_TEST}]] if AVEC_POSITION_TEST else []) + [[{"text": B_PHOTO}],
                         [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_QUESTION}]],
            # is_persistent : Telegram garde les boutons affichés au lieu de les replier derrière une icône
            # (Bot API 6.4) ; un agriculteur peu habitué aux écrans ne trouverait pas l'icône.
@@ -61,9 +70,12 @@ CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}], [{"tex
 # Anciens libellés (claviers encore affichés sur les téléphones) : traités comme les nouveaux.
 # En wolof, beaucoup d'agriculteurs ne lisent pas le français : chaque bouton porte un numéro, que les
 # notes vocales citent (« appuie sur le 2 ») ; l'agriculteur peut réécouter la note autant qu'il veut.
-NUMEROS = {B_POSITION: 1, B_PHOTO: 2, B_PLAN: 3, B_ALERTES: 4, B_QUESTION: 5}
-CLAVIER_WO = {"keyboard": [[dict(b, text=f"{NUMEROS[b['text']]}. {b['text']}") for b in ligne]
-                           for ligne in CLAVIER["keyboard"]], "resize_keyboard": True, "is_persistent": True}
+NUMEROS = {B_POSITION: 1, B_PHOTO: 2, B_PLAN: 3, B_ALERTES: 4, B_QUESTION: 5, B_POSITION_TEST: 6}
+# Rangés dans l'ordre des numéros (1 à 5, puis le bouton test 6), pour que « appuie sur le 2 » corresponde
+# aussi à la 2e ligne pour qui ne lit pas.
+CLAVIER_WO = {"keyboard": sorted(([dict(b, text=f"{NUMEROS[b['text']]}. {b['text']}") for b in ligne]
+                                  for ligne in CLAVIER["keyboard"]), key=lambda l: int(l[0]["text"].split(".")[0])),
+              "resize_keyboard": True, "is_persistent": True}
 B_AIDE = "/aide"  # l'accueil reste accessible par /aide et par les anciens boutons d'aide
 ANCIENS_BOUTONS = {"Examiner une feuille": B_PHOTO, "Ma plante est malade : envoyer une photo": B_PHOTO,
                    "Que planter ?": B_PLAN, "Surveiller ma culture": B_ALERTES,
@@ -503,6 +515,12 @@ def traiter(maj: dict):
         etat["lon"] = round(msg["location"]["longitude"], 2)
         dire(chat, "position_recue")
         envoyer(chat, "C'est bon, j'ai bien reçu la position de ton champ.")
+        _plan(chat)
+    elif texte == B_POSITION_TEST and AVEC_POSITION_TEST and "langue" in etat:
+        etat["lat"], etat["lon"] = POSITION_TEST["lat"], POSITION_TEST["lon"]
+        dire(chat, "position_recue")
+        envoyer(chat, f"Position test : {POSITION_TEST['nom']}, dans la zone pilote des Niayes. "
+                      "C'est un bouton de démonstration ; pour ton vrai champ, utilise « " + B_POSITION + " ».")
         _plan(chat)
     elif msg.get("photo"):
         # Pas de filtre par la culture surveillée : la feuille peut venir d'une autre culture.

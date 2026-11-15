@@ -205,3 +205,16 @@ def test_ordre_des_cultures_dit_par_la_voix():
     # la note vocale « choix_culture » énumère les cultures dans cet ordre
     from engine.app.modules.planification.cultures import CULTURES
     assert list(CULTURES) == ["tomato", "potato", "onion", "cabbage", "pepper", "carrot", "chili", "bitter_eggplant"]
+
+
+def test_bouton_position_test_donne_une_position_des_niayes():
+    tg = telegram
+    tg.ETATS.clear()
+    tg.ETATS[13] = {"langue": "fr"}
+    assert [{"text": tg.B_POSITION_TEST}] in tg.CLAVIER["keyboard"]
+    with mock.patch.object(tg, "envoyer") as envoyer, mock.patch.object(tg, "_appel_silencieux"), \
+            mock.patch.object(tg, "_plan") as plan:
+        tg.traiter({"message": {"chat": {"id": 13}, "text": tg.B_POSITION_TEST}})
+    assert (tg.ETATS[13]["lat"], tg.ETATS[13]["lon"]) == (14.76, -17.21)
+    assert "Position test : Rufisque" in envoyer.call_args.args[1]
+    plan.assert_called_once()
