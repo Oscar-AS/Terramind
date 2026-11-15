@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import { Crosshair, MapPin, MapTrifold } from 'phosphor-react-native';
+import { Crosshair, Flask, MapPin, MapTrifold } from 'phosphor-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -10,6 +10,12 @@ import { FeuilleGlissante } from '@/components/FeuilleGlissante';
 import { Apparition, Bouton, Carte, Pastille, T } from '@/components/ui';
 import { profil, ZONES } from '@/profil';
 import { couleurs } from '@/theme';
+
+// Démonstration (décision de Salam, 15 nov 2026), comme le bouton du bot Telegram : une position fixe des Niayes
+// (Rufisque, zone pilote), pour essayer sans révéler où l'on est. À retirer quand la base couvrira tout le
+// Sénégal : EXPO_PUBLIC_POSITION_TEST=0 au moment de compiler l'APK.
+const AVEC_POSITION_TEST = process.env.EXPO_PUBLIC_POSITION_TEST !== '0';
+const POSITION_TEST = ZONES[0]; // Rufisque
 
 // Étape 1b : expliquer AVANT la fenêtre d'autorisation du système, avec un plan B (zones pilotes).
 export default function Position() {
@@ -56,7 +62,11 @@ export default function Position() {
           </Apparition>
           {message ? <T v="corpsGras" style={{ color: couleurs.terre }}>{message}</T> : null}
           <Apparition ordre={2}><Bouton libelle="Je suis dans mon champ" sousTitre="Utiliser le GPS" Icone={Crosshair} onPress={gps} /></Apparition>
-          <Apparition ordre={3}><Bouton libelle="Choisir ma zone" sousTitre="Rufisque, Thiès, Tivaouane, Kébémer" Icone={MapTrifold} onPress={() => setZonesOuvertes(true)} variante="clair" /></Apparition>
+          {AVEC_POSITION_TEST ? (
+            <Apparition ordre={3}><Bouton libelle="Envoyer une position test" sousTitre={`Démonstration : ${POSITION_TEST.nom}, Niayes`} Icone={Flask} variante="clair"
+              onPress={() => { profil.ecrire({ position: { lat: POSITION_TEST.lat, lon: POSITION_TEST.lon, nom: `${POSITION_TEST.nom} (test)` } }); suivant(); }} /></Apparition>
+          ) : null}
+          <Apparition ordre={4}><Bouton libelle="Choisir ma zone" sousTitre="Rufisque, Thiès, Tivaouane, Kébémer" Icone={MapTrifold} onPress={() => setZonesOuvertes(true)} variante="clair" /></Apparition>
         </>
       )}
       <FeuilleGlissante visible={zonesOuvertes} onFermer={() => setZonesOuvertes(false)} titre="Choisis ta zone">

@@ -24,7 +24,7 @@ const pause = (ms) => new Promise((r) => setTimeout(r, ms));
     return p;
   };
   const neuf = await page(null);
-  for (const [nom, chemin] of [['bienvenue', '/bienvenue'], ['langue', '/bienvenue/langue']]) {
+  for (const [nom, chemin] of [['bienvenue', '/bienvenue'], ['langue', '/bienvenue/langue'], ['position', '/bienvenue/position']]) {
     await neuf.goto(BASE + chemin, { waitUntil: 'networkidle0', timeout: 180000 }); await pause(4000);
     await neuf.screenshot({ path: `app_${nom}.png` });
   }
