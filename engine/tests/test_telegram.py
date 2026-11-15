@@ -223,3 +223,9 @@ def test_bouton_position_test_donne_une_position_des_niayes():
 def test_periode_meteo_en_francais():
     assert telegram.periode_fr("2026-11-05", "2026-11-12") == "du 5 au 12 novembre"
     assert telegram.periode_fr("2026-10-28", "2026-11-04") == "du 28 octobre au 4 novembre"
+
+
+def test_phrase_ph_negation():
+    from app.routes.telegram import phrase_ph
+    assert phrase_ph(6.8) == "ton sol n'est ni acide ni basique"
+    assert phrase_ph(6.1) == "ton sol est un peu acide"

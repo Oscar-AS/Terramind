@@ -125,6 +125,12 @@ TYPES_AUDIO = {".ogg": "audio/ogg", ".mp3": "audio/mpeg", ".m4a": "audio/mp4"}  
 ETATS: dict[int, dict] = {}
 
 
+def phrase_ph(ph: float) -> str:
+    """« ton sol est un peu acide », mais « ton sol n'est ni acide ni basique » (négation obligatoire)."""
+    mots = ph_en_mots(ph)
+    return f"ton sol n'est {mots}" if mots.startswith("ni ") else f"ton sol est {mots}"
+
+
 def escape(texte: str) -> str:
     """Échappe <, > et & pour le HTML de Telegram (les apostrophes restent lisibles)."""
     return _echapper(texte, quote=False)
@@ -277,7 +283,7 @@ def _plan(chat: int):
 
     blocs = ["<b>Ce qu'il faut savoir sur ton sol</b>\n"
              f"D'après la carte des sols iSDAsoil, ton champ contient environ {round(s['sable_pct'])} % de sable "
-             + (f"et son pH est de {nombre_fr(s['ph'])} : ton sol est {ph_en_mots(s['ph'])}." if s.get("ph") is not None
+             + (f"et son pH est de {nombre_fr(s['ph'])} : {phrase_ph(s['ph'])}." if s.get("ph") is not None
                 else "(pH inconnu à cet endroit).")]
     if groupes["conseillee"]:
         blocs.append("<b>Ce que tu peux planter maintenant</b>\n" + "\n".join(
