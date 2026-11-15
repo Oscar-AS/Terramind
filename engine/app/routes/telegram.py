@@ -94,7 +94,7 @@ ACCUEIL = (
     "<b>Par où commencer</b>\n"
     f"Partage la position de ton champ avec le bouton « {B_POSITION} », en bas de l'écran. "
     "Tu peux aussi m'envoyer directement une photo de ta plante, ou me poser ta question par écrit "
-    "ou en message vocal, en wolof ou en français.\n\n"
+    "(en français), ou en message vocal en wolof.\n\n"
     "<i>Je ne donne jamais de nom de produit ni de dose : pour un traitement, je t'oriente vers "
     f"{AGENT}.</i>"
 )
@@ -570,8 +570,8 @@ def traiter(maj: dict):
         envoyer(chat, ACCUEIL + "\n\n<i>Pour changer de langue, écris /langue.</i>", reply_markup=CLAVIER)
     elif texte == B_QUESTION:
         dire(chat, "invite_question")
-        envoyer(chat, "Je t'écoute. Pose-moi ta question par écrit, ou envoie-moi un message vocal, "
-                      "en wolof ou en français.", reply_markup=CLAVIER)
+        envoyer(chat, "Je t'écoute. Pose-moi ta question par écrit (en français), ou envoie-moi un message "
+                      "vocal en wolof.", reply_markup=CLAVIER)
     elif texte == B_PHOTO:
         dire(chat, "conseils_photo")
         envoyer(chat, "<b>Envoie-moi une photo de ta plante, là où quelque chose t'inquiète.</b>\n"
