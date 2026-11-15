@@ -7,7 +7,7 @@
   <meta name="description" content="Diagnostic photo, plan de culture, alertes météo et réponses sourcées, en français et en wolof, sur Telegram et sur Android.">
   <meta name="theme-color" content="#1F4D3A">
   <meta property="og:title" content="TerraMind : le conseiller agricole des maraîchers des Niayes">
-  <meta property="og:description" content="Photo d'une feuille, position du champ ou question : TerraMind répond à partir de documents agricoles publiés et de la vraie météo.">
+  <meta property="og:description" content="Photo de ta plante, position du champ ou question : TerraMind répond à partir de documents agricoles publiés et de la météo de la zone de ton champ.">
   <meta property="og:image" content="captures/resultat.webp">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231F4D3A'/%3E%3Cpath d='M8 25c0-10 6-16 17-17 0 11-6 16-17 17z' fill='%23F5EFE3'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -77,7 +77,7 @@
         <span data-en="French and Wolof · Niayes, Senegal">Français et wolof · Niayes, Sénégal</span>
       </div>
       <h1 class="apparait titre mt-6 text-[44px] leading-[1.02] text-sable sm:text-[58px] lg:text-[72px] lg:leading-[1]" style="--d:80ms" data-en="The farm advisor in every grower's pocket">Le conseiller agricole dans la poche des maraîchers</h1>
-      <p class="apparait mt-6 max-w-[520px] text-[18px] leading-[1.6] text-clair" style="--d:160ms" data-en="Send a photo of a leaf, the location of your field or a question, in French or Wolof. TerraMind answers from published farming documents and the real weather of your field.">Envoie la photo d'une feuille, la position de ton champ ou ta question, en français ou en wolof. TerraMind répond à partir de documents agricoles publiés et de la vraie météo de ton champ.</p>
+      <p class="apparait mt-6 max-w-[520px] text-[18px] leading-[1.6] text-clair" style="--d:160ms" data-en="Send a photo of your plant, the location of your field or a question, in French or Wolof. TerraMind answers from published farming documents and the weather of your field's area.">Envoie la photo de ta plante, la position de ton champ ou ta question, en français ou en wolof. TerraMind répond à partir de documents agricoles publiés et de la météo de la zone de ton champ.</p>
       <div class="apparait mt-8 flex flex-wrap gap-3" style="--d:240ms">
         <a href="https://t.me/TerraMindAfriqueBot" class="bouton bg-soleil text-encre hover:bg-[#F0B947]">
           <i data-i="send" class="h-5 w-5"></i><span data-en="Open the Telegram bot">Ouvrir le bot Telegram</span></a>
@@ -88,7 +88,7 @@
       <ul class="apparait mt-10 flex flex-wrap gap-x-6 gap-y-2 text-[14px] text-clair" style="--d:320ms">
         <li class="flex items-center gap-2"><i data-i="book" class="h-4 w-4 text-soleil"></i><span data-en="Every tip cites its source">Chaque conseil cite sa source</span></li>
         <li class="flex items-center gap-2"><i data-i="shield" class="h-4 w-4 text-soleil"></i><span data-en="Never a product or a dose">Jamais de produit ni de dose</span></li>
-        <li class="flex items-center gap-2"><i data-i="cloud" class="h-4 w-4 text-soleil"></i><span data-en="Real weather (NASA POWER)">Vraie météo (NASA POWER)</span></li>
+        <li class="flex items-center gap-2"><i data-i="cloud" class="h-4 w-4 text-soleil"></i><span data-en="Satellite weather (NASA POWER)">Météo satellite (NASA POWER)</span></li>
       </ul>
     </div>
 
@@ -287,7 +287,7 @@
         <ol class="revele mt-8 space-y-4 text-[17px]">
           <li class="flex gap-4"><span class="numero">1</span><span data-en="Open <b>@TerraMindAfriqueBot</b> on Telegram.">Ouvre <b>@TerraMindAfriqueBot</b> sur Telegram.</span></li>
           <li class="flex gap-4"><span class="numero">2</span><span data-en="Choose French or Wolof.">Choisis le français ou le wolof.</span></li>
-          <li class="flex gap-4"><span class="numero">3</span><span data-en="Share your field's location, or send a photo of a leaf.">Partage la position de ton champ, ou envoie la photo d'une feuille.</span></li>
+          <li class="flex gap-4"><span class="numero">3</span><span data-en="Share your field's location, or send a photo of your plant.">Partage la position de ton champ, ou envoie la photo de ta plante.</span></li>
         </ol>
         <div class="revele mt-9 flex flex-wrap gap-3">
           <a href="https://t.me/TerraMindAfriqueBot" class="bouton bg-foret text-sable hover:bg-[#245A44]"><i data-i="send" class="h-5 w-5"></i><span data-en="Start on Telegram">Commencer sur Telegram</span></a>
@@ -444,7 +444,7 @@
     ['resultat', ['Diagnostic', 'Mildiou, confiance du modèle 93 %.'], ['Diagnosis', 'Late blight, model confidence 93%.']],
     ['resultat2', ['Expliqué en 4 temps', 'Ce que c\'est, pourquoi, que faire, comment éviter.'], ['Explained in 4 steps', 'What it is, why, what to do, how to prevent it.']],
     ['plan', ['Que planter ?', 'Selon le sol de ton champ et la saison.'], ['What to plant?', 'Based on your field\'s soil and the season.']],
-    ['alertes', ['Alertes de la semaine', 'La météo réelle de ton champ.'], ['This week\'s alerts', 'The real weather of your field.']],
+    ['alertes', ['Alertes de la semaine', 'La météo de la zone de ton champ.'], ['This week\'s alerts', 'The weather of your field\'s area.']],
   ];
   const FICHES = {
     fr: [['Maladies', 9, '#D9467C', [['Mildiou (tomate, pomme de terre)', 'Taches brunes aux bords flous, duvet blanc dessous', 'DPV, ISRA / FAO'], ['Alternariose (tomate, pomme de terre)', 'Taches rondes à cercles, comme une cible', 'DPV, ISRA / FAO'], ['Flétrissement bactérien de la tomate', "Les feuilles ramollissent et se fanent, d'abord les plus jeunes", 'FAO / ISRA-CDH']]],
@@ -461,10 +461,10 @@
   // Questions fréquemment posées (liste voulue par Salam ; réponses vérifiées dans le code et les fiches).
   const FAQ = {
     fr: [
-      ['Quel est votre pitch en une phrase ?', "TerraMind aide les petits maraîchers des Niayes à choisir quoi planter selon leur sol et la saison, à anticiper les maladies grâce à la météo et à reconnaître une maladie sur la photo d'une feuille, en citant pour chaque conseil le document d'où il vient."],
+      ['Quel est votre pitch en une phrase ?', "TerraMind aide les petits maraîchers des Niayes à choisir quoi planter selon leur sol et la saison, à anticiper les maladies grâce à la météo et à reconnaître une maladie sur la photo d'une plante, en citant pour chaque conseil le document d'où il vient."],
       ['Pourquoi un bot Telegram plutôt que WhatsApp, plus utilisé ?', "Pour faire répondre un bot sur WhatsApp, Meta exige le statut officiel d'entreprise. TerraMind est encore un projet de hackathon et n'a pas ce statut ; Telegram permet de servir les agriculteurs dès maintenant."],
       ['Pourquoi faire confiance à ce que TerraMind dit ?', "Le bot fonctionne par génération augmentée par la recherche (RAG) : il cherche d'abord le passage utile dans ses fiches, puis l'IA reformule ce passage, sans rien ajouter. Les fiches viennent de documents publiés (guide ISRA / FAO de 1987, manuel de la DPV, fiches du PADEN et de l'ISRA-CDH, FAO, INRAE…) ; chaque phrase porte sa source, et un vérificateur indépendant les a relues contre ces sources."],
-      ["Quel est l'impact du climat dans ce projet ?", "La météo réelle de ton champ (NASA POWER) sert à prévenir : chaque semaine, TerraMind regarde si l'humidité et la température favorisent le mildiou ou l'alternariose, et calcule les générations de ravageurs comme la mineuse ou la teigne. Ces règles viennent d'études faites hors du Sénégal : TerraMind parle de conditions favorables, pas de maladie certaine."],
+      ["Quel est l'impact du climat dans ce projet ?", "La météo de la zone de ton champ (NASA POWER, estimée par satellite) sert à prévenir : chaque semaine, TerraMind regarde si l'humidité et la température favorisent le mildiou ou l'alternariose, et calcule les générations de ravageurs comme la mineuse ou la teigne. Ces règles viennent d'études faites hors du Sénégal : TerraMind parle de conditions favorables, pas de maladie certaine."],
       ["Et si TerraMind n'a pas la réponse ?", "Il le dit, et t'oriente vers un agent agricole (ANCAR, service départemental de l'agriculture). Il ne devine pas."],
       ['Et si TerraMind donne un traitement qui tue nos plantes ?', "Il ne peut pas : TerraMind ne propose jamais de nom de produit chimique ni de dose, parce qu'une erreur de produit peut tuer la plante. Pour un traitement, il renvoie toujours vers un agent agricole."],
       ['TerraMind est-il rentable ?', "C'est le modèle visé : l'application reste gratuite pour les agriculteurs, et des instituts paieraient un abonnement pour accéder à des données agrégées et anonymes (maladies signalées, risques météo). Ces données aideraient à orienter les politiques agricoles et resteraient au Sénégal. Ce service n'a pas encore de clients : il est en préparation."],
@@ -476,10 +476,10 @@
       ['Pourquoi le bot met-il environ une minute à répondre parfois ?', "Le moteur est hébergé sur l'offre gratuite de Render, qui met le serveur en veille quand personne ne l'utilise. La première demande le réveille (environ une minute), les suivantes sont rapides. Le forfait d'hébergement cloud prévu pour l'ouverture au grand public supprimera ce délai."],
     ],
     en: [
-      ['What is your one-sentence pitch?', 'TerraMind helps small vegetable growers in the Niayes choose what to plant for their soil and season, anticipate diseases from the weather and recognise a disease from a photo of a leaf, citing for every tip the document it comes from.'],
+      ['What is your one-sentence pitch?', 'TerraMind helps small vegetable growers in the Niayes choose what to plant for their soil and season, anticipate diseases from the weather and recognise a disease from a photo of a plant, citing for every tip the document it comes from.'],
       ['Why a Telegram bot rather than WhatsApp, which is more widely used?', 'To run a bot on WhatsApp, Meta requires official business status. TerraMind is still a hackathon project without that status; Telegram lets us serve farmers right now.'],
       ['Why trust what TerraMind says?', 'The bot uses retrieval-augmented generation (RAG): it first finds the relevant passage in its fiches, then the AI rewords that passage without adding anything. The fiches come from published documents (ISRA / FAO 1987 guide, DPV manual, PADEN and ISRA-CDH fiches, FAO, INRAE…); every sentence carries its source, and an independent checker re-read them against those sources.'],
-      ['What role does climate play in this project?', "Your field's real weather (NASA POWER) is used for prevention: every week, TerraMind checks whether humidity and temperature favour late blight or early blight, and counts pest generations such as tomato leafminer or diamondback moth. These rules come from studies done outside Senegal, so TerraMind speaks of favourable conditions, never of a certain disease."],
+      ['What role does climate play in this project?', "The weather of your field's area (NASA POWER, satellite estimates) is used for prevention: every week, TerraMind checks whether humidity and temperature favour late blight or early blight, and counts pest generations such as tomato leafminer or diamondback moth. These rules come from studies done outside Senegal, so TerraMind speaks of favourable conditions, never of a certain disease."],
       ["What if TerraMind doesn't have the answer?", 'It says so, and points you to an agricultural agent (ANCAR, departmental agriculture service). It does not guess.'],
       ['What if TerraMind suggests a treatment that kills our plants?', 'It cannot: TerraMind never suggests a chemical product name or a dose, because one wrong product can kill the plant. For any treatment, it always refers you to an agricultural agent.'],
       ['Is TerraMind profitable?', 'That is the model we aim for: the app stays free for farmers, and institutes would pay a subscription to access aggregated, anonymous data (reported diseases, weather risks). This data would help guide agricultural policy and would stay in Senegal. The service has no clients yet: it is being prepared.'],
