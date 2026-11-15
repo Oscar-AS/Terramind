@@ -55,13 +55,15 @@ B_QUESTION = "J'ai une question à te poser"
 # Un bouton par ligne : le libellé reste lisible en entier sur un petit écran.
 CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}], [{"text": B_PHOTO}],
                         [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_QUESTION}]],
-           "resize_keyboard": True}
+           # is_persistent : Telegram garde les boutons affichés au lieu de les replier derrière une icône
+           # (Bot API 6.4) ; un agriculteur peu habitué aux écrans ne trouverait pas l'icône.
+           "resize_keyboard": True, "is_persistent": True}
 # Anciens libellés (claviers encore affichés sur les téléphones) : traités comme les nouveaux.
 # En wolof, beaucoup d'agriculteurs ne lisent pas le français : chaque bouton porte un numéro, que les
 # notes vocales citent (« appuie sur le 2 ») ; l'agriculteur peut réécouter la note autant qu'il veut.
 NUMEROS = {B_POSITION: 1, B_PHOTO: 2, B_PLAN: 3, B_ALERTES: 4, B_QUESTION: 5}
 CLAVIER_WO = {"keyboard": [[dict(b, text=f"{NUMEROS[b['text']]}. {b['text']}") for b in ligne]
-                           for ligne in CLAVIER["keyboard"]], "resize_keyboard": True}
+                           for ligne in CLAVIER["keyboard"]], "resize_keyboard": True, "is_persistent": True}
 B_AIDE = "/aide"  # l'accueil reste accessible par /aide et par les anciens boutons d'aide
 ANCIENS_BOUTONS = {"Examiner une feuille": B_PHOTO, "Ma plante est malade : envoyer une photo": B_PHOTO,
                    "Que planter ?": B_PLAN, "Surveiller ma culture": B_ALERTES,
