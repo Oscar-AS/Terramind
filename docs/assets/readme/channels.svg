@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-label="Les façades : Là où l'agriculteur parle au bot : WhatsApp d'abord, l'appli web en secours">
+  <defs>
+    <linearGradient id="fond" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f4d3a"/><stop offset="1" stop-color="#14261d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="260" rx="22" fill="url(#fond)"/>
+  <!-- dunes stylisées des Niayes -->
+  <path d="M0 210 C 220 170 380 240 600 200 S 980 160 1200 205 V260 H0z" fill="#3f8f5f" opacity="0.35"/>
+  <path d="M0 232 C 260 205 460 255 700 228 S 1020 210 1200 232 V260 H0z" fill="#d08a2e" opacity="0.45"/>
+  <circle cx="1090" cy="62" r="26" fill="#d08a2e" opacity="0.9"/>
+  <g transform="translate(70 62) scale(1.1)"><path d="M16 26 h66 a10 10 0 0 1 10 10 v30 a10 10 0 0 1 -10 10 h-38 l-18 16 v-16 h-10 a10 10 0 0 1 -10 -10 v-30 a10 10 0 0 1 10 -10z" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round"/>
+      <rect x="74" y="50" width="34" height="56" rx="7" fill="none" stroke="#fff" stroke-width="7"/>
+      <circle cx="91" cy="97" r="3.5" fill="#fff"/></g>
+  <text x="230" y="92" font-family="Georgia, 'Times New Roman', serif" font-size="22" fill="#f3e3c3" letter-spacing="3">TERRAMIND AFRIQUE · CHANNELS/</text>
+  <text x="230" y="146" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="bold" fill="#ffffff">Les façades</text>
+  <text x="230" y="186" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#fbf7ef">Là où l'agriculteur parle au bot : WhatsApp d'abord, l'appli web en secours</text>
+</svg>

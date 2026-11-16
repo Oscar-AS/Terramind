@@ -43,3 +43,15 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# --- Données brutes volumineuses, retéléchargeables ---
+# Recréées par : python3 scripts/donnees/telecharger_sources.py power wfp documents
+# (URL, dates et empreintes SHA-256 dans data/raw/MANIFESTE.csv)
+data/raw/nasa_power/
+data/raw/wfp_prix/
+data/raw/documents/
+data/raw/images/
+
+# Poids des modèles (plusieurs Go), téléchargés par scripts/outils/telecharger_modeles.py
+modeles/
+data/raw/kallaama/

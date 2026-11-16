@@ -167,6 +167,156 @@ Statuts : **Utilisée** (reprise dans le brouillon) · **Lue, non utilisée** ·
 
 ---
 
+## Session 3 · 2 novembre 2026 · Données ouvertes, seuils météo, documents publics à la place des fiches ISRA
+
+**Qui** : Salam, avec un assistant IA (Claude, d'Anthropic) qui a fait les recherches web et les téléchargements par script.
+
+**Pourquoi** : rassembler avant le développement toutes les données encore manquantes (consigne D7) :
+- photos pour le diagnostic ;
+- règles météo pour la Prévention ;
+- vérification des sols iSDAsoil ;
+- contenu des fiches ISRA-CDH introuvables ;
+- salinité ;
+- accès aux modèles wolof.
+
+**Outils** : recherche web, API de Hugging Face, de GitHub, de la Wayback Machine et de NASA POWER ; scripts du dépôt (`telecharger_sources.py`, `telecharger_images.py`, `extraire_rapports.py`, `comparer_zones.py`).
+
+### Requêtes effectuées
+
+| # | Requête (résumé) | Résultat principal |
+|---|---|---|
+| 1 | API Hugging Face : Kiriku, galsenai, whosper, dofbi, speecht5, Kallaama | Accès et licences relevés (voir `docs/voix-wolof.md` § 7 bis) ; nouvelle voix `AIHubSN/Kiriku-Wolof-TTS` |
+| 2 | Licences de PlantVillage et PlantDoc (Hugging Face, GitHub) | CC BY-SA 3.0 et CC BY 4.0 ; aucune classe oignon ni chou |
+| 3 | iSDAsoil : règle de l'azote total, légende des textures | Règle `exp(x/100)-1` (catalogue Earth Engine) ; légende USDA publiée avec la carte |
+| 4 | TOMCAST / FAST (alternariose) | Tableau des notes (UC IPM), Madden et al. 1978 |
+| 5 | Critères Hutton et période de Smith (mildiou) | AHDB 2017 |
+| 6 | Humectation estimée par l'humidité relative | Sentelhas et al. 2008 (seuil de 90 %) |
+| 7 | *Alternaria porri*, DOWNCAST (maladies de l'oignon) | Suheri et Price 2000 ; Jesperson et Sutton 1987 |
+| 8 | Degrés-jours : *Tuta absoluta*, *Plutella xylostella*, *Bemisia tabaci* | Seuils et constantes (voir le document des seuils) |
+| 9 | Salinité des sols des Niayes | 4 études (IJBCS 2012, ACSJ 2015, ESJ 2022, Mboltime) |
+| 10 | Wayback Machine : marcheagricole.sn | Pages des fiches ISRA-CDH jamais archivées |
+| 11 | Fiches ISRA / PADEN / ministère / FAO / ANCAR (oignon, tomate, chou, pomme de terre, poivron) | Livret PIESAN oignon 2022 (FR/wolof), fiche PADEN oignon, FAO/RADHORT tomate, STDF/AUMN chou |
+| 12 | isracdh.sn (site du CDH) | Fiches « publiées prochainement », prix pas encore publiés |
+| 13 | Fiches de zones voisines : CNRADA (Mauritanie), RECA et chambres d'agriculture (Niger) | 11 fiches CNRADA, 4 documents nigériens |
+| 14 | NASA POWER horaire, déc. 2025 à févr. 2026, Tivaouane | Test des critères Hutton sur l'épisode de Notto Gouye Diama |
+| 15 | NASA POWER + iSDAsoil sur 11 zones | Comparaison climat et sol des zones analogues |
+
+### Sources consultées
+
+Les sources et leur usage sont détaillés dans :
+- [seuils-meteo-maladies-ravageurs.md](seuils-meteo-maladies-ravageurs.md) (règles météo, salinité) ;
+- [research/itineraires-par-culture.md](../../research/itineraires-par-culture.md) (documents agronomiques par culture, zones analogues) ;
+- [data/README.md](../../data/README.md) et [data/CATALOGUE.md](../../data/CATALOGUE.md) (jeux de données).
+
+Chaque fichier téléchargé est inscrit dans `data/raw/MANIFESTE.csv` (URL, date, empreinte SHA-256).
+
+### Ce que nous n'avons pas trouvé
+
+- **Les fiches ISRA-CDH de 2022** : site fermé, pages jamais archivées, site du CDH sans fiches.
+- **Une carte ouverte de la salinité** à l'échelle du champ.
+- **Des photos d'oignon et de chou malades** dans les jeux ouverts.
+- **Des documents sénégalais récents** pour la tomate, le chou, le poivron et la pomme de terre, équivalents au livret oignon.
+- **Une validation au Sénégal** de l'un des modèles météo.
+
+### Limites
+
+- Les modèles météo viennent d'autres pays.
+- La météo vient d'une grille d'environ 50 km.
+- L'humectation des feuilles est estimée par l'humidité.
+- Les fiches de Mauritanie et du Niger ne valent que dans la mesure où leurs zones ressemblent aux Niayes (voir la comparaison climat et sol).
+- Les rendements cités sont des rendements de station.
+
+### Ce qui a été produit
+
+- Corrections et extensions des scripts de données : azote, textures, images, documents, zones.
+- Nouveaux tableaux dans `data/extraits/` : EAA 2022-2023, inventaire des images, comparaison des zones.
+- Documents `docs/sources/seuils-meteo-maladies-ravageurs.md` et `research/itineraires-par-culture.md`.
+- Décision D11.
+- 22 mots wolof sourcés ajoutés au lexique (livret PIESAN).
+
+### Suites à donner
+
+- Demander les fiches au CDH (formulaire de isracdh.sn).
+- Chercher des photos d'oignon et de chou malades sous une licence lisible.
+- Faire valider le lexique par un locuteur.
+- Tester les autres modèles sur les données EAA et NASA POWER.
+
+---
+
+## Session 4 · 4 novembre 2026 · Chou, documents du PADEN, test du calendrier des règles
+
+**Qui** : Salam, avec un assistant IA (Claude, d'Anthropic).
+
+**Pourquoi** : combler les manques listés à la fin de la session 3 :
+- photos de chou malade ;
+- fiche PADEN pomme de terre d'origine ;
+- lexique wolof ;
+- test des règles de Prévention sur d'autres épisodes.
+
+### Requêtes effectuées
+
+| # | Requête (résumé) | Résultat principal |
+|---|---|---|
+| 1 | Jeux d'images de maladies du chou, licence ouverte (Mendeley, Zenodo, Kaggle) | Mendeley `sjmgzhwrxv` (Ghana, CC BY 4.0) retenu ; jeux Kaggle agrégés écartés (licences mêlées) |
+| 2 | Fiche PADEN « production intensive de la pomme de terre » | Site paden-senegal.org fermé ; liste complète des PDF dans la Wayback Machine |
+| 3 | Index Wayback de paden-senegal.org | 67 PDF archivés ; 14 retenus (fiches, livrets FR/wolof, manuel DPV des ravageurs, recensement horticole) ; manuel sur les pesticides écarté |
+| 4 | Manuel DPV : conditions climatiques des maladies | Alternariose 20-25 °C avec alternance humide/ensoleillé (p. 80) ; mildiou décrit dans les Niayes (p. 88) |
+| 5 | Règles de Prévention sur NASA POWER horaire 2020-2025 (4 points) | Calendrier comparé aux saisons documentées (voir le document des seuils, § 5 bis) |
+
+### Ce qui a été produit
+
+- **Images de chou :** 203 images d'origine (`data/raw/images/chou_mendeley/`, empreinte vérifiée).
+- **Documents du PADEN :** 14 documents (`data/raw/documents/paden/`, source `paden`).
+- **Lexique wolof :** 13 mots ajoutés depuis les livrets PADEN (chou, pomme de terre, carotte, mois de mars à septembre, hectare, saisons) et variantes d'écriture des mois. 51 mots sont à valider, 14 restent à remplir.
+- **Test des règles :** `scripts/donnees/tester_modeles_prevention.py` et `data/extraits/prevention_calendrier_2020-2025.csv`.
+- **Itinéraires :** chou et pomme de terre complétés avec les documents du PADEN.
+
+### Ce que nous n'avons pas trouvé
+
+- Des images de la teigne du chou.
+- Une source pour un plafond de température dans la règle du mildiou.
+- Des observations datées par parcelle pour valider les alertes.
+
+### Suites à donner
+
+- Intégrer au module Prévention les conséquences du test (alerte seulement si la culture est déclarée ; générations depuis le repiquage).
+- Faire valider le lexique par un locuteur.
+
+---
+
+## Session 5 · 5 novembre 2026 · Plafond du mildiou, questions wolof (Kallaama), contrôle de la voix
+
+**Qui** : Salam, avec un assistant IA (Claude, d'Anthropic).
+
+**Pourquoi** : appliquer la consigne « le terrain est un complément » ([strategie-donnees-manquantes.md](../strategie-donnees-manquantes.md)) :
+- trouver le plafond de température du mildiou ;
+- préparer les 30 questions de test D9 sans agriculteur ;
+- contrôler la voix wolof sans locuteur.
+
+### Requêtes effectuées
+
+| # | Requête (résumé) | Résultat principal |
+|---|---|---|
+| 1 | Température de sporulation de *Phytophthora infestans* | Optimum 15-20 °C ; quasi nulle à 28 °C (*Plant Disease* 2005) ; pas de germination à 27 °C (*Plant Disease* 2009) ; Crosier 1934 : 3-26 °C |
+| 2 | Modèle de Wallin / Blitecast, bornes de température | 7,2 à 26,6 °C (tableau UC IPM, Wallin 1951 et 1962) |
+| 3 | Corpus Kallaama : licence, contenu, téléchargement du texte seul | CC BY 4.0 ; transcriptions validées, lexique de prononciation de 48 793 formes et corpus écrit sur GitHub, sans les 5,4 Go d'audio |
+| 4 | Questions dans les transcriptions validées (mots interrogatifs × thèmes agricoles) | 76 candidates, 30 retenues à la main, mot pour mot |
+| 5 | Mots du lexique TerraMind dans le lexique Kallaama | 42 sur 51 attestés ; 6 variantes d'orthographe trouvées |
+
+### Ce qui a été produit
+
+- **Plafond :** variante « Hutton plafonné » dans `tester_modeles_prevention.py`.
+- **Questions D9 :** `research/questions_test_d9_wolof.csv`.
+- **Contrôle de la voix :** `scripts/outils/controle_voix.py` et `content/voix/controle_voix.csv`. Les mots « à risque » bloquent la voix en direct.
+- **Lexique :** colonnes `atteste_kallaama` et `variante_kallaama`.
+
+### Ce que nous n'avons pas trouvé
+
+- Des questions sur le maraîchage dans Kallaama : les émissions parlent surtout de mil, d'arachide, de maïs, de météo et de semences.
+- Les mots *suppome* (chou) et *pepiñeer* (pépinière), absents du lexique Kallaama : ils restent sourcés par les livrets officiels.
+
+---
+
 ## Modèle pour une nouvelle session
 
 ```markdown

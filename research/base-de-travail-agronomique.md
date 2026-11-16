@@ -1,8 +1,8 @@
 # Base de travail agronomique (BROUILLON)
 
-> **⚠️ BROUILLON, NON VALIDÉ PAR UN AGRONOME. Ce n'est pas du contenu final.**
+> **⚠️ BROUILLON. Ce n'est pas du contenu final.** Depuis le 2 nov 2026 (décision D7), le contenu repose uniquement sur les sources citées ; la relecture par un agronome est un bonus, pas une condition.
 >
-> Pour Rama : ce document te donne seulement une **base de départ** pour la table sol → culture et les fiches maladies (échéance du 6 nov). Il rassemble ce que disent des sources publiques, chaque information avec sa source et sa page. Rien ici ne doit aller tel quel dans les gabarits ou le produit : tout reste à relire, corriger, compléter et faire valider par l'agronome.
+> Pour Rama : ce document te donne seulement une **base de départ** pour la table sol → culture et les fiches maladies (échéance du 6 nov). Il rassemble ce que disent des sources publiques, chaque information avec sa source et sa page. Rien ici ne doit aller tel quel dans les gabarits ou le produit : tout reste à relire, corriger et compléter à partir des sources (validation par un agronome : bonus, voir décision D7).
 >
 > Préparé le 30 oct 2026 par Salam, avec une recherche assistée par IA (Claude). Méthode, requêtes et sources consultées : [docs/sources/journal-recherche-agronomique.md](../docs/sources/journal-recherche-agronomique.md).
 
@@ -19,7 +19,7 @@
 
 1. **Les fiches officielles les plus récentes existent, mais nous ne les avons pas.** L'ISRA a réactualisé en 2022, avec deux projets USAID, les itinéraires techniques de 20 cultures maraîchères (tomate, oignon, pomme de terre, chou, poivron, piments, aubergine, carotte, etc.). Aucun lien de téléchargement n'est publié sur la page de l'ISRA. Le site qui hébergeait des fiches ISRA-CDH (marcheagricole.sn) était inaccessible le 30 oct 2026. **Action : demander ces fiches 2022 au CDH Cambérène ou par l'encadreur.** Elles remplaceraient avantageusement le guide de 1987.
 2. **Aucune fiche ANCAR téléchargeable n'a été trouvée** (confirme ce que disait le plan de tâches).
-3. **Le mildiou n'apparaît pas dans le guide de 1987**, ni pour la tomate ni pour la pomme de terre, et nous n'avons trouvé aucune étude scientifique sur le mildiou au Sénégal. Par contre, un article de presse du **17 février 2026** signale des symptômes « qui ressemblent au mildiou » sur pomme de terre et tomate à **Notto Gouye Diama** (département de Tivaouane, Niayes), sans diagnostic officiel. Voir § 5 : c'est un point à discuter en équipe, car le module Prévention est construit autour du mildiou.
+3. **Le mildiou n'apparaît pas dans le guide de 1987**, ni pour la tomate ni pour la pomme de terre. *Mise à jour du 4 nov 2026* : le manuel de la DPV sur les ravageurs et maladies des Niayes (diffusé par le PADEN) le décrit sur la pomme de terre et la tomate (p. 88-90). Nous n'avons toujours trouvé aucune étude scientifique chiffrée sur le mildiou au Sénégal. Par contre, un article de presse du **17 février 2026** signale des symptômes « qui ressemblent au mildiou » sur pomme de terre et tomate à **Notto Gouye Diama** (département de Tivaouane, Niayes), sans diagnostic officiel. Voir § 5 : c'est un point à discuter en équipe, car le module Prévention est construit autour du mildiou.
 4. **Le maïs n'est pas couvert par le guide maraîcher**, et nous n'avons trouvé aucune source sénégalaise sur ses maladies des feuilles (celles de PlantVillage). Le problème majeur documenté au Sénégal sur le maïs est un insecte, la chenille légionnaire d'automne, que PlantVillage ne couvre pas. À peser dans la décision du 4 nov.
 
 ---
@@ -79,7 +79,7 @@ Version tableur : [brouillon_table_sol_culture.csv](brouillon_table_sol_culture.
 | **Aubergine** | ni trop lourd ni trop léger, profond, meuble, bien drainé, riche en matière organique | 5,5 à 6,8 | moins sensible | toute l'année en pépinière (30 à 50 j) | toute l'année | *à vérifier* (p. 80) | supporte la chaleur ; meilleurs résultats en saison fraîche | 79-80 |
 | **Carotte** | sableux, bien ameublis, assez profonds, sans obstacle pour la racine | 5,5 à 6,8 | **très sensible** (sol et eau) | semis direct, oct.-nov. à mars-avril | (semis direct) | environ 100 à 120 j (*à vérifier*, p. 86) | saison sèche fraîche (la chaleur donne des racines courtes et fibreuses) | 85-86 |
 
-**Pour aller du texte aux règles** (proposition à valider avec Oscar et l'agronome, pas une donnée sourcée) :
+**Pour aller du texte aux règles** (proposition à valider avec Oscar, et avec un agronome si l'on en trouve un ; pas une donnée sourcée) :
 
 - `sol(lat, lon)` d'Oscar renverra une texture et un pH. On peut traduire les mots du guide en trois classes simples : *léger* (sableux = dior), *moyen* (sablo-limoneux = dior-deck), *lourd* (argileux). Par exemple, la carotte demande un sol léger, la pomme de terre un sol plutôt léger, le poivron et l'aubergine un sol moyen.
 - Règle d'exclusion simple : si le pH est en dessous du minimum du Tableau 3, la culture est déconseillée ou conseillée avec un renvoi vers un agent (chaulage). Si la zone est signalée salée, l'oignon et la carotte sont exclus.
@@ -102,7 +102,7 @@ Les fiches suivent les classes de **PlantVillage**, car le modèle d'Oscar ne re
 **2. Mildiou** (*Phytophthora infestans*), tomate et pomme de terre. Classes : *Tomato Late blight*, *Potato Late blight*.
 - Symptômes : taches d'aspect huileux qui brunissent, parfois un duvet blanc sous la feuille ; dessèchement très rapide du feuillage (Ephytia, INRAE ; article Thiesinfo du 17 févr. 2026). L'alternariose et le mildiou se ressemblent : l'alternariose donne des taches sèches à cercles concentriques, le mildiou des taches huileuses qui s'étendent vite.
 - Présence au Sénégal : **absente du guide de 1987** ; **aucune étude sénégalaise trouvée**. Signalement de presse non confirmé à Notto Gouye Diama en février 2026 ; un épisode semblable s'y serait produit « il y a plus de cinq ans » (même article).
-- Prévention (sans produit) : ne pas mouiller le feuillage, arroser le matin, arracher et éloigner du champ les plants très atteints, contacter un agent agricole dès les premiers symptômes (*à faire valider par l'agronome*).
+- Prévention (sans produit) : ne pas mouiller le feuillage, arroser le matin, arracher et éloigner du champ les plants très atteints, contacter un agent agricole dès les premiers symptômes (*geste de bon sens, source à trouver ; avis d'agronome en bonus*).
 
 **3. Cladosporiose** (*Passalora fulva*, ancien nom *Cladosporium fulvum*), tomate. Classe : *Tomato Leaf Mold*.
 - Symptômes : taches vert pâle à jaunâtres sur le dessus des feuilles, avec en dessous un duvet velouté brun verdâtre à violet [G87 p. 140].
@@ -154,7 +154,7 @@ Le modèle ne les reconnaîtra pas, mais les agriculteurs en parleront. Le produ
 
 ---
 
-## 6. Questions à poser à l'agronome
+## 6. Questions à poser à un agronome (bonus, si l'on en trouve un)
 
 1. Ces 8 cultures sont-elles les bonnes pour la zone pilote ? Lesquelles retirer ou ajouter (jaxatu, gombo, laitue…) ?
 2. Les périodes de semis du guide de 1987 sont-elles encore valables avec les variétés et le climat actuels ?

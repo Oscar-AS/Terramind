@@ -1,0 +1,120 @@
+{
+    "type": "Feature",
+    "stac_version": "1.0.0-beta.2",
+    "id": "sand_content",
+    "properties": {
+        "start_datetime": "2001-01-01T00:00:00Z",
+        "end_datetime": "2017-01-01T00:00:00Z",
+        "proj:epsg": 3857,
+        "proj:transform": [
+            30.0,
+            0.0,
+            -3502582.8076430312,
+            0.0,
+            -30.0,
+            4530073.13045243,
+            0.0,
+            0.0,
+            1.0
+        ],
+        "proj:shape": [
+            289306,
+            328563
+        ],
+        "datetime": null
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    57.081712708848684,
+                    -34.89121030686439
+                ],
+                [
+                    57.081712708848684,
+                    37.64980990000001
+                ],
+                [
+                    -31.464236700000008,
+                    37.64980990000001
+                ],
+                [
+                    -31.464236700000008,
+                    -34.89121030686439
+                ],
+                [
+                    57.081712708848684,
+                    -34.89121030686439
+                ]
+            ]
+        ]
+    },
+    "links": [
+        {
+            "rel": "root",
+            "href": "../../catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "collection",
+            "href": "../collection.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../collection.json",
+            "type": "application/json"
+        }
+    ],
+    "assets": {
+        "image": {
+            "href": "https://isdasoil.s3.amazonaws.com/soil_data/sand_content/sand_content.tif",
+            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+            "title": "Sand content",
+            "description": "Sand content at soil depths of 0-20cm and 20-50cm, predicted mean and standard deviation",
+            "eo:bands": [
+                {
+                    "name": "mean_0_20",
+                    "description": "Sand content, predicted mean at 0-20 cm depth"
+                },
+                {
+                    "name": "mean_20_50",
+                    "description": "Sand content, predicted mean at 20-50 cm depth"
+                },
+                {
+                    "name": "stdev_0_20",
+                    "description": "Sand content, standard deviation at 0-20 cm depth"
+                },
+                {
+                    "name": "stdev_20_50",
+                    "description": "Sand content, standard deviation at 20-50 cm depth"
+                }
+            ],
+            "roles": [
+                "data"
+            ]
+        },
+        "thumbnail": {
+            "href": "https://isdasoil.s3.amazonaws.com/soil_data/sand_content/sand_content_thumbnail.png",
+            "type": "image/png",
+            "title": "Sand content thumbnail",
+            "roles": [
+                "thumbnail"
+            ]
+        }
+    },
+    "bbox": [
+        -31.464236700000008,
+        -34.89121030686439,
+        57.081712708848684,
+        37.64980990000001
+    ],
+    "stac_extensions": [
+        "projection",
+        "eo"
+    ],
+    "collection": "soil_data",
+    "back-transformation": null,
+    "unit": "%"
+}
