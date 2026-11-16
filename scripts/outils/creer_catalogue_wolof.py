@@ -24,9 +24,9 @@ S = "synthese"
 MESSAGES = [
     # --- Guide : voix humaine (accueil et messages sensibles) ---
     ("choix_langue", "au démarrage, avant le choix de la langue (toujours envoyé)", H,
-     "Pour continuer en wolof, appuie sur Wolof."),
+     "Pour qu'on réponde à tes questions en wolof, appuie sur Wolof."),
     ("accueil", "après le choix du wolof", H,
-     "Bonjour, je suis TerraMind, ton assistant pour le maraîchage. En bas de l'écran, tu as cinq boutons "
+     "Bonjour, je suis TerraMind, ton assistant pour le maraîchage. En bas de l'écran, tu as des boutons "
      "numérotés. Le un m'envoie la position de ton champ : commence par lui. Le deux sert à voir si ta plante est "
      "malade. Le trois te dit quoi planter. Le quatre te dit ce que la météo de la semaine annonce pour tes "
      "plantes. Le cinq sert à me poser une question : tu peux me parler en wolof. Je ne donne jamais de produit "
