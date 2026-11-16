@@ -9,7 +9,7 @@
 
 ## En une phrase
 
-TerraMind aide les petits maraîchers des Niayes (Sénégal) à **choisir quoi planter selon leur sol et la saison**, à **anticiper les maladies grâce à la météo** et à **reconnaître une maladie sur la photo d'une feuille**. Chaque conseil cite le document d'où il vient.
+TerraMind aide les petits maraîchers des Niayes (Sénégal) à **choisir quoi planter selon leur sol et la saison**, à **anticiper les maladies grâce à la météo** et à **reconnaître une maladie sur la photo d'une plante** (feuille, fruit ou plante entière). Chaque conseil cite le document d'où il vient.
 
 ## L'application en images
 
@@ -18,6 +18,14 @@ TerraMind aide les petits maraîchers des Niayes (Sénégal) à **choisir quoi p
 </p>
 
 <sub>Vraies captures de l'application branchée sur le moteur (écran d'iPhone 16, 393 × 852 points), 15 nov 2026. Bienvenue → langue → accueil → diagnostic → explication → plan → alertes. Photo du diagnostic : jeu de test de TOM2024 (CC BY 4.0), jamais vue à l'entraînement. Le visage des écrans de bienvenue et d'accueil est une image générée par IA.</sub>
+
+## Le bot Telegram en images
+
+<p align="center">
+  <img src="docs/assets/captures/telegram/02-accueil.webp" width="13.5%" alt="Accueil du bot"> <img src="docs/assets/captures/telegram/05a-plan-sol.webp" width="13.5%" alt="Ton sol"> <img src="docs/assets/captures/telegram/06b-meteo-date.webp" width="13.5%" alt="Météo de ces derniers jours"> <img src="docs/assets/captures/telegram/07a-consigne.webp" width="13.5%" alt="Consigne photo"> <img src="docs/assets/captures/telegram/07b-diagnostic-resultat.webp" width="13.5%" alt="Diagnostic : Mildiou, 95 %"> <img src="docs/assets/captures/telegram/07e-ensuite-sources.webp" width="13.5%" alt="Ensuite, sources"> <img src="docs/assets/captures/telegram/08b-reponse-sources.webp" width="13.5%" alt="Réponse sourcée">
+</p>
+
+<sub>Vraies captures du bot @TerraMindAfriqueBot sur un iPhone, branché sur le moteur en ligne (Render), 15 et 16 nov 2026. Position : bouton « Envoyer une position test » (Rufisque, zone pilote des Niayes), pas la position d'un agriculteur. Photo du diagnostic : jeu de test de TOM2024 (CC BY 4.0), jamais vue à l'entraînement. Le mode wolof (notes vocales) sera ajouté après la relecture des traductions.</sub>
 
 ## Ce que l'agriculteur peut faire
 
