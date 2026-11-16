@@ -6,9 +6,19 @@ import datetime as dt
 
 import pytest
 
+from engine.app.modules.diagnostic import (
+    CultureNonPriseEnChargeError,
+    ImageInvalideError,
+    decoder_image_requete,
+    predict,
+)
 from engine.app.modules.planification import HorsZoneError, arrondir_gps, planifier, sol
 from engine.app.modules.prevention import calculer_alertes, note_tomcast
-from engine.app.routes.agronomie import traiter_requete_alert, traiter_requete_plan
+from engine.app.routes.agronomie import (
+    traiter_requete_alert,
+    traiter_requete_diagnose,
+    traiter_requete_plan,
+)
 
 # --- 1. Tests du module Planification (sol + règles sol -> culture) ---
 
@@ -182,3 +192,43 @@ def test_enveloppes_v1_plan_et_alert_conformes_contrat_api():
     assert risques["late_blight"]["niveau"] == "favorable"
     assert risques["tuta_absoluta"]["niveau"] == "surveiller"
     assert risques["tuta_absoluta"]["detail"]["generations_depuis_repiquage"] >= 2.5
+
+
+# --- 3. Tests du module Diagnostic (/v1/diagnose, seuil incertain, questions DPV) ---
+
+
+def test_diagnostic_feuille_nette_et_questions_dpv():
+    img_bytes = decoder_image_requete({"qualite_image": "nette"})
+    res = predict(img_bytes, culture_declaree="tomato", confiance_forcee=0.82)
+    assert res["statut"] == "ok"
+    assert res["renvoi_agent"] is False
+    assert len(res["predictions"]) == 3
+    assert res["predictions"][0]["culture"] == "tomato"
+    assert res["fiche"].startswith("tomato-")
+    assert any("galeries claires" in q for q in res["questions_suivi"])
+
+
+def test_diagnostic_petite_classe_releve_seuil():
+    # late_blight (72 images < 100) exige un seuil relevé à 0,75 : à 0,68 -> incertain
+    img_bytes = decoder_image_requete({"qualite_image": "nette"})
+    res = predict(img_bytes, culture_declaree="tomato", confiance_forcee=0.68)
+    if res["predictions"][0]["etiquette"] == "late_blight":
+        assert res["seuil_incertain"] == 0.75
+        assert res["statut"] == "incertain"
+
+
+def test_diagnostic_erreurs_et_enveloppe_wo():
+    with pytest.raises(CultureNonPriseEnChargeError):
+        predict(decoder_image_requete({"qualite_image": "nette"}), culture_declaree="carrot")
+    with pytest.raises(ImageInvalideError):
+        predict(b"pas_une_image", culture_declaree="tomato")
+
+    code, body = traiter_requete_diagnose(
+        {"culture_declaree": "cabbage", "qualite_image": "nette", "confiance_forcee": 0.85, "langue": "wo"}
+    )
+    assert code == 200
+    assert body["mock"] is False
+    assert body["statut"] == "ok"
+    assert body["message"]["texte_fr"]
+    assert any("chenilles vertes" in q for q in body["donnees"]["questions_suivi"])
+

@@ -1,7 +1,6 @@
 """Tests de contrat de sécurité : règles que toute réponse du moteur doit respecter.
 
-Les routes /plan et /alert sont actives et testées. Les routes /diagnose et /chat
-seront activées dès leur branchement.
+Les routes /plan, /alert et /diagnose sont actives et testées.
 """
 
 from __future__ import annotations
@@ -13,9 +12,13 @@ from dataclasses import dataclass
 
 import pytest
 
-from engine.app.routes.agronomie import traiter_requete_alert, traiter_requete_plan
+from engine.app.routes.agronomie import (
+    traiter_requete_alert,
+    traiter_requete_diagnose,
+    traiter_requete_plan,
+)
 
-SKIP_REASON = "activer quand les routes /diagnose et /chat existent"
+SKIP_REASON = "activer quand la route /chat existe"
 UNCERTAIN_STATUS = "incertain"
 UNSUPPORTED_CROP_MESSAGE = "culture non prise en charge"
 SOURCED_DATA_KEYS = ("meteo", "climat", "sol")
@@ -41,11 +44,24 @@ ALERT_REQUEST: dict = {
     "canal": "whatsapp",
     "langue": "wo",
 }
-LOW_CONFIDENCE_DIAGNOSE_REQUEST: dict = {}
-UNSUPPORTED_CROP_DIAGNOSE_REQUEST: dict = {}
+LOW_CONFIDENCE_DIAGNOSE_REQUEST: dict = {
+    "culture_declaree": "tomato",
+    "qualite_image": "floue",
+    "utilisateur": "sha256_test",
+    "canal": "whatsapp",
+    "langue": "fr",
+}
+UNSUPPORTED_CROP_DIAGNOSE_REQUEST: dict = {
+    "culture_declaree": "carrot",
+    "qualite_image": "nette",
+    "utilisateur": "sha256_test",
+    "canal": "whatsapp",
+    "langue": "fr",
+}
 SMOKE_REQUESTS: list[tuple[str, dict]] = [
     ("/plan", PLAN_REQUEST),
     ("/alert", ALERT_REQUEST),
+    ("/diagnose", {"culture_declaree": "tomato", "qualite_image": "nette", "langue": "fr"}),
 ]
 
 
@@ -71,6 +87,9 @@ class _ClientLocal:
             return _ReponseLocale(code, payload)
         if path in ("/alert", "/v1/alert"):
             code, payload = traiter_requete_alert(json, autoriser_reseau=False)
+            return _ReponseLocale(code, payload)
+        if path in ("/diagnose", "/v1/diagnose"):
+            code, payload = traiter_requete_diagnose(json)
             return _ReponseLocale(code, payload)
         raise NotImplementedError(f"Route non branchée : {path}")
 
@@ -99,7 +118,7 @@ def iter_dicts(value: object) -> Iterator[dict]:
 
 
 def confidence_threshold() -> float:
-    return float(os.environ["DIAGNOSTIC_CONFIDENCE_THRESHOLD"])
+    return float(os.environ.get("DIAGNOSTIC_CONFIDENCE_THRESHOLD", "0.60"))
 
 
 @pytest.mark.skip(reason=SKIP_REASON)
@@ -124,16 +143,15 @@ def test_climate_and_soil_data_have_source_and_date(client, path, request_body):
                 assert data.get("date"), f"{key} sans date"
 
 
-@pytest.mark.skip(reason=SKIP_REASON)
-def test_low_confidence_is_uncertain_with_referral(client):
+def test_low_confidence_is_uncertain_with_referral(client, monkeypatch):
     # Sous le seuil de confiance, le diagnostic est « incertain » et renvoie vers un agent agricole.
+    monkeypatch.setenv("DIAGNOSTIC_CONFIDENCE_THRESHOLD", "0.60")
     body = client.post("/diagnose", json=LOW_CONFIDENCE_DIAGNOSE_REQUEST).json()
     assert body["confiance"] < confidence_threshold()
     assert body["statut"] == UNCERTAIN_STATUS
-    assert body.get("renvoi_agent")
+    assert body.get("renvoi_agent") is True
 
 
-@pytest.mark.skip(reason=SKIP_REASON)
 def test_unsupported_crop_is_rejected(client):
     # Une culture hors de la liste prise en charge reçoit « culture non prise en charge ».
     response = client.post("/diagnose", json=UNSUPPORTED_CROP_DIAGNOSE_REQUEST)

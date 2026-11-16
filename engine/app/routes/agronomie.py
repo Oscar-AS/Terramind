@@ -7,6 +7,12 @@ dans un environnement sans FastAPI, et sont branchées sur le routeur FastAPI d�
 
 from __future__ import annotations
 
+from ..modules.diagnostic import (
+    CultureNonPriseEnChargeError,
+    ImageInvalideError,
+    decoder_image_requete,
+    predict,
+)
 from ..modules.planification import HorsZoneError, planifier
 from ..modules.prevention import CULTURES_CONNUES, calculer_alertes
 
@@ -226,6 +232,101 @@ def traiter_requete_alert(corps: dict, autoriser_reseau: bool = True) -> tuple[i
     }
 
 
+def traiter_requete_diagnose(corps: dict) -> tuple[int, dict]:
+    """Traite une requête /v1/diagnose et renvoie (code_http, enveloppe_json)."""
+    langue = str(corps.get("langue") or "fr").strip().lower()
+    if langue not in ("fr", "wo"):
+        return 400, _reponse_erreur(
+            "fr", f"Langue non prise en charge : {langue}. Choisir 'fr' ou 'wo'."
+        )
+
+    culture_decl = corps.get("culture_declaree") or corps.get("culture")
+    try:
+        image_bytes = decoder_image_requete(corps)
+        res = predict(
+            image_bytes=image_bytes,
+            culture_declaree=culture_decl,
+            confiance_forcee=corps.get("confiance_forcee"),
+        )
+    except CultureNonPriseEnChargeError as exc:
+        texte_fr = str(exc)
+        texte_wo = (
+            "Mbay mii dugguagul ci diagnostic photo bi (culture non prise en charge) : "
+            "demal gis agent agricole."
+        )
+        return 200, {
+            "version": "0.1",
+            "mock": False,
+            "statut": "je_ne_sais_pas",
+            "langue": langue,
+            "renvoi_agent": True,
+            "message": {
+                "texte": texte_wo if langue == "wo" else texte_fr,
+                "texte_fr": texte_fr,
+                "audio_url": None,
+                "reponse_type": "culture_non_prise_en_charge",
+            },
+            "sources": [],
+            "donnees": {},
+        }
+    except ImageInvalideError as exc:
+        return 400, _reponse_erreur(langue, str(exc), reponse_type="image_invalide")
+
+    top1 = res["predictions"][0]
+    if res["statut"] == "incertain":
+        texte_fr = (
+            f"Je ne suis pas assez sûr du diagnostic sur cette photo "
+            f"(confiance {res['confiance']:.0%} < seuil {res['seuil_incertain']:.0%}). "
+            f"Prends une photo plus nette d'une feuille ou montre la plante à un agent agricole."
+        )
+        texte_wo = (
+            "Photo bi leerul bu doy ngir xam feebar bi ci lu wóor : "
+            "jëlal beneen photo xob bu leer walla nga wone ko agent agricole."
+        )
+        rep_type = "diagnostic_incertain"
+    else:
+        texte_fr = (
+            f"Diagnostic probable : {top1['libelle']} ({top1['culture']}, "
+            f"confiance {top1['confiance']:.0%}). "
+            "Retire les feuilles très atteintes, évite de mouiller le feuillage et "
+            "consulte un agent agricole avant tout traitement."
+        )
+        texte_wo = (
+            f"Li ñu jort ci xob bi : {top1['libelle']} ({top1['confiance']:.0%}). "
+            "Dindil xob yi gëna tawat te laaj agent agricole."
+        )
+        rep_type = "diagnostic_ok"
+
+    sources = [
+        {
+            "document": "Base TerraMind v1 (TOM2024 Burkina Faso + CCMT Ghana) et fiches DPV Sénégal",
+            "page": "ml/MODEL_CARD.md",
+        }
+    ]
+
+    return 200, {
+        "version": "0.1",
+        "mock": False,
+        "statut": res["statut"],
+        "confiance": res["confiance"],
+        "renvoi_agent": res["renvoi_agent"],
+        "langue": langue,
+        "message": {
+            "texte": texte_wo if langue == "wo" else texte_fr,
+            "texte_fr": texte_fr,
+            "audio_url": None,
+            "reponse_type": rep_type,
+        },
+        "sources": sources,
+        "donnees": {
+            "predictions": res["predictions"],
+            "seuil_incertain": res["seuil_incertain"],
+            "fiche": res["fiche"],
+            "questions_suivi": res["questions_suivi"],
+        },
+    }
+
+
 try:
     from fastapi import APIRouter
     from fastapi.responses import JSONResponse
@@ -242,6 +343,12 @@ try:
     @router.post("/alert")
     def route_alert(corps: dict):
         code, payload = traiter_requete_alert(corps)
+        return JSONResponse(status_code=code, content=payload)
+
+    @router.post("/v1/diagnose")
+    @router.post("/diagnose")
+    def route_diagnose(corps: dict):
+        code, payload = traiter_requete_diagnose(corps)
         return JSONResponse(status_code=code, content=payload)
 
 except ImportError:

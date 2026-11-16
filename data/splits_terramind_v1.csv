@@ -1,0 +1,41 @@
+crop,label,categorie,libelle_fr,est_feuille,train,val,test,total,tom2024,ccmt
+cashew,anthracnose,maladie,Anthracnose,oui,1383,173,173,1729,0,1729
+cashew,gummosis,maladie,Gommose,oui,314,39,39,392,0,392
+cashew,healthy,sain,Cajou sain,oui,1094,137,137,1368,0,1368
+cashew,leaf_miner,ravageur,Mineuse des feuilles,oui,1102,138,138,1378,0,1378
+cashew,red_rust,maladie,Rouille rouge,oui,1345,168,168,1681,0,1681
+cassava,bacterial_blight,maladie,Bactériose,oui,2074,259,259,2592,0,2592
+cassava,brown_spot,maladie,Taches brunes,oui,1173,146,146,1465,0,1465
+cassava,green_mite,ravageur,Acarien vert,oui,812,101,101,1014,0,1014
+cassava,healthy,sain,Manioc sain,oui,955,119,119,1193,0,1193
+cassava,mosaic,maladie,Mosaïque,oui,890,111,111,1112,0,1112
+maize,abiotic_disorder,abiotique,Trouble abiotique,oui,60,8,8,76,76,0
+maize,curvularia_leaf_spot,maladie,Curvulariose,oui,203,25,25,253,253,0
+maize,fall_armyworm,ravageur,Chenille légionnaire,oui,1152,144,144,1440,1156,284
+maize,grasshopper,ravageur,Criquets,oui,539,67,67,673,0,673
+maize,healthy,sain,Maïs sain,oui,604,75,75,754,551,203
+maize,helminthosporiosis,maladie,Helminthosporiose,oui,123,15,15,153,153,0
+maize,leaf_beetle,ravageur,Chrysomèle,oui,747,93,93,933,0,933
+maize,leaf_blight,maladie,Brûlure des feuilles,oui,629,78,78,785,0,785
+maize,leaf_spot,maladie,Taches foliaires,oui,821,103,103,1027,0,1027
+maize,rust,maladie,Rouille,oui,76,9,9,94,94,0
+maize,streak_virus,maladie,Virus de la striure,oui,733,92,92,917,0,917
+maize,stripe,maladie,Stries (stripe),oui,1723,216,216,2155,2155,0
+onion,alternaria,maladie,Alternariose,oui,400,50,50,500,500,0
+onion,caterpillars,ravageur,Chenilles,oui,606,76,76,758,758,0
+onion,fusarium,maladie,Fusariose,oui,573,72,72,717,717,0
+onion,healthy,sain,Oignon sain,oui,528,66,66,660,660,0
+onion,virosis,maladie,Virose,oui,159,20,20,199,199,0
+tomato,alternaria,maladie,Alternariose,oui,219,27,27,273,273,0
+tomato,bacterial_wilt,maladie,Flétrissement bactérien,oui,200,25,25,250,250,0
+tomato,blossom_end_rot,abiotique,Pourriture apicale,non,92,11,11,114,114,0
+tomato,healthy,sain,Tomate saine (feuille),oui,974,122,122,1218,755,463
+tomato,healthy_fruit,sain,Fruit de tomate sain,non,421,53,53,527,527,0
+tomato,helicoverpa_armigera,ravageur,Noctuelle de la tomate (Helicoverpa),oui,203,25,25,253,253,0
+tomato,late_blight,maladie,Mildiou,oui,58,7,7,72,72,0
+tomato,leaf_blight,maladie,Brûlure des feuilles,oui,1029,128,128,1285,0,1285
+tomato,leaf_curl,maladie,Enroulement des feuilles,oui,409,51,51,511,0,511
+tomato,mites,ravageur,Acariens,oui,300,37,37,374,374,0
+tomato,septoria_leaf_spot,maladie,Septoriose,oui,1836,229,229,2294,0,2294
+tomato,verticillium_wilt,maladie,Verticilliose,oui,618,77,77,772,0,772
+tomato,virosis,maladie,Virose,oui,1189,149,149,1487,1487,0
