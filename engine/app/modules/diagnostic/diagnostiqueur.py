@@ -175,8 +175,12 @@ def _charger_modele_pytorch() -> dict | None:
         if util_hf:
             from transformers import AutoModelForImageClassification
 
+            est_local = Path(backbone).is_dir()
             modele = AutoModelForImageClassification.from_pretrained(
-                backbone, num_labels=nb_classes, ignore_mismatched_sizes=True
+                backbone,
+                num_labels=nb_classes,
+                ignore_mismatched_sizes=True,
+                local_files_only=est_local,
             )
         else:
             from torchvision.models import mobilenet_v3_large
@@ -198,13 +202,17 @@ def _charger_modele_pytorch() -> dict | None:
             info_tete = json.loads(TETE_JSON_PATH.read_text(encoding="utf-8"))
             nb_classes = info_tete["nb_classes"]
             classes_info = info_tete["classes"]
+            est_local_hf = LOCAL_PRETRAINED_DIR.is_dir()
             source_hf = (
                 str(LOCAL_PRETRAINED_DIR)
-                if LOCAL_PRETRAINED_DIR.is_dir()
+                if est_local_hf
                 else info_tete["backbone_hf"]
             )
             modele = AutoModelForImageClassification.from_pretrained(
-                source_hf, num_labels=nb_classes, ignore_mismatched_sizes=True
+                source_hf,
+                num_labels=nb_classes,
+                ignore_mismatched_sizes=True,
+                local_files_only=est_local_hf,
             )
             w_bytes = zlib.decompress(base64.b64decode(info_tete["weight_b64_zlib"]))
             b_bytes = zlib.decompress(base64.b64decode(info_tete["bias_b64_zlib"]))
