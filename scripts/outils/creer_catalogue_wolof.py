@@ -47,16 +47,16 @@ MESSAGES = [
      "Envoie-moi une photo de ta plante, là où quelque chose t'inquiète : une feuille, un fruit, une tige ou "
      "toute la plante. Touche le petit bouton rond tout à gauche de la case Message, juste au-dessus des grands "
      "boutons. Choisis ensuite Appareil photo, ou une photo déjà prise dans ta galerie. Approche-toi, pour que je "
-     "voie bien les taches ou les trous, à la lumière du jour, sans ombre."),
+     "voie bien les taches ou les trous, et que la photo soit claire."),
     ("attente_photo", "photo reçue", H, "Merci, je regarde ta photo. Attends quelques secondes."),
     ("photo_incertaine", "diagnostic incertain", H,
-     "Je ne suis pas sûr de ce que je vois. Plutôt que de te donner une mauvaise réponse, je préfère que tu "
-     "reprennes la photo : de plus près, à la lumière du jour. Si la plante va mal, montre-la "
-     "aussi à un agent agricole."),
+     "Ce que je vois n'est pas clair. Plutôt que de te donner une mauvaise réponse, reprends la photo : "
+     "de plus près, et que la photo soit claire. Si la plante est malade, montre-la aussi à un agent agricole."),
     ("photo_illisible", "photo illisible", H,
      "Je n'arrive pas à lire cette photo. Reprends-la, bien nette, de près, à la lumière du jour."),
     ("photo_saine", "plante saine", H,
-     "Bonne nouvelle : ce que je vois semble sain. Si d'autres plants ont des taches, envoie-moi leur photo."),
+     "Bonne nouvelle : ce que je vois ne ressemble pas à une maladie. Si d'autres plants ont des taches, "
+     "envoie-moi leur photo."),
     ("diagnostic_prudence", "après chaque diagnostic", H,
      "Ce n'est qu'une première indication, pas un diagnostic sûr. Pour confirmer, montre ta plante à un agent "
      "agricole."),
@@ -82,14 +82,14 @@ MESSAGES = [
     ("date_repiquage", "après le choix de la culture", H,
      "Tu l'as plantée quand ? Écris-moi le jour et le mois. Si tu ne t'en souviens plus, écris juste : je ne sais pas."),
     ("plan_suite", "après le plan de culture", H,
-     "Si tu as déjà planté, appuie sur le quatre : je te dirai ce que la météo annonce pour tes plantes. "
-     "Si tu vois des taches sur ta plante, appuie sur le deux."),
+     "Si tu as déjà planté, appuie sur le bouton quatre : je te dirai ce que la météo annonce pour tes plantes. "
+     "Si tu vois des taches sur ta plante, appuie sur le bouton deux."),
     ("date_ignoree", "date de plantation inconnue", H, "Pas de souci, je fais sans la date."),
     ("date_incomprise", "date de plantation illisible", H,
      "Je n'ai pas compris la date. Écris le jour, une barre, puis le mois. Par exemple quinze barre dix, pour le "
      "quinze octobre."),
     ("date_future", "date de plantation dans le futur", H,
-     "Cette date n'est pas encore arrivée. Écris le jour où tu as planté. Par exemple quinze barre dix, pour le "
+     "Cette date ne va pas. Réécris le jour où tu as planté. Par exemple quinze barre dix, pour le "
      "quinze octobre."),
     ("plan_intro", "avant le plan de culture", H,
      "Voici ce que tu peux planter ce mois-ci, selon le sol de ton champ et la saison."),
@@ -177,31 +177,36 @@ MESSAGES = [
      "dedans. Pour qu'elle ne revienne pas, arrache les mauvaises herbes autour du champ et change de culture."),
     ("fiche_ravageur-chenilles-oignon", "diagnostic chenilles de l'oignon", S,
      "Je vois des chenilles sur l'oignon. Elles mangent les feuilles, surtout la nuit. Ramasse à la main les "
-     "feuilles qui portent des œufs ou des groupes de jeunes chenilles. Pour éviter qu'elles reviennent, "
-     "surveille dès la pépinière, laboure le sol, et détruis les mauvaises herbes."),
+     "feuilles où il y a des œufs ou des petites chenilles. Pour qu'elles ne reviennent pas, regarde tes plants dès "
+     "la pépinière, retourne la terre et arrache les mauvaises herbes."),
     ("fiche_ravageur-acariose-tomate", "diagnostic acariens", S,
-     "Cela ressemble à des acariens. Ils sont trop petits pour être vus : le dessous des feuilles devient "
-     "brillant, puis couleur bronze, et la plante sèche. Regarde le dessous des feuilles. Pour la lutte, "
+     "Cela ressemble à des acariens. Ils sont si petits qu'on ne les voit presque pas : le dessous des feuilles "
+     "devient brillant, puis brun, et la plante sèche. Regarde le dessous des feuilles. Pour savoir quoi faire, "
      "demande à un agent agricole."),
     ("fiche_accident-necrose-apicale", "diagnostic cul noir", S,
-     "C'est le cul noir du fruit. Ce n'est pas une maladie contagieuse : la plante manque de calcium, souvent "
-     "à cause d'arrosages irréguliers. Arrose de façon régulière, et paille le sol pour le garder frais."),
+     "C'est le cul noir du fruit. Ce n'est pas une maladie qui passe d'une plante à l'autre : la plante manque "
+     "de calcium, souvent parce que l'arrosage n'est pas régulier. Arrose régulièrement, et couvre le sol de paille "
+     "pour qu'il ne sèche pas."),
     ("fiche_accident-coup-de-soleil", "diagnostic coup de soleil", S,
-     "C'est un coup de soleil sur le fruit. Ce n'est pas une maladie : le fruit a brûlé au soleil. Mets les "
-     "pieds à l'ombre."),
+     "Le fruit a brûlé au soleil, ce n'est pas une maladie. Fais de l'ombre à tes plantes."),
 ]
 
 # --- Plan de culture : une phrase par culture et par cas (voix de synthèse) ---
 CULTURES = {"tomato": "la tomate", "potato": "la pomme de terre", "onion": "l'oignon",
             "cabbage": "le chou", "pepper": "le poivron", "carrot": "la carotte",
             "chili": "le piment", "bitter_eggplant": "le jaxatu"}
+def pronom(nom):
+    """« la tomate » → « la », « le chou » → « le », « l'oignon » → « le » (pas d'élision devant « plante »)."""
+    return "le" if nom.startswith("l'") else nom.split()[0]
+
+
 for k, nom in CULTURES.items():
     MESSAGES += [
         (f"culture_{k}_conseillee", f"plan : {nom} conseillée", S, f"Pour {nom}, c'est le bon moment pour planter."),
         (f"culture_{k}_possible", f"plan : {nom} possible", S,
          f"Pour {nom}, c'est possible, avec quelques précautions. Demande conseil à un agent agricole."),
         (f"culture_{k}_deconseillee", f"plan : {nom} déconseillée", S,
-         f"Pour {nom}, ce n'est pas le bon moment ce mois-ci."),
+         f"Pour {nom}, ne {pronom(nom)} plante pas ce mois-ci. Ce n'est pas le meilleur moment."),
     ]
 
 
