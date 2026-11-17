@@ -1,9 +1,10 @@
-# Seuls engine/, les fiches, les notes vocales wolof et le modèle de diagnostic entrent dans l'image : tout le reste (données, modèles, secrets) en est exclu.
+# Seuls engine/, les fiches, les phrases et notes vocales wolof et le modèle de diagnostic entrent dans l'image : tout le reste (données, modèles, secrets) en est exclu.
 *
 !engine/
 !content/fiches/
 !content/audio/wo/
 !content/voix/lexique_wolof.csv
+!content/voix/messages_wolof.csv
 !modeles/diagnostic/
 engine/tests/
 **/__pycache__

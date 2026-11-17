@@ -8,8 +8,8 @@ import { profil } from '@/profil';
 import { couleurs, ombre, tailles } from '@/theme';
 
 const LANGUES = [
-  { id: 'wo' as const, nom: 'Wolof', dit: 'Réponses vocales bientôt', drapeau: '🇸🇳' },
-  { id: 'fr' as const, nom: 'Français', dit: 'Disponible maintenant', drapeau: '🇫🇷' },
+  { id: 'wo' as const, nom: 'Wolof', dit: 'Réponses dites à voix haute', drapeau: '🇸🇳' },
+  { id: 'fr' as const, nom: 'Français', dit: 'Réponses écrites', drapeau: '🇫🇷' },
 ];
 
 // Étape 1a : choix de la langue, en tout premier (docs/maquettes/references-ecrans.md).
@@ -34,7 +34,7 @@ export default function Langue() {
       ))}
       <Apparition ordre={3} style={styles.note}>
         <Pastille Icone={Translate} taille={40} />
-        <T v="petit" style={{ flex: 1 }}>{"Les réponses en wolof arrivent bientôt. Pour l'instant, TerraMind répond en français."}</T>
+        <T v="petit" style={{ flex: 1 }}>{"En wolof, appuie sur le haut-parleur pour écouter. Le texte en français reste écrit dessous."}</T>
       </Apparition>
     </Ecran>
   );

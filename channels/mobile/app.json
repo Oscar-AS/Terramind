@@ -41,7 +41,16 @@
           "photosPermission": "TerraMind lit la photo de feuille que tu choisis."
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false
+        }
+      ],
+      "expo-asset"
     ],
     "scheme": "terramind",
     "experiments": {

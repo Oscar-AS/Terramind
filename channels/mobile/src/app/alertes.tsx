@@ -1,12 +1,13 @@
 import { router } from 'expo-router';
 import { Bug, CalendarCheck, CloudRain, CloudSun, Eye, EyeSlash, type Icon, Leaf, SealCheck } from 'phosphor-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { type Alertes, demanderAlertes, envoyerRetour, type Reponse } from '@/api';
+import { type Alertes, demanderAlertes, envoyerRetour, type PhraseWolof, type Reponse } from '@/api';
 import { Ecran } from '@/components/Ecran';
 import { Chargement, Erreur, Sources } from '@/components/Etat';
 import { Apparition, Badge, Bouton, Carte, Pastille, T } from '@/components/ui';
+import { BlocWolof, BoutonEcouter } from '@/components/Voix';
 import { dateFr } from '@/format';
 import { couleurs } from '@/theme';
 
@@ -42,6 +43,12 @@ export default function AlertesEcran() {
     setEssai((e) => e + 1);
   };
 
+  const wolof = reponse?.message.wolof;
+  // En wolof, l'écran se lit en entier : l'introduction, puis chaque alerte (comme le bot).
+  const voix = useMemo<PhraseWolof[] | undefined>(() => (wolof ? [
+    ...wolof, ...(reponse?.donnees.alertes ?? []).flatMap((a) => (a.wo ? [a.wo] : [])),
+  ] : undefined), [wolof, reponse]);
+
   if (reponse?.statut === 'culture_requise') {
     return (
       <Ecran titre="Alertes de la semaine">
@@ -58,7 +65,7 @@ export default function AlertesEcran() {
   };
 
   return (
-    <Ecran titre="Alertes de la semaine">
+    <Ecran titre="Alertes de la semaine" voix={voix}>
       {erreur ? <Erreur texte={erreur} onReessayer={charger} /> : null}
       {!erreur && !reponse ? <Chargement Icone={CloudSun} texte="Je regarde la météo de ton champ…" /> : null}
       {reponse ? (
@@ -67,6 +74,7 @@ export default function AlertesEcran() {
             <CloudSun size={20} color={couleurs.encreDouce} weight="duotone" />
             <T v="petit">Météo du {dateFr(reponse.donnees.meteo.periode[0], false)} au {dateFr(reponse.donnees.meteo.periode[1], false)}</T>
           </Apparition>
+          {wolof?.length && actives.length ? <Apparition ordre={1}><BlocWolof phrases={wolof} /></Apparition> : null}
           {actives.length === 0 ? (
             <Apparition ordre={1}>
               <Carte style={styles.calme}>
@@ -74,7 +82,7 @@ export default function AlertesEcran() {
                 <T v="sousTitre" style={{ textAlign: 'center' }}>
                   {reponse.donnees.alertes.length === 0 ? 'Pas encore de surveillance' : 'Tout est calme'}
                 </T>
-                <T v="corps" style={{ textAlign: 'center' }}>{reponse.message.texte}</T>
+                {wolof?.length ? <BlocWolof phrases={wolof} /> : <T v="corps" style={{ textAlign: 'center' }}>{reponse.message.texte}</T>}
               </Carte>
             </Apparition>
           ) : null}
@@ -92,7 +100,13 @@ export default function AlertesEcran() {
                         couleur={couleurs.terre} fond={couleurs.terreClair} />
                     </View>
                   </View>
-                  <T v="corps">{a.conseil}</T>
+                  {a.wo ? (
+                    <View style={styles.wolof}>
+                      <T v="corpsGras">{a.wo.texte_wo}</T>
+                      <BoutonEcouter phrases={[a.wo]} libelle="Écouter" />
+                    </View>
+                  ) : null}
+                  <T v={a.wo ? 'petit' : 'corps'}>{a.conseil}</T>
                   {a.niveau === 'date_requise' ? null : retours[a.id] ? <T v="corpsGras" style={{ color: couleurs.feuille }}>{'Merci pour ta réponse.'}</T> : (
                     <>
                       <T v="petit">As-tu vu des signes dans ton champ ?</T>
@@ -118,4 +132,5 @@ const styles = StyleSheet.create({
   calme: { alignItems: 'center', paddingVertical: 28 },
   tete: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   boutons: { flexDirection: 'row', gap: 8 },
+  wolof: { gap: 8, backgroundColor: couleurs.sable, borderRadius: 14, padding: 12 },
 });

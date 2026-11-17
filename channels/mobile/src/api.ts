@@ -6,10 +6,14 @@ export const ENGINE_URL = (process.env.EXPO_PUBLIC_ENGINE_URL ?? 'http://localho
 
 export type Statut = 'ok' | 'incertain' | 'je_ne_sais_pas' | 'culture_requise' | 'erreur';
 export type Source = { document: string; page: string };
+/** Phrase wolof relue par un locuteur, avec sa note vocale (adresse relative au moteur). */
+export type PhraseWolof = { cle: string; texte_wo: string; texte_fr: string; audio_url: string | null };
 export type Reponse<T> = {
   statut: Statut;
   mock: boolean;
-  message: { texte: string; texte_fr: string; audio_url: string | null };
+  langue: 'fr' | 'wo';
+  /** En wolof : `texte` est le wolof, `texte_fr` le français, `wolof` les phrases avec leurs notes vocales. */
+  message: { texte: string; texte_fr: string; audio_url: string | null; wolof?: PhraseWolof[] };
   sources: Source[];
   donnees: T;
 };
@@ -23,6 +27,7 @@ export type CulturePlan = {
   cycle_jours: [number, number];
   raisons: string[];
   avertissements: string[];
+  wo?: PhraseWolof | null;
 };
 export type Plan = {
   sol: { texture: string | null; sable_pct: number | null; argile_pct: number | null; ph: number | null; ph_mots?: string | null };
@@ -33,6 +38,7 @@ export type Alerte = {
   risque: string;
   niveau: 'aucun' | 'surveiller' | 'favorable' | 'date_requise';
   conseil: string | null;
+  wo?: PhraseWolof | null;
 };
 export type Alertes = { alertes: Alerte[]; meteo: { source: string; periode: [string, string] } };
 export type Prediction = { culture: string; etiquette: string; categorie: string; libelle: string; confiance: number };
@@ -56,7 +62,7 @@ export class ErreurReseau extends Error {}
 
 function commun() {
   const p = profil.lire();
-  // Le texte wolof et la voix ne sont pas encore branchés côté moteur : il répond en français.
+  // En wolof, le moteur ajoute les phrases relues et leurs notes vocales (plan, alertes, diagnostic).
   return { utilisateur: p.id, canal: 'mobile', langue: p.langue ?? 'fr' };
 }
 

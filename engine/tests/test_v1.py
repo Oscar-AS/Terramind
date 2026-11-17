@@ -123,6 +123,43 @@ class Routes(unittest.TestCase):
         self.assertIn("Alternariose", corps["message"]["texte"])
         self.assertTrue(corps["sources"])
 
+    def test_plan_en_wolof(self):
+        with mock.patch("engine.app.modules.planification.plan.sol", return_value=SOL):
+            r = self.c.post("/v1/plan", json={**COMMUN, "langue": "wo", "lat": 14.76, "lon": -17.21,
+                                              "date": "2026-11-13"})
+        corps = r.json()
+        self.assertEqual(corps["langue"], "wo")
+        self.assertEqual([p["cle"] for p in corps["message"]["wolof"]], ["plan_intro", "eau_salee"])
+        self.assertTrue(corps["message"]["texte_fr"].startswith("Ce mois-ci"))
+        for c in corps["donnees"]["cultures"]:  # chaque culture a sa phrase relue et sa note vocale
+            self.assertEqual(c["wo"]["cle"], f"culture_{c['culture']}_{c['adaptation']}")
+            self.assertTrue(c["wo"]["audio_url"].startswith("/audio/wo/"))
+        audio = self.c.get(corps["message"]["audio_url"])
+        self.assertEqual(audio.status_code, 200)
+        self.assertEqual(audio.headers["content-type"], "audio/mpeg")
+
+    def test_alerte_en_wolof(self):
+        donnees = {"alertes": [{"risque": "late_blight", "niveau": "eleve", "conseil": "Surveille."},
+                               {"risque": "alternaria", "niveau": "aucun", "conseil": None}],
+                   "meteo": {"periode": ["2026-11-05", "2026-11-12"]}}
+        with mock.patch("engine.app.routes.v1.calculer", return_value=donnees):
+            r = self.c.post("/v1/alert", json={**COMMUN, "langue": "wo", "lat": 14.76, "lon": -17.21,
+                                               "culture": "tomato"})
+        corps = r.json()
+        self.assertEqual(corps["message"]["wolof"][0]["cle"], "alerte_intro")
+        self.assertEqual(corps["donnees"]["alertes"][0]["wo"]["cle"], "alerte_late_blight")
+        self.assertNotIn("wo", corps["donnees"]["alertes"][1])
+
+    def test_francais_sans_wolof(self):
+        with mock.patch("engine.app.modules.planification.plan.sol", return_value=SOL):
+            corps = self.c.post("/v1/plan", json={**COMMUN, "lat": 14.76, "lon": -17.21}).json()
+        self.assertEqual(corps["langue"], "fr")
+        self.assertNotIn("wolof", corps["message"])
+        self.assertNotIn("wo", corps["donnees"]["cultures"][0])
+
+    def test_audio_inconnu(self):
+        self.assertEqual(self.c.get("/audio/wo/../../../.env").status_code, 404)
+
     def test_langue_invalide(self):
         r = self.c.post("/v1/chat", json={**COMMUN, "langue": "en", "texte": "x"})
         self.assertEqual(r.status_code, 422)

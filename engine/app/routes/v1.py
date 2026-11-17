@@ -1,8 +1,9 @@
 """Points d'entrée métier /v1 (contrat : docs/api.md, v0.1).
 
-Toutes les réponses suivent l'enveloppe commune. Langue : le wolof écrit et la voix ne sont
-pas encore branchés (D9, D10) ; une demande en wolof reçoit donc le texte français, et
-l'enveloppe le dit honnêtement (`langue: "fr"`, `audio_url: null`).
+Toutes les réponses suivent l'enveloppe commune. Langue : une demande en wolof (`langue: "wo"`)
+reçoit, pour /plan, /alert et /diagnose, les phrases wolof relues par un locuteur et leurs notes
+vocales (catalogue content/voix/, comme le bot Telegram) : `message.wolof`, et `wo` sur chaque culture
+ou alerte concernée. Le texte français reste toujours fourni. /chat répond en français (`langue: "fr"`).
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ from ..modules.planification import sol as sol_module
 from ..modules.planification.cultures import CULTURES
 from ..modules.planification.plan import planifier
 from ..modules.prevention.alerte import SOURCE_SEUILS, calculer
+from ..responses.voix import catalogue
 
 journal = logging.getLogger("terramind.v1")
 router = APIRouter(prefix="/v1")
@@ -35,11 +37,17 @@ AGENT = ("Pour être sûr, montre ta plante à un agent agricole (ANCAR, service
          "de l'agriculture).")
 
 
-def enveloppe(statut: str, texte: str, donnees: dict, sources: list | None = None, code: int = 200):
+def enveloppe(statut: str, texte: str, donnees: dict, sources: list | None = None, code: int = 200,
+              wolof: list | None = None):
+    """`wolof` : phrases du catalogue relu (catalogue.phrases) ; si présent, le message est en wolof,
+    `texte_fr` garde le français et `audio_url` est la première note vocale."""
+    message = {"texte": texte, "texte_fr": texte, "audio_url": None, "reponse_type": None}
+    if wolof:
+        message.update(texte=" ".join(p["texte_wo"] for p in wolof),
+                       audio_url=next((p["audio_url"] for p in wolof if p["audio_url"]), None), wolof=wolof)
     return JSONResponse(status_code=code, content={
-        "version": VERSION, "mock": False, "statut": statut, "langue": "fr",
-        "message": {"texte": texte, "texte_fr": texte, "audio_url": None, "reponse_type": None},
-        "sources": sources or [], "donnees": donnees,
+        "version": VERSION, "mock": False, "statut": statut, "langue": "wo" if wolof else "fr",
+        "message": message, "sources": sources or [], "donnees": donnees,
     })
 
 
@@ -91,7 +99,12 @@ def plan(d: DemandePlan):
     texte = (f"Ce mois-ci, tu peux planter : {', '.join(conseillees)}."
              if conseillees else "Aucune culture de la liste n'est conseillée ce mois-ci. " + AGENT)
     journal.info("plan : %s cultures conseillées", len(conseillees))
-    return enveloppe("ok", texte, donnees, sources)
+    wolof = None
+    if d.langue == "wo":
+        for c in donnees["cultures"]:
+            c["wo"] = catalogue.phrase(f"culture_{c['culture']}_{c['adaptation']}")
+        wolof = catalogue.phrases("plan_intro", *(["eau_salee"] if d.eau_puits_salee == "ne_sait_pas" else []))
+    return enveloppe("ok", texte, donnees, sources, wolof=wolof)
 
 
 @router.post("/alert")
@@ -114,8 +127,15 @@ def alerte(d: DemandeAlerte):
                  "Si tu vois des taches sur ta plante (feuille, fruit, tige), prends-la en photo.")
     else:
         texte = " ".join(actives) if actives else "Pas d'alerte cette semaine pour ta culture."
+    wolof = None
+    if d.langue == "wo":
+        for a in donnees["alertes"]:
+            if a["niveau"] != "aucun" and a["conseil"]:
+                a["wo"] = catalogue.phrase(f"alerte_{a['risque']}")
+        wolof = catalogue.phrases("alerte_pas_de_regle" if not donnees["alertes"]
+                                  else "alerte_intro" if actives else "alerte_rien")
     return enveloppe("ok", texte, donnees, [SOURCE_SEUILS,
-                     {"document": "NASA POWER", "page": "météo au point du champ"}])
+                     {"document": "NASA POWER", "page": "météo au point du champ"}], wolof=wolof)
 
 
 @router.post("/diagnose")
@@ -136,11 +156,13 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
         return enveloppe("erreur", "Je n'arrive pas à lire cette photo. Reprends-la, bien nette.", {}, code=400)
     certain = r.pop("certain")
     top = r["predictions"][0]
+    wo = langue == "wo"
     source = [{"document": "Modèle TerraMind v1 (TOM2024 CC BY 4.0, PlantVillage CC BY-SA 3.0, PlantDoc CC BY 4.0)",
                "page": "ml/eval/diagnostic_v1.md"}]
     if not certain:
         return enveloppe("incertain", "Je ne suis pas sûr de ce que je vois. Reprends la photo d'une seule "
-                         "feuille, de près, à la lumière du jour. " + AGENT, r, source)
+                         "feuille, de près, à la lumière du jour. " + AGENT, r, source,
+                         wolof=catalogue.phrases("photo_incertaine") if wo else None)
     r["fiche"] = fiche_simple(top["etiquette"], top.get("culture"))
     if r["fiche"]:
         source += [s for s in r["fiche"].pop("sources") if s not in source]
@@ -148,10 +170,13 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
     source += [q["source"] for q in r["questions_suivi"] if q["source"] not in source]
     if top["categorie"] == "sain":
         texte = "Cette feuille semble saine."
+        wolof = catalogue.phrases("photo_saine") if wo else None
     else:
         texte = (f"Cela ressemble à : {top['libelle']}. Ce n'est qu'une première indication, "
                  "pas un diagnostic sûr. " + AGENT)
-    return enveloppe("ok", texte, r, source)
+        fiche = f"fiche_{r['fiche']['fiche']}" if r["fiche"] else "pas_de_fiche"
+        wolof = catalogue.phrases(fiche, "diagnostic_prudence") if wo else None
+    return enveloppe("ok", texte, r, source, wolof=wolof)
 
 
 # Ravageurs que la photo ne sait pas reconnaître (absents du modèle) : une question oui/non tirée de la fiche

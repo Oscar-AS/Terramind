@@ -44,7 +44,8 @@ Le moteur est le seul endroit où vit la logique agricole. WhatsApp, l'appli web
 | `statut` | `ok` ; `incertain` (le module n'est pas assez sûr) ; `je_ne_sais_pas` (aucune source ne répond, D8) ; `culture_requise` (il manque la culture déclarée) ; `erreur` |
 | `message.texte` | Texte à montrer, dans la langue demandée |
 | `message.texte_fr` | Toujours rempli quand `langue = wo` : le texte écrit accompagne la note vocale (D10) |
-| `message.audio_url` | Note vocale en wolof (OGG/Opus), ou `null` si la voix de synthèse est bloquée par la normalisation (mot à risque, chiffre non traité…). Dans ce cas, la façade envoie la réponse type enregistrée ou le texte |
+| `message.audio_url` | Première note vocale wolof (MP3, adresse relative au moteur : `/audio/wo/<clé>.mp3`), ou `null` |
+| `message.wolof` | En wolof seulement (`/plan`, `/alert`, `/diagnose`) : liste des phrases relues `{cle, texte_wo, texte_fr, audio_url}` (catalogue `content/voix/messages_wolof.csv`). Chaque culture du plan et chaque alerte active portent aussi leur phrase dans `wo` |
 | `message.reponse_type` | Identifiant de la réponse type utilisée (`content/templates/`), sinon `null` |
 | `sources` | Documents et pages d'où vient le contenu. **Jamais vide quand `statut = ok`** (D6, D8) |
 | `donnees` | Résultat propre à chaque point d'entrée (sections 2 à 5) |
@@ -204,12 +205,12 @@ Le moteur est le seul endroit où vit la logique agricole. WhatsApp, l'appli web
 
 | Point d'entrée | État |
 |---|---|
-| `POST /v1/plan` | ✅ réel : sol iSDAsoil lu au point (15 à 30 s la première fois, puis en cache), 6 cultures, règles du guide ISRA 1987 |
+| `POST /v1/plan` | ✅ réel : sol iSDAsoil lu au point (15 à 30 s la première fois, puis en cache), 8 cultures, règles du guide ISRA 1987 |
 | `POST /v1/alert` | ✅ réel : NASA POWER (la semaine analysée s'arrête 3 jours avant la date, délai de publication de NASA) |
-| `POST /v1/diagnose` | ✅ modèle v0 (tomate, pomme de terre, poivron) ; voir `ml/eval/diagnostic_v0.json` |
-| `POST /v1/chat` | ⏳ répond toujours `je_ne_sais_pas` : `content/fiches/` est vide et aucun modèle de langage n'est configuré |
+| `POST /v1/diagnose` | ✅ modèle v1 (MobileNetV3) ; voir `ml/eval/diagnostic_v1.md` |
+| `POST /v1/chat` | ✅ réel : passages des 23 fiches (BM25) reformulés par Gemini à partir de ces seuls passages ; sinon `je_ne_sais_pas` |
 | `POST /v1/feedback` | ⏳ accepté et journalisé, pas encore enregistré (`enregistre: false`, base de données non configurée) |
-| Langue `wo` | ⏳ le moteur répond en français et l'indique (`langue: "fr"`, `audio_url: null`) |
+| Langue `wo` | ✅ `/plan`, `/alert`, `/diagnose` : phrases wolof relues + notes vocales (`GET /audio/wo/<clé>.mp3`) ; `/chat` répond en français (`langue: "fr"`) |
 
 ## 8. Erreurs
 

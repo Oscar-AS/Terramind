@@ -1,12 +1,13 @@
 import { router } from 'expo-router';
 import { CalendarBlank, CheckCircle, Hourglass, MinusCircle, Plant, Warning, WarningCircle } from 'phosphor-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { type Adaptation, type CulturePlan, demanderPlan, type Plan, type Reponse } from '@/api';
+import { type Adaptation, type CulturePlan, demanderPlan, type PhraseWolof, type Plan, type Reponse } from '@/api';
 import { Ecran } from '@/components/Ecran';
 import { Chargement, Erreur, Sources } from '@/components/Etat';
 import { Apparition, Badge, Bouton, Carte, T } from '@/components/ui';
+import { BlocWolof, BoutonEcouter } from '@/components/Voix';
 import { CULTURES } from '@/profil';
 import { nombreFr } from '@/format';
 import { couleurs } from '@/theme';
@@ -41,6 +42,12 @@ function CarteCulture({ c, ordre }: { c: CulturePlan; ordre: number }) {
             <Badge Icone={b.Icone} texte={b.mot} couleur={b.couleur} fond={b.fond} />
           </View>
         </View>
+        {c.wo ? (
+          <View style={styles.wolof}>
+            <T v="corpsGras">{c.wo.texte_wo}</T>
+            <BoutonEcouter phrases={[c.wo]} libelle="Écouter" />
+          </View>
+        ) : null}
         {!eteinte ? (
           <>
             <Ligne Icone={CalendarBlank} texte={c.periode_semis} />
@@ -79,8 +86,15 @@ export default function PlanEcran() {
 
   const sol = reponse?.donnees.sol;
   const cultures = reponse?.donnees.cultures ?? [];
+  const wolof = reponse?.message.wolof;
+  // Tout l'écran à l'écoute, comme le bot : l'introduction, puis chaque culture conseillée ou possible.
+  const voix = useMemo<PhraseWolof[] | undefined>(() => (wolof ? [
+    ...wolof.slice(0, 1),
+    ...(reponse?.donnees.cultures ?? []).filter((c) => c.adaptation !== 'deconseillee' && c.wo).map((c) => c.wo as PhraseWolof),
+    ...wolof.slice(1),
+  ] : undefined), [wolof, reponse]);
   return (
-    <Ecran titre="Que planter ?">
+    <Ecran titre="Que planter ?" voix={voix}>
       {erreur ? <Erreur texte={erreur} onReessayer={charger} /> : null}
       {!erreur && !reponse ? <Chargement Icone={Plant} texte="Je regarde ton sol et la saison…" /> : null}
       {reponse ? (
@@ -100,7 +114,9 @@ export default function PlanEcran() {
               </View>
             </Apparition>
           ) : null}
-          <Apparition ordre={1}><T v="corpsGras">{reponse.message.texte}</T></Apparition>
+          <Apparition ordre={1}>
+            {wolof?.length ? <BlocWolof phrases={wolof} /> : <T v="corpsGras">{reponse.message.texte}</T>}
+          </Apparition>
           {cultures.map((c, i) => <CarteCulture key={c.culture} c={c} ordre={i + 2} />)}
           <Bouton libelle="J'ai planté" sousTitre="Pour recevoir les alertes" Icone={Plant} onPress={() => router.push('/cultures')} />
           <Sources sources={reponse.sources} />
@@ -117,5 +133,6 @@ const styles = StyleSheet.create({
   vignette: { width: 64, height: 64, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   eteinte: { opacity: 0.75 },
   ligne: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  wolof: { gap: 8, backgroundColor: couleurs.sable, borderRadius: 14, padding: 12 },
   avertissement: { flexDirection: 'row', gap: 10, backgroundColor: couleurs.terreClair, borderRadius: 14, padding: 12 },
 });

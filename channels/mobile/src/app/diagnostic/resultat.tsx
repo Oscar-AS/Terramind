@@ -9,6 +9,7 @@ import { type Diagnostic, diagnostiquer, type Reponse } from '@/api';
 import { Ecran } from '@/components/Ecran';
 import { Erreur, Sources } from '@/components/Etat';
 import { Apparition, Bouton, Carte, Pastille, T } from '@/components/ui';
+import { BlocWolof } from '@/components/Voix';
 import { couleurs, polices } from '@/theme';
 
 /** Ligne de balayage qui parcourt la photo pendant l'analyse. */
@@ -107,13 +108,14 @@ export default function Resultat() {
   const top = reponse?.donnees.predictions?.[0];
   const sain = top?.categorie === 'sain';
   const fiche = reponse?.donnees.fiche;
+  const wolof = reponse?.message.wolof;
   const etat = incertain
     ? { Icone: Question, sur: 'Je n’ai pas pu lire ta photo', titre: 'Reprends la photo', fond: couleurs.soleilClair, couleur: '#7A5A12' }
     : sain ? { Icone: SealCheck, sur: 'Bonne nouvelle', titre: top?.libelle ?? '', fond: couleurs.pousse, couleur: couleurs.foret }
       : { Icone: Warning, sur: 'Cela ressemble à', titre: top?.libelle ?? '', fond: couleurs.terreClair, couleur: couleurs.terre };
 
   return (
-    <Ecran titre="Résultat">
+    <Ecran titre="Résultat" voix={wolof}>
       {erreur ? <Erreur texte={erreur} onReessayer={analyser} /> : null}
       {reponse && top ? (
         <>
@@ -132,6 +134,9 @@ export default function Resultat() {
               </View>
             </View>
           </Apparition>
+
+          {/* En wolof : le résumé dit (fiche courte relue, prudence), le détail en français reste dessous. */}
+          {wolof?.length ? <Apparition ordre={1}><BlocWolof phrases={wolof} /></Apparition> : null}
 
           {/* 2a. Incertain : comment faire une meilleure photo, puis le bouton pour recommencer. */}
           {incertain ? (
@@ -163,7 +168,7 @@ export default function Resultat() {
                     <Jauge valeur={top.confiance} />
                   </Carte>
                 </Apparition>
-              ) : <Apparition ordre={1}><T v="corps">{reponse.message.texte}</T></Apparition>}
+              ) : wolof?.length ? null : <Apparition ordre={1}><T v="corps">{reponse.message.texte}</T></Apparition>}
               {!sain && fiche ? PARTIES.filter((p) => fiche[p.cle]).map((p, i) => (
                 <Apparition key={p.cle} ordre={2 + i}>
                   <Partie numero={i + 1} titre={p.titre} Icone={p.Icone} texte={fiche[p.cle] ?? ''} />
