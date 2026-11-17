@@ -25,12 +25,21 @@ def main():
     modele.eval()
     x = torch.randn(1, 3, 224, 224)
     sortie = DOSSIER / "terramind_diag_v0.onnx"
-    torch.onnx.export(modele, x, str(sortie), input_names=["image"], output_names=["logits"],
-                      opset_version=17, dynamo=False)
+    torch.onnx.export(
+        modele,
+        x,
+        str(sortie),
+        input_names=["image"],
+        output_names=["logits"],
+        opset_version=17,
+        dynamo=False,
+    )
     attendu = modele(x).detach().numpy()
     obtenu = ort.InferenceSession(str(sortie)).run(None, {"image": x.numpy()})[0]
     ecart = float(np.abs(attendu - obtenu).max())
-    print(f"ok {sortie.name} ({sortie.stat().st_size // 1024} Ko), écart max PyTorch/ONNX {ecart:.2e}")
+    print(
+        f"ok {sortie.name} ({sortie.stat().st_size // 1024} Ko), écart max PyTorch/ONNX {ecart:.2e}"
+    )
     assert ecart < 1e-3
 
 

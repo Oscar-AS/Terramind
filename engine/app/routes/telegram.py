@@ -62,26 +62,42 @@ B_POSITION_TEST = "Envoyer une position test"
 POSITION_TEST = {"nom": "Rufisque", "lat": 14.76, "lon": -17.21}
 AVEC_POSITION_TEST = os.environ.get("BOUTON_POSITION_TEST", "1") != "0"
 # Un bouton par ligne : le libellé reste lisible en entier sur un petit écran.
-CLAVIER = {"keyboard": [[{"text": B_POSITION, "request_location": True}]]
-                        + ([[{"text": B_POSITION_TEST}]] if AVEC_POSITION_TEST else []) + [[{"text": B_PHOTO}],
-                        [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_QUESTION}]],
-           # is_persistent : Telegram garde les boutons affichés au lieu de les replier derrière une icône
-           # (Bot API 6.4) ; un agriculteur peu habitué aux écrans ne trouverait pas l'icône.
-           "resize_keyboard": True, "is_persistent": True}
+CLAVIER = {
+    "keyboard": [[{"text": B_POSITION, "request_location": True}]]
+    + ([[{"text": B_POSITION_TEST}]] if AVEC_POSITION_TEST else [])
+    + [[{"text": B_PHOTO}], [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_QUESTION}]],
+    # is_persistent : Telegram garde les boutons affichés au lieu de les replier derrière une icône
+    # (Bot API 6.4) ; un agriculteur peu habitué aux écrans ne trouverait pas l'icône.
+    "resize_keyboard": True,
+    "is_persistent": True,
+}
 # Anciens libellés (claviers encore affichés sur les téléphones) : traités comme les nouveaux.
 # En wolof, beaucoup d'agriculteurs ne lisent pas le français : chaque bouton porte un numéro, que les
 # notes vocales citent (« appuie sur le 2 ») ; l'agriculteur peut réécouter la note autant qu'il veut.
 NUMEROS = {B_POSITION: 1, B_PHOTO: 2, B_PLAN: 3, B_ALERTES: 4, B_QUESTION: 5, B_POSITION_TEST: 6}
 # Rangés dans l'ordre des numéros (1 à 5, puis le bouton test 6), pour que « appuie sur le 2 » corresponde
 # aussi à la 2e ligne pour qui ne lit pas.
-CLAVIER_WO = {"keyboard": sorted(([dict(b, text=f"{NUMEROS[b['text']]}. {b['text']}") for b in ligne]
-                                  for ligne in CLAVIER["keyboard"]), key=lambda l: int(l[0]["text"].split(".")[0])),
-              "resize_keyboard": True, "is_persistent": True}
+CLAVIER_WO = {
+    "keyboard": sorted(
+        (
+            [dict(b, text=f"{NUMEROS[b['text']]}. {b['text']}") for b in ligne]
+            for ligne in CLAVIER["keyboard"]
+        ),
+        key=lambda l: int(l[0]["text"].split(".")[0]),
+    ),
+    "resize_keyboard": True,
+    "is_persistent": True,
+}
 B_AIDE = "/aide"  # l'accueil reste accessible par /aide et par les anciens boutons d'aide
-ANCIENS_BOUTONS = {"Examiner une feuille": B_PHOTO, "Ma plante est malade : envoyer une photo": B_PHOTO,
-                   "Que planter ?": B_PLAN, "Surveiller ma culture": B_ALERTES,
-                   "La météo de la semaine pour ma culture": B_ALERTES,
-                   "Aide": B_AIDE, "Comment ça marche ?": B_AIDE}
+ANCIENS_BOUTONS = {
+    "Examiner une feuille": B_PHOTO,
+    "Ma plante est malade : envoyer une photo": B_PHOTO,
+    "Que planter ?": B_PLAN,
+    "Surveiller ma culture": B_ALERTES,
+    "La météo de la semaine pour ma culture": B_ALERTES,
+    "Aide": B_AIDE,
+    "Comment ça marche ?": B_AIDE,
+}
 AGENT = "un agent agricole (ANCAR, service départemental de l'agriculture)"
 
 ACCUEIL = (
@@ -110,18 +126,30 @@ DEMANDE_POSITION = (
     f"Touche le bouton « {B_POSITION} » en bas de l'écran, de préférence quand tu es dans ton champ."
 )
 
-CHOIX_LANGUE = ("<b>Bienvenue sur TerraMind.</b>\n"
-                "En quelle langue veux-tu que je te parle ? Touche « Wolof » ou « Français ».\n\n"
-                "<i>En wolof, je te réponds par des messages vocaux, avec le texte en français en dessous.</i>")
-CLAVIER_LANGUE = {"inline_keyboard": [[{"text": "Wolof", "callback_data": "langue:wo"},
-                                       {"text": "Français", "callback_data": "langue:fr"}]]}
+CHOIX_LANGUE = (
+    "<b>Bienvenue sur TerraMind.</b>\n"
+    "En quelle langue veux-tu que je te parle ? Touche « Wolof » ou « Français ».\n\n"
+    "<i>En wolof, je te réponds par des messages vocaux, avec le texte en français en dessous.</i>"
+)
+CLAVIER_LANGUE = {
+    "inline_keyboard": [
+        [
+            {"text": "Wolof", "callback_data": "langue:wo"},
+            {"text": "Français", "callback_data": "langue:fr"},
+        ]
+    ]
+}
 
 # Notes vocales en wolof (D10), préparées à l'avance : content/audio/wo/<clé>.ogg (ou .mp3, .m4a), textes dans
 # content/voix/messages_wolof.csv. Phrases générales et sensibles : voix humaine ; contenu choisi par
 # le modèle (fiche de la maladie reconnue, alerte, culture) : voix de synthèse contrôlée.
 AUDIO_WO = Path(__file__).resolve().parents[3] / "content" / "audio" / "wo"
 VOIX_DEJA_ENVOYEES: dict[str, str] = {}
-TYPES_AUDIO = {".ogg": "audio/ogg", ".mp3": "audio/mpeg", ".m4a": "audio/mp4"}  # clé → file_id Telegram, pour ne pas renvoyer le fichier
+TYPES_AUDIO = {
+    ".ogg": "audio/ogg",
+    ".mp3": "audio/mpeg",
+    ".m4a": "audio/mp4",
+}  # clé → file_id Telegram, pour ne pas renvoyer le fichier
 
 ETATS: dict[int, dict] = {}
 
@@ -138,14 +166,20 @@ def escape(texte: str) -> str:
 
 
 # Noms lisibles par un agriculteur pour les sources dont le nom court serait un nom d'auteur ou un document interne.
-NOMS_LISIBLES = {"Beniest J. et al.": "Guide pratique du maraîchage au Sénégal (ISRA / FAO)",
-                 "Sylla S.": "Thèse sur la mineuse de la tomate (UCAD / CIRAD)",
-                 "Pfeiffer D. G. et al.": "Florida Entomologist (2013)",
-                 "Diallo et al. 2015": "African Crop Science Journal (2015)",
-                 "Blancard D.": "Ephytia (INRAE)", "Zitter T. A.": "Université Cornell",
-                 "Spry C.": "Université du Kentucky", "Jackson G.": "Pacific Pests (fiche 163)",
-                 "Panthee D. R.": "International Journal of Vegetable Science"}
-SOURCES_INTERNES = ("Seuils météo des maladies et ravageurs",)  # nos notes de travail, pas des sources publiées
+NOMS_LISIBLES = {
+    "Beniest J. et al.": "Guide pratique du maraîchage au Sénégal (ISRA / FAO)",
+    "Sylla S.": "Thèse sur la mineuse de la tomate (UCAD / CIRAD)",
+    "Pfeiffer D. G. et al.": "Florida Entomologist (2013)",
+    "Diallo et al. 2015": "African Crop Science Journal (2015)",
+    "Blancard D.": "Ephytia (INRAE)",
+    "Zitter T. A.": "Université Cornell",
+    "Spry C.": "Université du Kentucky",
+    "Jackson G.": "Pacific Pests (fiche 163)",
+    "Panthee D. R.": "International Journal of Vegetable Science",
+}
+SOURCES_INTERNES = (
+    "Seuils météo des maladies et ravageurs",
+)  # nos notes de travail, pas des sources publiées
 
 
 def _court(document: str) -> str | None:
@@ -157,13 +191,16 @@ def _court(document: str) -> str | None:
             return lisible
     nom = document.split(",")[0].strip()
     if nom.count("(") > nom.count(")"):
-        nom = nom[:nom.rfind("(")].strip()
+        nom = nom[: nom.rfind("(")].strip()
     return nom
 
 
 def _appel(methode: str, **donnees) -> dict:
-    req = urllib.request.Request(API.format(jeton=config.TELEGRAM_BOT_TOKEN, methode=methode),
-                                 data=json.dumps(donnees).encode(), headers={"Content-Type": "application/json"})
+    req = urllib.request.Request(
+        API.format(jeton=config.TELEGRAM_BOT_TOKEN, methode=methode),
+        data=json.dumps(donnees).encode(),
+        headers={"Content-Type": "application/json"},
+    )
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.loads(r.read())
 
@@ -192,7 +229,12 @@ def envoyer(chat: int, texte: str, **extra):
         except urllib.error.HTTPError as e:
             # 400 : balisage refusé par Telegram. On renvoie le même texte sans mise en forme.
             journal.warning("envoi Telegram refusé (%s) : nouvel essai en texte simple", e.code)
-            brut = re.sub(r"</?[bi]>", "", m).replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
+            brut = (
+                re.sub(r"</?[bi]>", "", m)
+                .replace("&lt;", "<")
+                .replace("&gt;", ">")
+                .replace("&amp;", "&")
+            )
             try:
                 _appel("sendMessage", chat_id=chat, text=brut, **options)
             except Exception as e2:
@@ -201,15 +243,26 @@ def envoyer(chat: int, texte: str, **extra):
             journal.warning("envoi Telegram échoué : %s", type(e).__name__)
 
 
-def _envoyer_fichier(methode: str, chat: int, champ: str, chemin: Path, octets: bytes | None = None) -> dict:
+def _envoyer_fichier(
+    methode: str, chat: int, champ: str, chemin: Path, octets: bytes | None = None
+) -> dict:
     """Envoie un fichier à Telegram (multipart), sans dépendance externe. `octets` : contenu déjà en mémoire."""
     borne = uuid.uuid4().hex
     contenu = chemin.read_bytes() if octets is None else octets
-    corps = (f"--{borne}\r\nContent-Disposition: form-data; name=\"chat_id\"\r\n\r\n{chat}\r\n"
-             f"--{borne}\r\nContent-Disposition: form-data; name=\"{champ}\"; filename=\"{chemin.name}\"\r\n"
-             f"Content-Type: {TYPES_AUDIO.get(chemin.suffix, 'audio/ogg')}\r\n\r\n").encode() + contenu + f"\r\n--{borne}--\r\n".encode()
-    req = urllib.request.Request(API.format(jeton=config.TELEGRAM_BOT_TOKEN, methode=methode), data=corps,
-                                 headers={"Content-Type": f"multipart/form-data; boundary={borne}"})
+    corps = (
+        (
+            f'--{borne}\r\nContent-Disposition: form-data; name="chat_id"\r\n\r\n{chat}\r\n'
+            f'--{borne}\r\nContent-Disposition: form-data; name="{champ}"; filename="{chemin.name}"\r\n'
+            f"Content-Type: {TYPES_AUDIO.get(chemin.suffix, 'audio/ogg')}\r\n\r\n"
+        ).encode()
+        + contenu
+        + f"\r\n--{borne}--\r\n".encode()
+    )
+    req = urllib.request.Request(
+        API.format(jeton=config.TELEGRAM_BOT_TOKEN, methode=methode),
+        data=corps,
+        headers={"Content-Type": f"multipart/form-data; boundary={borne}"},
+    )
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read())
 
@@ -220,7 +273,14 @@ def dire(chat: int, cle: str, toujours: bool = False):
     if not toujours and ETATS.get(chat, {}).get("langue") != "wo":
         return
     # Telegram accepte les notes vocales en OGG (Opus), MP3 ou M4A.
-    chemin = next((AUDIO_WO / f"{cle}.{ext}" for ext in ("ogg", "mp3", "m4a") if (AUDIO_WO / f"{cle}.{ext}").exists()), None)
+    chemin = next(
+        (
+            AUDIO_WO / f"{cle}.{ext}"
+            for ext in ("ogg", "mp3", "m4a")
+            if (AUDIO_WO / f"{cle}.{ext}").exists()
+        ),
+        None,
+    )
     if chemin is None:
         journal.info("note vocale wolof pas encore enregistrée : %s", cle)
         return
@@ -235,9 +295,15 @@ def dire(chat: int, cle: str, toujours: bool = False):
 
 
 QUESTIONS_CHAMP = {
-    "eau": ("question_eau_salee", "<b>Une question sur ton eau</b>\nL'eau de ton puits est-elle salée ?"),
-    "basfond": ("question_bas_fond", "<b>Une question sur ton champ</b>\nTon champ est-il dans un bas-fond, "
-                "un endroit bas où l'eau reste longtemps après la pluie ?"),
+    "eau": (
+        "question_eau_salee",
+        "<b>Une question sur ton eau</b>\nL'eau de ton puits est-elle salée ?",
+    ),
+    "basfond": (
+        "question_bas_fond",
+        "<b>Une question sur ton champ</b>\nTon champ est-il dans un bas-fond, "
+        "un endroit bas où l'eau reste longtemps après la pluie ?",
+    ),
 }
 CHAMP_ETAT = {"eau": "eau_salee", "basfond": "bas_fond"}
 
@@ -249,10 +315,22 @@ def _demander_champ(chat: int) -> bool:
         if CHAMP_ETAT[cle] not in e:
             dire(chat, voix)
             wo = e.get("langue") == "wo"
-            envoyer(chat, texte, reply_markup={"inline_keyboard": [[
-                {"text": "1. Oui" if wo else "Oui", "callback_data": f"{cle}:oui"},
-                {"text": "2. Non" if wo else "Non", "callback_data": f"{cle}:non"},
-                {"text": "3. Je ne sais pas" if wo else "Je ne sais pas", "callback_data": f"{cle}:ne_sait_pas"}]]})
+            envoyer(
+                chat,
+                texte,
+                reply_markup={
+                    "inline_keyboard": [
+                        [
+                            {"text": "1. Oui" if wo else "Oui", "callback_data": f"{cle}:oui"},
+                            {"text": "2. Non" if wo else "Non", "callback_data": f"{cle}:non"},
+                            {
+                                "text": "3. Je ne sais pas" if wo else "Je ne sais pas",
+                                "callback_data": f"{cle}:ne_sait_pas",
+                            },
+                        ]
+                    ]
+                },
+            )
             return True
     return False
 
@@ -265,12 +343,19 @@ def _plan(chat: int):
     e = ETATS[chat]
     if _demander_champ(chat):  # le plan suivra la dernière réponse
         return
-    envoyer(chat, "Je regarde maintenant le sol de ton champ et la saison. Cela prend environ 30 secondes.")
+    envoyer(
+        chat,
+        "Je regarde maintenant le sol de ton champ et la saison. Cela prend environ 30 secondes.",
+    )
     try:
         d, _ = planifier(e["lat"], e["lon"], dt.date.today(), e["eau_salee"], e["bas_fond"])
     except sol_module.SolIndisponible:
-        envoyer(chat, "Je n'arrive pas à lire la carte des sols à cet endroit pour le moment. "
-                      f"Réessaie dans quelques minutes avec le bouton « {B_PLAN} ».", reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "Je n'arrive pas à lire la carte des sols à cet endroit pour le moment. "
+            f"Réessaie dans quelques minutes avec le bouton « {B_PLAN} ».",
+            reply_markup=CLAVIER,
+        )
         return
     s = d["sol"]
     groupes = {"conseillee": [], "possible": [], "deconseillee": []}
@@ -282,39 +367,81 @@ def _plan(chat: int):
     if e["eau_salee"] == "ne_sait_pas":
         dire(chat, "eau_salee")
 
-    blocs = ["<b>Ce qu'il faut savoir sur ton sol</b>\n"
-             "D'après la carte des sols iSDAsoil, ton champ "
-             + (f"contient environ {round(s['sable_pct'])} % de sable " if s.get("sable_pct") is not None else "")
-             + (f"et son pH est de {nombre_fr(s['ph'])} : {phrase_ph(s['ph'])}." if s.get("ph") is not None
-                else "(pH inconnu à cet endroit).")]
+    blocs = [
+        "<b>Ce qu'il faut savoir sur ton sol</b>\n"
+        "D'après la carte des sols iSDAsoil, ton champ "
+        + (
+            f"contient environ {round(s['sable_pct'])} % de sable "
+            if s.get("sable_pct") is not None
+            else ""
+        )
+        + (
+            f"et son pH est de {nombre_fr(s['ph'])} : {phrase_ph(s['ph'])}."
+            if s.get("ph") is not None
+            else "(pH inconnu à cet endroit)."
+        )
+    ]
     if groupes["conseillee"]:
-        blocs.append("<b>Ce que tu peux planter maintenant</b>\n" + "\n".join(
-            f"• {escape(c['libelle'])} : {escape(c['periode_semis'])}"
-            + "".join(f"\n   <i>{escape(a)}</i>" for a in c["avertissements"]) for c in groupes["conseillee"]))
+        blocs.append(
+            "<b>Ce que tu peux planter maintenant</b>\n"
+            + "\n".join(
+                f"• {escape(c['libelle'])} : {escape(c['periode_semis'])}"
+                + "".join(f"\n   <i>{escape(a)}</i>" for a in c["avertissements"])
+                for c in groupes["conseillee"]
+            )
+        )
     if groupes["possible"]:
-        blocs.append("<b>Ce que tu peux planter, avec quelques précautions</b>\n" + "\n".join(
-            f"• {escape(c['libelle'])} : {escape(c['periode_semis'])}"
-            + "".join(f"\n   <i>{escape(a)}</i>" for a in c["avertissements"]) for c in groupes["possible"]))
+        blocs.append(
+            "<b>Ce que tu peux planter, avec quelques précautions</b>\n"
+            + "\n".join(
+                f"• {escape(c['libelle'])} : {escape(c['periode_semis'])}"
+                + "".join(f"\n   <i>{escape(a)}</i>" for a in c["avertissements"])
+                for c in groupes["possible"]
+            )
+        )
     if groupes["deconseillee"]:
-        blocs.append("<b>Ce qu'il vaut mieux ne pas planter ce mois-ci</b>\n"
-                     + escape(", ".join(c["libelle"] for c in groupes["deconseillee"])) + ".")
+        blocs.append(
+            "<b>Ce qu'il vaut mieux ne pas planter ce mois-ci</b>\n"
+            + escape(", ".join(c["libelle"] for c in groupes["deconseillee"]))
+            + "."
+        )
     if e["eau_salee"] == "ne_sait_pas":
-        blocs.append("<b>Une précaution importante</b>\nSi l'eau de ton puits est salée, évite l'oignon et la carotte.")
-    blocs.append("<b>Ce que tu peux faire ensuite</b>\n"
-                 f"Si une culture est déjà en place, touche « {B_ALERTES} » : je regarde si la météo de la "
-                 "semaine favorise une maladie. Si tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo.")
-    blocs.append("<i>Sources : Guide pratique du maraîchage au Sénégal (ISRA, 1987) ; carte des sols iSDAsoil.</i>")
+        blocs.append(
+            "<b>Une précaution importante</b>\nSi l'eau de ton puits est salée, évite l'oignon et la carotte."
+        )
+    blocs.append(
+        "<b>Ce que tu peux faire ensuite</b>\n"
+        f"Si une culture est déjà en place, touche « {B_ALERTES} » : je regarde si la météo de la "
+        "semaine favorise une maladie. Si tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo."
+    )
+    blocs.append(
+        "<i>Sources : Guide pratique du maraîchage au Sénégal (ISRA, 1987) ; carte des sols iSDAsoil.</i>"
+    )
     dire(chat, "plan_suite")
     envoyer(chat, "\n\n".join(blocs), reply_markup=CLAVIER)
 
 
-MOIS_FR = ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
-           "novembre", "décembre")
+MOIS_FR = (
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
+)
 
 
 def periode_fr(debut, fin) -> str:
     """« du 5 au 12 novembre » (ou « du 28 octobre au 4 novembre ») au lieu de « 2026-11-05 au 2026-11-12 »."""
-    d, f = (x if isinstance(x, dt.date) else dt.date.fromisoformat(str(x)[:10]) for x in (debut, fin))
+    d, f = (
+        x if isinstance(x, dt.date) else dt.date.fromisoformat(str(x)[:10]) for x in (debut, fin)
+    )
     if d.month == f.month:
         return f"du {d.day} au {f.day} {MOIS_FR[f.month - 1]}"
     return f"du {d.day} {MOIS_FR[d.month - 1]} au {f.day} {MOIS_FR[f.month - 1]}"
@@ -325,16 +452,24 @@ def _alertes(chat: int):
     try:
         d = calculer(e["lat"], e["lon"], e["culture"], dt.date.today(), e.get("repiquage"))
     except meteo.MeteoIndisponible:
-        envoyer(chat, "La météo est momentanément indisponible. Réessaie dans quelques minutes.",
-                reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "La météo est momentanément indisponible. Réessaie dans quelques minutes.",
+            reply_markup=CLAVIER,
+        )
         return
     culture = CULTURES[e["culture"]]["libelle"].lower()
-    if not d["alertes"]:  # aucune règle météo pour cette culture : ne pas dire « rien d'inquiétant »
+    if not d[
+        "alertes"
+    ]:  # aucune règle météo pour cette culture : ne pas dire « rien d'inquiétant »
         dire(chat, "alerte_pas_de_regle")
-        envoyer(chat, f"<b>Pour ta culture ({escape(culture)}), je ne surveille pas encore la météo.</b>\n"
-                      "Je n'ai pas de règle sourcée qui relie le temps aux maladies de cette culture.\n\n"
-                      "<b>Ce que tu peux faire</b>\nSi tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo.",
-                reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            f"<b>Pour ta culture ({escape(culture)}), je ne surveille pas encore la météo.</b>\n"
+            "Je n'ai pas de règle sourcée qui relie le temps aux maladies de cette culture.\n\n"
+            "<b>Ce que tu peux faire</b>\nSi tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo.",
+            reply_markup=CLAVIER,
+        )
         return
     actives = [a["conseil"] for a in d["alertes"] if a["niveau"] != "aucun" and a["conseil"]]
     if actives:
@@ -346,34 +481,56 @@ def _alertes(chat: int):
         dire(chat, "alerte_rien")
     debut, fin = d["meteo"]["periode"]
     # NASA POWER donne la météo MESURÉE (avec quelques jours de retard), pas une prévision : le titre le dit.
-    blocs = [f"<b>Ce que la météo de ces derniers jours dit pour ta culture ({escape(culture)})</b>\n"
-             f"J'ai regardé la météo de la zone de ton champ {periode_fr(debut, fin)}."]
+    blocs = [
+        f"<b>Ce que la météo de ces derniers jours dit pour ta culture ({escape(culture)})</b>\n"
+        f"J'ai regardé la météo de la zone de ton champ {periode_fr(debut, fin)}."
+    ]
     if actives:
         blocs.append("<b>Ce qu'il faut surveiller</b>\n" + _liste(actives))
     else:
-        blocs.append("<b>Bonne nouvelle : rien d'inquiétant pour le moment</b>\nLa météo de ces derniers jours ne favorise aucune "
-                     "des maladies ni aucun des ravageurs que je surveille pour cette culture.")
-    blocs.append("<b>Ce que tu peux faire ensuite</b>\n"
-                 f"Reviens me demander la semaine prochaine avec le bouton « {B_ALERTES} ». "
-                 "Si tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo.")
-    blocs.append("<i>Météo : NASA POWER. Ces règles viennent d'études faites hors du Sénégal : je parle de "
-                 "conditions favorables, pas de maladie certaine.</i>")
+        blocs.append(
+            "<b>Bonne nouvelle : rien d'inquiétant pour le moment</b>\nLa météo de ces derniers jours ne favorise aucune "
+            "des maladies ni aucun des ravageurs que je surveille pour cette culture."
+        )
+    blocs.append(
+        "<b>Ce que tu peux faire ensuite</b>\n"
+        f"Reviens me demander la semaine prochaine avec le bouton « {B_ALERTES} ». "
+        "Si tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo."
+    )
+    blocs.append(
+        "<i>Météo : NASA POWER. Ces règles viennent d'études faites hors du Sénégal : je parle de "
+        "conditions favorables, pas de maladie certaine.</i>"
+    )
     if any(a["niveau"] == "date_requise" for a in d["alertes"]):
         e["date_libre"] = True  # la date pourra être écrite à n'importe quel moment
-        blocs.append("<b>Pour surveiller aussi les insectes</b>\nÉcris-moi le jour où tu l'as plantée, "
-                     "comme ça : <b>15/10</b> pour le 15 octobre.")
+        blocs.append(
+            "<b>Pour surveiller aussi les insectes</b>\nÉcris-moi le jour où tu l'as plantée, "
+            "comme ça : <b>15/10</b> pour le 15 octobre."
+        )
     envoyer(chat, "\n\n".join(blocs), reply_markup=CLAVIER)
-    envoyer(chat, "Tu veux surveiller une autre culture ?",
-            reply_markup={"inline_keyboard": [[{"text": "Changer de culture", "callback_data": "changer_culture"}]]})
+    envoyer(
+        chat,
+        "Tu veux surveiller une autre culture ?",
+        reply_markup={
+            "inline_keyboard": [
+                [{"text": "Changer de culture", "callback_data": "changer_culture"}]
+            ]
+        },
+    )
 
 
 def _choisir_culture(chat: int):
     wo = ETATS.get(chat, {}).get("langue") == "wo"
-    boutons = [[{"text": f"{i}. {c['libelle']}" if wo else c["libelle"], "callback_data": f"culture:{k}"}]
-               for i, (k, c) in enumerate(CULTURES.items(), 1)]
+    boutons = [
+        [{"text": f"{i}. {c['libelle']}" if wo else c["libelle"], "callback_data": f"culture:{k}"}]
+        for i, (k, c) in enumerate(CULTURES.items(), 1)
+    ]
     dire(chat, "choix_culture")
-    envoyer(chat, "<b>Quelle culture veux-tu que je surveille ?</b>\nChoisis-la dans la liste.",
-            reply_markup={"inline_keyboard": boutons})
+    envoyer(
+        chat,
+        "<b>Quelle culture veux-tu que je surveille ?</b>\nChoisis-la dans la liste.",
+        reply_markup={"inline_keyboard": boutons},
+    )
 
 
 def _sans_position(chat: int):
@@ -384,7 +541,9 @@ def _sans_position(chat: int):
 
 def _telecharger(file_id: str) -> bytes:
     chemin = _appel("getFile", file_id=file_id)["result"]["file_path"]
-    with urllib.request.urlopen(FICHIER.format(jeton=config.TELEGRAM_BOT_TOKEN, chemin=chemin), timeout=30) as r:
+    with urllib.request.urlopen(
+        FICHIER.format(jeton=config.TELEGRAM_BOT_TOKEN, chemin=chemin), timeout=30
+    ) as r:
         return r.read()
 
 
@@ -395,32 +554,53 @@ def _vocal(chat: int, note: dict):
     ecrire = "Tu peux aussi écrire ta question, ou utiliser les boutons en bas de l'écran."
     if not ecoute.disponible():
         dire(chat, "vocal_indisponible")
-        envoyer(chat, f"Je ne peux pas écouter les messages vocaux pour le moment. {ecrire}", reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            f"Je ne peux pas écouter les messages vocaux pour le moment. {ecrire}",
+            reply_markup=CLAVIER,
+        )
         return
     if (note.get("duration") or 0) > ecoute.DUREE_MAX:
         dire(chat, "vocal_trop_long")
-        envoyer(chat, "Ta note vocale est trop longue pour moi. Pose ta question en moins d'une minute.",
-                reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "Ta note vocale est trop longue pour moi. Pose ta question en moins d'une minute.",
+            reply_markup=CLAVIER,
+        )
         return
     dire(chat, "vocal_ecoute")
     envoyer(chat, "J'écoute ta note vocale. Cela prend quelques secondes.")
     try:
-        compris = ecoute.comprendre(_telecharger(note["file_id"]), note.get("mime_type") or "audio/ogg",
-                                    note.get("duration"))
+        compris = ecoute.comprendre(
+            _telecharger(note["file_id"]),
+            note.get("mime_type") or "audio/ogg",
+            note.get("duration"),
+        )
     except ecoute.NoteTropLongue:
         dire(chat, "vocal_trop_long")
-        envoyer(chat, "Ta note vocale est trop longue pour moi. Pose ta question en moins d'une minute.",
-                reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "Ta note vocale est trop longue pour moi. Pose ta question en moins d'une minute.",
+            reply_markup=CLAVIER,
+        )
         return
     except Exception as e:  # Octopus indisponible, plafond du jour atteint, fichier illisible
         journal.info("note vocale non traitée : %s", type(e).__name__)
         dire(chat, "vocal_indisponible")
-        envoyer(chat, f"Je ne peux pas écouter les messages vocaux pour le moment. {ecrire}", reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            f"Je ne peux pas écouter les messages vocaux pour le moment. {ecrire}",
+            reply_markup=CLAVIER,
+        )
         return
     if not compris["francais"]:
         dire(chat, "vocal_non_compris")
-        envoyer(chat, "Je n'ai pas bien compris ta note vocale. Peux-tu la redire plus lentement, dans un "
-                      f"endroit calme ? {ecrire}", reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "Je n'ai pas bien compris ta note vocale. Peux-tu la redire plus lentement, dans un "
+            f"endroit calme ? {ecrire}",
+            reply_markup=CLAVIER,
+        )
         return
     # L'agriculteur voit ce qui a été compris : s'il y a une erreur, il peut reformuler.
     envoyer(chat, f"<i>J'ai compris ta question ainsi : « {escape(compris['francais'])} »</i>")
@@ -435,59 +615,86 @@ def _photo(chat: int, file_id: str, culture: str | None):
     try:
         res = modele.diagnostiquer(_telecharger(file_id), culture)
     except modele.ModeleAbsent:
-        envoyer(chat, "L'examen des photos est momentanément indisponible. Réessaie plus tard.",
-                reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "L'examen des photos est momentanément indisponible. Réessaie plus tard.",
+            reply_markup=CLAVIER,
+        )
         return
     except Exception as e:
         journal.info("photo Telegram illisible : %s", type(e).__name__)
         dire(chat, "photo_illisible")
-        envoyer(chat, "Je n'arrive pas à lire cette photo. Peux-tu la reprendre, bien nette ?\n\n"
-                      + CONSEILS_PHOTO, reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "Je n'arrive pas à lire cette photo. Peux-tu la reprendre, bien nette ?\n\n"
+            + CONSEILS_PHOTO,
+            reply_markup=CLAVIER,
+        )
         return
     top = res["predictions"][0]
     if not res["certain"]:
         dire(chat, "photo_incertaine")
-        envoyer(chat, "<b>Je ne suis pas sûr de ce que je vois.</b>\n"
-                      "Plutôt que de te donner une mauvaise réponse, je préfère que tu reprennes la photo.\n\n"
-                      "<b>Comment reprendre la photo</b>\n" + CONSEILS_PHOTO + "\n\n"
-                      f"<i>Si la plante va mal, montre-la aussi à {AGENT}.</i>", reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "<b>Je ne suis pas sûr de ce que je vois.</b>\n"
+            "Plutôt que de te donner une mauvaise réponse, je préfère que tu reprennes la photo.\n\n"
+            "<b>Comment reprendre la photo</b>\n" + CONSEILS_PHOTO + "\n\n"
+            f"<i>Si la plante va mal, montre-la aussi à {AGENT}.</i>",
+            reply_markup=CLAVIER,
+        )
         return
     if top["categorie"] == "sain":
         dire(chat, "photo_saine")
-        envoyer(chat, "<b>Bonne nouvelle : ce que je vois semble sain.</b>\n"
-                      "Je ne vois pas de signe de maladie sur cette photo.\n\n"
-                      "<b>Ce que tu peux faire ensuite</b>\nSi d'autres plants ont des taches, envoie-moi leur photo."
-                      + _verifier_aussi(top.get("culture")),
-                reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "<b>Bonne nouvelle : ce que je vois semble sain.</b>\n"
+            "Je ne vois pas de signe de maladie sur cette photo.\n\n"
+            "<b>Ce que tu peux faire ensuite</b>\nSi d'autres plants ont des taches, envoie-moi leur photo."
+            + _verifier_aussi(top.get("culture")),
+            reply_markup=CLAVIER,
+        )
         return
-    tete = ("<b>Ce que je vois sur ta photo</b>\n"
-            f"Cela ressemble à : <b>{escape(top['libelle'])}</b> "
-            f"(confiance du modèle : {round(top['confiance'] * 100)} %).\n"
-            "C'est une première indication, pas un diagnostic sûr.")
+    tete = (
+        "<b>Ce que je vois sur ta photo</b>\n"
+        f"Cela ressemble à : <b>{escape(top['libelle'])}</b> "
+        f"(confiance du modèle : {round(top['confiance'] * 100)} %).\n"
+        "C'est une première indication, pas un diagnostic sûr."
+    )
     from .v1 import FICHES_ETIQUETTES
 
     nom_fiche = FICHES_ETIQUETTES.get(top["etiquette"])
     dire(chat, f"fiche_{nom_fiche}" if nom_fiche else "pas_de_fiche")
     dire(chat, "diagnostic_prudence")
     fiche = texte_fiche(top["etiquette"], top.get("culture"))
-    suite = ("<b>Ce que tu peux faire ensuite</b>\n"
-             f"Pour confirmer, montre ta plante à {AGENT}. "
-             "Tu peux aussi m'écrire une question sur ce problème.")
+    suite = (
+        "<b>Ce que tu peux faire ensuite</b>\n"
+        f"Pour confirmer, montre ta plante à {AGENT}. "
+        "Tu peux aussi m'écrire une question sur ce problème."
+    )
     if not fiche:
-        envoyer(chat, f"{tete}\n\nJe n'ai pas encore de fiche sur ce problème.\n\n{suite}"
-                      + _verifier_aussi(top.get("culture")), reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            f"{tete}\n\nJe n'ai pas encore de fiche sur ce problème.\n\n{suite}"
+            + _verifier_aussi(top.get("culture")),
+            reply_markup=CLAVIER,
+        )
         return
     corps, sources = fiche
-    envoyer(chat, f"{tete}\n\n{corps}\n\n{suite}{_verifier_aussi(top.get('culture'))}\n\n{sources}",
-            reply_markup=CLAVIER)
+    envoyer(
+        chat,
+        f"{tete}\n\n{corps}\n\n{suite}{_verifier_aussi(top.get('culture'))}\n\n{sources}",
+        reply_markup=CLAVIER,
+    )
 
 
 def _verifier_aussi(culture: str | None) -> str:
     """Ravageurs invisibles pour le modèle (mineuse de la tomate) : la question oui/non de la fiche."""
     from .v1 import questions_suivi
 
-    return "".join(f"\n\n<b>À vérifier aussi</b>\n{escape(q['question'])}\n<i>Si oui : {escape(q['si_oui'])}</i>"
-                   for q in questions_suivi(culture))
+    return "".join(
+        f"\n\n<b>À vérifier aussi</b>\n{escape(q['question'])}\n<i>Si oui : {escape(q['si_oui'])}</i>"
+        for q in questions_suivi(culture)
+    )
 
 
 def texte_fiche(etiquette: str, culture: str | None) -> tuple[str, str] | None:
@@ -527,17 +734,23 @@ def _question(chat: int, texte: str):
     r = repondre(texte, memoire.echanges_recents(etat))
     if r["statut"] != "ok":
         dire(chat, "je_ne_sais_pas")
-        envoyer(chat, "Je n'ai pas trouvé la réponse dans mes fiches, et je préfère ne pas inventer.\n"
-                      f"Pour cette question, le mieux est de demander à {AGENT}.\n\n"
-                      "<b>Ce que je sais faire</b>\n"
-                      "• Te dire quoi planter, selon ton sol.\n"
-                      "• Surveiller ta culture selon la météo.\n"
-                      "• Regarder la photo de ta plante malade.", reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "Je n'ai pas trouvé la réponse dans mes fiches, et je préfère ne pas inventer.\n"
+            f"Pour cette question, le mieux est de demander à {AGENT}.\n\n"
+            "<b>Ce que je sais faire</b>\n"
+            "• Te dire quoi planter, selon ton sol.\n"
+            "• Surveiller ta culture selon la météo.\n"
+            "• Regarder la photo de ta plante malade.",
+            reply_markup=CLAVIER,
+        )
         return
     if ETATS.get(chat, {}).get("langue") == "wo":
         _dire_reponse_wolof(chat, r["texte"])
-    sources = " ; ".join(_court(s["document"]) + (f", p. {s['page']}" if s["page"][:1].isdigit() else "")
-                         for s in [x for x in r["sources"] if _court(x["document"])][:3])
+    sources = " ; ".join(
+        _court(s["document"]) + (f", p. {s['page']}" if s["page"][:1].isdigit() else "")
+        for s in [x for x in r["sources"] if _court(x["document"])][:3]
+    )
     memoire.ajouter_echange(etat, texte, r["texte"].replace("**", ""))
     reponse = escape(r["texte"].replace("**", ""))
     envoyer(chat, f"{reponse}\n\n<i>Sources : {escape(sources)}</i>", reply_markup=CLAVIER)
@@ -547,7 +760,9 @@ def traiter(maj: dict):
     if "callback_query" in maj:
         q = maj["callback_query"]
         _appel_silencieux("answerCallbackQuery", callback_query_id=q["id"])
-        chat = ((q.get("message") or {}).get("chat") or {}).get("id") or (q.get("from") or {}).get("id")
+        chat = ((q.get("message") or {}).get("chat") or {}).get("id") or (q.get("from") or {}).get(
+            "id"
+        )
         if chat is None:
             return
         donnee = q.get("data", "")
@@ -573,10 +788,13 @@ def traiter(maj: dict):
             ETATS[chat]["attend_date"], ETATS[chat]["date_libre"] = True, False
             ETATS[chat].pop("repiquage", None)
             dire(chat, "date_repiquage")
-            envoyer(chat, f"C'est noté : {escape(CULTURES[culture]['libelle'].lower())}.\n\n"
-                          "<b>Une dernière question pour bien te conseiller</b>\nTu l'as plantée quand ? "
-                          "Écris-moi le jour comme ça : <b>15/10</b> pour le 15 octobre. "
-                          "Si tu ne t'en souviens plus, écris juste : <b>je ne sais pas</b>.")
+            envoyer(
+                chat,
+                f"C'est noté : {escape(CULTURES[culture]['libelle'].lower())}.\n\n"
+                "<b>Une dernière question pour bien te conseiller</b>\nTu l'as plantée quand ? "
+                "Écris-moi le jour comme ça : <b>15/10</b> pour le 15 octobre. "
+                "Si tu ne t'en souviens plus, écris juste : <b>je ne sais pas</b>.",
+            )
         return
     msg = maj.get("message") or {}
     chat = (msg.get("chat") or {}).get("id")
@@ -598,8 +816,13 @@ def traiter(maj: dict):
     elif texte == B_POSITION_TEST and AVEC_POSITION_TEST and "langue" in etat:
         etat["lat"], etat["lon"] = POSITION_TEST["lat"], POSITION_TEST["lon"]
         dire(chat, "position_recue")
-        envoyer(chat, f"Position test : {POSITION_TEST['nom']}, dans la zone pilote des Niayes. "
-                      "C'est un bouton de démonstration ; pour ton vrai champ, utilise « " + B_POSITION + " ».")
+        envoyer(
+            chat,
+            f"Position test : {POSITION_TEST['nom']}, dans la zone pilote des Niayes. "
+            "C'est un bouton de démonstration ; pour ton vrai champ, utilise « "
+            + B_POSITION
+            + " ».",
+        )
         _plan(chat)
     elif msg.get("photo"):
         # Pas de filtre par la culture surveillée : la feuille peut venir d'une autre culture.
@@ -609,41 +832,68 @@ def traiter(maj: dict):
     elif texte.startswith("/oublier"):
         memoire.oublier(chat)
         ETATS.pop(chat, None)  # rien n'est rangé après : la conversation repart de zéro
-        envoyer(chat, "C'est fait : j'ai oublié ta langue, ton champ, ta culture et nos derniers échanges. "
-                      "Écris /start pour recommencer.")
-    elif texte.startswith(("/start", "/langue")) or ("langue" not in etat and not etat.get("attend_date")):
+        envoyer(
+            chat,
+            "C'est fait : j'ai oublié ta langue, ton champ, ta culture et nos derniers échanges. "
+            "Écris /start pour recommencer.",
+        )
+    elif texte.startswith(("/start", "/langue")) or (
+        "langue" not in etat and not etat.get("attend_date")
+    ):
         dire(chat, "choix_langue", toujours=True)  # la question est aussi dite en wolof
         envoyer(chat, CHOIX_LANGUE, reply_markup=CLAVIER_LANGUE)
     elif texte == B_AIDE:
         dire(chat, "accueil")
-        envoyer(chat, ACCUEIL + "\n\n<i>Pour changer de langue, écris /langue. Pour que j'oublie tout ce que tu m'as dit, écris /oublier.</i>", reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            ACCUEIL
+            + "\n\n<i>Pour changer de langue, écris /langue. Pour que j'oublie tout ce que tu m'as dit, écris /oublier.</i>",
+            reply_markup=CLAVIER,
+        )
     elif texte == B_QUESTION:
         dire(chat, "invite_question")
-        envoyer(chat, "Je t'écoute. Pose-moi ta question par écrit (en français), ou envoie-moi un message "
-                      "vocal en wolof.", reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "Je t'écoute. Pose-moi ta question par écrit (en français), ou envoie-moi un message "
+            "vocal en wolof.",
+            reply_markup=CLAVIER,
+        )
     elif texte == B_PHOTO:
         dire(chat, "conseils_photo")
-        envoyer(chat, "<b>Envoie-moi une photo de ta plante, là où quelque chose t'inquiète.</b>\n"
-                      "Touche le petit bouton rond tout à gauche de la case « Message », juste au-dessus des grands boutons. "
-                      "Choisis ensuite « Appareil photo » pour prendre la photo maintenant, ou une photo déjà prise dans ta galerie.\n\n"
-                      "<b>Pour une photo bien lisible</b>\n" + CONSEILS_PHOTO, reply_markup=CLAVIER)
+        envoyer(
+            chat,
+            "<b>Envoie-moi une photo de ta plante, là où quelque chose t'inquiète.</b>\n"
+            "Touche le petit bouton rond tout à gauche de la case « Message », juste au-dessus des grands boutons. "
+            "Choisis ensuite « Appareil photo » pour prendre la photo maintenant, ou une photo déjà prise dans ta galerie.\n\n"
+            "<b>Pour une photo bien lisible</b>\n" + CONSEILS_PHOTO,
+            reply_markup=CLAVIER,
+        )
     elif texte == B_PLAN:
         if "lat" in etat:
             _plan(chat)
         else:
             dire(chat, "demande_position")
-            envoyer(chat, "Je peux te dire quoi planter ce mois-ci, selon le sol de ton champ. "
-                          + DEMANDE_POSITION, reply_markup=CLAVIER)
+            envoyer(
+                chat,
+                "Je peux te dire quoi planter ce mois-ci, selon le sol de ton champ. "
+                + DEMANDE_POSITION,
+                reply_markup=CLAVIER,
+            )
     elif texte == B_ALERTES:
         if "lat" not in etat:
             dire(chat, "demande_position")
-            envoyer(chat, "Je peux surveiller ta culture avec la météo de ton champ. "
-                          + DEMANDE_POSITION, reply_markup=CLAVIER)
+            envoyer(
+                chat,
+                "Je peux surveiller ta culture avec la météo de ton champ. " + DEMANDE_POSITION,
+                reply_markup=CLAVIER,
+            )
         elif "culture" in etat and not etat.get("attend_date"):
             _alertes(chat)
         else:
             _choisir_culture(chat)
-    elif etat.get("attend_date") and re.fullmatch(r"((je )?ne sais (pas|plus)|xamu ?ma|xamu ?ma ko)\s*[.!]?", texte.lower()):
+    elif etat.get("attend_date") and re.fullmatch(
+        r"((je )?ne sais (pas|plus)|xamu ?ma|xamu ?ma ko)\s*[.!]?", texte.lower()
+    ):
         etat["repiquage"], etat["attend_date"] = None, False
         dire(chat, "date_ignoree")
         envoyer(chat, "Pas de souci, je fais sans la date.")
@@ -651,20 +901,29 @@ def traiter(maj: dict):
             _alertes(chat)
         else:
             _sans_position(chat)
-    elif ((etat.get("attend_date") or etat.get("date_libre")) and "culture" in etat
-          and (m := re.fullmatch(r"(\d{1,2})[/.\- ](\d{1,2})", texte))):
+    elif (
+        (etat.get("attend_date") or etat.get("date_libre"))
+        and "culture" in etat
+        and (m := re.fullmatch(r"(\d{1,2})[/.\- ](\d{1,2})", texte))
+    ):
         aujourdhui = dt.date.today()
         jour, mois = int(m.group(1)), int(m.group(2))
         try:
             date = dt.date(aujourdhui.year - (mois > aujourdhui.month), mois, jour)
         except ValueError:
             dire(chat, "date_incomprise")
-            envoyer(chat, "Je n'ai pas compris la date. Écris-la comme ceci : <b>15/10</b> pour le 15 octobre.")
+            envoyer(
+                chat,
+                "Je n'ai pas compris la date. Écris-la comme ceci : <b>15/10</b> pour le 15 octobre.",
+            )
             return
         if date > aujourdhui:
             dire(chat, "date_future")
-            envoyer(chat, "Cette date n'est pas encore arrivée. Écris le jour où tu as planté, "
-                          "par exemple <b>15/10</b> pour le 15 octobre.")
+            envoyer(
+                chat,
+                "Cette date n'est pas encore arrivée. Écris le jour où tu as planté, "
+                "par exemple <b>15/10</b> pour le 15 octobre.",
+            )
             return
         etat["repiquage"], etat["attend_date"], etat["date_libre"] = date, False, False
         if "lat" in etat:
@@ -677,8 +936,9 @@ def traiter(maj: dict):
 
 def _chat_de(maj: dict) -> int | None:
     q = maj.get("callback_query") or {}
-    return (((maj.get("message") or q.get("message") or {}).get("chat") or {}).get("id")
-            or (q.get("from") or {}).get("id"))
+    return ((maj.get("message") or q.get("message") or {}).get("chat") or {}).get("id") or (
+        q.get("from") or {}
+    ).get("id")
 
 
 def traiter_sans_planter(maj: dict):
@@ -695,10 +955,15 @@ def traiter_sans_planter(maj: dict):
     except Exception as e:
         # Type et ligne seulement : le texte de l'erreur pourrait contenir un message de l'agriculteur.
         ou = traceback.extract_tb(e.__traceback__)[-1]
-        journal.error("message non traité : %s (%s:%s)", type(e).__name__, Path(ou.filename).name, ou.lineno)
+        journal.error(
+            "message non traité : %s (%s:%s)", type(e).__name__, Path(ou.filename).name, ou.lineno
+        )
         if chat is not None:
-            _appel_silencieux("sendMessage", chat_id=chat, text="Désolé, un problème m'a empêché de répondre. "
-                              "Réessaie dans un instant.")
+            _appel_silencieux(
+                "sendMessage",
+                chat_id=chat,
+                text="Désolé, un problème m'a empêché de répondre. " "Réessaie dans un instant.",
+            )
     finally:
         if chat is not None and chat in ETATS:
             apres = json.dumps(memoire.vers_json(ETATS[chat]), sort_keys=True, default=str)
@@ -723,12 +988,17 @@ def _appel_silencieux(methode: str, **donnees):
 
 
 @router.post("/webhook/telegram")
-async def webhook(request: Request, taches: BackgroundTasks,
-                  x_telegram_bot_api_secret_token: str | None = Header(default=None)):
+async def webhook(
+    request: Request,
+    taches: BackgroundTasks,
+    x_telegram_bot_api_secret_token: str | None = Header(default=None),
+):
     secret = config.TELEGRAM_WEBHOOK_SECRET
     if not config.TELEGRAM_BOT_TOKEN or not secret:
         raise HTTPException(503, "bot Telegram non configuré")
-    if not x_telegram_bot_api_secret_token or not hmac.compare_digest(x_telegram_bot_api_secret_token.encode(), secret.encode()):
+    if not x_telegram_bot_api_secret_token or not hmac.compare_digest(
+        x_telegram_bot_api_secret_token.encode(), secret.encode()
+    ):
         raise HTTPException(403, "secret invalide")
     # Réponse immédiate à Telegram ; le travail (sol, météo, photo) se fait ensuite.
     taches.add_task(traiter_sans_planter, await request.json())

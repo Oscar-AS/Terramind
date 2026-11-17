@@ -21,9 +21,11 @@ class MeteoIndisponible(RuntimeError):
 
 
 def _lire(pas: str, parametres: str, lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict:
-    url = (f"{POWER.format(pas=pas)}?parameters={parametres}&community=AG"
-           f"&latitude={lat}&longitude={lon}&start={debut:%Y%m%d}&end={fin:%Y%m%d}&format=JSON"
-           + ("&time-standard=UTC" if pas == "hourly" else ""))
+    url = (
+        f"{POWER.format(pas=pas)}?parameters={parametres}&community=AG"
+        f"&latitude={lat}&longitude={lon}&start={debut:%Y%m%d}&end={fin:%Y%m%d}&format=JSON"
+        + ("&time-standard=UTC" if pas == "hourly" else "")
+    )
     try:
         with urllib.request.urlopen(url, timeout=60) as r:
             return json.loads(r.read())["properties"]["parameter"]
@@ -32,9 +34,12 @@ def _lire(pas: str, parametres: str, lat: float, lon: float, debut: dt.date, fin
 
 
 @lru_cache(maxsize=256)
-def heures(lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict[dt.datetime, tuple[float, float]]:
+def heures(
+    lat: float, lon: float, debut: dt.date, fin: dt.date
+) -> dict[dt.datetime, tuple[float, float]]:
     """{date et heure (UTC, = heure du Sénégal) : (température °C, humidité %, pluie mm)} ; heures manquantes
-    retirées. Pluie : PRECTOTCORR (mm/h), corrigée par CMAP en Afrique ; bruine et valeurs aberrantes possibles."""
+    retirées. Pluie : PRECTOTCORR (mm/h), corrigée par CMAP en Afrique ; bruine et valeurs aberrantes possibles.
+    """
     p = _lire("hourly", "T2M,RH2M,PRECTOTCORR", lat, lon, debut, fin)
     res = {}
     for cle, t in p["T2M"].items():
@@ -46,7 +51,9 @@ def heures(lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict[dt.date
     return res
 
 
-def horaire(lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict[dt.date, list[tuple[float, float]]]:
+def horaire(
+    lat: float, lon: float, debut: dt.date, fin: dt.date
+) -> dict[dt.date, list[tuple[float, float]]]:
     """{jour: [(température °C, humidité %), …]} ; heures manquantes retirées."""
     jours: dict[dt.date, list[tuple[float, float]]] = {}
     for moment, th in sorted(heures(lat, lon, debut, fin).items()):
@@ -55,7 +62,9 @@ def horaire(lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict[dt.dat
 
 
 @lru_cache(maxsize=256)
-def journalier(lat: float, lon: float, debut: dt.date, fin: dt.date) -> dict[dt.date, tuple[float, float]]:
+def journalier(
+    lat: float, lon: float, debut: dt.date, fin: dt.date
+) -> dict[dt.date, tuple[float, float]]:
     """{jour: (Tmin, Tmax)} ; jours manquants retirés."""
     p = _lire("daily", "T2M_MIN,T2M_MAX", lat, lon, debut, fin)
     jours = {}

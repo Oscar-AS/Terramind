@@ -1,9 +1,11 @@
-import csv, sys
+import csv
+import sys
+
 cat = {r["cle"]: r for r in csv.DictReader(open("content/voix/messages_wolof.csv"))}
 con = {r["cle"]: r for r in csv.DictReader(open("content/voix/traductions_concordance.csv"))}
 ordre = [k for k, r in cat.items() if r["statut"] == "a_relire"]
 debut, n = int(sys.argv[1]), int(sys.argv[2])
-for i, k in enumerate(ordre[debut:debut + n], debut + 1):
+for i, k in enumerate(ordre[debut : debut + n], debut + 1):
     r, c = cat[k], con.get(k, {})
     print(f"#{i}/{len(ordre)} {k} | usage: {r['usage']}")
     print("FR:", r["texte_fr"])

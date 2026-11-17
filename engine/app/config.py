@@ -32,7 +32,6 @@ def valeur(cle, defaut=""):
     return os.environ.get(cle, defaut).strip()
 
 
-
 # Bot Telegram (D12) : jeton de @BotFather et secret partagé de l'en-tête du webhook.
 TELEGRAM_BOT_TOKEN = valeur("TELEGRAM_BOT_TOKEN")
 TELEGRAM_WEBHOOK_SECRET = valeur("TELEGRAM_WEBHOOK_SECRET")

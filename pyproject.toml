@@ -2,12 +2,20 @@
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+# Python 3.9 : version minimale du moteur en local (README) ; l'image Render est en 3.11. Sans ça, ruff
+# propose datetime.UTC, zip(strict=…) ou « X | None » dans les modèles FastAPI, qui cassent en 3.9.
+target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
-# La longueur des lignes est gérée par black (qui ne coupe pas les chaînes).
-ignore = ["E501"]
+# E501 : la longueur des lignes est gérée par black (qui ne coupe pas les chaînes).
+# E741 : « l » pour « ligne » est un nom courant dans le code. B008 : File(...) / Form(...) en valeur
+# par défaut est l'écriture normale de FastAPI.
+ignore = ["E501", "E741", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+# Modèles FastAPI / pydantic : les annotations sont lues à l'exécution, « X | None » casserait en Python 3.9.
+"engine/app/routes/v1.py" = ["UP007"]
 
 [tool.black]
 line-length = 100

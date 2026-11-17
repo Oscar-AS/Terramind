@@ -26,8 +26,18 @@ journal = logging.getLogger("terramind.memoire")
 TABLE = "memoire_bot"
 DELAI = 5  # secondes : la mémoire ne doit jamais faire attendre l'agriculteur longtemps
 # Champs gardés d'une visite à l'autre (les autres sont des drapeaux du moment).
-GARDES = ("langue", "lat", "lon", "eau_salee", "bas_fond", "culture", "repiquage", "attend_date",
-          "date_libre", "historique")
+GARDES = (
+    "langue",
+    "lat",
+    "lon",
+    "eau_salee",
+    "bas_fond",
+    "culture",
+    "repiquage",
+    "attend_date",
+    "date_libre",
+    "historique",
+)
 
 
 def _reglages() -> tuple[str, str] | None:
@@ -64,10 +74,17 @@ def _depuis_json(donnees: dict) -> dict:
 
 def _requete(methode: str, chemin: str, corps: object | None = None, entetes: dict | None = None):
     url, cle = _reglages()
-    req = urllib.request.Request(f"{url}/rest/v1/{chemin}", method=methode,
-                                 data=json.dumps(corps).encode() if corps is not None else None,
-                                 headers={"apikey": cle, "Authorization": f"Bearer {cle}",
-                                          "Content-Type": "application/json", **(entetes or {})})
+    req = urllib.request.Request(
+        f"{url}/rest/v1/{chemin}",
+        method=methode,
+        data=json.dumps(corps).encode() if corps is not None else None,
+        headers={
+            "apikey": cle,
+            "Authorization": f"Bearer {cle}",
+            "Content-Type": "application/json",
+            **(entetes or {}),
+        },
+    )
     with urllib.request.urlopen(req, timeout=DELAI) as r:
         texte = r.read()
     return json.loads(texte) if texte else None
@@ -90,9 +107,16 @@ def enregistrer(chat: int, etat: dict) -> bool:
     if not active():
         return False
     try:
-        _requete("POST", f"{TABLE}?on_conflict=cle",
-                 {"cle": cle_de(chat), "etat": vers_json(etat), "maj": dt.datetime.now(dt.timezone.utc).isoformat()},
-                 {"Prefer": "resolution=merge-duplicates,return=minimal"})
+        _requete(
+            "POST",
+            f"{TABLE}?on_conflict=cle",
+            {
+                "cle": cle_de(chat),
+                "etat": vers_json(etat),
+                "maj": dt.datetime.now(dt.timezone.utc).isoformat(),
+            },
+            {"Prefer": "resolution=merge-duplicates,return=minimal"},
+        )
         return True
     except Exception as e:
         journal.warning("mémoire non enregistrée (%s)", type(e).__name__)
@@ -130,6 +154,11 @@ def echanges_recents(etat: dict, maintenant: dt.datetime | None = None) -> list[
 
 def ajouter_echange(etat: dict, question: str, reponse: str):
     h = echanges_recents(etat)
-    h.append({"question": question[:500], "reponse": reponse[:600],
-              "quand": dt.datetime.now(dt.timezone.utc).isoformat()})
+    h.append(
+        {
+            "question": question[:500],
+            "reponse": reponse[:600],
+            "quand": dt.datetime.now(dt.timezone.utc).isoformat(),
+        }
+    )
     etat["historique"] = h[-HISTORIQUE_MAX:]

@@ -30,7 +30,6 @@ import time
 from collections import Counter
 from pathlib import Path
 
-import numpy as np
 import pyarrow.parquet as pq
 import torch
 from PIL import Image, ImageFilter
@@ -47,7 +46,10 @@ MIN_IMAGES = 50
 PLAFOND_PV = 600
 TAILLE = 224
 ARCHS = {
-    "mobilenet_v3_large": (models.mobilenet_v3_large, models.MobileNet_V3_Large_Weights.IMAGENET1K_V2),
+    "mobilenet_v3_large": (
+        models.mobilenet_v3_large,
+        models.MobileNet_V3_Large_Weights.IMAGENET1K_V2,
+    ),
     "convnext_tiny": (models.convnext_tiny, models.ConvNeXt_Tiny_Weights.IMAGENET1K_V1),
 }
 
@@ -71,14 +73,25 @@ def construire(graine: int):
         test_pd += [("pd", f, cle) for f in lister(IMAGES / "plantdoc" / "test" / dossier)]
 
     # data/label_mapping.csv d'Oscar (branche ml/dataset-merge, pas encore fusionnée).
-    texte = subprocess.run(["git", "show", "origin/ml/dataset-merge:data/label_mapping.csv"], cwd=RACINE,
-                           capture_output=True, text=True, check=True).stdout
-    correspondance = {(r["crop_src"], r["label_src"]): (r["crop"], r["label"])
-                      for r in csv.DictReader(io.StringIO(texte)) if r["source"] == "tom2024"}
+    texte = subprocess.run(
+        ["git", "show", "origin/ml/dataset-merge:data/label_mapping.csv"],
+        cwd=RACINE,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+    correspondance = {
+        (r["crop_src"], r["label_src"]): (r["crop"], r["label"])
+        for r in csv.DictReader(io.StringIO(texte))
+        if r["source"] == "tom2024"
+    }
     table = pq.read_table(TOM)
     noms = json.loads(table.schema.metadata[b"huggingface"])["info"]["features"]["label"]["names"]
-    lignes = [(r["crop_type"], noms[r["label"]], r["image"]["bytes"])
-              for r in table.to_pylist() if r["crop_type"] in CULTURES_TOM]
+    lignes = [
+        (r["crop_type"], noms[r["label"]], r["image"]["bytes"])
+        for r in table.to_pylist()
+        if r["crop_type"] in CULTURES_TOM
+    ]
     comptes = Counter(correspondance[(c, l)] for c, l, _ in lignes)
     vus = set()
     for c, l, octets in lignes:
@@ -101,13 +114,19 @@ class Photos(Dataset):
 
     def __getitem__(self, i):
         _, charge, cle = self.elements[i]
-        image = Image.open(io.BytesIO(charge) if isinstance(charge, bytes) else charge).convert("RGB")
+        image = Image.open(io.BytesIO(charge) if isinstance(charge, bytes) else charge).convert(
+            "RGB"
+        )
         return self.transformation(image), self.index[cle]
 
 
 class FlouAleatoire:
     def __call__(self, image):
-        return image.filter(ImageFilter.GaussianBlur(random.uniform(0.1, 1.5))) if random.random() < 0.3 else image
+        return (
+            image.filter(ImageFilter.GaussianBlur(random.uniform(0.1, 1.5)))
+            if random.random() < 0.3
+            else image
+        )
 
 
 def logits_de(modele, chargeur, appareil):
@@ -138,9 +157,15 @@ def mesures(logits, cibles, t, seuils=(0.4, 0.5, 0.6, 0.7, 0.8, 0.9)):
     p = torch.softmax(logits / t, 1)
     conf, pred = p.max(1)
     juste = pred == cibles
-    tableau = {str(s): {"couverture": round(float((conf >= s).float().mean()), 3),
-                        "precision": round(float(juste[conf >= s].float().mean()), 3) if (conf >= s).any() else None}
-               for s in seuils}
+    tableau = {
+        str(s): {
+            "couverture": round(float((conf >= s).float().mean()), 3),
+            "precision": (
+                round(float(juste[conf >= s].float().mean()), 3) if (conf >= s).any() else None
+            ),
+        }
+        for s in seuils
+    }
     return round(float(juste.float().mean()), 4), tableau
 
 
@@ -159,17 +184,29 @@ def main():
     ent, val, test_pd, test_tom = construire(args.graine)
     cles = sorted({cle for *_, cle in ent})
     index = {cle: i for i, cle in enumerate(cles)}
-    print(f"{args.arch} : {len(cles)} classes ; entraînement {len(ent)}, validation terrain {len(val)}, "
-          f"test PlantDoc {len(test_pd)}, test TOM2024 {len(test_tom)}", flush=True)
+    print(
+        f"{args.arch} : {len(cles)} classes ; entraînement {len(ent)}, validation terrain {len(val)}, "
+        f"test PlantDoc {len(test_pd)}, test TOM2024 {len(test_tom)}",
+        flush=True,
+    )
 
     norm = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    aug = transforms.Compose([
-        transforms.RandomResizedCrop(TAILLE, scale=(0.35, 1.0)), transforms.RandomHorizontalFlip(),
-        transforms.RandomVerticalFlip(), transforms.RandomRotation(30), FlouAleatoire(),
-        transforms.ColorJitter(0.4, 0.4, 0.4, 0.06), transforms.ToTensor(), norm,
-        transforms.RandomErasing(p=0.25),
-    ])
-    simple = transforms.Compose([transforms.Resize(256), transforms.CenterCrop(TAILLE), transforms.ToTensor(), norm])
+    aug = transforms.Compose(
+        [
+            transforms.RandomResizedCrop(TAILLE, scale=(0.35, 1.0)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            transforms.RandomRotation(30),
+            FlouAleatoire(),
+            transforms.ColorJitter(0.4, 0.4, 0.4, 0.06),
+            transforms.ToTensor(),
+            norm,
+            transforms.RandomErasing(p=0.25),
+        ]
+    )
+    simple = transforms.Compose(
+        [transforms.Resize(256), transforms.CenterCrop(TAILLE), transforms.ToTensor(), norm]
+    )
     charge = dict(batch_size=48, num_workers=4, persistent_workers=True)
     # Échantillonnage équilibré : chaque classe pèse pareil, quelle que soit sa source.
     comptes = Counter(index[c] for *_, c in ent)
@@ -190,7 +227,9 @@ def main():
     perte = nn.CrossEntropyLoss(label_smoothing=0.1)
     lr = 1e-3 if args.arch.startswith("mobilenet") else 3e-4
     opt = torch.optim.AdamW(modele.parameters(), lr=lr, weight_decay=0.05)
-    plan = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=lr, total_steps=args.epoques * len(c_ent))
+    plan = torch.optim.lr_scheduler.OneCycleLR(
+        opt, max_lr=lr, total_steps=args.epoques * len(c_ent)
+    )
 
     meilleur, historique = -1.0, []
     for ep in range(1, args.epoques + 1):
@@ -204,7 +243,10 @@ def main():
         lv, yv = logits_de(modele, c_val, appareil)
         acc_val = float((lv.argmax(1) == yv).float().mean())
         historique.append({"epoque": ep, "validation_terrain": round(acc_val, 4)})
-        print(f"époque {ep} : validation terrain {acc_val:.3f} ({time.time() - debut:.0f} s)", flush=True)
+        print(
+            f"époque {ep} : validation terrain {acc_val:.3f} ({time.time() - debut:.0f} s)",
+            flush=True,
+        )
         if acc_val > meilleur:  # choix sur la validation terrain, jamais sur les tests
             meilleur = acc_val
             torch.save(modele.state_dict(), sortie / "meilleur.pth")
@@ -214,7 +256,9 @@ def main():
     t = temperature(lv, yv)
     _, tab_val = mesures(lv, yv, t)
     # Seuil : le plus bas qui donne au moins 85 % de réponses justes sur la validation terrain.
-    seuil = next((float(s) for s, m in tab_val.items() if m["precision"] and m["precision"] >= 0.85), 0.9)
+    seuil = next(
+        (float(s) for s, m in tab_val.items() if m["precision"] and m["precision"] >= 0.85), 0.9
+    )
     resultats = {}
     for nom, chargeur in (("test_plantdoc", c_pd), ("test_tom2024", c_tom)):
         lt, yt = logits_de(modele, chargeur, appareil)
@@ -222,22 +266,51 @@ def main():
         par_classe = {}
         for i in yt.unique().tolist():
             m = yt == i
-            par_classe[f"{cles[i][0]}/{cles[i][1]}"] = round(float((lt[m].argmax(1) == i).float().mean()), 3)
-        resultats[nom] = {"images": len(yt), "precision": acc, "seuils": tab, "par_classe": par_classe}
+            par_classe[f"{cles[i][0]}/{cles[i][1]}"] = round(
+                float((lt[m].argmax(1) == i).float().mean()), 3
+            )
+        resultats[nom] = {
+            "images": len(yt),
+            "precision": acc,
+            "seuils": tab,
+            "par_classe": par_classe,
+        }
         print(f"{nom} : précision {acc:.3f} ; au seuil {seuil} : {tab[str(seuil)]}", flush=True)
 
     modele.to("cpu").eval()
-    torch.onnx.export(modele, torch.zeros(1, 3, TAILLE, TAILLE), str(sortie / "terramind_diag.onnx"),
-                      input_names=["image"], output_names=["logits"], opset_version=17, dynamo=False)
-    (sortie / "etiquettes.json").write_text(json.dumps([{"culture": c, "etiquette": e} for c, e in cles], indent=2))
-    (sortie / "calibration.json").write_text(json.dumps({"temperature": t, "seuil_incertain": seuil}))
-    (RACINE / "ml" / "eval" / f"diagnostic_v1_{args.arch}.json").write_text(json.dumps({
-        "architecture": args.arch, "classes": [f"{c}/{e}" for c, e in cles],
-        "donnees": {"entrainement": len(ent), "validation_terrain": len(val)},
-        "validation_terrain": {"precision": round(meilleur, 4), "seuils": tab_val},
-        "temperature": round(t, 3), "seuil_incertain": seuil, **resultats,
-        "historique": historique, "graine": args.graine, "epoques": args.epoques,
-    }, indent=2, ensure_ascii=False))
+    torch.onnx.export(
+        modele,
+        torch.zeros(1, 3, TAILLE, TAILLE),
+        str(sortie / "terramind_diag.onnx"),
+        input_names=["image"],
+        output_names=["logits"],
+        opset_version=17,
+        dynamo=False,
+    )
+    (sortie / "etiquettes.json").write_text(
+        json.dumps([{"culture": c, "etiquette": e} for c, e in cles], indent=2)
+    )
+    (sortie / "calibration.json").write_text(
+        json.dumps({"temperature": t, "seuil_incertain": seuil})
+    )
+    (RACINE / "ml" / "eval" / f"diagnostic_v1_{args.arch}.json").write_text(
+        json.dumps(
+            {
+                "architecture": args.arch,
+                "classes": [f"{c}/{e}" for c, e in cles],
+                "donnees": {"entrainement": len(ent), "validation_terrain": len(val)},
+                "validation_terrain": {"precision": round(meilleur, 4), "seuils": tab_val},
+                "temperature": round(t, 3),
+                "seuil_incertain": seuil,
+                **resultats,
+                "historique": historique,
+                "graine": args.graine,
+                "epoques": args.epoques,
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+    )
     print(f"FINI {args.arch} : température {t:.2f}, seuil {seuil}", flush=True)
 
 

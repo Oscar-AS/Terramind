@@ -8,7 +8,14 @@ from pathlib import Path
 
 SORTIE = Path(__file__).resolve().parents[2] / "docs" / "assets" / "readme"
 
-FORET, FEUILLE, OCRE, SABLE, CREME, ENCRE = "#1f4d3a", "#3f8f5f", "#d08a2e", "#f3e3c3", "#fbf7ef", "#14261d"
+FORET, FEUILLE, OCRE, SABLE, CREME, ENCRE = (
+    "#1f4d3a",
+    "#3f8f5f",
+    "#d08a2e",
+    "#f3e3c3",
+    "#fbf7ef",
+    "#14261d",
+)
 
 # Icônes dessinées à la main (repère 120 x 120), en traits blancs.
 ICONES = {
@@ -49,17 +56,61 @@ ICONES = {
 }
 
 BANNIERES = {
-    "engine": ("engine/", "Le moteur", "Un seul cerveau pour l'application mobile et le bot Telegram"),
-    "channels": ("channels/", "Les façades", "Là où l'agriculteur parle à TerraMind : application mobile et Telegram"),
-    "dashboard": ("dashboard/", "Le tableau de bord", "Ce que l'équipe et les partenaires voient : usage, questions, alertes"),
-    "content": ("content/", "Le savoir du bot", "Fiches agronomiques, réponses types et voix wolof, tout sourcé"),
-    "data": ("data/", "Les données", "Sols, météo, cultures, prix, images : chaque fichier avec sa source"),
-    "docs": ("docs/", "La documentation", "Décisions, architecture, API, risques et sources de recherche"),
-    "ml": ("ml/", "L'intelligence artificielle", "Le modèle qui reconnaît une maladie sur la photo d'une feuille"),
-    "research": ("research/", "Le terrain", "Base agronomique, tests avec les agriculteurs, consentement"),
-    "scripts": ("scripts/", "Les outils", "Scripts qui collectent et vérifient les données, reproductibles"),
-    "deploy": ("deploy/", "La mise en ligne", "Le conteneur du moteur, publié sur ghcr.io et servi par Render"),
-    "site": ("channels/site/", "Le site vitrine", "Présenter TerraMind, ouvrir le bot, télécharger l'application"),
+    "engine": (
+        "engine/",
+        "Le moteur",
+        "Un seul cerveau pour l'application mobile et le bot Telegram",
+    ),
+    "channels": (
+        "channels/",
+        "Les façades",
+        "Là où l'agriculteur parle à TerraMind : application mobile et Telegram",
+    ),
+    "dashboard": (
+        "dashboard/",
+        "Le tableau de bord",
+        "Ce que l'équipe et les partenaires voient : usage, questions, alertes",
+    ),
+    "content": (
+        "content/",
+        "Le savoir du bot",
+        "Fiches agronomiques, réponses types et voix wolof, tout sourcé",
+    ),
+    "data": (
+        "data/",
+        "Les données",
+        "Sols, météo, cultures, prix, images : chaque fichier avec sa source",
+    ),
+    "docs": (
+        "docs/",
+        "La documentation",
+        "Décisions, architecture, API, risques et sources de recherche",
+    ),
+    "ml": (
+        "ml/",
+        "L'intelligence artificielle",
+        "Le modèle qui reconnaît une maladie sur la photo d'une feuille",
+    ),
+    "research": (
+        "research/",
+        "Le terrain",
+        "Base agronomique, tests avec les agriculteurs, consentement",
+    ),
+    "scripts": (
+        "scripts/",
+        "Les outils",
+        "Scripts qui collectent et vérifient les données, reproductibles",
+    ),
+    "deploy": (
+        "deploy/",
+        "La mise en ligne",
+        "Le conteneur du moteur, publié sur ghcr.io et servi par Render",
+    ),
+    "site": (
+        "channels/site/",
+        "Le site vitrine",
+        "Présenter TerraMind, ouvrir le bot, télécharger l'application",
+    ),
 }
 
 
@@ -86,5 +137,7 @@ def banniere(cle, chemin, titre, sous_titre):
 if __name__ == "__main__":
     SORTIE.mkdir(parents=True, exist_ok=True)
     for cle, (chemin, titre, sous_titre) in BANNIERES.items():
-        (SORTIE / f"{cle}.svg").write_text(banniere(cle, chemin, titre, sous_titre), encoding="utf-8")
+        (SORTIE / f"{cle}.svg").write_text(
+            banniere(cle, chemin, titre, sous_titre), encoding="utf-8"
+        )
         print(f"  ok  docs/assets/readme/{cle}.svg")

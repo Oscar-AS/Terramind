@@ -41,7 +41,7 @@ from essai_voix_wolof import cer  # noqa: E402
 VOIX = RACINE / "modeles" / "AIHubSN__Kiriku-Wolof-TTS"
 ASR = RACINE / "modeles" / "AIHubSN__M-Kiriku-ASR"
 SORTIE = RACINE / "content" / "voix" / "controle_voix.csv"
-SEUIL = 0.20      # phrase entière
+SEUIL = 0.20  # phrase entière
 SEUIL_MOT = 0.34  # mot retrouvé dans la phrase (au plus 1 caractère faux sur 3)
 KALLAAMA = RACINE / "data" / "raw" / "kallaama" / "data"
 
@@ -50,7 +50,10 @@ def phrases_kallaama():
     """Phrases réelles : transcriptions validées puis corpus écrit, nettoyées des balises d'annotation."""
     import glob
     import re
-    for f in sorted(glob.glob(str(KALLAAMA / "transcriptions/checked/transcriptions-wol/stm/*.stm"))):
+
+    for f in sorted(
+        glob.glob(str(KALLAAMA / "transcriptions/checked/transcriptions-wol/stm/*.stm"))
+    ):
         for ligne in open(f, encoding="utf-8"):
             parts = ligne.split(None, 6)
             if ligne.startswith(";;") or len(parts) < 7 or parts[2] == "excluded_region":
@@ -64,11 +67,16 @@ def phrases_kallaama():
 def phrase_pour(mot, phrases):
     """Phrase la plus courte (5 à 15 mots, sans nom propre, chiffre ni guillemet) contenant le mot."""
     import re
+
     motif = re.compile(rf"(?<!\w){re.escape(mot.lower())}(?!\w)")
     meilleure = None
     for s in phrases:
         mots = s.split()
-        if not 5 <= len(mots) <= 15 or re.search(r"[0-9\"«»()]", s) or any(m[:1].isupper() for m in mots[1:]):
+        if (
+            not 5 <= len(mots) <= 15
+            or re.search(r"[0-9\"«»()]", s)
+            or any(m[:1].isupper() for m in mots[1:])
+        ):
             continue
         if motif.search(s.lower()) and (meilleure is None or len(s) < len(meilleure)):
             meilleure = s
@@ -78,18 +86,21 @@ def phrase_pour(mot, phrases):
 def mot_retrouve(mot, entendu):
     """Meilleur CER entre le mot et un passage de même longueur (en mots, ±1) de la retranscription."""
     from essai_voix_wolof import cer as _cer
+
     cible = mot.lower().replace("-", " ").split()
     h = entendu.lower().replace("-", " ").split()
     meilleur = 9.0
     for n in {max(1, len(cible) - 1), len(cible), len(cible) + 1}:
         for i in range(0, max(1, len(h) - n + 1)):
-            meilleur = min(meilleur, _cer(" ".join(cible), " ".join(h[i:i + n])))
+            meilleur = min(meilleur, _cer(" ".join(cible), " ".join(h[i : i + n])))
     return round(meilleur, 3)
 
 
 def textes():
     phrases = list(phrases_kallaama())
-    for r in csv.DictReader((RACINE / "content" / "voix" / "lexique_wolof.csv").open(encoding="utf-8")):
+    for r in csv.DictReader(
+        (RACINE / "content" / "voix" / "lexique_wolof.csv").open(encoding="utf-8")
+    ):
         mot = r["a_dire_en_wolof"].strip()
         if mot:
             yield "lexique", r["ecrit"], mot, phrase_pour(mot, phrases)
@@ -97,16 +108,20 @@ def textes():
         for k, ligne in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
             if ligne.strip():
                 yield "reponse_type", f"{f.name}:{k}", ligne.strip(), None
-    for r in csv.DictReader((RACINE / "research" / "questions_test_d9_wolof.csv").open(encoding="utf-8")):
+    for r in csv.DictReader(
+        (RACINE / "research" / "questions_test_d9_wolof.csv").open(encoding="utf-8")
+    ):
         yield "question_d9", r["n"], r["question_wolof"], None
 
 
 def main():
     import librosa
-    from TTS.utils.synthesizer import Synthesizer
     from transformers import pipeline
+    from TTS.utils.synthesizer import Synthesizer
 
-    synth = Synthesizer(tts_checkpoint=str(VOIX / "model.pth"), tts_config_path=str(VOIX / "config.json"))
+    synth = Synthesizer(
+        tts_checkpoint=str(VOIX / "model.pth"), tts_config_path=str(VOIX / "config.json")
+    )
     asr = pipeline("automatic-speech-recognition", model=str(ASR), device="cpu")
     sr = synth.output_sample_rate
     lignes = []
@@ -131,14 +146,20 @@ def main():
             taux_mot = ""
             statut = "ok" if taux <= SEUIL else "a_risque"
         lignes.append([type_, cle, texte, lu, entendu, taux, taux_mot, statut])
-        print(f"{statut:8} {taux:5.2f} {str(taux_mot):6} {type_:12} {texte[:14]:14} {lu[:50]:50} | {entendu[:45]}")
+        print(
+            f"{statut:8} {taux:5.2f} {str(taux_mot):6} {type_:12} {texte[:14]:14} {lu[:50]:50} | {entendu[:45]}"
+        )
     with SORTIE.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["type", "cle", "texte", "texte_lu", "entendu", "cer_phrase", "cer_mot", "statut"])
+        w.writerow(
+            ["type", "cle", "texte", "texte_lu", "entendu", "cer_phrase", "cer_mot", "statut"]
+        )
         w.writerows(lignes)
     n = len(lignes)
     ok = sum(1 for l in lignes if l[-1] == "ok")
-    print(f"\n{ok}/{n} « ok » (phrases : CER ≤ {SEUIL} ; mots : CER ≤ {SEUIL_MOT} dans leur phrase) ; date {dt.date.today()} ; voix {VOIX.name} ; ASR {ASR.name}")
+    print(
+        f"\n{ok}/{n} « ok » (phrases : CER ≤ {SEUIL} ; mots : CER ≤ {SEUIL_MOT} dans leur phrase) ; date {dt.date.today()} ; voix {VOIX.name} ; ASR {ASR.name}"
+    )
 
 
 if __name__ == "__main__":

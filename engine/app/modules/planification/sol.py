@@ -19,8 +19,15 @@ import zlib
 from functools import lru_cache
 
 ISDASOIL = "https://isdasoil.s3.amazonaws.com/soil_data/{p}/{p}.{ext}"
-TEXTURES = "https://isdasoil.s3.amazonaws.com/soil_data/texture_class/texture_class_attribute_table.csv"
-PROPRIETES = {"ph": "ph", "sand_content": "sable_pct", "clay_content": "argile_pct", "texture_class": "texture"}
+TEXTURES = (
+    "https://isdasoil.s3.amazonaws.com/soil_data/texture_class/texture_class_attribute_table.csv"
+)
+PROPRIETES = {
+    "ph": "ph",
+    "sand_content": "sable_pct",
+    "clay_content": "argile_pct",
+    "texture_class": "texture",
+}
 FENETRE = 2
 
 
@@ -43,21 +50,25 @@ def _tags(entete: bytes) -> dict:
     tailles = {2: 1, 3: 2, 4: 4, 12: 8, 16: 8}
     formats = {3: "H", 4: "I", 12: "d", 16: "Q"}
     off = struct.unpack("<Q", entete[8:16])[0]
-    n = struct.unpack("<Q", entete[off:off + 8])[0]
+    n = struct.unpack("<Q", entete[off : off + 8])[0]
     tags = {}
     for i in range(n):
-        e = entete[off + 8 + i * 20: off + 28 + i * 20]
+        e = entete[off + 8 + i * 20 : off + 28 + i * 20]
         tag, typ, nb = struct.unpack("<HHQ", e[:12])
         taille = tailles.get(typ, 1) * nb
         if taille <= 8:
-            brut = e[12:12 + taille]
+            brut = e[12 : 12 + taille]
         else:
             pos = struct.unpack("<Q", e[12:20])[0]
             if pos + taille > len(entete):
                 tags[tag] = ("tableau", pos, nb)
                 continue
-            brut = entete[pos:pos + taille]
-        tags[tag] = brut.decode("ascii", "ignore").strip("\x00 ") if typ == 2 else struct.unpack("<" + formats[typ] * nb, brut)
+            brut = entete[pos : pos + taille]
+        tags[tag] = (
+            brut.decode("ascii", "ignore").strip("\x00 ")
+            if typ == 2
+            else struct.unpack("<" + formats[typ] * nb, brut)
+        )
     return tags
 
 
@@ -90,9 +101,13 @@ def _valeur(prop: str, lat: float, lon: float):
     taille = struct.unpack("<I", _get(url, pos_nb + 4 * k, pos_nb + 4 * k + 3))[0]
     tuile = zlib.decompress(_get(url, debut, debut + taille - 1))
     ly, lx = lig % th, col % tl
-    bruts = [struct.unpack_from("<" + fmt, tuile, ((yy * tl + xx) * nb_bandes) * octets)[0]  # bande 0 = moyenne
-             for yy in range(max(0, ly - FENETRE), min(th, ly + FENETRE + 1))
-             for xx in range(max(0, lx - FENETRE), min(tl, lx + FENETRE + 1))]
+    bruts = [
+        struct.unpack_from("<" + fmt, tuile, ((yy * tl + xx) * nb_bandes) * octets)[
+            0
+        ]  # bande 0 = moyenne
+        for yy in range(max(0, ly - FENETRE), min(th, ly + FENETRE + 1))
+        for xx in range(max(0, lx - FENETRE), min(tl, lx + FENETRE + 1))
+    ]
     bruts = [b for b in bruts if b != nodata]
     if not bruts:
         return None
@@ -107,28 +122,51 @@ def _valeur(prop: str, lat: float, lon: float):
 # mean_0_20). Servent seulement si le serveur iSDAsoil ne répond pas et que le champ est à moins de
 # RAYON_SECOURS_KM d'un point ; la source le dit. Au-delà, on préfère « indisponible » à une valeur fausse.
 POINTS_PILOTES = {
-    "Kébémer": (15.3042, -16.2611, {"ph": 6.9, "sable_pct": 83, "argile_pct": 11, "texture": "Sandy Loam"}),
-    "Rufisque": (14.7593, -17.2054, {"ph": 6.8, "sable_pct": 59, "argile_pct": 22, "texture": "Sandy Clay Loam"}),
-    "Thiès": (14.7459, -16.8698, {"ph": 6.3, "sable_pct": 72, "argile_pct": 17, "texture": "Sandy Loam"}),
-    "Tivaouane": (15.0884, -16.6518, {"ph": 6.4, "sable_pct": 76, "argile_pct": 12, "texture": "Sandy Loam"}),
+    "Kébémer": (
+        15.3042,
+        -16.2611,
+        {"ph": 6.9, "sable_pct": 83, "argile_pct": 11, "texture": "Sandy Loam"},
+    ),
+    "Rufisque": (
+        14.7593,
+        -17.2054,
+        {"ph": 6.8, "sable_pct": 59, "argile_pct": 22, "texture": "Sandy Clay Loam"},
+    ),
+    "Thiès": (
+        14.7459,
+        -16.8698,
+        {"ph": 6.3, "sable_pct": 72, "argile_pct": 17, "texture": "Sandy Loam"},
+    ),
+    "Tivaouane": (
+        15.0884,
+        -16.6518,
+        {"ph": 6.4, "sable_pct": 76, "argile_pct": 12, "texture": "Sandy Loam"},
+    ),
 }
 RAYON_SECOURS_KM = 5.0
 
 
 def _distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     p1, p2 = math.radians(lat1), math.radians(lat2)
-    a = (math.sin((p2 - p1) / 2) ** 2
-         + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2)
+    a = (
+        math.sin((p2 - p1) / 2) ** 2
+        + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2
+    )
     return 2 * 6371.0 * math.asin(math.sqrt(a))
 
 
 def sol_secours(lat: float, lon: float) -> dict | None:
     """Valeurs du point pilote le plus proche s'il est à moins de RAYON_SECOURS_KM, sinon None."""
-    dist, nom, valeurs = min((_distance_km(lat, lon, la, lo), nom, v) for nom, (la, lo, v) in POINTS_PILOTES.items())
+    dist, nom, valeurs = min(
+        (_distance_km(lat, lon, la, lo), nom, v) for nom, (la, lo, v) in POINTS_PILOTES.items()
+    )
     if dist > RAYON_SECOURS_KM:
         return None
-    return {**valeurs, "source": f"iSDAsoil 30 m, 0-20 cm, relevé au point pilote de {nom} "
-                                 f"(à {nombre_km(dist)} km ; serveur iSDAsoil injoignable)"}
+    return {
+        **valeurs,
+        "source": f"iSDAsoil 30 m, 0-20 cm, relevé au point pilote de {nom} "
+        f"(à {nombre_km(dist)} km ; serveur iSDAsoil injoignable)",
+    }
 
 
 def nombre_km(x: float) -> str:

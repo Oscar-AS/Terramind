@@ -76,14 +76,25 @@ def transcrire(audio: bytes, type_mime: str, duree_annoncee: float | None = None
     reservees = float(duree_annoncee or DUREE_MAX)
     COMPTEUR.reserver(reservees)
     borne = "tm-" + uuid.uuid4().hex
-    corps = (f"--{borne}\r\nContent-Disposition: form-data; name=\"audio\"; filename=\"note\"\r\n"
-             f"Content-Type: {type_mime}\r\n\r\n").encode() + audio + f"\r\n--{borne}--\r\n".encode()
+    corps = (
+        (
+            f'--{borne}\r\nContent-Disposition: form-data; name="audio"; filename="note"\r\n'
+            f"Content-Type: {type_mime}\r\n\r\n"
+        ).encode()
+        + audio
+        + f"\r\n--{borne}--\r\n".encode()
+    )
     requete = urllib.parse.urlencode({"project_id": config.OCTOPUS_PROJECT_ID, "language": "wo"})
-    req = urllib.request.Request(f"{config.OCTOPUS_URL}/api/voice/transcribe?{requete}", data=corps,
-                                 headers={"Authorization": f"Bearer {config.OCTOPUS_API_KEY}",
-                                          # le pare-feu d'Octopus refuse l'agent par défaut « Python-urllib » (403)
-                                          "User-Agent": "TerraMind-moteur/0.2",
-                                          "Content-Type": f"multipart/form-data; boundary={borne}"})
+    req = urllib.request.Request(
+        f"{config.OCTOPUS_URL}/api/voice/transcribe?{requete}",
+        data=corps,
+        headers={
+            "Authorization": f"Bearer {config.OCTOPUS_API_KEY}",
+            # le pare-feu d'Octopus refuse l'agent par défaut « Python-urllib » (403)
+            "User-Agent": "TerraMind-moteur/0.2",
+            "Content-Type": f"multipart/form-data; boundary={borne}",
+        },
+    )
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             d = json.loads(r.read())
@@ -112,7 +123,7 @@ def traduire(texte_wo: str) -> str | None:
     fr = gemini(CONSIGNE_TRADUCTION, texte_wo, delai=20)
     if not fr or "INCOMPRIS" in fr:
         return None
-    return fr.strip().strip("«»\"").strip()
+    return fr.strip().strip('«»"').strip()
 
 
 def comprendre(audio: bytes, type_mime: str, duree_annoncee: float | None = None) -> dict:

@@ -49,7 +49,9 @@ def test_note_trop_longue_refusee_sans_appel(octopus):
 
 
 def test_transcription_et_plafond_du_jour(octopus):
-    with mock.patch("urllib.request.urlopen", return_value=_Reponse({"text": " naka ", "duration_seconds": 40})) as appel:
+    with mock.patch(
+        "urllib.request.urlopen", return_value=_Reponse({"text": " naka ", "duration_seconds": 40})
+    ) as appel:
         assert ecoute.transcrire(b"x", "audio/ogg", 40) == "naka"
         req = appel.call_args.args[0]
         assert "project_id=proj-test" in req.full_url and "language=wo" in req.full_url
@@ -63,18 +65,34 @@ def test_transcription_et_plafond_du_jour(octopus):
 def test_traduction_incomprise():
     with mock.patch("engine.app.modules.rag.reponse.gemini", return_value="INCOMPRIS"):
         assert ecoute.traduire("bla") is None
-    with mock.patch("engine.app.modules.rag.reponse.gemini", return_value="« Comment soigner le mildiou ? »"):
+    with mock.patch(
+        "engine.app.modules.rag.reponse.gemini", return_value="« Comment soigner le mildiou ? »"
+    ):
         assert ecoute.traduire("naka") == "Comment soigner le mildiou ?"
 
 
 def test_bot_note_vocale_comprise():
     telegram.ETATS.clear()
     telegram.ETATS[5] = {"langue": "fr"}
-    with mock.patch.object(ecoute, "disponible", return_value=True), \
-            mock.patch.object(telegram, "_telecharger", return_value=b"ogg"), \
-            mock.patch.object(ecoute, "comprendre", return_value={"wolof": "naka", "francais": "Comment éviter le mildiou ?"}), \
-            mock.patch.object(telegram, "_question") as question, mock.patch.object(telegram, "envoyer") as envoyer:
-        telegram.traiter({"message": {"chat": {"id": 5}, "voice": {"file_id": "f", "duration": 4, "mime_type": "audio/ogg"}}})
+    with (
+        mock.patch.object(ecoute, "disponible", return_value=True),
+        mock.patch.object(telegram, "_telecharger", return_value=b"ogg"),
+        mock.patch.object(
+            ecoute,
+            "comprendre",
+            return_value={"wolof": "naka", "francais": "Comment éviter le mildiou ?"},
+        ),
+        mock.patch.object(telegram, "_question") as question,
+        mock.patch.object(telegram, "envoyer") as envoyer,
+    ):
+        telegram.traiter(
+            {
+                "message": {
+                    "chat": {"id": 5},
+                    "voice": {"file_id": "f", "duration": 4, "mime_type": "audio/ogg"},
+                }
+            }
+        )
     assert "Comment éviter le mildiou ?" in envoyer.call_args.args[1]
     question.assert_called_once_with(5, "Comment éviter le mildiou ?")
 
@@ -82,11 +100,19 @@ def test_bot_note_vocale_comprise():
 def test_bot_note_vocale_sans_octopus_ou_trop_longue():
     telegram.ETATS.clear()
     telegram.ETATS[5] = {"langue": "fr"}
-    with mock.patch.object(ecoute, "disponible", return_value=False), mock.patch.object(telegram, "envoyer") as envoyer:
+    with (
+        mock.patch.object(ecoute, "disponible", return_value=False),
+        mock.patch.object(telegram, "envoyer") as envoyer,
+    ):
         telegram.traiter({"message": {"chat": {"id": 5}, "voice": {"file_id": "f", "duration": 4}}})
     assert "pour le moment" in envoyer.call_args.args[1]
-    with mock.patch.object(ecoute, "disponible", return_value=True), mock.patch.object(telegram, "envoyer") as envoyer, \
-            mock.patch.object(telegram, "_telecharger") as telecharger:
-        telegram.traiter({"message": {"chat": {"id": 5}, "voice": {"file_id": "f", "duration": 120}}})
+    with (
+        mock.patch.object(ecoute, "disponible", return_value=True),
+        mock.patch.object(telegram, "envoyer") as envoyer,
+        mock.patch.object(telegram, "_telecharger") as telecharger,
+    ):
+        telegram.traiter(
+            {"message": {"chat": {"id": 5}, "voice": {"file_id": "f", "duration": 120}}}
+        )
     assert "trop longue" in envoyer.call_args.args[1]
     telecharger.assert_not_called()

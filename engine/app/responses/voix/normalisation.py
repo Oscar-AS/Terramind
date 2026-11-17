@@ -29,18 +29,40 @@ LEXIQUE = Path(__file__).resolve().parents[4] / "content" / "voix" / "lexique_wo
 # Résultat du contrôle automatique « aller-retour » (scripts/outils/controle_voix.py).
 CONTROLE = Path(__file__).resolve().parents[4] / "content" / "voix" / "controle_voix.csv"
 
-TAILLE_MAX = 160   # caractères par morceau envoyé à la synthèse
-TAILLE_MIN = 30    # en dessous, on fusionne avec le morceau voisin
+TAILLE_MAX = 160  # caractères par morceau envoyé à la synthèse
+TAILLE_MIN = 30  # en dessous, on fusionne avec le morceau voisin
 
 # Petits mots français fréquents : leur présence dans un texte censé être en
 # wolof indique un mélange de langues que la voix lira mal.
-MOTS_FRANCAIS = {"le", "la", "les", "des", "du", "et", "pour", "avec", "dans", "est", "une", "un",
-                 "sur", "pas", "vous", "votre", "il", "elle", "qui", "que", "au", "aux"}
+MOTS_FRANCAIS = {
+    "le",
+    "la",
+    "les",
+    "des",
+    "du",
+    "et",
+    "pour",
+    "avec",
+    "dans",
+    "est",
+    "une",
+    "un",
+    "sur",
+    "pas",
+    "vous",
+    "votre",
+    "il",
+    "elle",
+    "qui",
+    "que",
+    "au",
+    "aux",
+}
 
 
 @dataclass
 class TextePret:
-    morceaux: list = field(default_factory=list)   # texte à synthétiser, morceau par morceau
+    morceaux: list = field(default_factory=list)  # texte à synthétiser, morceau par morceau
     problemes: list = field(default_factory=list)  # raisons de ne pas synthétiser en direct
 
     @property
@@ -69,8 +91,11 @@ def charger_controle(chemin=CONTROLE):
     if not chemin.exists():
         return set()
     with open(chemin, encoding="utf-8") as f:
-        return {r["texte"].strip().lower() for r in csv.DictReader(f)
-                if r["type"] == "lexique" and r["statut"] == "a_risque"}
+        return {
+            r["texte"].strip().lower()
+            for r in csv.DictReader(f)
+            if r["type"] == "lexique" and r["statut"] == "a_risque"
+        }
 
 
 def nombre_en_wolof(n, chiffres, bases):
@@ -85,7 +110,9 @@ def nombre_en_wolof(n, chiffres, bases):
     parties = []
     milliers, reste = divmod(n, 1000)
     if milliers:
-        parties.append(junni if milliers == 1 else f"{_multiplicateur(milliers, chiffres, bases)}i {junni}")
+        parties.append(
+            junni if milliers == 1 else f"{_multiplicateur(milliers, chiffres, bases)}i {junni}"
+        )
     centaines, reste = divmod(reste, 100)
     if centaines:
         parties.append(teemeer if centaines == 1 else f"{chiffres[centaines]}i {teemeer}")
@@ -107,15 +134,15 @@ def preparer(texte, lexique=None, a_risque=None):
     a_risque = charger_controle() if a_risque is None else a_risque
     resultat = TextePret()
 
-    t = re.sub(r"\[[^\]]*\]", " ", texte)                    # sources [Guide 1987, p. 140]
-    t = re.sub(r"https?://\S+|www\.\S+", " ", t)              # liens
-    t = re.sub(r"[*_#>`]", " ", t)                            # mise en forme
+    t = re.sub(r"\[[^\]]*\]", " ", texte)  # sources [Guide 1987, p. 140]
+    t = re.sub(r"https?://\S+|www\.\S+", " ", t)  # liens
+    t = re.sub(r"[*_#>`]", " ", t)  # mise en forme
     t = "".join(c for c in t if unicodedata.category(c) not in ("So", "Sk", "Cs"))  # émojis
 
     if re.search(r"\d+[.,]\d+", t):
         resultat.problemes.append("nombre décimal : à reformuler (arrondir ou dire en mots)")
 
-    for ecrit in sorted(mots, key=len, reverse=True):         # mots du lexique (unités, mois…)
+    for ecrit in sorted(mots, key=len, reverse=True):  # mots du lexique (unités, mois…)
         t = re.sub(rf"(?<!\w){re.escape(ecrit)}(?!\w)", mots[ecrit], t, flags=re.IGNORECASE)
     for ecrit in a_remplir:
         if re.search(rf"(?<!\w){re.escape(ecrit)}(?!\w)", t, flags=re.IGNORECASE):
@@ -128,19 +155,26 @@ def preparer(texte, lexique=None, a_risque=None):
         except ValueError:
             resultat.problemes.append(f"nombre trop grand : {m.group(0)}")
             return m.group(0)
+
     t = re.sub(r"\d{1,3}(?: \d{3})+|\d+", en_lettres, t)
 
     restes = sorted(set(re.findall(r"[%°/=+<>&@€$]", t)))
     if restes:
         resultat.problemes.append(f"symboles non lus correctement : {' '.join(restes)}")
-    francais = sorted({m for m in re.findall(r"[a-zàâçéèêëîïôûùüÿœ]+", t.lower()) if m in MOTS_FRANCAIS})
+    francais = sorted(
+        {m for m in re.findall(r"[a-zàâçéèêëîïôûùüÿœ]+", t.lower()) if m in MOTS_FRANCAIS}
+    )
     if francais:
         resultat.problemes.append(f"mots français dans le texte wolof : {', '.join(francais)}")
 
     t = re.sub(r"\s+", " ", t).strip()
-    risques = sorted(m for m in a_risque if re.search(rf"(?<!\w){re.escape(m)}(?!\w)", t, flags=re.IGNORECASE))
+    risques = sorted(
+        m for m in a_risque if re.search(rf"(?<!\w){re.escape(m)}(?!\w)", t, flags=re.IGNORECASE)
+    )
     if risques:
-        resultat.problemes.append(f"mots que la voix déforme (contrôle aller-retour) : {', '.join(risques)}")
+        resultat.problemes.append(
+            f"mots que la voix déforme (contrôle aller-retour) : {', '.join(risques)}"
+        )
     # La voix wolof (Kiriku-Wolof-TTS) n'a appris que des minuscules : une majuscule est ignorée,
     # ce qui fait disparaître la première lettre de la phrase (constaté à l'essai du 4 nov 2026).
     resultat.morceaux = [m.lower() for m in decouper(t)]
@@ -149,20 +183,24 @@ def preparer(texte, lexique=None, a_risque=None):
 
 def decouper(texte):
     """Morceaux de TAILLE_MAX caractères au plus, coupés aux fins de phrase puis aux virgules,
-    fusion des morceaux trop courts, ponctuation finale garantie (limite les dérapages de la voix)."""
+    fusion des morceaux trop courts, ponctuation finale garantie (limite les dérapages de la voix).
+    """
     phrases = [p.strip() for p in re.split(r"(?<=[.!?;])\s+", texte) if p.strip()]
     morceaux = []
     for p in phrases:
         while len(p) > TAILLE_MAX:
             coupe = p.rfind(",", 0, TAILLE_MAX)
             coupe = coupe if coupe > TAILLE_MIN else p.rfind(" ", 0, TAILLE_MAX)
-            morceaux.append(p[:coupe + 1].strip())
-            p = p[coupe + 1:].strip()
+            morceaux.append(p[: coupe + 1].strip())
+            p = p[coupe + 1 :].strip()
         morceaux.append(p)
     fusionnes = []
     for m in morceaux:
-        if fusionnes and (len(m) < TAILLE_MIN or len(fusionnes[-1]) < TAILLE_MIN) \
-                and len(fusionnes[-1]) + len(m) + 1 <= TAILLE_MAX:
+        if (
+            fusionnes
+            and (len(m) < TAILLE_MIN or len(fusionnes[-1]) < TAILLE_MIN)
+            and len(fusionnes[-1]) + len(m) + 1 <= TAILLE_MAX
+        ):
             fusionnes[-1] = f"{fusionnes[-1]} {m}"
         else:
             fusionnes.append(m)

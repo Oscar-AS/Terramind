@@ -20,7 +20,9 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s : %(messa
 app = FastAPI(title="TerraMind Afrique, moteur", version="0.2.0")
 # L'application web (Expo web) appelle le moteur depuis le navigateur : CORS ouvert en lecture/écriture
 # simple, sans cookie ni jeton (aucune donnée de session).
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET", "POST"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware, allow_origins=["*"], allow_methods=["GET", "POST"], allow_headers=["*"]
+)
 app.include_router(v1.router)
 app.include_router(telegram.router)
 # Notes vocales wolof relues (content/audio/wo/), écoutées par l'application en mode wolof.

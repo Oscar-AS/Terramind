@@ -15,15 +15,33 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 try:
     from fastapi.testclient import TestClient
+
     from engine.app import config
     from engine.app.main import app
 except ImportError:  # environnement sans FastAPI
     TestClient = None
 
 SECRET, JETON = "secret-de-test", "jeton-de-test"
-MESSAGE = {"entry": [{"changes": [{"value": {"messages": [
-    {"from": "221700000000", "type": "text", "text": {"body": "Salamalekum"}},
-    {"from": "221700000000", "type": "image", "image": {"id": "x"}}]}}]}]}
+MESSAGE = {
+    "entry": [
+        {
+            "changes": [
+                {
+                    "value": {
+                        "messages": [
+                            {
+                                "from": "221700000000",
+                                "type": "text",
+                                "text": {"body": "Salamalekum"},
+                            },
+                            {"from": "221700000000", "type": "image", "image": {"id": "x"}},
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
 
 
 @unittest.skipIf(TestClient is None, "FastAPI absent")
@@ -35,6 +53,7 @@ class Webhook(unittest.TestCase):
 
         async def faux_envoi(destinataire, texte, client):
             self.envoyes.append((destinataire, texte))
+
         app.state.envoyer_texte = faux_envoi
         self.client = TestClient(app)
 
@@ -45,15 +64,22 @@ class Webhook(unittest.TestCase):
     def _post(self, corps, signature=None):
         brut = json.dumps(corps).encode()
         sig = signature or "sha256=" + hmac.new(SECRET.encode(), brut, hashlib.sha256).hexdigest()
-        return self.client.post("/webhook/whatsapp", content=brut,
-                                headers={"X-Hub-Signature-256": sig, "Content-Type": "application/json"})
+        return self.client.post(
+            "/webhook/whatsapp",
+            content=brut,
+            headers={"X-Hub-Signature-256": sig, "Content-Type": "application/json"},
+        )
 
     def test_verification_meta(self):
-        ok = self.client.get("/webhook/whatsapp", params={"hub.mode": "subscribe", "hub.verify_token": JETON,
-                                                          "hub.challenge": "1234"})
+        ok = self.client.get(
+            "/webhook/whatsapp",
+            params={"hub.mode": "subscribe", "hub.verify_token": JETON, "hub.challenge": "1234"},
+        )
         self.assertEqual((ok.status_code, ok.text), (200, "1234"))
-        ko = self.client.get("/webhook/whatsapp", params={"hub.mode": "subscribe", "hub.verify_token": "faux",
-                                                          "hub.challenge": "1234"})
+        ko = self.client.get(
+            "/webhook/whatsapp",
+            params={"hub.mode": "subscribe", "hub.verify_token": "faux", "hub.challenge": "1234"},
+        )
         self.assertEqual(ko.status_code, 403)
 
     def test_echo_seulement_si_signature_valide(self):

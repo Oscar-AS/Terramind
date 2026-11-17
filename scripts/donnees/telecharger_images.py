@@ -39,10 +39,14 @@ PV_URL = "https://huggingface.co/datasets/mohanty/PlantVillage/resolve/main/data
 PV_CULTURES = ("Tomato___", "Potato___", "Pepper,_bell___")
 PD_DEPOT = "pratikkayal/PlantDoc-Dataset"
 PD_MOTS = ("Tomato", "Potato", "Bell_pepper")
-CHOU_URL = ("https://data.mendeley.com/public-files/datasets/sjmgzhwrxv/files/"
-            "15717f20-a822-48c8-b1f1-cdaf53be636d/file_downloaded")
+CHOU_URL = (
+    "https://data.mendeley.com/public-files/datasets/sjmgzhwrxv/files/"
+    "15717f20-a822-48c8-b1f1-cdaf53be636d/file_downloaded"
+)
 CCMT_ZIP = "https://data.mendeley.com/public-api/zip/bwh3zbpkpv/download/1"  # redirige vers un lien S3 de 5 min
-CHOU_SHA256 = "4dba5e7a553b02eb28a17ac4ab2d671ee6b48223f3fa38ffd89163736240cd79"  # publié par Mendeley
+CHOU_SHA256 = (
+    "4dba5e7a553b02eb28a17ac4ab2d671ee6b48223f3fa38ffd89163736240cd79"  # publié par Mendeley
+)
 
 
 class FichierDistant(io.RawIOBase):
@@ -71,7 +75,9 @@ class FichierDistant(io.RawIOBase):
         fin = self.taille if n is None or n < 0 else min(self.taille, self.pos + n)
         if fin <= self.pos:
             return b""
-        req = urllib.request.Request(self.url, headers={**UA, "Range": f"bytes={self.pos}-{fin - 1}"})
+        req = urllib.request.Request(
+            self.url, headers={**UA, "Range": f"bytes={self.pos}-{fin - 1}"}
+        )
         with urllib.request.urlopen(req, timeout=120) as r:
             donnees = r.read()
         self.pos += len(donnees)
@@ -79,7 +85,7 @@ class FichierDistant(io.RawIOBase):
 
     def readinto(self, b):
         d = self.read(len(b))
-        b[:len(d)] = d
+        b[: len(d)] = d
         return len(d)
 
 
@@ -106,16 +112,29 @@ class ArchiveMendeley(FichierDistant):
 
 
 def ccmt():
-    print("CCMT (Mendeley Data, Ghana) : lecture du répertoire de l'archive (8,4 Go, rien n'est téléchargé en entier)…")
+    print(
+        "CCMT (Mendeley Data, Ghana) : lecture du répertoire de l'archive (8,4 Go, rien n'est téléchargé en entier)…"
+    )
     zf = zipfile.ZipFile(io.BufferedReader(ArchiveMendeley(CCMT_ZIP), buffer_size=4 * 1024 * 1024))
     prefixe = "Raw Data/CCMT Dataset/Tomato/"
-    entrees = [i for i in zf.infolist() if not i.is_dir() and prefixe in i.filename
-               and i.filename.lower().endswith((".jpg", ".jpeg", ".png"))]
+    entrees = [
+        i
+        for i in zf.infolist()
+        if not i.is_dir()
+        and prefixe in i.filename
+        and i.filename.lower().endswith((".jpg", ".jpeg", ".png"))
+    ]
     if not entrees:
-        raise SystemExit("CCMT : aucun fichier « " + prefixe + " » ; noms vus : "
-                         + ", ".join(sorted({i.filename.split("/")[0] for i in zf.infolist()})[:10]))
+        raise SystemExit(
+            "CCMT : aucun fichier « "
+            + prefixe
+            + " » ; noms vus : "
+            + ", ".join(sorted({i.filename.split("/")[0] for i in zf.infolist()})[:10])
+        )
     entrees.sort(key=lambda i: i.header_offset)
-    print(f"  {len(entrees)} images de tomate à extraire ({sum(i.compress_size for i in entrees) / 1e6:.0f} Mo)")
+    print(
+        f"  {len(entrees)} images de tomate à extraire ({sum(i.compress_size for i in entrees) / 1e6:.0f} Mo)"
+    )
     for k, info in enumerate(entrees, 1):
         relatif = info.filename.split(prefixe, 1)[1]
         cible = SORTIE / "ccmt" / "Tomato" / relatif
@@ -133,11 +152,18 @@ def plantvillage():
     brut = FichierDistant(PV_URL)
     # Grand tampon : regroupe les petites lectures du module zipfile en peu de requêtes.
     zf = zipfile.ZipFile(io.BufferedReader(brut, buffer_size=4 * 1024 * 1024))
-    entrees = [i for i in zf.infolist() if not i.is_dir() and "/color/" in f"/{i.filename}"
-               and any(f"/{c}" in f"/{i.filename}" for c in PV_CULTURES)]
+    entrees = [
+        i
+        for i in zf.infolist()
+        if not i.is_dir()
+        and "/color/" in f"/{i.filename}"
+        and any(f"/{c}" in f"/{i.filename}" for c in PV_CULTURES)
+    ]
     entrees.sort(key=lambda i: i.header_offset)  # lecture dans l'ordre du fichier
-    print(f"  {len(entrees)} images à extraire "
-          f"({sum(i.compress_size for i in entrees) / 1e6:.0f} Mo compressés)")
+    print(
+        f"  {len(entrees)} images à extraire "
+        f"({sum(i.compress_size for i in entrees) / 1e6:.0f} Mo compressés)"
+    )
     for k, info in enumerate(entrees, 1):
         classe, nom = Path(info.filename).parent.name, Path(info.filename).name
         cible = SORTIE / "plantvillage" / classe / nom
@@ -155,8 +181,13 @@ def plantdoc():
     api = f"https://api.github.com/repos/{PD_DEPOT}/git/trees/master?recursive=1"
     with urllib.request.urlopen(urllib.request.Request(api, headers=UA), timeout=60) as r:
         arbre = json.load(r)["tree"]
-    fichiers = [f for f in arbre if f["type"] == "blob" and f["path"].count("/") == 2
-                and any(m in f["path"].split("/")[1] for m in PD_MOTS)]
+    fichiers = [
+        f
+        for f in arbre
+        if f["type"] == "blob"
+        and f["path"].count("/") == 2
+        and any(m in f["path"].split("/")[1] for m in PD_MOTS)
+    ]
     print(f"  {len(fichiers)} images à télécharger")
     for k, f in enumerate(fichiers, 1):
         cible = SORTIE / "plantdoc" / f["path"]
@@ -175,6 +206,7 @@ def plantdoc():
 
 def chou():
     import hashlib
+
     print("Chou (Mendeley Data, Ghana) : téléchargement de l'archive (140 Mo)…")
     with urllib.request.urlopen(urllib.request.Request(CHOU_URL, headers=UA), timeout=600) as r:
         contenu = r.read()
@@ -183,13 +215,19 @@ def chou():
         raise SystemExit(f"Chou : empreinte inattendue {empreinte}")
     # On ne garde que les images d'origine (archive ORIGINAL_ALL_COMBINE_CABBAGE_DISEASES.zip) :
     # les versions augmentées gonfleraient artificiellement les résultats (même règle que CCMT).
-    classes = {"Cabbage_Altenaria_spot": "alternariose", "Cabbage - Black_rot": "pourriture_noire",
-               "Cabbage - Healthy": "sain", "Cabbage downy mildew - Original": "mildiou"}
+    classes = {
+        "Cabbage_Altenaria_spot": "alternariose",
+        "Cabbage - Black_rot": "pourriture_noire",
+        "Cabbage - Healthy": "sain",
+        "Cabbage downy mildew - Original": "mildiou",
+    }
     base = SORTIE / "chou_mendeley"
     if base.exists():
         shutil.rmtree(base)
     with zipfile.ZipFile(io.BytesIO(contenu)) as externe:
-        nom = next(n for n in externe.namelist() if n.endswith("ORIGINAL_ALL_COMBINE_CABBAGE_DISEASES.zip"))
+        nom = next(
+            n for n in externe.namelist() if n.endswith("ORIGINAL_ALL_COMBINE_CABBAGE_DISEASES.zip")
+        )
         with zipfile.ZipFile(io.BytesIO(externe.read(nom))) as zf:
             for info in zf.infolist():
                 dossier = Path(info.filename).parent.name
@@ -203,8 +241,12 @@ def chou():
 
 def inventaire():
     lignes = []
-    for source, licence in (("plantvillage", "CC BY-SA 3.0"), ("plantdoc", "CC BY 4.0"),
-                            ("chou_mendeley", "CC BY 4.0"), ("ccmt", "CC BY 4.0")):
+    for source, licence in (
+        ("plantvillage", "CC BY-SA 3.0"),
+        ("plantdoc", "CC BY 4.0"),
+        ("chou_mendeley", "CC BY 4.0"),
+        ("ccmt", "CC BY 4.0"),
+    ):
         base = SORTIE / source
         if not base.exists():
             continue
@@ -213,7 +255,10 @@ def inventaire():
             if n:
                 lignes.append([source, str(d.relative_to(base)), n, licence])
     entete = ["source", "classe", "images", "licence"]
-    for chemin in (SORTIE / "INVENTAIRE.csv", RACINE / "data" / "extraits" / "images_diagnostic_inventaire.csv"):
+    for chemin in (
+        SORTIE / "INVENTAIRE.csv",
+        RACINE / "data" / "extraits" / "images_diagnostic_inventaire.csv",
+    ):
         chemin.parent.mkdir(parents=True, exist_ok=True)
         with chemin.open("w", newline="", encoding="utf-8") as f:
             w = csv.writer(f)

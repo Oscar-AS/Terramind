@@ -1,6 +1,11 @@
-import csv, sys
+"""Enregistre la version wolof relue d'une phrase : python3 scripts/outils/relecture_wolof_valider.py <cle> "<wolof>"."""
+
+import csv
+import sys
+
 p = "content/voix/messages_wolof.csv"
-rows = list(csv.DictReader(open(p)))
+with open(p, encoding="utf-8") as f:
+    rows = list(csv.DictReader(f))
 champs = list(rows[0].keys())
 cle, wo = sys.argv[1], sys.argv[2]
 for r in rows:
@@ -9,5 +14,8 @@ for r in rows:
         break
 else:
     sys.exit("clé inconnue")
-w = csv.DictWriter(open(p, "w", newline=""), fieldnames=champs); w.writeheader(); w.writerows(rows)
+with open(p, "w", newline="", encoding="utf-8") as f:
+    w = csv.DictWriter(f, fieldnames=champs)
+    w.writeheader()
+    w.writerows(rows)
 print("ok", cle)
