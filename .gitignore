@@ -58,3 +58,6 @@ data/raw/kallaama/
 
 # --- Jeux de données locaux (images, jamais dans Git) ---
 data_local/
+
+# Vercel (lien local du site vitrine, créé par « npx vercel »)
+.vercel/
