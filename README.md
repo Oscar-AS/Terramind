@@ -7,6 +7,11 @@
 </p>
 
 <p align="center">
+  <a href="https://terramind-sigma.vercel.app"><img src="https://img.shields.io/badge/🌍%20Visiter%20le%20site-terramind--sigma.vercel.app-1f4d3a?style=for-the-badge" alt="Visiter le site : terramind-sigma.vercel.app"></a>
+  <a href="https://t.me/TerraMindAfriqueBot"><img src="https://img.shields.io/badge/💬%20Essayer%20le%20bot-@TerraMindAfriqueBot-229ED9?style=for-the-badge&logo=telegram&logoColor=white" alt="Essayer le bot Telegram"></a>
+</p>
+
+<p align="center">
   <a href="https://t.me/TerraMindAfriqueBot"><b>💬 Essayer le bot Telegram</b></a>
   &nbsp;·&nbsp;
   <a href="channels/mobile/"><b>📱 L'application mobile</b></a>
@@ -26,7 +31,7 @@
 
 Au Sénégal, un petit maraîcher décide seul : **quoi planter, quand traiter, quelle est cette tache sur la feuille**. Une erreur peut coûter une récolte.
 
-TerraMind répond à ces trois questions sur l'application mobile et sur Telegram, **en français, et en wolof à l'oral** sur le bot :
+TerraMind répond à ces trois questions sur l'application mobile et sur Telegram, **en français, et en wolof à l'oral** :
 
 - 🌱 **Que planter ce mois-ci ?** d'après le sol lu au point de son champ
 - 🔔 **Quel risque cette semaine ?** d'après la météo de sa zone
@@ -58,7 +63,7 @@ Chaque conseil **cite le document** d'où il vient. Quand TerraMind n'est pas s�
 </tr>
 </table>
 
-<sub>Vraies captures de l'application branchée sur le moteur, 15 nov 2026. Profil de démonstration (Rufisque, tomate). Photo du diagnostic : jeu de test de TOM2024 (CC BY 4.0), jamais vue à l'entraînement. Le visage de l'écran d'accueil est une image générée par IA.</sub>
+<sub>Vraies captures de l'application branchée sur le moteur, 15 et 17 nov 2026. Profil de démonstration (Rufisque, tomate). Photo du diagnostic : jeu de test de TOM2024 (CC BY 4.0), jamais vue à l'entraînement. Le visage de l'écran d'accueil est une image générée par IA.</sub>
 
 ## 💬 Le bot Telegram en action
 
@@ -81,7 +86,19 @@ Chaque conseil **cite le document** d'où il vient. Quand TerraMind n'est pas s�
 
 ## 🗣️ Le wolof, à l'oral
 
-Beaucoup d'agriculteurs lisent peu. En mode wolof, le bot Telegram **parle** : chaque message est aussi une **note vocale**, et l'agriculteur répond en appuyant sur des **numéros** plutôt qu'en écrivant. Il peut poser sa question **à voix haute** en wolof.
+<table>
+<tr>
+<td width="65%" valign="middle">
+
+Beaucoup d'agriculteurs lisent peu. En mode wolof, TerraMind **parle** :
+
+- sur **Telegram**, chaque message est aussi une **note vocale** ; l'agriculteur répond avec des **numéros** plutôt qu'en écrivant, et peut poser sa question **à voix haute** ;
+- dans **l'application**, chaque réponse a son bouton **« Écouter en wolof »**, avec le texte wolof relu et le français dessous.
+
+</td>
+<td width="35%" align="center"><img src="docs/assets/captures/app/plan-wolof.webp" width="210" alt="Le plan de culture en wolof, à écouter dans l'application"><br><sub>Le plan, à écouter en wolof (application, 17 nov)</sub></td>
+</tr>
+</table>
 
 <table>
 <tr>
@@ -134,8 +151,8 @@ L'application et le bot n'ont **aucune logique agricole** : ils appellent le mê
 | 🔔 | **Alertes météo** | ✅ | 7 risques : mildiou (tomate, pomme de terre, oignon), alternariose (tomate, carotte), mineuse, noctuelle, teigne · règles testées sur 2020-2025 |
 | 📷 | **Diagnostic photo** | ✅ | **91,7 %** sur 1 058 photos de terrain africaines (TOM2024) · 21 problèmes reconnus · « je ne suis pas sûr » sous le seuil |
 | 💬 | **Questions libres** | ✅ | 23 fiches sourcées · 3 vérifications indépendantes (≈ 320 affirmations, 51 corrigées) |
-| 🗣️ | **Wolof** | ✅ | 76 phrases relues · 76 notes vocales · questions orales |
-| 📱 | **Application mobile** | ✅ | Expo · Android (APK) et web · en français (le wolof y arrivera après le bot) |
+| 🗣️ | **Wolof** | ✅ | 76 phrases relues · 76 notes vocales, dans le bot et l'application · questions orales sur le bot |
+| 📱 | **Application mobile** | ✅ | Expo · Android (APK) et web · français et wolof (notes vocales) |
 | 💬 | **Bot Telegram** | ✅ | en ligne sur Render, même moteur que l'application |
 | 🗄️ | WhatsApp | archivé | [archives/whatsapp/](archives/whatsapp/), à réactiver si le projet continue |
 
