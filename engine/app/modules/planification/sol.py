@@ -102,9 +102,52 @@ def _valeur(prop: str, lat: float, lon: float):
     return round(sum(retro(b) for b in bruts) / len(bruts), 1)
 
 
-@lru_cache(maxsize=512)
+# Secours hors ligne (idée d'Oscar, branche ml/dataset-merge, b28a1e1) : valeurs iSDAsoil 0-20 cm déjà
+# relevées aux 4 points pilotes des Niayes (data/raw/isdasoil/isdasoil_points_pilotes.csv, bande
+# mean_0_20). Servent seulement si le serveur iSDAsoil ne répond pas et que le champ est à moins de
+# RAYON_SECOURS_KM d'un point ; la source le dit. Au-delà, on préfère « indisponible » à une valeur fausse.
+POINTS_PILOTES = {
+    "Kébémer": (15.3042, -16.2611, {"ph": 6.9, "sable_pct": 83, "argile_pct": 11, "texture": "Sandy Loam"}),
+    "Rufisque": (14.7593, -17.2054, {"ph": 6.8, "sable_pct": 59, "argile_pct": 22, "texture": "Sandy Clay Loam"}),
+    "Thiès": (14.7459, -16.8698, {"ph": 6.3, "sable_pct": 72, "argile_pct": 17, "texture": "Sandy Loam"}),
+    "Tivaouane": (15.0884, -16.6518, {"ph": 6.4, "sable_pct": 76, "argile_pct": 12, "texture": "Sandy Loam"}),
+}
+RAYON_SECOURS_KM = 5.0
+
+
+def _distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    a = (math.sin((p2 - p1) / 2) ** 2
+         + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2)
+    return 2 * 6371.0 * math.asin(math.sqrt(a))
+
+
+def sol_secours(lat: float, lon: float) -> dict | None:
+    """Valeurs du point pilote le plus proche s'il est à moins de RAYON_SECOURS_KM, sinon None."""
+    dist, nom, valeurs = min((_distance_km(lat, lon, la, lo), nom, v) for nom, (la, lo, v) in POINTS_PILOTES.items())
+    if dist > RAYON_SECOURS_KM:
+        return None
+    return {**valeurs, "source": f"iSDAsoil 30 m, 0-20 cm, relevé au point pilote de {nom} "
+                                 f"(à {nombre_km(dist)} km ; serveur iSDAsoil injoignable)"}
+
+
+def nombre_km(x: float) -> str:
+    return f"{x:.1f}".replace(".", ",")
+
+
 def sol(lat: float, lon: float) -> dict:
     """{texture, sable_pct, argile_pct, ph, source} ; lat/lon arrondis à 0,01° par l'appelant."""
+    try:
+        return _sol_en_ligne(lat, lon)
+    except SolIndisponible as e:
+        secours = sol_secours(lat, lon)
+        if secours is None or "pas de donnée" in str(e):
+            raise
+        return secours
+
+
+@lru_cache(maxsize=512)
+def _sol_en_ligne(lat: float, lon: float) -> dict:
     try:
         resultat = {nom: _valeur(prop, lat, lon) for prop, nom in PROPRIETES.items()}
     except SolIndisponible:

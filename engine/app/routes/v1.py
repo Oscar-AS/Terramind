@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import datetime as dt
 import logging
+import re
 from typing import Literal, Optional
 
 from fastapi import APIRouter, File, Form, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
@@ -98,6 +100,9 @@ def alerte(d: DemandeAlerte):
         return enveloppe("culture_requise", "Dis-moi d'abord ce que tu as planté.", {})
     if d.culture not in CULTURES:
         return enveloppe("erreur", "Cette culture n'est pas encore prise en charge.", {}, code=400)
+    if d.date_repiquage and d.date_repiquage > (d.date or dt.date.today()):
+        return enveloppe("erreur", "La date de plantation est dans le futur. Donne le jour où tu as planté.",
+                         {}, code=400)
     try:
         donnees = calculer(round(d.lat, 2), round(d.lon, 2), d.culture, d.date or dt.date.today(),
                            d.date_repiquage)
@@ -118,11 +123,12 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
                    utilisateur: str = Form(...), canal: Canal = Form(...), langue: Langue = Form(...)):
     from ..modules.diagnostic import modele  # numpy/onnxruntime chargés seulement ici
 
-    contenu = await photo.read()
+    contenu = await photo.read(PHOTO_MAX + 1)  # jamais plus que la limite en mémoire
     if len(contenu) > PHOTO_MAX:
         return enveloppe("erreur", "La photo est trop lourde.", {}, code=413)
     try:
-        r = modele.diagnostiquer(contenu, culture)
+        # Calcul du modèle hors de la boucle : le serveur continue de répondre (webhook Telegram…).
+        r = await run_in_threadpool(modele.diagnostiquer, contenu, culture)
     except modele.ModeleAbsent as e:
         return indisponible(e)
     except Exception as e:  # image illisible
@@ -138,12 +144,34 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
     r["fiche"] = fiche_simple(top["etiquette"], top.get("culture"))
     if r["fiche"]:
         source += [s for s in r["fiche"].pop("sources") if s not in source]
+    r["questions_suivi"] = questions_suivi(culture or top.get("culture"))
+    source += [q["source"] for q in r["questions_suivi"] if q["source"] not in source]
     if top["categorie"] == "sain":
         texte = "Cette feuille semble saine."
     else:
         texte = (f"Cela ressemble à : {top['libelle']}. Ce n'est qu'une première indication, "
                  "pas un diagnostic sûr. " + AGENT)
     return enveloppe("ok", texte, r, source)
+
+
+# Ravageurs que la photo ne sait pas reconnaître (absents du modèle) : une question oui/non tirée de la fiche
+# sourcée, posée après chaque diagnostic de la culture, même « saine » (idée reprise d'Oscar, docs/api.md § 2).
+DPV = ("Direction de la Protection des Végétaux / PADEN, manuel des ravageurs et maladies des cultures "
+       "maraîchères des Niayes (archive Wayback, source `paden` de scripts/donnees/telecharger_sources.py)")
+QUESTIONS_SUIVI = {
+    "tomato": [{
+        "question": "Vois-tu sur les feuilles des taches claires, blanchâtres, où la peau de la feuille reste "
+                    "entière ? Ou, sur les fruits, des galeries et de petits trous ?",
+        "si_oui": "C'est peut-être la mineuse de la tomate (Tuta absoluta). Sa chenille vit à l'intérieur de "
+                  "la feuille : je ne sais pas la reconnaître sur une photo. Montre ta plante à un agent agricole.",
+        "fiche": "ravageur-mineuse-tomate",
+        "source": {"document": DPV, "page": "29"},
+    }],
+}
+
+
+def questions_suivi(culture: Optional[str]) -> list[dict]:
+    return [dict(q) for q in QUESTIONS_SUIVI.get(culture or "", [])]
 
 
 # Étiquette du modèle → fiche de content/fiches/.
@@ -215,6 +243,8 @@ def chat(d: DemandeChat):
 
 @router.post("/feedback")
 def feedback(d: Retour):
-    # Pas encore de base de données (Supabase non configuré) : le retour est seulement journalisé.
-    journal.info("retour : alerte=%s vu=%s canal=%s", d.alerte_id.split("-")[-3:-2], d.vu, d.canal)
-    return enveloppe("ok", "Merci, c'est noté.", {"enregistre": False})
+    # Pas encore de base de données (Supabase non configuré) : le retour est seulement journalisé, sans
+    # la position. Identifiant : a-AAAA-MM-JJ-<risque>-<lat>-<lon> (la longitude du Sénégal est négative).
+    m = re.fullmatch(r"a-\d{4}-\d{2}-\d{2}-([a-z_]+)-.*", d.alerte_id)
+    journal.info("retour : risque=%s vu=%s canal=%s", m.group(1) if m else "?", d.vu, d.canal)
+    return enveloppe("ok", "Merci pour ta réponse.", {"enregistre": False})

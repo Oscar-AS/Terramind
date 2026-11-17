@@ -19,8 +19,10 @@ import threading
 import urllib.request
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlparse
 
 from .. import config
+from ..responses.voix.normalisation import preparer
 
 journal = logging.getLogger("terramind.parole")
 LEXIQUE = Path(__file__).resolve().parents[3] / "content" / "voix" / "lexique_wolof.csv"
@@ -78,7 +80,10 @@ def synthetiser(texte_wo: str) -> bytes:
         url = json.loads(r.read())["url"]
     if url.startswith("/"):
         url = config.OCTOPUS_URL + url
-    with urllib.request.urlopen(urllib.request.Request(url, headers=entetes), timeout=60) as r:
+    # Le jeton ne part que vers Octopus lui-même : une adresse de stockage (S3, CDN) n'en a pas besoin.
+    chez_octopus = urlparse(url).netloc == urlparse(config.OCTOPUS_URL).netloc
+    entetes_mp3 = entetes if chez_octopus else {"User-Agent": AGENT}
+    with urllib.request.urlopen(urllib.request.Request(url, headers=entetes_mp3), timeout=60) as r:
         return r.read()
 
 
@@ -91,7 +96,16 @@ def dire_en_wolof(texte_fr: str) -> bytes | None:
         return None
     try:
         wo = traduire_en_wolof(texte_fr)
-        return synthetiser(wo) if wo else None
+        if not wo:
+            return None
+        # Contrôle avant la voix (engine/app/responses/voix/normalisation.py) : nombres en lettres, mots du
+        # lexique ; s'il reste un problème (chiffre décimal, symbole, mot français…), pas de voix : le texte
+        # français est envoyé de toute façon.
+        pret = preparer(wo)
+        if pret.problemes:
+            journal.info("réponse vocale wolof écartée : %s", "; ".join(pret.problemes))
+            return None
+        return synthetiser(" ".join(pret.morceaux))
     except Exception as e:
         journal.warning("réponse vocale wolof impossible : %s", type(e).__name__)
         return None

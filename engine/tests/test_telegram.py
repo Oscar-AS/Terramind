@@ -169,6 +169,18 @@ def test_photo_non_filtree_par_la_culture_surveillee():
     assert photo.call_args.args[2] is None
 
 
+def test_photo_tomate_demande_de_verifier_la_mineuse():
+    from engine.app.modules.diagnostic import modele
+    res = {"predictions": [{"culture": "tomato", "etiquette": "healthy", "categorie": "sain",
+                            "libelle": "Tomate saine", "confiance": 0.9}], "certain": True}
+    with mock.patch.object(modele, "diagnostiquer", return_value=res), \
+            mock.patch.object(telegram, "_telecharger", return_value=b"x"), \
+            mock.patch.object(telegram, "dire"), mock.patch.object(telegram, "envoyer") as envoyer:
+        telegram._photo(14, "f", None)
+    dernier = envoyer.call_args.args[1]
+    assert "À vérifier aussi" in dernier and "Tuta absoluta" in dernier
+
+
 def test_reponse_libre_dite_en_wolof():
     telegram.ETATS.clear()
     telegram.ETATS[13] = {"langue": "wo"}
@@ -226,13 +238,80 @@ def test_periode_meteo_en_francais():
 
 
 def test_phrase_ph_negation():
-    from app.routes.telegram import phrase_ph
+    from engine.app.routes.telegram import phrase_ph
     assert phrase_ph(6.8) == "ton sol n'est ni acide ni basique"
     assert phrase_ph(6.1) == "ton sol est un peu acide"
 
 
 def test_ranger_pages_fusionne():
-    from app.modules.rag.fiches import ranger_pages
+    from engine.app.modules.rag.fiches import ranger_pages
     assert ranger_pages(["90-91", "91", "89", "88"]) == ["88-91"]
     assert ranger_pages(["88-90", "91", "140"]) == ["88-91", "140"]
     assert ranger_pages(["12", "30", "12"]) == ["12", "30"]
+
+
+def test_date_future_refusee():
+    from engine.app.routes import telegram as tg
+    import datetime as dt
+
+    demain = dt.date.today() + dt.timedelta(days=1)
+    if demain.month != dt.date.today().month:
+        return  # fin de mois : « demain » serait lu comme l'an dernier
+    tg.ETATS[10] = {"culture": "tomato", "attend_date": True, "lat": 14.76, "lon": -17.21}
+    with mock.patch.object(tg, "envoyer") as envoyer, mock.patch.object(tg, "_alertes") as alertes:
+        tg.traiter({"message": {"chat": {"id": 10}, "text": f"{demain.day}/{demain.month}"}})
+    assert "pas encore arrivée" in envoyer.call_args.args[1] and not alertes.called
+    assert tg.ETATS[10]["attend_date"]
+
+
+def test_changer_de_culture_et_date_plus_tard():
+    from engine.app.routes import telegram as tg
+
+    tg.ETATS[11] = {"langue": "fr", "culture": "tomato", "repiquage": None, "attend_date": False,
+                    "date_libre": True, "lat": 14.76, "lon": -17.21}
+    with mock.patch.object(tg, "envoyer"), mock.patch.object(tg, "_alertes") as alertes:
+        tg.traiter({"message": {"chat": {"id": 11}, "text": "15/10"}})  # date donnée après « je ne sais pas »
+        assert tg.ETATS[11]["repiquage"].month == 10 and alertes.called
+    with mock.patch.object(tg, "envoyer") as envoyer, mock.patch.object(tg, "_appel_silencieux"):
+        tg.traiter({"callback_query": {"id": "q", "data": "changer_culture", "message": {"chat": {"id": 11}}}})
+        assert "Quelle culture" in envoyer.call_args.args[1]
+        tg.traiter({"callback_query": {"id": "q", "data": "culture:onion", "message": {"chat": {"id": 11}}}})
+    assert tg.ETATS[11]["culture"] == "onion" and "repiquage" not in tg.ETATS[11]
+
+
+def test_etat_perdu_apres_veille():
+    from engine.app.routes import telegram as tg
+
+    tg.ETATS.pop(12, None)
+    with mock.patch.object(tg, "envoyer") as envoyer, mock.patch.object(tg, "_appel_silencieux"):
+        tg.traiter({"callback_query": {"id": "q", "data": "eau:oui", "message": {"chat": {"id": 12}}}})
+    assert "connaître ton champ" in envoyer.call_args.args[1]
+
+
+def test_erreur_imprevue_message_de_repli():
+    from engine.app.routes import telegram as tg
+
+    with mock.patch.object(tg, "traiter", side_effect=TypeError("x")), \
+            mock.patch.object(tg, "_appel_silencieux") as appel:
+        tg.traiter_sans_planter({"message": {"chat": {"id": 13}, "text": "bonjour"}})
+    assert appel.call_args.kwargs["chat_id"] == 13
+
+
+def test_secret_non_ascii_refuse():
+    from fastapi.testclient import TestClient
+    from engine.app.main import app
+
+    with mock.patch.object(config, "TELEGRAM_BOT_TOKEN", "t"), mock.patch.object(config, "TELEGRAM_WEBHOOK_SECRET", "s"):
+        r = TestClient(app).post("/webhook/telegram", json=START,
+                                 headers={"X-Telegram-Bot-Api-Secret-Token": b"\xe9t\xe9"})
+    assert r.status_code == 403
+
+
+def test_date_inconnue_en_wolof():
+    from engine.app.routes import telegram as tg
+
+    for i, mot in enumerate(("xamuma", "Xamu ma.", "xamuma ko")):
+        tg.ETATS[20 + i] = {"culture": "tomato", "attend_date": True}
+        with mock.patch.object(tg, "envoyer"):
+            tg.traiter({"message": {"chat": {"id": 20 + i}, "text": mot}})
+        assert tg.ETATS[20 + i]["repiquage"] is None and not tg.ETATS[20 + i]["attend_date"], mot

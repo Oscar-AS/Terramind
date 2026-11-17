@@ -14,17 +14,19 @@ CONSEILS = {
                                   "Regarde le dessous des feuilles : taches brunes avec un duvet blanc.",
     ("alternaria", "favorable"): "Le temps de ces derniers jours est favorable à l'alternariose. "
                                  "Regarde les vieilles feuilles : taches brunes avec des cercles.",
-    ("tuta_absoluta", "surveiller"): "Une nouvelle génération de mineuse est probable. "
-                                     "Regarde s'il y a des galeries claires dans les feuilles.",
-    ("plutella_xylostella", "surveiller"): "Une nouvelle génération de teigne du chou est probable. "
-                                           "Regarde tes choux de près, surtout le dessous des feuilles.",
+    ("tuta_absoluta", "surveiller"): "De nouvelles petites chenilles (mineuse de la tomate) vont sans doute "
+                                     "bientôt sortir et manger l'intérieur de tes feuilles. Regarde tes feuilles : "
+                                     "des traces claires, comme des petits chemins.",
+    ("plutella_xylostella", "surveiller"): "De nouvelles petites chenilles (teigne du chou) vont sans doute "
+                                           "bientôt sortir et manger les feuilles de tes choux. Regarde tes choux "
+                                           "de près, surtout le dessous des feuilles.",
     # Symptômes : Cornell (Carrot Leaf Blight Diseases and their Management in New York) ; UC IPM (onion downy mildew).
     ("carrot_alternaria", "favorable"): "Le temps de ces derniers jours est favorable à l'alternariose de la carotte. "
                                         "Regarde les feuilles : petites taches brun foncé, souvent au bord, entourées de jaune.",
     # Symptômes : fiche content/fiches/ravageur-noctuelle-tomate.md (DPV p. 51-52 ; FAO/RADHORT p. 7).
-    ("helicoverpa_armigera", "surveiller"): "Une nouvelle génération de noctuelle (le ver des fruits) est probable. "
-                                            "Regarde les fruits et les fleurs : fruits troués, fleurs coupées, "
-                                            "chenilles brunes, vertes ou jaunes.",
+    ("helicoverpa_armigera", "surveiller"): "De nouvelles chenilles (noctuelle) vont sans doute bientôt sortir et "
+                                            "manger tes fruits. Regarde tes fruits et tes fleurs : des trous dans "
+                                            "les fruits, des fleurs coupées, des petites chenilles.",
     ("date_requise", "date_requise"): "Pour surveiller les insectes de ta culture, j'ai besoin de savoir quand tu "
                                       "l'as plantée.",
     ("onion_downy_mildew", "favorable"): "Les nuits très humides de ces derniers jours sont favorables au mildiou de "
@@ -77,7 +79,7 @@ def calculer(lat: float, lon: float, culture: str, date: dt.date, date_repiquage
         periode = [debut.isoformat(), fin.isoformat()]
 
     ravageurs = [r for r, (cibles, *_) in regles.RAVAGEURS.items() if culture in cibles]
-    if ravageurs and (date_repiquage is None or date_repiquage >= fin):
+    if ravageurs and date_repiquage is None:
         # Les générations se comptent depuis la plantation : sans date, on le dit au lieu de se taire.
         alertes.append({"risque": "date_requise", "regle": "degres_jours", "niveau": "date_requise",
                         "detail": {"ravageurs": ravageurs}})
@@ -85,7 +87,8 @@ def calculer(lat: float, lon: float, culture: str, date: dt.date, date_repiquage
     for risque, (cibles, seuil, dd_gen) in regles.RAVAGEURS.items():
         if risque not in ravageurs:
             continue
-        serie = meteo.journalier(lat, lon, date_repiquage, fin)
+        # Plantation plus récente que la dernière météo publiée : aucune génération encore bouclée.
+        serie = meteo.journalier(lat, lon, date_repiquage, fin) if date_repiquage < fin else {}
         gen = regles.generations(serie, seuil, dd_gen)
         alertes.append({
             "risque": risque, "regle": "degres_jours",

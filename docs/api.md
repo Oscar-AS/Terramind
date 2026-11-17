@@ -100,7 +100,7 @@ Le moteur est le seul endroit où vit la logique agricole. WhatsApp, l'appli web
   - `seuil_incertain` est fixé par Oscar après évaluation, et peut être plus strict pour les petites classes.
 - **`fiche`** : la fiche de `content/fiches/` en 4 parties, dans l'ordre où un malade se pose les questions : ce que c'est, pourquoi c'est arrivé, que faire maintenant, pour que ça ne revienne pas. Les lignes réservées à une autre culture que celle de la photo sont retirées. `null` si la maladie n'a pas encore de fiche (la façade le dit, sans rien inventer) ; les sources de la fiche s'ajoutent à `sources`.
 - **Sous le seuil :** `statut = incertain` avec la réponse type « je ne suis pas sûr, voici un agent agricole ». Aucune maladie n'est annoncée.
-- **Ravageurs que la photo ne reconnaît pas** (mineuse de la tomate, teigne du chou, D11 et stratégie § 1) : `questions_suivi` contient les questions oui/non du manuel de la DPV, que la façade pose ensuite à l'agriculteur.
+- **Ravageurs que la photo ne reconnaît pas** (D11 et stratégie § 1) : `questions_suivi` contient des questions oui/non tirées des fiches sourcées (manuel de la DPV), que la façade pose ensuite à l'agriculteur : `[{"question", "si_oui", "fiche", "source"}]`. Aujourd'hui une seule : la mineuse de la tomate (*Tuta absoluta*, DPV p. 29), posée après chaque photo de tomate reconnue, même saine. Vide si la photo est incertaine ou d'une autre culture. Le chou n'est pas dans le modèle photo : la teigne n'a donc pas de question.
 
 ## 3. `POST /v1/plan` : que planter ici, et quand
 

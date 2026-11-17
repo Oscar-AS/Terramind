@@ -11,6 +11,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import threading
 from functools import lru_cache
 from pathlib import Path
 
@@ -23,6 +24,13 @@ SEUIL_INCERTAIN = 0.6  # repli si ni variable d'environnement ni calibration
 TAILLE = 224
 MOYENNE = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 ECART = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+# Mémoire limitée (Render gratuit, 512 Mo). Une photo JPEG de téléphone (12 à 108 millions de pixels) est
+# décodée directement à taille réduite (draft) ; les autres formats (PNG…) sont décodés en entier, donc
+# limités à 25 millions de pixels. Au-delà de 120 millions, Pillow refuse avant tout décodage.
+Image.MAX_IMAGE_PIXELS = 120_000_000
+PIXELS_MAX_NON_JPEG = 25_000_000
+COTE_MIN = 64  # en dessous, la photo est agrandie plus de 3 fois : le modèle ne verrait que du flou
+_VERROU = threading.Lock()  # un seul chargement du modèle, même si deux photos arrivent en même temps
 
 # Libellés français et catégories, au format de data/label_mapping.csv (branche d'Oscar).
 LIBELLES = {
@@ -52,8 +60,13 @@ class ModeleAbsent(RuntimeError):
     pass
 
 
-@lru_cache(maxsize=1)
 def _charger():
+    with _VERROU:
+        return _charger_une_fois()
+
+
+@lru_cache(maxsize=1)
+def _charger_une_fois():
     import onnxruntime as ort  # import tardif : le moteur démarre même sans modèle
 
     fichier = next((DOSSIER / n for n in ("terramind_diag.onnx", "terramind_diag_v0.onnx") if (DOSSIER / n).exists()), None)
@@ -68,7 +81,14 @@ def _charger():
 
 
 def _preparer(contenu: bytes) -> np.ndarray:
-    image = Image.open(io.BytesIO(contenu)).convert("RGB")
+    image = Image.open(io.BytesIO(contenu))
+    if image.format == "JPEG":
+        image.draft("RGB", (512, 512))  # décodage à taille réduite, côté court ≥ 512 (le modèle utilise 256)
+    elif image.size[0] * image.size[1] > PIXELS_MAX_NON_JPEG:
+        raise ValueError("image trop grande")
+    if min(image.size) < COTE_MIN:  # vignette ou image tronquée : on ne devine rien (idée reprise d'Oscar)
+        raise ValueError("image trop petite")
+    image = image.convert("RGB")
     l, h = image.size
     echelle = 256 / min(l, h)  # même traitement que la validation : 256 puis centre 224
     image = image.resize((max(TAILLE, round(l * echelle)), max(TAILLE, round(h * echelle))), Image.BILINEAR)

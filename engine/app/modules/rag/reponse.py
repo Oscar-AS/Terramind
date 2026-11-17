@@ -10,9 +10,11 @@ Rien de personnel n'est envoyé à Gemini : seulement la question et les extrait
 
 from __future__ import annotations
 
+import datetime as dt
 import json
 import logging
 import os
+import threading
 import urllib.request
 
 from ... import config  # noqa: F401  (charge .env avant de lire la clé)
@@ -35,10 +37,34 @@ CONSIGNE = (
 )
 
 
+class _Plafond:
+    """Nombre d'appels à Gemini par jour (GEMINI_APPELS_PAR_JOUR, 500 par défaut) : /v1/chat est ouvert à
+    tous, un script en boucle ne doit pas épuiser le quota. Au-delà : réponse extractive, sans Gemini."""
+
+    def __init__(self):
+        self.jour, self.n, self.verrou = dt.date.today(), 0, threading.Lock()
+
+    def prendre(self) -> bool:
+        limite = int(os.environ.get("GEMINI_APPELS_PAR_JOUR", "").strip() or 500)
+        with self.verrou:
+            if self.jour != dt.date.today():
+                self.jour, self.n = dt.date.today(), 0
+            if self.n >= limite:
+                return False
+            self.n += 1
+            return True
+
+
+PLAFOND = _Plafond()
+
+
 def gemini(consigne: str, texte: str, delai: int = 30) -> str | None:
-    """Appel simple à Gemini (consigne système + un message). None sans clé ou en cas d'échec."""
+    """Appel simple à Gemini (consigne système + un message). None sans clé, plafond atteint ou échec."""
     cle = os.environ.get("GEMINI_API_KEY", "").strip()
     if not cle:
+        return None
+    if not PLAFOND.prendre():
+        journal.warning("plafond du jour des appels à Gemini atteint")
         return None
     modele = os.environ.get("GEMINI_MODEL", "").strip() or "gemini-3.5-flash-lite"
     corps = {

@@ -27,6 +27,7 @@ import json
 import logging
 import os
 import re
+import traceback
 import urllib.error
 import urllib.request
 import uuid
@@ -282,7 +283,8 @@ def _plan(chat: int):
         dire(chat, "eau_salee")
 
     blocs = ["<b>Ce qu'il faut savoir sur ton sol</b>\n"
-             f"D'après la carte des sols iSDAsoil, ton champ contient environ {round(s['sable_pct'])} % de sable "
+             "D'après la carte des sols iSDAsoil, ton champ "
+             + (f"contient environ {round(s['sable_pct'])} % de sable " if s.get("sable_pct") is not None else "")
              + (f"et son pH est de {nombre_fr(s['ph'])} : {phrase_ph(s['ph'])}." if s.get("ph") is not None
                 else "(pH inconnu à cet endroit).")]
     if groupes["conseillee"]:
@@ -356,7 +358,28 @@ def _alertes(chat: int):
                  "Si tu vois des taches sur ta plante (feuille, fruit, tige), envoie-moi une photo.")
     blocs.append("<i>Météo : NASA POWER. Ces règles viennent d'études faites hors du Sénégal : je parle de "
                  "conditions favorables, pas de maladie certaine.</i>")
+    if any(a["niveau"] == "date_requise" for a in d["alertes"]):
+        e["date_libre"] = True  # la date pourra être écrite à n'importe quel moment
+        blocs.append("<b>Pour surveiller aussi les insectes</b>\nÉcris-moi le jour où tu l'as plantée, "
+                     "comme ça : <b>15/10</b> pour le 15 octobre.")
     envoyer(chat, "\n\n".join(blocs), reply_markup=CLAVIER)
+    envoyer(chat, "Tu veux surveiller une autre culture ?",
+            reply_markup={"inline_keyboard": [[{"text": "Changer de culture", "callback_data": "changer_culture"}]]})
+
+
+def _choisir_culture(chat: int):
+    wo = ETATS.get(chat, {}).get("langue") == "wo"
+    boutons = [[{"text": f"{i}. {c['libelle']}" if wo else c["libelle"], "callback_data": f"culture:{k}"}]
+               for i, (k, c) in enumerate(CULTURES.items(), 1)]
+    dire(chat, "choix_culture")
+    envoyer(chat, "<b>Quelle culture veux-tu que je surveille ?</b>\nChoisis-la dans la liste.",
+            reply_markup={"inline_keyboard": boutons})
+
+
+def _sans_position(chat: int):
+    """État perdu (redémarrage du serveur après la veille de Render) : on redemande le champ."""
+    dire(chat, "demande_position")
+    envoyer(chat, DEMANDE_POSITION, reply_markup=CLAVIER)
 
 
 def _telecharger(file_id: str) -> bytes:
@@ -433,7 +456,8 @@ def _photo(chat: int, file_id: str, culture: str | None):
         dire(chat, "photo_saine")
         envoyer(chat, "<b>Bonne nouvelle : ce que je vois semble sain.</b>\n"
                       "Je ne vois pas de signe de maladie sur cette photo.\n\n"
-                      "<b>Ce que tu peux faire ensuite</b>\nSi d'autres plants ont des taches, envoie-moi leur photo.",
+                      "<b>Ce que tu peux faire ensuite</b>\nSi d'autres plants ont des taches, envoie-moi leur photo."
+                      + _verifier_aussi(top.get("culture")),
                 reply_markup=CLAVIER)
         return
     tete = ("<b>Ce que je vois sur ta photo</b>\n"
@@ -450,10 +474,20 @@ def _photo(chat: int, file_id: str, culture: str | None):
              f"Pour confirmer, montre ta plante à {AGENT}. "
              "Tu peux aussi m'écrire une question sur ce problème.")
     if not fiche:
-        envoyer(chat, f"{tete}\n\nJe n'ai pas encore de fiche sur ce problème.\n\n{suite}", reply_markup=CLAVIER)
+        envoyer(chat, f"{tete}\n\nJe n'ai pas encore de fiche sur ce problème.\n\n{suite}"
+                      + _verifier_aussi(top.get("culture")), reply_markup=CLAVIER)
         return
     corps, sources = fiche
-    envoyer(chat, f"{tete}\n\n{corps}\n\n{suite}\n\n{sources}", reply_markup=CLAVIER)
+    envoyer(chat, f"{tete}\n\n{corps}\n\n{suite}{_verifier_aussi(top.get('culture'))}\n\n{sources}",
+            reply_markup=CLAVIER)
+
+
+def _verifier_aussi(culture: str | None) -> str:
+    """Ravageurs invisibles pour le modèle (mineuse de la tomate) : la question oui/non de la fiche."""
+    from .v1 import questions_suivi
+
+    return "".join(f"\n\n<b>À vérifier aussi</b>\n{escape(q['question'])}\n<i>Si oui : {escape(q['si_oui'])}</i>"
+                   for q in questions_suivi(culture))
 
 
 def texte_fiche(etiquette: str, culture: str | None) -> tuple[str, str] | None:
@@ -510,14 +544,21 @@ def _question(chat: int, texte: str):
 def traiter(maj: dict):
     if "callback_query" in maj:
         q = maj["callback_query"]
-        chat = q["message"]["chat"]["id"]
         _appel_silencieux("answerCallbackQuery", callback_query_id=q["id"])
+        chat = ((q.get("message") or {}).get("chat") or {}).get("id") or (q.get("from") or {}).get("id")
+        if chat is None:
+            return
         donnee = q.get("data", "")
         cle, _, reponse = donnee.partition(":")
         if cle in CHAMP_ETAT and reponse in ("oui", "non", "ne_sait_pas"):
             ETATS.setdefault(chat, {})[CHAMP_ETAT[cle]] = reponse
             if "lat" in ETATS[chat]:
                 _plan(chat)
+            else:
+                _sans_position(chat)
+            return
+        if donnee == "changer_culture":
+            _choisir_culture(chat)
             return
         if donnee in ("langue:wo", "langue:fr"):
             ETATS.setdefault(chat, {})["langue"] = donnee[-2:]
@@ -527,7 +568,8 @@ def traiter(maj: dict):
         culture = donnee.removeprefix("culture:")
         if culture in CULTURES:
             ETATS.setdefault(chat, {})["culture"] = culture
-            ETATS[chat]["attend_date"] = True
+            ETATS[chat]["attend_date"], ETATS[chat]["date_libre"] = True, False
+            ETATS[chat].pop("repiquage", None)
             dire(chat, "date_repiquage")
             envoyer(chat, f"C'est noté : {escape(CULTURES[culture]['libelle'].lower())}.\n\n"
                           "<b>Une dernière question pour bien te conseiller</b>\nTu l'as plantée quand ? "
@@ -593,19 +635,17 @@ def traiter(maj: dict):
         elif "culture" in etat and not etat.get("attend_date"):
             _alertes(chat)
         else:
-            wo = etat.get("langue") == "wo"
-            boutons = [[{"text": f"{i}. {c['libelle']}" if wo else c["libelle"], "callback_data": f"culture:{k}"}]
-                       for i, (k, c) in enumerate(CULTURES.items(), 1)]
-            dire(chat, "choix_culture")
-            envoyer(chat, "<b>Quelle culture veux-tu que je surveille ?</b>\nChoisis-la dans la liste.",
-                    reply_markup={"inline_keyboard": boutons})
-    elif etat.get("attend_date") and re.fullmatch(r"(je )?ne sais (pas|plus)\.?", texte.lower()):
+            _choisir_culture(chat)
+    elif etat.get("attend_date") and re.fullmatch(r"((je )?ne sais (pas|plus)|xamu ?ma|xamu ?ma ko)\s*[.!]?", texte.lower()):
         etat["repiquage"], etat["attend_date"] = None, False
         dire(chat, "date_ignoree")
         envoyer(chat, "Pas de souci, je fais sans la date.")
         if "lat" in etat:
             _alertes(chat)
-    elif etat.get("attend_date") and (m := re.fullmatch(r"(\d{1,2})[/.\- ](\d{1,2})", texte)):
+        else:
+            _sans_position(chat)
+    elif ((etat.get("attend_date") or etat.get("date_libre")) and "culture" in etat
+          and (m := re.fullmatch(r"(\d{1,2})[/.\- ](\d{1,2})", texte))):
         aujourdhui = dt.date.today()
         jour, mois = int(m.group(1)), int(m.group(2))
         try:
@@ -614,11 +654,44 @@ def traiter(maj: dict):
             dire(chat, "date_incomprise")
             envoyer(chat, "Je n'ai pas compris la date. Écris-la comme ceci : <b>15/10</b> pour le 15 octobre.")
             return
-        etat["repiquage"], etat["attend_date"] = date, False
+        if date > aujourdhui:
+            dire(chat, "date_future")
+            envoyer(chat, "Cette date n'est pas encore arrivée. Écris le jour où tu as planté, "
+                          "par exemple <b>15/10</b> pour le 15 octobre.")
+            return
+        etat["repiquage"], etat["attend_date"], etat["date_libre"] = date, False, False
         if "lat" in etat:
             _alertes(chat)
+        else:
+            _sans_position(chat)
     elif texte:
         _question(chat, texte)
+
+
+def traiter_sans_planter(maj: dict):
+    """Une erreur imprévue ne doit pas laisser l'agriculteur sans réponse."""
+    try:
+        traiter(maj)
+    except Exception as e:
+        # Type et ligne seulement : le texte de l'erreur pourrait contenir un message de l'agriculteur.
+        ou = traceback.extract_tb(e.__traceback__)[-1]
+        journal.error("message non traité : %s (%s:%s)", type(e).__name__, Path(ou.filename).name, ou.lineno)
+        q = maj.get("callback_query") or {}
+        chat = (((maj.get("message") or q.get("message") or {}).get("chat") or {}).get("id")
+                or (q.get("from") or {}).get("id"))
+        if chat is not None:
+            _appel_silencieux("sendMessage", chat_id=chat, text="Désolé, un problème m'a empêché de répondre. "
+                              "Réessaie dans un instant.")
+    finally:
+        _limiter_etats()
+
+
+ETATS_MAX = 5000  # agriculteurs gardés en mémoire ; au-delà, on oublie les plus anciens
+
+
+def _limiter_etats():
+    while len(ETATS) > ETATS_MAX:
+        ETATS.pop(next(iter(ETATS)))
 
 
 def _appel_silencieux(methode: str, **donnees):
@@ -634,8 +707,8 @@ async def webhook(request: Request, taches: BackgroundTasks,
     secret = config.TELEGRAM_WEBHOOK_SECRET
     if not config.TELEGRAM_BOT_TOKEN or not secret:
         raise HTTPException(503, "bot Telegram non configuré")
-    if not x_telegram_bot_api_secret_token or not hmac.compare_digest(x_telegram_bot_api_secret_token, secret):
+    if not x_telegram_bot_api_secret_token or not hmac.compare_digest(x_telegram_bot_api_secret_token.encode(), secret.encode()):
         raise HTTPException(403, "secret invalide")
     # Réponse immédiate à Telegram ; le travail (sol, météo, photo) se fait ensuite.
-    taches.add_task(traiter, await request.json())
+    taches.add_task(traiter_sans_planter, await request.json())
     return {"ok": True}
