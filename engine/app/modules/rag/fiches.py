@@ -18,18 +18,37 @@ from pathlib import Path
 
 RACINE = Path(__file__).resolve().parents[4]
 DOSSIER = Path(os.environ.get("FICHES_PATH") or RACINE / "content" / "fiches")
-VIDES = set("""a au aux avec ce ces cet cette comme dans de des du elle en est et eux il ils je la le les leur lui
+VIDES = set(
+    """a au aux avec ce ces cet cette comme dans de des du elle en est et eux il ils je la le les leur lui
 ma mais me mes moi mon ne nos notre nous on ou par pas pour qu que qui sa se ses son sur ta te tes toi ton tu un une
 vos votre vous y quoi quand comment quel quelle quels quelles est-ce sont suis faire fait faut peut peux dois
-mon ma mes plus tres bien aussi alors donc ca cela ceci tout tous toute toutes j l d c n s m t qu y""".split())
+mon ma mes plus tres bien aussi alors donc ca cela ceci tout tous toute toutes j l d c n s m t qu y""".split()
+)
 REF = re.compile(r"\s*\[([^\]]+)\]")
 SYNONYMES = {  # mots courants des agriculteurs → mots des fiches
-    "tomates": "tomate", "oignons": "oignon", "choux": "chou", "pdt": "pomme",
-    "taches": "tache", "jaunes": "jaune", "trous": "trou", "chenilles": "chenille",
-    "semer": "semis", "seme": "semis", "planter": "plantation", "plante": "plantation", "repiquer": "repiquage",
-    "cultiver": "plantation", "cultive": "plantation",
-    "arrosage": "arroser", "sale": "sel", "salee": "sel", "salinite": "sel", "traiter": "traitement",
-    "soigner": "traitement", "engrais": "engrais", "puit": "puits",
+    "tomates": "tomate",
+    "oignons": "oignon",
+    "choux": "chou",
+    "pdt": "pomme",
+    "taches": "tache",
+    "jaunes": "jaune",
+    "trous": "trou",
+    "chenilles": "chenille",
+    "semer": "semis",
+    "seme": "semis",
+    "planter": "plantation",
+    "plante": "plantation",
+    "repiquer": "repiquage",
+    "cultiver": "plantation",
+    "cultive": "plantation",
+    "arrosage": "arroser",
+    "sale": "sel",
+    "salee": "sel",
+    "salinite": "sel",
+    "traiter": "traitement",
+    "soigner": "traitement",
+    "engrais": "engrais",
+    "puit": "puits",
 }
 # Mots qu'un agriculteur emploie pour chacune des 4 sections communes des fiches maladies.
 MOTS_SECTIONS = {
@@ -41,8 +60,15 @@ MOTS_SECTIONS = {
 # trop risquée sans contrôle ; seulement les familles repérées sur des questions réelles).
 FAMILLES = (("fletri", "fletrissement"),)
 FORMES = {"fanent": "fane", "faner": "fane", "fanee": "fane", "fanees": "fane", "fanes": "fane"}
-NOMS_CULTURES = {"tomato": "tomate", "onion": "oignon", "cabbage": "chou", "potato": "pomme terre",
-                 "pepper": "poivron", "carrot": "carotte", "bitter_eggplant": "jaxatu"}
+NOMS_CULTURES = {
+    "tomato": "tomate",
+    "onion": "oignon",
+    "cabbage": "chou",
+    "potato": "pomme terre",
+    "pepper": "poivron",
+    "carrot": "carotte",
+    "bitter_eggplant": "jaxatu",
+}
 
 
 def normaliser(texte: str) -> list[str]:
@@ -108,7 +134,10 @@ def passages() -> list[Passage]:
         titre = re.search(r"^titre:\s*(.+)$", entete, re.M)
         titre = titre.group(1).strip() if titre else chemin.stem
         cultures = re.search(r"^cultures:\s*(.+)$", entete, re.M)
-        noms = " ".join(NOMS_CULTURES.get(c.strip(), "") for c in (cultures.group(1).split(",") if cultures else []))
+        noms = " ".join(
+            NOMS_CULTURES.get(c.strip(), "")
+            for c in (cultures.group(1).split(",") if cultures else [])
+        )
         for bloc in re.split(r"\n(?=## )", corps):
             if not bloc.startswith("## "):
                 continue
@@ -119,9 +148,19 @@ def passages() -> list[Passage]:
                 continue
             # Les fiches sans référence pour une section restent citées par leur titre.
             refs = refs or [f"FICHE {titre}"]
-            resultat.append(Passage(chemin.stem, titre, section[3:].strip(), propre, refs,
-                                    normaliser(f"{titre} {noms} {section} {section} {MOTS_SECTIONS.get(section[3:].strip().lower(), '')} {propre}"),
-                                    set(normaliser(titre))))
+            resultat.append(
+                Passage(
+                    chemin.stem,
+                    titre,
+                    section[3:].strip(),
+                    propre,
+                    refs,
+                    normaliser(
+                        f"{titre} {noms} {section} {section} {MOTS_SECTIONS.get(section[3:].strip().lower(), '')} {propre}"
+                    ),
+                    set(normaliser(titre)),
+                )
+            )
     return resultat
 
 
@@ -133,7 +172,9 @@ def _index():
     return ps, df, moyenne
 
 
-def chercher(question: str, n: int = 3, k1: float = 1.4, b: float = 0.75) -> list[tuple[float, Passage]]:
+def chercher(
+    question: str, n: int = 3, k1: float = 1.4, b: float = 0.75
+) -> list[tuple[float, Passage]]:
     ps, df, moyenne = _index()
     q = set(normaliser(question))
     scores = []
@@ -145,8 +186,10 @@ def chercher(question: str, n: int = 3, k1: float = 1.4, b: float = 0.75) -> lis
                 continue
             idf = math.log(1 + (len(ps) - df[m] + 0.5) / (df[m] + 0.5))
             s += idf * tf[m] * (k1 + 1) / (tf[m] + k1 * (1 - b + b * len(p.mots) / moyenne))
-            if m in p.mots_titre:  # le mot est le nom même de la fiche (« alternariose ») : elle passe devant
-                s += idf          # celles qui le citent en passant (« ne pas confondre avec l'alternariose »)
+            if (
+                m in p.mots_titre
+            ):  # le mot est le nom même de la fiche (« alternariose ») : elle passe devant
+                s += idf  # celles qui le citent en passant (« ne pas confondre avec l'alternariose »)
         if s > 0:
             scores.append((s, p))
     scores.sort(key=lambda x: -x[0])
@@ -166,7 +209,10 @@ def sources_de(ps: list[Passage]) -> list[dict]:
             liste = pages.setdefault(s["document"], [])
             if s["page"] != "—" and s["page"] not in liste:
                 liste.append(s["page"])
-    return [{"document": d, "page": ", ".join(ranger_pages(pg)) if pg else "—"} for d, pg in pages.items()]
+    return [
+        {"document": d, "page": ", ".join(ranger_pages(pg)) if pg else "—"}
+        for d, pg in pages.items()
+    ]
 
 
 def ranger_pages(pages: list[str]) -> list[str]:

@@ -1,4 +1,7 @@
 """Variables WhatsApp, à recoller dans engine/app/config.py pour réactiver le bot (voir README)."""
+
+from engine.app.config import valeur
+
 WHATSAPP_TOKEN = valeur("WHATSAPP_TOKEN")
 WHATSAPP_PHONE_NUMBER_ID = valeur("WHATSAPP_PHONE_NUMBER_ID")
 WHATSAPP_APP_SECRET = valeur("WHATSAPP_APP_SECRET")

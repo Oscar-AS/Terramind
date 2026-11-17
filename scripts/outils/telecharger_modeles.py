@@ -22,9 +22,18 @@ RACINE = Path(__file__).resolve().parents[2]
 DOSSIER = RACINE / "modeles"
 
 MODELES = {
-    "asr": ("AIHubSN/M-Kiriku-ASR", "Reconnaissance du wolof parlé (Whisper large-v3 ajusté), Apache 2.0, 6,2 Go"),
-    "asr-leger": ("dofbi/wolof-asr", "Reconnaissance légère, MIT, 1 Go (serveur sans carte graphique)"),
-    "voix": ("AIHubSN/Kiriku-Wolof-TTS", "Voix wolof principale à tester, 1 Go, licence non indiquée"),
+    "asr": (
+        "AIHubSN/M-Kiriku-ASR",
+        "Reconnaissance du wolof parlé (Whisper large-v3 ajusté), Apache 2.0, 6,2 Go",
+    ),
+    "asr-leger": (
+        "dofbi/wolof-asr",
+        "Reconnaissance légère, MIT, 1 Go (serveur sans carte graphique)",
+    ),
+    "voix": (
+        "AIHubSN/Kiriku-Wolof-TTS",
+        "Voix wolof principale à tester, 1 Go, licence non indiquée",
+    ),
     "voix-secours": ("bilalfaye/speecht5_tts-wolof-v0.2", "Voix wolof de secours, MIT, 0,6 Go"),
 }
 
@@ -45,6 +54,10 @@ if __name__ == "__main__":
         depot, role = MODELES[nom]
         cible = DOSSIER / depot.replace("/", "__")
         print(f"{nom} : {depot} ({role})")
-        snapshot_download(depot, local_dir=cible, token=t,
-                          allow_patterns=["*.json", "*.txt", "*.model", "*.safetensors", "*.pth", "*.md"])
+        snapshot_download(
+            depot,
+            local_dir=cible,
+            token=t,
+            allow_patterns=["*.json", "*.txt", "*.model", "*.safetensors", "*.pth", "*.md"],
+        )
         print(f"  ok  {cible.relative_to(RACINE)}")

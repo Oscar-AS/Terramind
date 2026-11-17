@@ -58,11 +58,19 @@ def empreinte(texte: str) -> str:
 
 
 def synthetiser(texte: str, cle_api: str, langue: str = "wo") -> bytes:
-    corps = json.dumps({"text": texte, "language": langue,
-                        "project_id": config.OCTOPUS_PROJECT_ID or "proj-challenge-f0903409d71542feaa95"}).encode()
+    corps = json.dumps(
+        {
+            "text": texte,
+            "language": langue,
+            "project_id": config.OCTOPUS_PROJECT_ID or "proj-challenge-f0903409d71542feaa95",
+        }
+    ).encode()
     entetes = {"Authorization": f"Bearer {cle_api}", "User-Agent": AGENT}
-    req = urllib.request.Request(f"{config.OCTOPUS_URL}/api/tts", data=corps,
-                                 headers={**entetes, "Content-Type": "application/json"})
+    req = urllib.request.Request(
+        f"{config.OCTOPUS_URL}/api/tts",
+        data=corps,
+        headers={**entetes, "Content-Type": "application/json"},
+    )
     with urllib.request.urlopen(req, timeout=120) as r:
         url = json.loads(r.read())["url"]
     if url.startswith("/"):
@@ -72,14 +80,18 @@ def synthetiser(texte: str, cle_api: str, langue: str = "wo") -> bytes:
 
 
 def main():
-    a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    a = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     a.add_argument("--brouillons", action="store_true", help="générer aussi les phrases non relues")
     a.add_argument("--cle", action="append", help="seulement cette clé (répétable)")
     a.add_argument("--forcer", action="store_true", help="refaire même si l'audio existe")
     a.add_argument("--essai", action="store_true", help="afficher ce qui serait généré, sans appel")
     args = a.parse_args()
 
-    statuts = {"relu", "valide_concordance"} | ({"brouillon_gemini", "a_relire"} if args.brouillons else set())
+    statuts = {"relu", "valide_concordance"} | (
+        {"brouillon_gemini", "a_relire"} if args.brouillons else set()
+    )
     lignes = list(csv.DictReader(CATALOGUE.open(encoding="utf-8")))
     deja = {}
     if JOURNAL.exists():
@@ -104,7 +116,9 @@ def main():
         return
     cle_api = jeton()
     if not cle_api:
-        sys.exit("Aucun jeton Octopus : remplir OCTOPUS_API_KEY dans .env ou lancer `octopus login`.")
+        sys.exit(
+            "Aucun jeton Octopus : remplir OCTOPUS_API_KEY dans .env ou lancer `octopus login`."
+        )
 
     SORTIE.mkdir(parents=True, exist_ok=True)
     for i, l in enumerate(a_faire, 1):
@@ -113,16 +127,24 @@ def main():
             if l["cle"] in EN_FRANCAIS_D_ABORD:  # MP3 mis bout à bout : lisible d'un seul tenant
                 audio = synthetiser(EN_FRANCAIS_D_ABORD[l["cle"]], cle_api, "fr") + audio
         except Exception as e:
-            print(f"  [{i}/{len(a_faire)}] {l['cle']} : échec ({type(e).__name__} {getattr(e, 'code', '')})")
+            print(
+                f"  [{i}/{len(a_faire)}] {l['cle']} : échec ({type(e).__name__} {getattr(e, 'code', '')})"
+            )
             continue
         for x in ("ogg", "m4a"):  # un seul fichier par clé : le bot prend le premier trouvé
             (SORTIE / f"{l['cle']}.{x}").unlink(missing_ok=True)
         (SORTIE / f"{l['cle']}.mp3").write_bytes(audio)
-        deja[l["cle"]] = {"cle": l["cle"], "statut_texte": l["statut"], "empreinte": empreinte(l["texte_wo"]),
-                          "octets": str(len(audio))}
+        deja[l["cle"]] = {
+            "cle": l["cle"],
+            "statut_texte": l["statut"],
+            "empreinte": empreinte(l["texte_wo"]),
+            "octets": str(len(audio)),
+        }
         print(f"  [{i}/{len(a_faire)}] {l['cle']} : {len(audio) // 1024} Ko")
         with JOURNAL.open("w", encoding="utf-8", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=["cle", "statut_texte", "empreinte", "octets"], lineterminator="\n")
+            w = csv.DictWriter(
+                f, fieldnames=["cle", "statut_texte", "empreinte", "octets"], lineterminator="\n"
+            )
             w.writeheader()
             w.writerows(sorted(deja.values(), key=lambda r: r["cle"]))
 

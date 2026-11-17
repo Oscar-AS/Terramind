@@ -47,14 +47,19 @@ SOL = {  # propriété iSDAsoil -> (nom court, échelle d'écart notable)
     "cation_exchange_capacity": ("cec_cmol_kg", 5),
 }
 CLIMAT = {  # nom court -> échelle
-    "t_moy_annuelle_c": 2, "t_moy_saison_fraiche_c": 2, "hr_saison_fraiche_pct": 10, "pluie_annuelle_mm": 150,
+    "t_moy_annuelle_c": 2,
+    "t_moy_saison_fraiche_c": 2,
+    "hr_saison_fraiche_pct": 10,
+    "pluie_annuelle_mm": 150,
 }
 FRAIS = ["NOV", "DEC", "JAN", "FEB", "MAR"]
 
 
 def climat(lat, lon):
-    url = ("https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M,RH2M,PRECTOTCORR"
-           f"&community=AG&latitude={lat}&longitude={lon}&format=JSON")
+    url = (
+        "https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M,RH2M,PRECTOTCORR"
+        f"&community=AG&latitude={lat}&longitude={lon}&format=JSON"
+    )
     p = json.loads(ts.telecharger(url))["properties"]["parameter"]
     return {
         "t_moy_annuelle_c": round(p["T2M"]["ANN"], 1),
@@ -86,24 +91,36 @@ def main():
         return round(sum(abs(valeurs[n][c] - ref[c]) / echelles[c] for c in dispo) / len(dispo), 2)
 
     sortie = ts.RACINE / "data" / "extraits" / "zones_analogues_comparaison.csv"
-    entete = (["zone", "pays", "latitude", "longitude"] + list(CLIMAT) + criteres_sol + ["texture",
-              "ecart_climat", "ecart_sol", "ecart_total"])
+    entete = (
+        ["zone", "pays", "latitude", "longitude"]
+        + list(CLIMAT)
+        + criteres_sol
+        + ["texture", "ecart_climat", "ecart_sol", "ecart_total"]
+    )
     rangs = []
     for n, (lat, lon, pays) in ZONES.items():
         ec, es = ecart(n, CLIMAT), ecart(n, criteres_sol)
         tot = None if ec is None or es is None else round((ec + es) / 2, 2)
-        rangs.append([n, pays, lat, lon] + [valeurs[n].get(c) for c in list(CLIMAT) + criteres_sol]
-                     + [valeurs[n].get("texture"), ec, es, tot])
-    rangs.append(["Moyenne des 4 points Niayes (référence)", "Niayes", "", ""]
-                 + [round(ref[c], 1) for c in list(CLIMAT) + criteres_sol] + ["", 0, 0, 0])
+        rangs.append(
+            [n, pays, lat, lon]
+            + [valeurs[n].get(c) for c in list(CLIMAT) + criteres_sol]
+            + [valeurs[n].get("texture"), ec, es, tot]
+        )
+    rangs.append(
+        ["Moyenne des 4 points Niayes (référence)", "Niayes", "", ""]
+        + [round(ref[c], 1) for c in list(CLIMAT) + criteres_sol]
+        + ["", 0, 0, 0]
+    )
     with sortie.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(entete)
         w.writerows(rangs)
     print(f"  ok  {sortie.relative_to(ts.RACINE)}")
     for r in sorted(rangs[:-1], key=lambda r: (r[-1] is None, r[-1])):
-        print(f"  {r[0]:42} climat {r[-3]}  sol {r[-2]}  total {r[-1]}  | sable {r[8]} argile {r[9]} "
-              f"pH {r[10]} C {r[11]} CEC {r[12]} | {r[13]}")
+        print(
+            f"  {r[0]:42} climat {r[-3]}  sol {r[-2]}  total {r[-1]}  | sable {r[8]} argile {r[9]} "
+            f"pH {r[10]} C {r[11]} CEC {r[12]} | {r[13]}"
+        )
 
 
 if __name__ == "__main__":

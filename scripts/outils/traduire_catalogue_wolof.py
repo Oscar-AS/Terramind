@@ -45,13 +45,19 @@ def glossaire() -> str:
 def gemini(lot: list[dict]) -> dict[str, str]:
     cle = os.environ.get("GEMINI_API_KEY", "").strip()
     modele = os.environ.get("GEMINI_MODEL", "").strip() or "gemini-3.5-flash-lite"
-    demande = (f"Glossaire :\n{glossaire()}\n\nMessages à traduire :\n"
-               + json.dumps([{"cle": r["cle"], "texte_fr": r["texte_fr"]} for r in lot], ensure_ascii=False))
-    corps = {"system_instruction": {"parts": [{"text": CONSIGNE}]},
-             "contents": [{"role": "user", "parts": [{"text": demande}]}],
-             "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2}}
-    req = urllib.request.Request(GEMINI.format(modele=modele), data=json.dumps(corps).encode(),
-                                 headers={"Content-Type": "application/json", "x-goog-api-key": cle})
+    demande = f"Glossaire :\n{glossaire()}\n\nMessages à traduire :\n" + json.dumps(
+        [{"cle": r["cle"], "texte_fr": r["texte_fr"]} for r in lot], ensure_ascii=False
+    )
+    corps = {
+        "system_instruction": {"parts": [{"text": CONSIGNE}]},
+        "contents": [{"role": "user", "parts": [{"text": demande}]}],
+        "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2},
+    }
+    req = urllib.request.Request(
+        GEMINI.format(modele=modele),
+        data=json.dumps(corps).encode(),
+        headers={"Content-Type": "application/json", "x-goog-api-key": cle},
+    )
     with urllib.request.urlopen(req, timeout=120) as r:
         d = json.loads(r.read())
     texte = "".join(p.get("text", "") for p in d["candidates"][0]["content"]["parts"])
@@ -65,12 +71,14 @@ def main():
     a_faire = [r for r in lignes if not r["texte_wo"].strip()]
     print(f"{len(a_faire)} messages à traduire")
     for i in range(0, len(a_faire), 15):
-        lot = a_faire[i:i + 15]
+        lot = a_faire[i : i + 15]
         trad = gemini(lot)
         for r in lot:
             if trad.get(r["cle"]):
                 r["texte_wo"], r["statut"] = trad[r["cle"]], "brouillon_gemini"
-        print(f"  lot {i // 15 + 1} : {sum(1 for r in lot if r['statut'] == 'brouillon_gemini')}/{len(lot)}")
+        print(
+            f"  lot {i // 15 + 1} : {sum(1 for r in lot if r['statut'] == 'brouillon_gemini')}/{len(lot)}"
+        )
     with CATALOGUE.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=champs, lineterminator="\n")
         w.writeheader()

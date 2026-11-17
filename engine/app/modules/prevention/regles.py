@@ -23,8 +23,12 @@ from __future__ import annotations
 import datetime as dt
 
 PLAFOND_MILDIOU = 26.6
-TOMCAST = [((13, 18), (7, 16, 21, None)), ((18, 21), (4, 9, 16, 23)),
-           ((21, 26), (3, 6, 13, 21)), ((26, 30), (4, 9, 16, 23))]
+TOMCAST = [
+    ((13, 18), (7, 16, 21, None)),
+    ((18, 21), (4, 9, 16, 23)),
+    ((21, 26), (3, 6, 13, 21)),
+    ((26, 30), (4, 9, 16, 23)),
+]
 SEUIL_TOMCAST = 15
 RAVAGEURS = {  # risque : (cultures, seuil °C, degrés-jours par génération)
     "tuta_absoluta": (("tomato",), 8.0, 440),
@@ -50,31 +54,41 @@ def resume_jours(horaire: dict[dt.date, list[tuple[float, float]]]) -> list[dict
         if len(heures) < 20:
             continue
         humides = [t for t, h in heures if h >= 90]
-        jours.append({
-            "date": jour,
-            "tmin": min(t for t, _ in heures),
-            "h90_frais": sum(1 for t in humides if t <= PLAFOND_MILDIOU),
-            "dsv": note_tomcast(len(humides), sum(humides) / len(humides)) if humides else 0,
-        })
+        jours.append(
+            {
+                "date": jour,
+                "tmin": min(t for t, _ in heures),
+                "h90_frais": sum(1 for t in humides if t <= PLAFOND_MILDIOU),
+                "dsv": note_tomcast(len(humides), sum(humides) / len(humides)) if humides else 0,
+            }
+        )
     return jours
 
 
 def jours_hutton(jours: list[dict]) -> list[dt.date]:
     """Jours où le critère Hutton plafonné est rempli (avec la veille)."""
     ok = lambda j: j["tmin"] >= 10 and j["h90_frais"] >= 6  # noqa: E731
-    return [b["date"] for a, b in zip(jours, jours[1:])
-            if ok(a) and ok(b) and (b["date"] - a["date"]).days == 1]
+    return [
+        b["date"]
+        for a, b in zip(jours, jours[1:])
+        if ok(a) and ok(b) and (b["date"] - a["date"]).days == 1
+    ]
 
 
-def generations(journalier: dict[dt.date, tuple[float, float]], seuil: float, dd_generation: float) -> float:
+def generations(
+    journalier: dict[dt.date, tuple[float, float]], seuil: float, dd_generation: float
+) -> float:
     """Générations bouclées depuis le premier jour de la série (méthode de la moyenne)."""
     dd = sum(max(0.0, (tmin + tmax) / 2 - seuil) for tmin, tmax in journalier.values())
     return dd / dd_generation
 
 
-def jours_downcast(heures: dict[dt.datetime, tuple], ecartes_pluie: list | None = None) -> list[dt.date]:
+def jours_downcast(
+    heures: dict[dt.datetime, tuple], ecartes_pluie: list | None = None
+) -> list[dt.date]:
     """Jours où les critères DOWNCAST de sporulation du mildiou de l'oignon sont remplis. Les nuits qui
-    remplissaient tout sauf la pluie sont ajoutées à `ecartes_pluie` (transparence : pluie du modèle)."""
+    remplissaient tout sauf la pluie sont ajoutées à `ecartes_pluie` (transparence : pluie du modèle).
+    """
     par_jour: dict[dt.date, dict[int, tuple[float, float]]] = {}
     for moment, th in heures.items():
         par_jour.setdefault(moment.date(), {})[moment.hour] = th
@@ -83,14 +97,23 @@ def jours_downcast(heures: dict[dt.datetime, tuple], ecartes_pluie: list | None 
         veille = par_jour.get(jour - dt.timedelta(days=1), {})
         aujourd = par_jour[jour]
         journee = [veille[h][0] for h in range(8, 20) if h in veille]
-        nuit = [veille[h][0] for h in range(20, 24) if h in veille] + [aujourd[h][0] for h in range(0, 6) if h in aujourd]
+        nuit = [veille[h][0] for h in range(20, 24) if h in veille] + [
+            aujourd[h][0] for h in range(0, 6) if h in aujourd
+        ]
         petit_matin = [aujourd[h][1] for h in range(2, 6) if h in aujourd]
         if len(journee) < 10 or len(nuit) < 8 or len(petit_matin) < 4:
             continue  # heures manquantes : on ne conclut pas
-        if (sum(journee) / len(journee) < 24 and 4 <= sum(nuit) / len(nuit) <= 24
-                and all(h > 95 for h in petit_matin)):
-            pluie = sum(th[2] for th in ([veille[23]] if 23 in veille else []) + [aujourd[h] for h in range(0, 4) if h in aujourd]
-                        if len(th) > 2)
+        if (
+            sum(journee) / len(journee) < 24
+            and 4 <= sum(nuit) / len(nuit) <= 24
+            and all(h > 95 for h in petit_matin)
+        ):
+            pluie = sum(
+                th[2]
+                for th in ([veille[23]] if 23 in veille else [])
+                + [aujourd[h] for h in range(0, 4) if h in aujourd]
+                if len(th) > 2
+            )
             if pluie > PLUIE_MAX_NUIT_MM:
                 if ecartes_pluie is not None:
                     ecartes_pluie.append(jour)

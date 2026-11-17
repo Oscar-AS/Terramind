@@ -136,20 +136,30 @@ def main():
     entrainement, validation, terrain = construire_listes(args.graine)
     cles = sorted({cle for _, cle in entrainement})
     index = {cle: i for i, cle in enumerate(cles)}
-    print(f"{len(cles)} classes ; entraînement {len(entrainement)}, "
-          f"validation {len(validation)}, terrain {len(terrain)} ; appareil {appareil}")
+    print(
+        f"{len(cles)} classes ; entraînement {len(entrainement)}, "
+        f"validation {len(validation)}, terrain {len(terrain)} ; appareil {appareil}"
+    )
 
     normaliser = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    aug = transforms.Compose([
-        transforms.RandomResizedCrop(TAILLE, scale=(0.6, 1.0)),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomRotation(20),
-        transforms.ColorJitter(0.3, 0.3, 0.3, 0.05),
-        transforms.ToTensor(), normaliser,
-    ])
-    simple = transforms.Compose([
-        transforms.Resize(256), transforms.CenterCrop(TAILLE), transforms.ToTensor(), normaliser,
-    ])
+    aug = transforms.Compose(
+        [
+            transforms.RandomResizedCrop(TAILLE, scale=(0.6, 1.0)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(20),
+            transforms.ColorJitter(0.3, 0.3, 0.3, 0.05),
+            transforms.ToTensor(),
+            normaliser,
+        ]
+    )
+    simple = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(TAILLE),
+            transforms.ToTensor(),
+            normaliser,
+        ]
+    )
     charge = dict(batch_size=48, num_workers=4, persistent_workers=True)
     c_ent = DataLoader(Photos(entrainement, index, aug), shuffle=True, **charge)
     c_val = DataLoader(Photos(validation, index, simple), **charge)
@@ -165,7 +175,8 @@ def main():
     perte = nn.CrossEntropyLoss(weight=poids.to(appareil), label_smoothing=0.1)
     optimiseur = torch.optim.AdamW(modele.parameters(), lr=1e-3, weight_decay=1e-4)
     planning = torch.optim.lr_scheduler.OneCycleLR(
-        optimiseur, max_lr=1e-3, total_steps=args.epoques * len(c_ent))
+        optimiseur, max_lr=1e-3, total_steps=args.epoques * len(c_ent)
+    )
 
     meilleur, historique = -1.0, []
     SORTIE.mkdir(parents=True, exist_ok=True)
@@ -181,8 +192,11 @@ def main():
         acc_val, _ = evaluer(modele, c_val, appareil, len(cles))
         acc_ter, _ = evaluer(modele, c_ter, appareil, len(cles))
         historique.append({"epoque": epoque, "validation_labo": acc_val, "test_terrain": acc_ter})
-        print(f"époque {epoque} : validation labo {acc_val:.3f}, test terrain {acc_ter:.3f} "
-              f"({time.time() - debut:.0f} s)", flush=True)
+        print(
+            f"époque {epoque} : validation labo {acc_val:.3f}, test terrain {acc_ter:.3f} "
+            f"({time.time() - debut:.0f} s)",
+            flush=True,
+        )
         # Choix du modèle sur la validation labo : le test terrain reste un test, pas un critère.
         if acc_val > meilleur:
             meilleur = acc_val
@@ -199,19 +213,30 @@ def main():
     (SORTIE / "etiquettes.json").write_text(json.dumps(etiquettes, indent=2))
 
     EVAL.parent.mkdir(parents=True, exist_ok=True)
-    EVAL.write_text(json.dumps({
-        "modele": "mobilenet_v3_large (ImageNet) affiné",
-        "donnees": {"entrainement": len(entrainement), "validation_labo": len(validation),
-                    "test_terrain_plantdoc": len(terrain)},
-        "classes": [f"{c}/{e}" for c, e in cles],
-        "precision_validation_labo": round(acc_val, 4),
-        "precision_test_terrain": round(acc_ter, 4),
-        "test_terrain_par_classe": {f"{cles[k][0]}/{cles[k][1]}": round(v, 3)
-                                    for k, v in sorted(ter_classes.items())},
-        "historique": historique,
-        "graine": args.graine,
-        "epoques": args.epoques,
-    }, indent=2, ensure_ascii=False))
+    EVAL.write_text(
+        json.dumps(
+            {
+                "modele": "mobilenet_v3_large (ImageNet) affiné",
+                "donnees": {
+                    "entrainement": len(entrainement),
+                    "validation_labo": len(validation),
+                    "test_terrain_plantdoc": len(terrain),
+                },
+                "classes": [f"{c}/{e}" for c, e in cles],
+                "precision_validation_labo": round(acc_val, 4),
+                "precision_test_terrain": round(acc_ter, 4),
+                "test_terrain_par_classe": {
+                    f"{cles[k][0]}/{cles[k][1]}": round(v, 3)
+                    for k, v in sorted(ter_classes.items())
+                },
+                "historique": historique,
+                "graine": args.graine,
+                "epoques": args.epoques,
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+    )
     print(f"FINI : validation labo {acc_val:.3f}, test terrain {acc_ter:.3f}")
 
 

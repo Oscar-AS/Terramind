@@ -39,7 +39,8 @@ CONSIGNE = (
 
 class _Plafond:
     """Nombre d'appels à Gemini par jour (GEMINI_APPELS_PAR_JOUR, 500 par défaut) : /v1/chat est ouvert à
-    tous, un script en boucle ne doit pas épuiser le quota. Au-delà : réponse extractive, sans Gemini."""
+    tous, un script en boucle ne doit pas épuiser le quota. Au-delà : réponse extractive, sans Gemini.
+    """
 
     def __init__(self):
         self.jour, self.n, self.verrou = dt.date.today(), 0, threading.Lock()
@@ -71,8 +72,11 @@ def gemini(consigne: str, texte: str, delai: int = 30) -> str | None:
         "system_instruction": {"parts": [{"text": consigne}]},
         "contents": [{"role": "user", "parts": [{"text": texte}]}],
     }
-    req = urllib.request.Request(GEMINI.format(modele=modele), data=json.dumps(corps).encode(),
-                                 headers={"Content-Type": "application/json", "x-goog-api-key": cle})
+    req = urllib.request.Request(
+        GEMINI.format(modele=modele),
+        data=json.dumps(corps).encode(),
+        headers={"Content-Type": "application/json", "x-goog-api-key": cle},
+    )
     try:
         with urllib.request.urlopen(req, timeout=delai) as r:
             d = json.loads(r.read())
@@ -83,36 +87,54 @@ def gemini(consigne: str, texte: str, delai: int = 30) -> str | None:
         return None
 
 
-SUITE = (" Des échanges précédents peuvent être fournis : sers-t'en seulement pour comprendre de quoi parle "
-         "la question (par exemple « et pour l'oignon ? » après une question sur le mildiou) ; la réponse "
-         "doit toujours venir des extraits de fiches.")
+SUITE = (
+    " Des échanges précédents peuvent être fournis : sers-t'en seulement pour comprendre de quoi parle "
+    "la question (par exemple « et pour l'oignon ? » après une question sur le mildiou) ; la réponse "
+    "doit toujours venir des extraits de fiches."
+)
 
 
-def _gemini(question: str, ps: list[fiches.Passage], historique: list[dict] | None = None) -> str | None:
+def _gemini(
+    question: str, ps: list[fiches.Passage], historique: list[dict] | None = None
+) -> str | None:
     extraits = "\n\n".join(f"[Fiche « {p.titre} », section « {p.section} »]\n{p.texte}" for p in ps)
     avant = ""
     if historique:
-        avant = "Échanges précédents :\n" + "\n".join(
-            f"- Agriculteur : {e['question']}\n  TerraMind : {e['reponse']}" for e in historique) + "\n\n"
-    return gemini(CONSIGNE + (SUITE if historique else ""),
-                  f"Extraits de fiches :\n{extraits}\n\n{avant}Question : {question}")
+        avant = (
+            "Échanges précédents :\n"
+            + "\n".join(
+                f"- Agriculteur : {e['question']}\n  TerraMind : {e['reponse']}" for e in historique
+            )
+            + "\n\n"
+        )
+    return gemini(
+        CONSIGNE + (SUITE if historique else ""),
+        f"Extraits de fiches :\n{extraits}\n\n{avant}Question : {question}",
+    )
 
 
 def _chercher(question: str, historique: list[dict] | None) -> list[tuple[float, fiches.Passage]]:
     """Passages de la question d'abord. Avec des échanges récents, on ajoute ceux du sujet en cours
     (questions récentes + question : « et comment l'éviter ? » après l'alternariose → la partie « éviter »
-    de la fiche alternariose). Gemini voit les échanges et choisit ; une question nouvelle garde ses passages."""
+    de la fiche alternariose). Gemini voit les échanges et choisit ; une question nouvelle garde ses passages.
+    """
     propres = [(s, p) for s, p in fiches.chercher(question) if s >= SCORE_MIN]
     if not historique:
         return propres
     vus = {id(p) for _, p in propres}
-    sujet = [(s, p) for s, p in fiches.chercher(" ".join([e["question"] for e in historique] + [question]))
-             if s >= SCORE_MIN and id(p) not in vus][:2]
+    sujet = [
+        (s, p)
+        for s, p in fiches.chercher(" ".join([e["question"] for e in historique] + [question]))
+        if s >= SCORE_MIN and id(p) not in vus
+    ][:2]
     vus |= {id(p) for _, p in sujet}
     dans_sujet = []
     if sujet:  # dans la fiche du sujet, les parties qui répondent à la question du moment
-        dans_sujet = [(s, p) for s, p in fiches.chercher(question, n=200)
-                      if p.fiche == sujet[0][1].fiche and s > 0 and id(p) not in vus][:2]
+        dans_sujet = [
+            (s, p)
+            for s, p in fiches.chercher(question, n=200)
+            if p.fiche == sujet[0][1].fiche and s > 0 and id(p) not in vus
+        ][:2]
     return propres + sujet + dans_sujet
 
 
@@ -120,16 +142,33 @@ def repondre(question: str, historique: list[dict] | None = None) -> dict:
     """`historique` : derniers échanges de la conversation (memoire.echanges_recents), facultatif."""
     trouves = _chercher(question, historique)
     if not trouves:
-        return {"statut": "je_ne_sais_pas", "texte": None, "passages": [], "sources": [], "mode": "aucun"}
+        return {
+            "statut": "je_ne_sais_pas",
+            "texte": None,
+            "passages": [],
+            "sources": [],
+            "mode": "aucun",
+        }
     ps = [p for _, p in trouves]
     # La fiche la plus pertinente apporte aussi sa section « Prévention » : une question sur un
     # symptôme appelle presque toujours « que faire ? ».
-    prevention = [p for p in fiches.passages() if p.fiche == ps[0].fiche
-                  and p.section.lower().startswith(("prévention", "que faire")) and p not in ps]
+    prevention = [
+        p
+        for p in fiches.passages()
+        if p.fiche == ps[0].fiche
+        and p.section.lower().startswith(("prévention", "que faire"))
+        and p not in ps
+    ]
     ps += prevention[:1]
     redige = _gemini(question, ps, historique)
     if redige and "JE_NE_SAIS_PAS" in redige:
-        return {"statut": "je_ne_sais_pas", "texte": None, "passages": [], "sources": [], "mode": "gemini"}
+        return {
+            "statut": "je_ne_sais_pas",
+            "texte": None,
+            "passages": [],
+            "sources": [],
+            "mode": "gemini",
+        }
     if redige:
         utilises, mode, texte = ps, "gemini", redige
     else:
@@ -137,6 +176,11 @@ def repondre(question: str, historique: list[dict] | None = None) -> dict:
         utilises, mode = [p], "extractif"
         texte = f"D'après la fiche « {p.titre} » ({p.section.lower()}) :\n{p.texte}"
     return {
-        "statut": "ok", "texte": texte, "mode": mode, "sources": fiches.sources_de(utilises),
-        "passages": [{"fiche": p.fiche, "section": p.section, "extrait": p.texte[:300]} for p in utilises],
+        "statut": "ok",
+        "texte": texte,
+        "mode": mode,
+        "sources": fiches.sources_de(utilises),
+        "passages": [
+            {"fiche": p.fiche, "section": p.section, "extrait": p.texte[:300]} for p in utilises
+        ],
     }

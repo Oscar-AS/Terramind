@@ -59,23 +59,33 @@ def glossaire() -> str:
     if not LEXIQUE.exists():
         return ""
     with LEXIQUE.open(encoding="utf-8") as f:
-        return "\n".join(f"{r['ecrit']} = {r['a_dire_en_wolof'].strip()}" for r in csv.DictReader(f)
-                         if r["type"] == "mot" and r["a_dire_en_wolof"].strip())
+        return "\n".join(
+            f"{r['ecrit']} = {r['a_dire_en_wolof'].strip()}"
+            for r in csv.DictReader(f)
+            if r["type"] == "mot" and r["a_dire_en_wolof"].strip()
+        )
 
 
 def traduire_en_wolof(texte_fr: str) -> str | None:
     from .rag.reponse import gemini
 
-    wo = gemini(CONSIGNE, f"Glossaire :\n{glossaire()}\n\nRéponse à traduire :\n{texte_fr}", delai=30)
+    wo = gemini(
+        CONSIGNE, f"Glossaire :\n{glossaire()}\n\nRéponse à traduire :\n{texte_fr}", delai=30
+    )
     return wo.strip() if wo else None
 
 
 def synthetiser(texte_wo: str) -> bytes:
     """Voix wolof d'Octopus (MP3)."""
     entetes = {"Authorization": f"Bearer {config.OCTOPUS_API_KEY}", "User-Agent": AGENT}
-    corps = json.dumps({"text": texte_wo, "language": "wo", "project_id": config.OCTOPUS_PROJECT_ID}).encode()
-    req = urllib.request.Request(f"{config.OCTOPUS_URL}/api/tts", data=corps,
-                                 headers={**entetes, "Content-Type": "application/json"})
+    corps = json.dumps(
+        {"text": texte_wo, "language": "wo", "project_id": config.OCTOPUS_PROJECT_ID}
+    ).encode()
+    req = urllib.request.Request(
+        f"{config.OCTOPUS_URL}/api/tts",
+        data=corps,
+        headers={**entetes, "Content-Type": "application/json"},
+    )
     with urllib.request.urlopen(req, timeout=60) as r:
         url = json.loads(r.read())["url"]
     if url.startswith("/"):

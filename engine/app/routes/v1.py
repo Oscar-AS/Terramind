@@ -33,28 +33,51 @@ Langue = Literal["fr", "wo"]
 Canal = Literal["whatsapp", "telegram", "pwa", "mobile", "dashboard"]
 OuiNon = Literal["oui", "non", "ne_sait_pas"]
 
-AGENT = ("Pour être sûr, montre ta plante à un agent agricole (ANCAR, service départemental "
-         "de l'agriculture).")
+AGENT = (
+    "Pour être sûr, montre ta plante à un agent agricole (ANCAR, service départemental "
+    "de l'agriculture)."
+)
 
 
-def enveloppe(statut: str, texte: str, donnees: dict, sources: list | None = None, code: int = 200,
-              wolof: list | None = None):
+def enveloppe(
+    statut: str,
+    texte: str,
+    donnees: dict,
+    sources: list | None = None,
+    code: int = 200,
+    wolof: list | None = None,
+):
     """`wolof` : phrases du catalogue relu (catalogue.phrases) ; si présent, le message est en wolof,
     `texte_fr` garde le français et `audio_url` est la première note vocale."""
     message = {"texte": texte, "texte_fr": texte, "audio_url": None, "reponse_type": None}
     if wolof:
-        message.update(texte=" ".join(p["texte_wo"] for p in wolof),
-                       audio_url=next((p["audio_url"] for p in wolof if p["audio_url"]), None), wolof=wolof)
-    return JSONResponse(status_code=code, content={
-        "version": VERSION, "mock": False, "statut": statut, "langue": "wo" if wolof else "fr",
-        "message": message, "sources": sources or [], "donnees": donnees,
-    })
+        message.update(
+            texte=" ".join(p["texte_wo"] for p in wolof),
+            audio_url=next((p["audio_url"] for p in wolof if p["audio_url"]), None),
+            wolof=wolof,
+        )
+    return JSONResponse(
+        status_code=code,
+        content={
+            "version": VERSION,
+            "mock": False,
+            "statut": statut,
+            "langue": "wo" if wolof else "fr",
+            "message": message,
+            "sources": sources or [],
+            "donnees": donnees,
+        },
+    )
 
 
 def indisponible(e: Exception):
     journal.warning("dépendance indisponible : %s", e)
-    return enveloppe("erreur", "Le service est momentanément indisponible. Réessaie dans quelques minutes.",
-                     {}, code=503)
+    return enveloppe(
+        "erreur",
+        "Le service est momentanément indisponible. Réessaie dans quelques minutes.",
+        {},
+        code=503,
+    )
 
 
 class Commun(BaseModel):
@@ -96,14 +119,19 @@ def plan(d: DemandePlan):
     except sol_module.SolIndisponible as e:
         return indisponible(e)
     conseillees = [c["libelle"] for c in donnees["cultures"] if c["adaptation"] == "conseillee"]
-    texte = (f"Ce mois-ci, tu peux planter : {', '.join(conseillees)}."
-             if conseillees else "Aucune culture de la liste n'est conseillée ce mois-ci. " + AGENT)
+    texte = (
+        f"Ce mois-ci, tu peux planter : {', '.join(conseillees)}."
+        if conseillees
+        else "Aucune culture de la liste n'est conseillée ce mois-ci. " + AGENT
+    )
     journal.info("plan : %s cultures conseillées", len(conseillees))
     wolof = None
     if d.langue == "wo":
         for c in donnees["cultures"]:
             c["wo"] = catalogue.phrase(f"culture_{c['culture']}_{c['adaptation']}")
-        wolof = catalogue.phrases("plan_intro", *(["eau_salee"] if d.eau_puits_salee == "ne_sait_pas" else []))
+        wolof = catalogue.phrases(
+            "plan_intro", *(["eau_salee"] if d.eau_puits_salee == "ne_sait_pas" else [])
+        )
     return enveloppe("ok", texte, donnees, sources, wolof=wolof)
 
 
@@ -114,17 +142,24 @@ def alerte(d: DemandeAlerte):
     if d.culture not in CULTURES:
         return enveloppe("erreur", "Cette culture n'est pas encore prise en charge.", {}, code=400)
     if d.date_repiquage and d.date_repiquage > (d.date or dt.date.today()):
-        return enveloppe("erreur", "La date de plantation est dans le futur. Donne le jour où tu as planté.",
-                         {}, code=400)
+        return enveloppe(
+            "erreur",
+            "La date de plantation est dans le futur. Donne le jour où tu as planté.",
+            {},
+            code=400,
+        )
     try:
-        donnees = calculer(round(d.lat, 2), round(d.lon, 2), d.culture, d.date or dt.date.today(),
-                           d.date_repiquage)
+        donnees = calculer(
+            round(d.lat, 2), round(d.lon, 2), d.culture, d.date or dt.date.today(), d.date_repiquage
+        )
     except meteo.MeteoIndisponible as e:
         return indisponible(e)
     actives = [a["conseil"] for a in donnees["alertes"] if a["niveau"] != "aucun"]
     if not donnees["alertes"]:  # aucune règle météo sourcée pour cette culture
-        texte = ("Pour cette culture, je ne surveille pas encore la météo. "
-                 "Si tu vois des taches sur ta plante (feuille, fruit, tige), prends-la en photo.")
+        texte = (
+            "Pour cette culture, je ne surveille pas encore la météo. "
+            "Si tu vois des taches sur ta plante (feuille, fruit, tige), prends-la en photo."
+        )
     else:
         texte = " ".join(actives) if actives else "Pas d'alerte cette semaine pour ta culture."
     wolof = None
@@ -132,15 +167,28 @@ def alerte(d: DemandeAlerte):
         for a in donnees["alertes"]:
             if a["niveau"] != "aucun" and a["conseil"]:
                 a["wo"] = catalogue.phrase(f"alerte_{a['risque']}")
-        wolof = catalogue.phrases("alerte_pas_de_regle" if not donnees["alertes"]
-                                  else "alerte_intro" if actives else "alerte_rien")
-    return enveloppe("ok", texte, donnees, [SOURCE_SEUILS,
-                     {"document": "NASA POWER", "page": "météo au point du champ"}], wolof=wolof)
+        wolof = catalogue.phrases(
+            "alerte_pas_de_regle"
+            if not donnees["alertes"]
+            else "alerte_intro" if actives else "alerte_rien"
+        )
+    return enveloppe(
+        "ok",
+        texte,
+        donnees,
+        [SOURCE_SEUILS, {"document": "NASA POWER", "page": "météo au point du champ"}],
+        wolof=wolof,
+    )
 
 
 @router.post("/diagnose")
-async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(None),
-                   utilisateur: str = Form(...), canal: Canal = Form(...), langue: Langue = Form(...)):
+async def diagnose(
+    photo: UploadFile = File(...),
+    culture: Optional[str] = Form(None),
+    utilisateur: str = Form(...),
+    canal: Canal = Form(...),
+    langue: Langue = Form(...),
+):
     from ..modules.diagnostic import modele  # numpy/onnxruntime chargés seulement ici
 
     contenu = await photo.read(PHOTO_MAX + 1)  # jamais plus que la limite en mémoire
@@ -153,16 +201,27 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
         return indisponible(e)
     except Exception as e:  # image illisible
         journal.info("photo illisible : %s", e)
-        return enveloppe("erreur", "Je n'arrive pas à lire cette photo. Reprends-la, bien nette.", {}, code=400)
+        return enveloppe(
+            "erreur", "Je n'arrive pas à lire cette photo. Reprends-la, bien nette.", {}, code=400
+        )
     certain = r.pop("certain")
     top = r["predictions"][0]
     wo = langue == "wo"
-    source = [{"document": "Modèle TerraMind v1 (TOM2024 CC BY 4.0, PlantVillage CC BY-SA 3.0, PlantDoc CC BY 4.0)",
-               "page": "ml/eval/diagnostic_v1.md"}]
+    source = [
+        {
+            "document": "Modèle TerraMind v1 (TOM2024 CC BY 4.0, PlantVillage CC BY-SA 3.0, PlantDoc CC BY 4.0)",
+            "page": "ml/eval/diagnostic_v1.md",
+        }
+    ]
     if not certain:
-        return enveloppe("incertain", "Je ne suis pas sûr de ce que je vois. Reprends la photo d'une seule "
-                         "feuille, de près, à la lumière du jour. " + AGENT, r, source,
-                         wolof=catalogue.phrases("photo_incertaine") if wo else None)
+        return enveloppe(
+            "incertain",
+            "Je ne suis pas sûr de ce que je vois. Reprends la photo d'une seule "
+            "feuille, de près, à la lumière du jour. " + AGENT,
+            r,
+            source,
+            wolof=catalogue.phrases("photo_incertaine") if wo else None,
+        )
     r["fiche"] = fiche_simple(top["etiquette"], top.get("culture"))
     if r["fiche"]:
         source += [s for s in r["fiche"].pop("sources") if s not in source]
@@ -172,8 +231,10 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
         texte = "Cette feuille semble saine."
         wolof = catalogue.phrases("photo_saine") if wo else None
     else:
-        texte = (f"Cela ressemble à : {top['libelle']}. Ce n'est qu'une première indication, "
-                 "pas un diagnostic sûr. " + AGENT)
+        texte = (
+            f"Cela ressemble à : {top['libelle']}. Ce n'est qu'une première indication, "
+            "pas un diagnostic sûr. " + AGENT
+        )
         fiche = f"fiche_{r['fiche']['fiche']}" if r["fiche"] else "pas_de_fiche"
         wolof = catalogue.phrases(fiche, "diagnostic_prudence") if wo else None
     return enveloppe("ok", texte, r, source, wolof=wolof)
@@ -181,17 +242,21 @@ async def diagnose(photo: UploadFile = File(...), culture: Optional[str] = Form(
 
 # Ravageurs que la photo ne sait pas reconnaître (absents du modèle) : une question oui/non tirée de la fiche
 # sourcée, posée après chaque diagnostic de la culture, même « saine » (idée reprise d'Oscar, docs/api.md § 2).
-DPV = ("Direction de la Protection des Végétaux / PADEN, manuel des ravageurs et maladies des cultures "
-       "maraîchères des Niayes (archive Wayback, source `paden` de scripts/donnees/telecharger_sources.py)")
+DPV = (
+    "Direction de la Protection des Végétaux / PADEN, manuel des ravageurs et maladies des cultures "
+    "maraîchères des Niayes (archive Wayback, source `paden` de scripts/donnees/telecharger_sources.py)"
+)
 QUESTIONS_SUIVI = {
-    "tomato": [{
-        "question": "Vois-tu sur les feuilles des taches claires, blanchâtres, où la peau de la feuille reste "
-                    "entière ? Ou, sur les fruits, des galeries et de petits trous ?",
-        "si_oui": "C'est peut-être la mineuse de la tomate (Tuta absoluta). Sa chenille vit à l'intérieur de "
-                  "la feuille : je ne sais pas la reconnaître sur une photo. Montre ta plante à un agent agricole.",
-        "fiche": "ravageur-mineuse-tomate",
-        "source": {"document": DPV, "page": "29"},
-    }],
+    "tomato": [
+        {
+            "question": "Vois-tu sur les feuilles des taches claires, blanchâtres, où la peau de la feuille reste "
+            "entière ? Ou, sur les fruits, des galeries et de petits trous ?",
+            "si_oui": "C'est peut-être la mineuse de la tomate (Tuta absoluta). Sa chenille vit à l'intérieur de "
+            "la feuille : je ne sais pas la reconnaître sur une photo. Montre ta plante à un agent agricole.",
+            "fiche": "ravageur-mineuse-tomate",
+            "source": {"document": DPV, "page": "29"},
+        }
+    ],
 }
 
 
@@ -201,13 +266,21 @@ def questions_suivi(culture: Optional[str]) -> list[dict]:
 
 # Étiquette du modèle → fiche de content/fiches/.
 FICHES_ETIQUETTES = {
-    "alternaria": "maladie-alternariose", "late_blight": "maladie-mildiou", "leaf_mold": "maladie-cladosporiose",
-    "bacterial_spot": "maladie-tache-bacterienne", "leaf_curl": "maladie-viroses-tomate",
-    "mosaic_virus": "maladie-viroses-tomate", "virosis": "maladie-viroses-tomate",
-    "fusarium": "maladie-fusariose", "bacterial_wilt": "maladie-fletrissement-bacterien",
-    "helicoverpa_armigera": "ravageur-noctuelle-tomate", "caterpillars": "ravageur-chenilles-oignon",
-    "mites": "ravageur-acariose-tomate", "blossom_end_rot": "accident-necrose-apicale",
-    "sunburn": "accident-coup-de-soleil", "septoria_leaf_spot": "maladie-septoriose",
+    "alternaria": "maladie-alternariose",
+    "late_blight": "maladie-mildiou",
+    "leaf_mold": "maladie-cladosporiose",
+    "bacterial_spot": "maladie-tache-bacterienne",
+    "leaf_curl": "maladie-viroses-tomate",
+    "mosaic_virus": "maladie-viroses-tomate",
+    "virosis": "maladie-viroses-tomate",
+    "fusarium": "maladie-fusariose",
+    "bacterial_wilt": "maladie-fletrissement-bacterien",
+    "helicoverpa_armigera": "ravageur-noctuelle-tomate",
+    "caterpillars": "ravageur-chenilles-oignon",
+    "mites": "ravageur-acariose-tomate",
+    "blossom_end_rot": "accident-necrose-apicale",
+    "sunburn": "accident-coup-de-soleil",
+    "septoria_leaf_spot": "maladie-septoriose",
     "target_spot": "maladie-tache-cible",
 }
 
@@ -222,8 +295,10 @@ PARTIES_FICHE = {
 
 # Débuts de ligne qui réservent une ligne de fiche à une culture (« Oignon : … », « Sur la tomate : … »).
 PREFIXES_CULTURE = {
-    "onion": ("oignon :", "sur l'oignon"), "tomato": ("tomate :", "sur la tomate"),
-    "potato": ("pomme de terre :", "sur la pomme de terre"), "pepper": ("poivron :", "pour le poivron"),
+    "onion": ("oignon :", "sur l'oignon"),
+    "tomato": ("tomate :", "sur la tomate"),
+    "potato": ("pomme de terre :", "sur la pomme de terre"),
+    "pepper": ("poivron :", "pour le poivron"),
 }
 
 
@@ -249,7 +324,12 @@ def fiche_simple(etiquette: str, culture: Optional[str] = None) -> Optional[dict
     if not trouves:
         return None
     resultat = {"fiche": nom, "titre": trouves[0].titre, "sources": fiches.sources_de(trouves)}
-    resultat.update({cle: (garder_culture(p.texte, culture).replace("*", "") if p else None) for cle, p in parties.items()})
+    resultat.update(
+        {
+            cle: (garder_culture(p.texte, culture).replace("*", "") if p else None)
+            for cle, p in parties.items()
+        }
+    )
     return resultat
 
 
@@ -262,7 +342,9 @@ def chat(d: DemandeChat):
     r = repondre(d.texte)
     donnees = {"transcription": None, "passages": r["passages"], "mode": r["mode"]}
     if r["statut"] != "ok":
-        return enveloppe("je_ne_sais_pas", "Je n'ai pas la réponse dans mes fiches. " + AGENT, donnees)
+        return enveloppe(
+            "je_ne_sais_pas", "Je n'ai pas la réponse dans mes fiches. " + AGENT, donnees
+        )
     return enveloppe("ok", r["texte"], donnees, r["sources"])
 
 

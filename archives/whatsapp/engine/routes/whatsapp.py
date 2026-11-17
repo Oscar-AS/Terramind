@@ -23,14 +23,19 @@ from .. import config
 journal = logging.getLogger("terramind.whatsapp")
 router = APIRouter()
 
-MESSAGE_ECHO = "TerraMind (démonstration) : j'ai bien reçu « {texte} ». Les vrais conseils arrivent bientôt."
+MESSAGE_ECHO = (
+    "TerraMind (démonstration) : j'ai bien reçu « {texte} ». Les vrais conseils arrivent bientôt."
+)
 
 
 @router.get("/webhook/whatsapp", response_class=PlainTextResponse)
 async def verifier(request: Request):
     p = request.query_params
-    if (p.get("hub.mode") == "subscribe" and config.WHATSAPP_VERIFY_TOKEN
-            and hmac.compare_digest(p.get("hub.verify_token", ""), config.WHATSAPP_VERIFY_TOKEN)):
+    if (
+        p.get("hub.mode") == "subscribe"
+        and config.WHATSAPP_VERIFY_TOKEN
+        and hmac.compare_digest(p.get("hub.verify_token", ""), config.WHATSAPP_VERIFY_TOKEN)
+    ):
         return p.get("hub.challenge", "")
     raise HTTPException(status_code=403, detail="jeton de vérification invalide")
 
@@ -39,7 +44,7 @@ def signature_valide(corps: bytes, entete: str, secret: str) -> bool:
     if not secret or not entete.startswith("sha256="):
         return False
     attendu = hmac.new(secret.encode(), corps, hashlib.sha256).hexdigest()
-    return hmac.compare_digest(entete[len("sha256="):], attendu)
+    return hmac.compare_digest(entete[len("sha256=") :], attendu)
 
 
 def messages_texte(donnees: dict):
@@ -52,19 +57,32 @@ def messages_texte(donnees: dict):
 
 
 async def envoyer_texte(destinataire: str, texte: str, client: httpx.AsyncClient):
-    url = (f"https://graph.facebook.com/{config.WHATSAPP_API_VERSION}/"
-           f"{config.WHATSAPP_PHONE_NUMBER_ID}/messages")
-    r = await client.post(url, headers={"Authorization": f"Bearer {config.WHATSAPP_TOKEN}"},
-                          json={"messaging_product": "whatsapp", "to": destinataire, "type": "text",
-                                "text": {"body": texte[:4096]}})
+    url = (
+        f"https://graph.facebook.com/{config.WHATSAPP_API_VERSION}/"
+        f"{config.WHATSAPP_PHONE_NUMBER_ID}/messages"
+    )
+    r = await client.post(
+        url,
+        headers={"Authorization": f"Bearer {config.WHATSAPP_TOKEN}"},
+        json={
+            "messaging_product": "whatsapp",
+            "to": destinataire,
+            "type": "text",
+            "text": {"body": texte[:4096]},
+        },
+    )
     if r.status_code >= 400:
         # Code et message d'erreur de Meta seulement : jamais le numéro ni le texte.
         try:
             erreur = r.json().get("error", {})
         except ValueError:
             erreur = {}
-        journal.warning("échec d'envoi WhatsApp : HTTP %s, code %s, %s", r.status_code,
-                        erreur.get("code"), erreur.get("message", "")[:200])
+        journal.warning(
+            "échec d'envoi WhatsApp : HTTP %s, code %s, %s",
+            r.status_code,
+            erreur.get("code"),
+            erreur.get("message", "")[:200],
+        )
     else:
         journal.info("réponse WhatsApp envoyée (HTTP %s)", r.status_code)
 
@@ -74,7 +92,9 @@ async def recevoir(request: Request):
     if not config.WHATSAPP_APP_SECRET:
         raise HTTPException(status_code=503, detail="secret de l'app non configuré")
     corps = await request.body()
-    if not signature_valide(corps, request.headers.get("X-Hub-Signature-256", ""), config.WHATSAPP_APP_SECRET):
+    if not signature_valide(
+        corps, request.headers.get("X-Hub-Signature-256", ""), config.WHATSAPP_APP_SECRET
+    ):
         raise HTTPException(status_code=401, detail="signature invalide")
     donnees = json.loads(corps or b"{}")
     envoyeur = getattr(request.app.state, "envoyer_texte", envoyer_texte)
