@@ -1,0 +1,201 @@
+{
+  "architecture": "mobilenet_v3_large",
+  "classes": [
+    "onion/alternaria",
+    "onion/caterpillars",
+    "onion/fusarium",
+    "onion/healthy",
+    "onion/virosis",
+    "pepper/bacterial_spot",
+    "pepper/healthy",
+    "potato/alternaria",
+    "potato/healthy",
+    "potato/late_blight",
+    "tomato/alternaria",
+    "tomato/bacterial_spot",
+    "tomato/bacterial_wilt",
+    "tomato/blossom_end_rot",
+    "tomato/healthy",
+    "tomato/healthy_fruit",
+    "tomato/helicoverpa_armigera",
+    "tomato/late_blight",
+    "tomato/leaf_curl",
+    "tomato/leaf_mold",
+    "tomato/mites",
+    "tomato/mosaic_virus",
+    "tomato/septoria_leaf_spot",
+    "tomato/sunburn",
+    "tomato/target_spot",
+    "tomato/virosis"
+  ],
+  "donnees": {
+    "entrainement": 14074,
+    "validation_terrain": 1291
+  },
+  "validation_terrain": {
+    "precision": 0.842,
+    "seuils": {
+      "0.4": {
+        "couverture": 0.972,
+        "precision": 0.861
+      },
+      "0.5": {
+        "couverture": 0.936,
+        "precision": 0.876
+      },
+      "0.6": {
+        "couverture": 0.899,
+        "precision": 0.896
+      },
+      "0.7": {
+        "couverture": 0.854,
+        "precision": 0.917
+      },
+      "0.8": {
+        "couverture": 0.8,
+        "precision": 0.932
+      },
+      "0.9": {
+        "couverture": 0.707,
+        "precision": 0.964
+      }
+    }
+  },
+  "temperature": 0.812,
+  "seuil_incertain": 0.4,
+  "test_plantdoc": {
+    "images": 102,
+    "precision": 0.5686,
+    "seuils": {
+      "0.4": {
+        "couverture": 0.843,
+        "precision": 0.616
+      },
+      "0.5": {
+        "couverture": 0.745,
+        "precision": 0.632
+      },
+      "0.6": {
+        "couverture": 0.598,
+        "precision": 0.721
+      },
+      "0.7": {
+        "couverture": 0.441,
+        "precision": 0.689
+      },
+      "0.8": {
+        "couverture": 0.333,
+        "precision": 0.647
+      },
+      "0.9": {
+        "couverture": 0.196,
+        "precision": 0.65
+      }
+    },
+    "par_classe": {
+      "pepper/bacterial_spot": 0.556,
+      "pepper/healthy": 0.75,
+      "potato/alternaria": 0.5,
+      "potato/late_blight": 0.375,
+      "tomato/alternaria": 0.667,
+      "tomato/bacterial_spot": 0.333,
+      "tomato/healthy": 0.375,
+      "tomato/late_blight": 0.6,
+      "tomato/leaf_curl": 0.833,
+      "tomato/leaf_mold": 0.5,
+      "tomato/mosaic_virus": 0.4,
+      "tomato/septoria_leaf_spot": 0.909
+    }
+  },
+  "test_tom2024": {
+    "images": 1058,
+    "precision": 0.9168,
+    "seuils": {
+      "0.4": {
+        "couverture": 0.992,
+        "precision": 0.92
+      },
+      "0.5": {
+        "couverture": 0.974,
+        "precision": 0.925
+      },
+      "0.6": {
+        "couverture": 0.933,
+        "precision": 0.943
+      },
+      "0.7": {
+        "couverture": 0.892,
+        "precision": 0.953
+      },
+      "0.8": {
+        "couverture": 0.857,
+        "precision": 0.963
+      },
+      "0.9": {
+        "couverture": 0.767,
+        "precision": 0.973
+      }
+    },
+    "par_classe": {
+      "onion/alternaria": 0.838,
+      "onion/caterpillars": 1.0,
+      "onion/fusarium": 0.952,
+      "onion/healthy": 0.99,
+      "onion/virosis": 0.964,
+      "tomato/alternaria": 0.792,
+      "tomato/bacterial_wilt": 0.906,
+      "tomato/blossom_end_rot": 0.952,
+      "tomato/healthy": 0.947,
+      "tomato/healthy_fruit": 0.989,
+      "tomato/helicoverpa_armigera": 0.875,
+      "tomato/late_blight": 0.5,
+      "tomato/mites": 0.709,
+      "tomato/sunburn": 1.0,
+      "tomato/virosis": 0.902
+    }
+  },
+  "historique": [
+    {
+      "epoque": 1,
+      "validation_terrain": 0.6801
+    },
+    {
+      "epoque": 2,
+      "validation_terrain": 0.739
+    },
+    {
+      "epoque": 3,
+      "validation_terrain": 0.7134
+    },
+    {
+      "epoque": 4,
+      "validation_terrain": 0.7444
+    },
+    {
+      "epoque": 5,
+      "validation_terrain": 0.7165
+    },
+    {
+      "epoque": 6,
+      "validation_terrain": 0.7978
+    },
+    {
+      "epoque": 7,
+      "validation_terrain": 0.811
+    },
+    {
+      "epoque": 8,
+      "validation_terrain": 0.828
+    },
+    {
+      "epoque": 9,
+      "validation_terrain": 0.8381
+    },
+    {
+      "epoque": 10,
+      "validation_terrain": 0.842
+    }
+  ],
+  "graine": 2026,
+  "epoques": 10
+}

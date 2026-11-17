@@ -1,0 +1,82 @@
+type,cle,texte,texte_lu,entendu,cer_phrase,cer_mot,statut
+lexique,0,tus,muy ñetti bii ci tus .,muy ñett bii ci tus,0.05,0.0,ok
+lexique,1,benn,benn bés a ci des .,benn bis a ci des,0.059,0.0,ok
+lexique,2,ñaar,kon mbay ak sàmm noom ñaar.,kon mbay ak sàmm noom ñaar,0.0,0.0,ok
+lexique,3,ñett,"lemal sa baaraan , muy ñett .",la ma sa baaraan muy ñatt,0.16,0.25,ok
+lexique,4,ñeent,"lemal sa baaraam , muy ñeent .",la ma sabba raam muy ñeent,0.192,0.0,ok
+lexique,5,juróom,wàllil nu yaw ci say juróom.,waleel ñu yow ci say juróom,0.185,0.0,ok
+lexique,6,juróom-benn,juróom-benn weeri kaso lañ ko daan .,yoon benni weeru kaso lañu ko daan,0.273,0.545,a_risque
+lexique,7,juróom-ñaar,xam nga kon juróom-ñaar fukk moo ci des.,xam nga kon juróom ñaar fukk moo ci des,0.026,0.0,ok
+lexique,8,juróom-ñett,téeméer bu nekk daañu la si delloo juróom-ñett fukk donc quatre vingt pour cent.,téeméer fo nekk dañu la ci teel juróom ñett fukk donc 80 pour cent,0.269,0.0,ok
+lexique,9,juróom-ñeent,géy amoon lu tollu ci fanweeri at ak juróom-ñeent .,gey amoon lu tollu ci fanweeri at ab juróom ñeent,0.062,0.0,ok
+lexique,10,fukk,ci xarnub fukk ak juroom g .,ci xarala fukk ak juwëng,0.308,0.0,ok
+lexique,100,téeméer,ci saag bi ñenti téeméer.,isaat bi ñeenti téemeer,0.208,0.143,ok
+lexique,1000,junni,bëggu la am junni yu roŋ.,bëggul a am junni yuro,0.167,0.0,ok
+lexique,et (entre parties d'un nombre),ak,ak lu ciy pexe ?,ak lu ciy dexe,0.071,0.0,ok
+lexique,kg,kilo,ñaata kilo lay peese ?,ñaata ci lo lay peese,0.1,0.5,a_risque
+lexique,ha,ektaar,lu tollu ci ñaari téeméeri ektaar nag lakk na ca .,lu toll ci ñaari téeméeri hectare nag lakk na ca,0.104,0.667,a_risque
+lexique,janvier,Saawiee,,,,,non_teste
+lexique,février,Feewiryee,,,,,non_teste
+lexique,mars,Mars,,,,,non_teste
+lexique,avril,Awril,awril : naxee-mbaay walla ?,awreel naxee mbaay wala,0.182,0.4,a_risque
+lexique,mai,Me,"me , bésub liggéeykat yi.",mais e soppi liggéeykat yi,0.409,0.5,a_risque
+lexique,juin,Suweŋ,,,,,non_teste
+lexique,juillet,Suleet,,,,,non_teste
+lexique,août,Ut,dem ut say sa ji.,demut sey sa ji,0.125,1.0,a_risque
+lexique,septembre,Setàmbar,,,,,non_teste
+lexique,octobre,Octoobar,,,,,non_teste
+lexique,novembre,Noovambar,,,,,non_teste
+lexique,décembre,Desambar,,,,,non_teste
+lexique,pomme de terre,pombiteer,"soble yokku , pombiteer yokku .",soble yokku mumbitere yokku,0.148,0.444,a_risque
+lexique,oignon,soble,soble tamit wàññeeku na .,soble tamit wàññeeku na,0.0,0.0,ok
+lexique,chou,suppome,,,,,non_teste
+lexique,aubergine amère,diakhatou,,,,,non_teste
+lexique,saison des pluies,nawet,ak ci fin nawet bi.,ak lifin nawet bi,0.111,0.0,ok
+lexique,litre,liitar,,,,,non_teste
+lexique,mètre,meetar,meetar elaas juuf ajandi nañ ko.,meetar el hadj diouf ajandi nañ ko,0.226,0.0,ok
+lexique,tonne,ton,,,,,non_teste
+lexique,sac,saako,ni muy fexee xanaaxëy na ci biir saako yi la nekkoon.,ñum wi fexe xanaa xëy na ci biir saaku yi la nekkoon,0.173,0.2,ok
+lexique,carotte,karoot,karoot tamit wàññi na .,garab tamit wàññi na,0.19,0.667,a_risque
+lexique,pépinière,pepiñeer,,,,,non_teste
+lexique,repiquer,jëmbët,fan lañuy jëmbët ay garab ?,fan lañuy jëm bët ay garab,0.04,0.167,ok
+lexique,semer,ji,dem ut say sa ji.,damut seysa ji,0.25,0.0,ok
+lexique,arroser,suuxat,dooley askan wi la suuxat.,doole askan wi la suux ak,0.12,0.333,ok
+lexique,engrais,angare,,,,,non_teste
+lexique,fumier,tos,tos gee naatal gàncax gi .,taf gee naatal gàncax gi,0.083,0.667,a_risque
+lexique,champ,tool,tool yu mag a mag.,soaree yu mal a mat,0.412,0.75,a_risque
+lexique,récolte,goob,,,,,non_teste
+lexique,maladie (d'une plante),feebar,miim réew a barey feebar !,mim réewa ba rey feebar,0.125,0.0,ok
+lexique,insecte,gunóor,ndax am na yeneen i gunóor yoo xam ne yii.,ndax amna yeneeni gunóor yoo xam ne yii,0.049,0.0,ok
+lexique,feuille,xob,dina laal ci xob yi.,dina laal ci xobi yi,0.053,0.333,ok
+lexique,saison sèche froide,lolli,te ab lolli buy wéy am'as lëf jafe.,te ab loolu buy wëy am maax la fa defee,0.394,0.4,a_risque
+lexique,saison sèche chaude,noor,te fekk na ba ci noor bi.,fekk na ba ci noor bi,0.125,0.0,ok
+question_d9,1,mais teel a ji bi ndax du indi problème,mais teel a ji bi ndax du indi problème.,mais teel la ji bi ndax du indi probléme,0.051,,ok
+question_d9,2,naka la ñuy tànnee par rapport ak fi nga xamante ne moom moom moom la ñu war a ji,naka la ñuy tànnee par rapport ak fi nga xamante ne moom moom moom la ñu war a ji.,naka lañuy tànnee par rapport ak fi nga xamantane moom moom moom lañu wara ji,0.062,,ok
+question_d9,3,ndax war nañu mën a commencer ji wala déet,ndax war nañu mën a commencer ji wala déet.,ndax war nañu mëna commencer ji wala déet,0.024,,ok
+question_d9,4,su ma la déggee kon jamono ji ñu toll ndax ñi nekk ci début mois d' août fi mu nekk nii kenn mënatul ji,su ma la déggee kon jamono ji ñu toll ndax ñi nekk ci début mois d' ut fi mu nekk nii kenn mënatul ji.,su ma la déggee kon jamono ji ñu tollu ndax ñi nekk ci dibi moidul fi mu nekk nii kenn mënatul ji,0.08,,ok
+question_d9,5,bu ñu nee état wu suuf si naka la mën a affecté ci maanaam rendement baykat bi,bu ñu nee état wu suuf si naka la mën a affecté ci maanaam rendement baykat bi.,bu ñu nee état wu suuf si naka la mëna affecté ci maanaam rendement baykat bi,0.013,,ok
+question_d9,6,waa léegi li nga wax ni ley définir dooley suuf léegi producteur bi nag moom naka la mën a njëriñoo,waa léegi li nga wax ni ley définir dooley suuf léegi producteur bi nag moom naka la mën a njëriñoo.,waaw léegi li nga wax ni ley définir dooley suuf léegi producteur bi nag moom naka la mëna njëriñoo,0.02,,ok
+question_d9,7,ñu xool naka la ñu sàmmee suñuy suuf,ñu xool naka la ñu sàmmee suñuy suuf.,ñu xool naka lañu sàmmee suñuy suuf,0.028,,ok
+question_d9,8,naka la mën a def ba defar kompos ndax comme ni mu waxee engrais produit chimique la,naka la mën a def ba defar kompos ndax comme ni mu waxee angare produit chimique la.,naka la mëna def ba defar kompos ndax kom ni mu waxee engrais ak produit chimique la,0.133,,ok
+question_d9,9,ndax engrais organique bi moom moo ko subventionné,ndax angare organique bi moom moo ko subventionné.,ndax engrais organique bi moom moo ko subventionné,0.082,,ok
+question_d9,10,non seulement moom dalay jox information mais dalay joxaale yow sa prise de décision lan nga war a def si par rapport ak taw bi soo ko laajee,non seulement moom dalay jox information mais dalay joxaale yow sa prise de décision lan nga war a def si par rapport ak taw bi soo ko laajee.,non seulement moom da lay jox information mais da lay joxaale yow sa prise de décision lan nga wara def ci par baa taw bi so ko laajee,0.092,,ok
+question_d9,11,waaye si wàllu xibaar yi ñuy jot ba léegi ndox mi des na ñooñu lan moo war a nekk seen taxawaay,waaye si wàllu xibaar yi ñuy jot ba léegi ndox mi des na ñooñu lan moo war a nekk seen taxawaay.,waaye ci wàllu xibaar yuñuy jot ba léegi ndox mi des na ñooñu lan moo wara nekk seen taxawaay,0.042,,ok
+question_d9,12,ndax xam ngeen ni nawet bi daanaka mën na dem ba mois d' octobre,ndax xam ngeen ni nawet bi daanaka mën na dem ba mois d' octoobar.,ndax xam ngeen ni nawet bi daanaka mën na dem ba mois d octobre,0.047,,ok
+question_d9,13,ndox mi ndax dina bëri wala dina tuuti,ndox mi ndax dina bëri wala dina tuuti.,ndox mi ndax dina bëri wala dina tuuti,0.0,,ok
+question_d9,14,waaw ndax dina taw si toolam,waaw ndax dina taw si toolam.,waaw ndax dina tal ci toolam,0.071,,ok
+question_d9,15,d' acoord léegi sax boobu ban période lay faral di génn ci biir nawet bi,d' acoord léegi sax boobu ban période lay faral di génn ci biir nawet bi.,dakoor leegi sax boobu ban per yépp lay faral di génn ci biir nawet bi,0.141,,ok
+question_d9,16,mais yooyu boo ko jotee dalay wax naka la jaww ji di demee,mais yooyu boo ko jotee dalay wax naka la jaww ji di demee.,mais yooyu boo ko jotee dalay wax naka la jaww ji di demee,0.0,,ok
+question_d9,17,te xam nañ ni taw jeex na donc lan moo koy saxal pourtant ndox la mais ndox yooyu moom moo wute,te xam nañ ni taw jeex na donc lan moo koy saxal pourtant ndox la mais ndox yooyu moom moo wute.,te xam nañ ne taw jeex na donc lan moo koy saxal pourtant ndox la mais ndox yooyu moom moo wute,0.011,,ok
+question_d9,18,ndax bu fekkente ni neenañ la taw bi dina jeex ci par exemple,ndax bu fekkente ni neenañ la taw bi dina jeex ci par exemple.,ndax bu fekkente ni nee na la taw bi dina jeex ci par exemple,0.033,,ok
+question_d9,19,mën naa am ñun lu ñuy am ci ndox boo xooloon pour sunu gerte ñor,mën naa am ñun lu ñuy am ci ndox boo xooloon pour sunu gerte ñor.,mën na am ñun luñuy am ci ndox boo xooloon pour sunu gerte ñaar,0.062,,ok
+question_d9,20,ndax insecte boobu muy awoor boobu dafay changé comportement en fonction ci climat climat bi li ñuy wax changement climatique yi,ndax gunóor boobu muy awoor boobu dafay changé comportement en fonction ci climat climat bi li ñuy wax changement climatique yi.,ndax gunóor boobu muy awoor boobu dafay changé komportement en fonction ci kilimakima bi li ñuy wax changement climatique yi,0.063,,ok
+question_d9,21,ndax am na yeneen i gunóor yoo xam ne yii,ndax am na yeneen i gunóor yoo xam ne yii.,ndax amna yeneen gunóor yoo xam ne yi,0.098,,ok
+question_d9,22,ban différence d' abord ci boo xoolee rekk dangay dangay xam ne différence am na d' abord nii boo ko xoolee ci wàllu xob yeeg tout ça,ban différence d' abord ci boo xoolee rekk dangay dangay xam ne différence am na d' abord nii boo ko xoolee ci wàllu xob yeeg tout ça.,ban difference d abord ci boo xoolee rekk dangay dangay xam ne difference amna d abord ni boo ko xoolee ci wàllu xob yi yegg tudd saax,0.107,,ok
+question_d9,23,ci wàllu saaku yi ndax fu ma for saako tam mën naa ci dugal sama récolte,ci wàllu saaku yi ndax fu ma for saako tam mën naa ci dugal sama goob.,ci wàllu saaku yi ndax fu ma fors saako tam mën naa ci dugal sama gopp,0.043,,ok
+question_d9,24,kon équipement yooyu tam day tax nga xam équipement bu ne ñaata lay jar ah ak ñaata temps ngay toog pour denc ko,kon équipement yooyu tam day tax nga xam équipement bu ne ñaata lay jar ah ak ñaata temps ngay toog pour denc ko.,kon équipement yooyu tam day tax nga xam équipement bu ne ñaata lay jar ax ak ñaata temps ngay toog pour denc ko,0.009,,ok
+question_d9,25,stock bi nga xam ne moom ngeen di am lan ngay tontu ci loolu,stock bi nga xam ne moom ngeen di am lan ngay tontu ci loolu.,stock bi nga xam ne moom ngeen di am lan ngay tontu ci loolu,0.0,,ok
+question_d9,26,lu tax spéculations yi yomb nañ cher ru ñu te mën nga am jiwam te gerte gi gis nga ne jafe na am jiwam,lu tax spéculations yi yomb nañ cher ru ñu te mën nga am jiwam te gerte gi gis nga ne jafe na am jiwam.,lu tax spekulaasiyon yi yomb nañ cher ruñu te mën nga am jiwam te gerte gi gis nga ne jafee na am jiwam,0.078,,ok
+question_d9,27,nee na ndax variétés yépp ñoo yam même prix bi,nee na ndax variétés yépp ñoo yam même prix bi.,neena ndax variété yépp ñoo yem même pii bi,0.109,,ok
+question_d9,28,ni mu ko waxee woon defar ngir jaay ci koñ bi tay boo doon def genre xayma genre bilan naka nga koy defee tay,ni mu ko waxee woon defar ngir jaay ci koñ bi tay boo doon def genre xayma genre bilan naka nga koy defee tay.,ni mu ko waxee woon defax ngir jaay ci koñ bi tey boo doon def genre xayma genre bi lan naka nga koy defee tey,0.037,,ok
+question_d9,29,surtout ban njëriñ tamit beneen la la am parce que agent bi nekk fii nii en tant que agent nit la munul jotandoo ñépp en même temps,surtout ban njëriñ tamit beneen la la am parce que agent bi nekk fii nii en tant que agent nit la munul jotandoo ñépp en même temps.,surtout ban njariñ tamit beneen la la am parce que agent bi nekk fii nii en tant que agent nit la mënul jotandoo ñépp en même temps,0.015,,ok
+question_d9,30,ndax formations yi yi nga xam ne ni day tax nga mën a xam sa nga xam projet sa projet,ndax formations yi yi nga xam ne ni day tax nga mën a xam sa nga xam projet sa projet.,ndax formation yi yi nga xam ne nii day tax nga mën a xam sa nga xam projet sa projet,0.024,,ok

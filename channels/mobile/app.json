@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "TerraMind",
+    "slug": "terramind",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.terramindafrique.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.terramindafrique.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-sqlite",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "TerraMind utilise ta position pour connaître le sol et la météo de ton champ."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "TerraMind utilise l'appareil photo pour examiner une feuille de ta plante.",
+          "photosPermission": "TerraMind lit la photo de feuille que tu choisis."
+        }
+      ],
+      "expo-font",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false
+        }
+      ],
+      "expo-asset"
+    ],
+    "scheme": "terramind",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

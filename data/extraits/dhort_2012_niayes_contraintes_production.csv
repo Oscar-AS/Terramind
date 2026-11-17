@@ -1,0 +1,97 @@
+communaute_rurale,contrainte,exploitations,pct,exploitations_total
+Bambilor,aucune,81,5.6,1443
+Bambilor,acces_foncier,407,28.2,1443
+Bambilor,ressources_eau,1187,82.3,1443
+Bambilor,main_oeuvre,279,19.4,1443
+Bambilor,acces_credit,722,50.0,1443
+Bambilor,acces_intrants,943,65.3,1443
+Diender Guedj,aucune,22,1.0,2209
+Diender Guedj,acces_foncier,0,0.0,2209
+Diender Guedj,ressources_eau,685,31.0,2209
+Diender Guedj,main_oeuvre,353,16.0,2209
+Diender Guedj,acces_credit,1613,73.0,2209
+Diender Guedj,acces_intrants,1723,78.0,2209
+Keur Mousseu,aucune,20,4.9,400
+Keur Mousseu,acces_foncier,17,4.3,400
+Keur Mousseu,ressources_eau,333,83.3,400
+Keur Mousseu,main_oeuvre,17,4.3,400
+Keur Mousseu,acces_credit,195,48.8,400
+Keur Mousseu,acces_intrants,277,69.1,400
+Fandène,aucune,1,2.2,47
+Fandène,acces_foncier,8,17.8,47
+Fandène,ressources_eau,30,64.4,47
+Fandène,main_oeuvre,1,2.2,47
+Fandène,acces_credit,22,46.7,47
+Fandène,acces_intrants,15,31.1,47
+Notto Gouye Diama,aucune,2,0.7,234
+Notto Gouye Diama,acces_foncier,14,5.9,234
+Notto Gouye Diama,ressources_eau,151,64.7,234
+Notto Gouye Diama,main_oeuvre,9,3.9,234
+Notto Gouye Diama,acces_credit,57,24.2,234
+Notto Gouye Diama,acces_intrants,222,94.8,234
+Taiba Ndiaye,aucune,2,0.7,282
+Taiba Ndiaye,acces_foncier,7,2.6,282
+Taiba Ndiaye,ressources_eau,136,48.3,282
+Taiba Ndiaye,main_oeuvre,22,7.9,282
+Taiba Ndiaye,acces_credit,82,29.1,282
+Taiba Ndiaye,acces_intrants,261,92.7,282
+Darou Khoudoss,aucune,115,6.7,1710
+Darou Khoudoss,acces_foncier,34,2.0,1710
+Darou Khoudoss,ressources_eau,379,22.1,1710
+Darou Khoudoss,main_oeuvre,57,3.4,1710
+Darou Khoudoss,acces_credit,941,55.0,1710
+Darou Khoudoss,acces_intrants,1480,86.6,1710
+Méouane,aucune,0,0.0,24
+Méouane,acces_foncier,1,4.5,24
+Méouane,ressources_eau,9,36.4,24
+Méouane,main_oeuvre,3,13.6,24
+Méouane,acces_credit,8,31.8,24
+Méouane,acces_intrants,24,100.0,24
+Kab Gaye,aucune,2,0.7,339
+Kab Gaye,acces_foncier,43,12.6,339
+Kab Gaye,ressources_eau,238,70.2,339
+Kab Gaye,main_oeuvre,83,24.5,339
+Kab Gaye,acces_credit,83,24.5,339
+Kab Gaye,acces_intrants,281,82.8,339
+Diokoul Ndiawrigne,aucune,0,0.0,468
+Diokoul Ndiawrigne,acces_foncier,21,4.6,468
+Diokoul Ndiawrigne,ressources_eau,422,90.2,468
+Diokoul Ndiawrigne,main_oeuvre,67,14.4,468
+Diokoul Ndiawrigne,acces_credit,101,21.6,468
+Diokoul Ndiawrigne,acces_intrants,419,89.5,468
+Thieppe,aucune,0,0.0,695
+Thieppe,acces_foncier,30,4.3,695
+Thieppe,ressources_eau,460,66.2,695
+Thieppe,main_oeuvre,125,18.0,695
+Thieppe,acces_credit,155,22.3,695
+Thieppe,acces_intrants,680,97.8,695
+Bandeigne,aucune,1,4.0,25
+Bandeigne,acces_foncier,2,8.0,25
+Bandeigne,ressources_eau,21,84.0,25
+Bandeigne,main_oeuvre,2,8.0,25
+Bandeigne,acces_credit,8,32.0,25
+Bandeigne,acces_intrants,20,80.0,25
+Léona,aucune,8,0.6,1251
+Léona,acces_foncier,376,30.1,1251
+Léona,ressources_eau,829,66.3,1251
+Léona,main_oeuvre,1159,92.6,1251
+Léona,acces_credit,1159,92.6,1251
+Léona,acces_intrants,1236,98.8,1251
+Ndiébène Gandiol,aucune,0,0.0,808
+Ndiébène Gandiol,acces_foncier,549,67.9,808
+Ndiébène Gandiol,ressources_eau,800,99.1,808
+Ndiébène Gandiol,main_oeuvre,663,82.1,808
+Ndiébène Gandiol,acces_credit,564,69.8,808
+Ndiébène Gandiol,acces_intrants,503,62.3,808
+Gandon,aucune,0,0.0,228
+Gandon,acces_foncier,72,31.5,228
+Gandon,ressources_eau,197,86.6,228
+Gandon,main_oeuvre,190,83.2,228
+Gandon,acces_credit,217,95.3,228
+Gandon,acces_intrants,144,63.1,228
+Ensemble,aucune,253,2.5,10163
+Ensemble,acces_foncier,1583,15.6,10163
+Ensemble,ressources_eau,5878,57.8,10163
+Ensemble,main_oeuvre,3032,29.8,10163
+Ensemble,acces_credit,5926,58.3,10163
+Ensemble,acces_intrants,8227,80.9,10163

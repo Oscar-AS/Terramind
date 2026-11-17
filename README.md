@@ -1,105 +1,214 @@
-# TerraMind Afrique
+<p align="center"><img src="docs/assets/readme/terramind.svg" alt="TerraMind Afrique" width="100%"></p>
 
-> Assistant agronomique sur WhatsApp et sur le web qui aide les petits maraîchers du Sénégal à choisir quoi semer et quand, à anticiper les maladies et à identifier une maladie à partir d'une photo de feuille.
+<p align="center">
+  <img src="https://img.shields.io/badge/PAS%20Challenge-2026%20·%20SALTIS-1f4d3a?style=for-the-badge" alt="PAS Challenge 2026">
+  <img src="https://img.shields.io/badge/français%20·%20wolof-voix%20comprise-3f8f5f?style=for-the-badge" alt="Français et wolof">
+  <img src="https://img.shields.io/badge/données%20inventées-0-d08a2e?style=for-the-badge" alt="Aucune donnée inventée">
+</p>
 
-Projet présenté au **PAS Challenge 2026 (SALTIS)**.
+<p align="center">
+  <a href="https://t.me/TerraMindAfriqueBot"><b>💬 Essayer le bot Telegram</b></a>
+  &nbsp;·&nbsp;
+  <a href="channels/mobile/"><b>📱 L'application mobile</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://terramind-sigma.vercel.app"><b>🌍 Le site</b></a>
+  &nbsp;·&nbsp;
+  <a href="docs/api.md"><b>⚙️ L'API</b></a>
+</p>
 
-## Architecture : un moteur, deux façades
+<br>
 
+<table>
+<tr>
+<td width="62%" valign="middle">
+
+### Un agronome de poche pour les maraîchers des Niayes
+
+Au Sénégal, un petit maraîcher décide seul : **quoi planter, quand traiter, quelle est cette tache sur la feuille**. Une erreur peut coûter une récolte.
+
+TerraMind répond à ces trois questions sur l'application mobile et sur Telegram, **en français, et en wolof à l'oral** sur le bot :
+
+- 🌱 **Que planter ce mois-ci ?** d'après le sol lu au point de son champ
+- 🔔 **Quel risque cette semaine ?** d'après la météo de sa zone
+- 📷 **Quelle est cette maladie ?** d'après une simple photo
+
+Chaque conseil **cite le document** d'où il vient. Quand TerraMind n'est pas sûr, il le dit.
+
+</td>
+<td width="38%" align="center">
+  <img src="docs/assets/captures/app/accueil.webp" width="230" alt="Écran d'accueil de l'application TerraMind">
+</td>
+</tr>
+</table>
+
+## 📱 L'application en action
+
+<table>
+<tr>
+<td align="center" width="25%"><img src="docs/assets/captures/app/plan.webp" alt="Que planter ce mois-ci"></td>
+<td align="center" width="25%"><img src="docs/assets/captures/app/alertes.webp" alt="Alertes météo de la semaine"></td>
+<td align="center" width="25%"><img src="docs/assets/captures/app/resultat.webp" alt="Diagnostic : Mildiou, 93 %"></td>
+<td align="center" width="25%"><img src="docs/assets/captures/app/resultat2.webp" alt="La maladie expliquée en 4 temps"></td>
+</tr>
+<tr>
+<td align="center"><b>1 · Que planter</b><br><sub>8 cultures classées selon son sol et le mois</sub></td>
+<td align="center"><b>2 · Les risques</b><br><sub>Mildiou, chenilles… d'après la météo</sub></td>
+<td align="center"><b>3 · Le diagnostic</b><br><sub>Une photo, une maladie probable</sub></td>
+<td align="center"><b>4 · L'explication</b><br><sub>Ce que c'est, pourquoi, que faire, comment éviter</sub></td>
+</tr>
+</table>
+
+<sub>Vraies captures de l'application branchée sur le moteur, 15 nov 2026. Profil de démonstration (Rufisque, tomate). Photo du diagnostic : jeu de test de TOM2024 (CC BY 4.0), jamais vue à l'entraînement. Le visage de l'écran d'accueil est une image générée par IA.</sub>
+
+## 💬 Le bot Telegram en action
+
+<table>
+<tr>
+<td align="center" width="25%"><img src="docs/assets/captures/telegram/02-accueil.webp" alt="Accueil du bot"></td>
+<td align="center" width="25%"><img src="docs/assets/captures/telegram/05a-plan-sol.webp" alt="Ce que dit le sol"></td>
+<td align="center" width="25%"><img src="docs/assets/captures/telegram/07b-diagnostic-resultat.webp" alt="Diagnostic : Mildiou, 95 %"></td>
+<td align="center" width="25%"><img src="docs/assets/captures/telegram/08b-reponse-sources.webp" alt="Réponse sourcée"></td>
+</tr>
+<tr>
+<td align="center"><b>Bienvenue</b><br><sub>Des boutons, pas de commandes à retenir</sub></td>
+<td align="center"><b>Son sol</b><br><sub>Sable, argile, acidité au point du champ</sub></td>
+<td align="center"><b>Sa photo</b><br><sub>La maladie expliquée en 4 temps</sub></td>
+<td align="center"><b>Sa question</b><br><sub>Une réponse tirée des fiches, pages citées</sub></td>
+</tr>
+</table>
+
+<sub>Vraies captures de <a href="https://t.me/TerraMindAfriqueBot">@TerraMindAfriqueBot</a> branché sur le moteur en ligne, 15 et 16 nov 2026. Position : bouton « position test » (Rufisque), pas celle d'un agriculteur. Toutes les captures : <a href="docs/assets/captures/">docs/assets/captures/</a>.</sub>
+
+## 🗣️ Le wolof, à l'oral
+
+Beaucoup d'agriculteurs lisent peu. En mode wolof, le bot Telegram **parle** : chaque message est aussi une **note vocale**, et l'agriculteur répond en appuyant sur des **numéros** plutôt qu'en écrivant. Il peut poser sa question **à voix haute** en wolof.
+
+<table>
+<tr>
+<td align="center" width="25%">🎙️<br><b>76 phrases</b><br><sub>traduites puis <b>relues une par une</b> par un locuteur de l'équipe, en wolof parlé</sub></td>
+<td align="center" width="25%">🔊<br><b>76 notes vocales</b><br><sub>générées avec la voix wolof d'Octopus, la plateforme du concours</sub></td>
+<td align="center" width="25%">👂<br><b>Questions orales</b><br><sub>reconnaissance vocale wolof, puis réponse tirée des fiches</sub></td>
+<td align="center" width="25%">📖<br><b>Un lexique</b><br><sub>des termes agricoles choisis avec l'équipe : <a href="content/voix/">content/voix/</a></sub></td>
+</tr>
+</table>
+
+## ⚙️ Comment ça marche : un moteur, deux façades
+
+```mermaid
+flowchart LR
+    subgraph F["Ce que voit l'agriculteur"]
+      APP["📱 Application mobile"]
+      TG["💬 Bot Telegram"]
+    end
+    subgraph M["Moteur FastAPI"]
+      PL["/v1/plan<br/>Que planter ?"]
+      AL["/v1/alert<br/>Risques de la semaine"]
+      DI["/v1/diagnose<br/>Photo"]
+      CH["/v1/chat<br/>Question libre"]
+    end
+    subgraph S["Sources ouvertes et citées"]
+      SOL["🟫 iSDAsoil<br/>sol à 30 m"]
+      MET["🌦️ NASA POWER<br/>météo horaire"]
+      MOD["🧠 MobileNetV3<br/>TOM2024 · PlantVillage · PlantDoc"]
+      FIC["📚 23 fiches<br/>ISRA · PADEN · DPV · FAO"]
+    end
+    APP --> M
+    TG --> M
+    PL --> SOL
+    AL --> MET
+    DI --> MOD
+    DI --> FIC
+    CH --> FIC
 ```
-   Agriculteur                      Agriculteur                 Équipe / partenaires
-       |                                 |                               |
-       v                                 v                               v
-+---------------+               +------------------+            +-----------------+
-| Bot WhatsApp  |               | Appli web (PWA)  |            | Tableau de bord |
-| channels/     |               | channels/pwa     |            | dashboard/      |
-| whatsapp      |               | (plan B)         |            |                 |
-+-------+-------+               +--------+---------+            +--------+--------+
-        |        HTTP (docs/api.md)      |                               |
-        +----------------+---------------+-------------------------------+
-                         v
-        +---------------------------------------------------+
-        |         Moteur Python / FastAPI (engine/)         |
-        |                                                   |
-        |  Planification   GPS -> sol -> cultures + semis   |
-        |  Prévention      météo -> risque de mildiou       |
-        |  Diagnostic      photo -> culture, maladie,       |
-        |                  confiance ou « incertain »       |
-        |                                                   |
-        |  Réponses : gabarits validés FR / wolof + audio   |
-        +---------------------------------------------------+
+
+L'application et le bot n'ont **aucune logique agricole** : ils appellent le même moteur ([décision D1](docs/decisions.md)). C'est ce qui nous a permis de passer de WhatsApp à Telegram en quelques jours quand Meta a bloqué notre compte ([D12](docs/decisions.md), [récit complet](docs/difficultes.md)).
+
+> [!TIP]
+> **Analogie Kuroko no Basket** : le moteur est Kuroko. Il ne marque pas lui-même, ce sont les façades qui parlent à l'agriculteur ; mais c'est lui qui fait circuler chaque ballon vers le bon coéquipier (sol, météo, photo, fiches). Concrètement : une seule base de code agricole sert toutes les façades.
+
+## 📊 Où en est le projet (17 nov 2026)
+
+| | Brique | État | En chiffres |
+|:-:|---|:-:|---|
+| 🌱 | **Que planter** | ✅ | 8 cultures (tomate, pomme de terre, oignon, chou, poivron, carotte, piment, jaxatu) · guide ISRA 1987 · sol lu au point du champ |
+| 🔔 | **Alertes météo** | ✅ | 7 risques : mildiou (tomate, pomme de terre, oignon), alternariose (tomate, carotte), mineuse, noctuelle, teigne · règles testées sur 2020-2025 |
+| 📷 | **Diagnostic photo** | ✅ | **91,7 %** sur 1 058 photos de terrain africaines (TOM2024) · 21 problèmes reconnus · « je ne suis pas sûr » sous le seuil |
+| 💬 | **Questions libres** | ✅ | 23 fiches sourcées · 3 vérifications indépendantes (≈ 320 affirmations, 51 corrigées) |
+| 🗣️ | **Wolof** | ✅ | 76 phrases relues · 76 notes vocales · questions orales |
+| 📱 | **Application mobile** | ✅ | Expo · Android (APK) et web · en français (le wolof y arrivera après le bot) |
+| 💬 | **Bot Telegram** | ✅ | en ligne sur Render, même moteur que l'application |
+| 🗄️ | WhatsApp | archivé | [archives/whatsapp/](archives/whatsapp/), à réactiver si le projet continue |
+
+Détail des résultats du modèle : [ml/eval/](ml/eval/). Justification de chaque seuil : [docs/seuils-et-parametres.md](docs/seuils-et-parametres.md).
+
+## 🧭 Explorer le dépôt
+
+<table>
+<tr>
+<td width="25%" valign="top">⚙️ <a href="engine/"><b>engine/</b></a><br><sub>Le moteur : plan, alertes, diagnostic, questions, bot Telegram</sub></td>
+<td width="25%" valign="top">💬 <a href="channels/"><b>channels/</b></a><br><sub>L'application mobile et le site vitrine</sub></td>
+<td width="25%" valign="top">🚀 <a href="deploy/"><b>deploy/</b></a><br><sub>L'image Docker et Render</sub></td>
+<td width="25%" valign="top">📝 <a href="content/"><b>content/</b></a><br><sub>23 fiches sourcées, voix et lexique wolof</sub></td>
+</tr>
+<tr>
+<td width="25%" valign="top">🧠 <a href="ml/"><b>ml/</b></a><br><sub>Le modèle de diagnostic, évalué honnêtement</sub></td>
+<td width="25%" valign="top">🗂️ <a href="data/"><b>data/</b></a><br><sub>Les données ouvertes et leur provenance</sub></td>
+<td width="25%" valign="top">🔎 <a href="research/"><b>research/</b></a><br><sub>La base agronomique et les tests</sub></td>
+<td width="25%" valign="top">📚 <a href="docs/"><b>docs/</b></a><br><sub>API, décisions D1 à D12, seuils, difficultés</sub></td>
+</tr>
+<tr>
+<td width="25%" valign="top">🛠️ <a href="scripts/"><b>scripts/</b></a><br><sub>Les outils de collecte et de vérification</sub></td>
+<td width="25%" valign="top">📊 <a href="dashboard/"><b>dashboard/</b></a><br><sub>Le tableau de bord (prévu, pas encore construit)</sub></td>
+<td width="25%" valign="top">🗄️ <a href="archives/"><b>archives/</b></a><br><sub>Le bot WhatsApp mis de côté</sub></td>
+</tr>
+</table>
+
+## 🤝 Nos règles
+
+<table>
+<tr>
+<td align="center" width="25%">🚫<br><b>Rien de factice</b><br><sub>Ce qui est montré marche vraiment ; aucune donnée inventée (<a href="docs/decisions.md">D6</a>)</sub></td>
+<td align="center" width="25%">📌<br><b>Toujours une source</b><br><sub>Sans source, le bot répond « je ne sais pas »</sub></td>
+<td align="center" width="25%">🧪<br><b>Jamais de dose</b><br><sub>Pour un produit, il renvoie vers un agent agricole</sub></td>
+<td align="center" width="25%">🔒<br><b>Vie privée</b><br><sub>Position arrondie à ~1 km ; aucune photo ni position d'agriculteur dans Git</sub></td>
+</tr>
+</table>
+
+## 🚀 Lancer le projet en local
+
+<details>
+<summary><b>Moteur, application et site : les commandes</b></summary>
+
+```bash
+# 1. Moteur (Python 3.9 ou plus) : copier .env.example en .env puis remplir les clés
+python3 -m venv .venv && .venv/bin/pip install -r engine/requirements.txt
+.venv/bin/uvicorn engine.app.main:app --reload --port 8000
+.venv/bin/python -m pytest -q                       # 70 tests
+
+# 2. Application mobile (Node.js, Expo)
+cd channels/mobile && npm install
+npx expo start                     # QR code à scanner avec Expo Go, ou « w » pour le web
+
+# 3. Site vitrine
+cd channels/site && python3 -m http.server 5500
 ```
 
-Le système est **général** : la culture est un paramètre partout. Seule la liste des cultures prises en charge par le diagnostic est fermée ; elle est fixée le 4 novembre 2026 (voir [docs/decisions.md](docs/decisions.md)).
+Le modèle de diagnostic (`modeles/diagnostic/`) n'est pas dans Git : il se reconstruit avec [ml/training/](ml/training/). En ligne, le moteur tourne sur **Render** à partir d'une image Docker ([deploy/](deploy/)).
 
-## Structure du dépôt
+</details>
 
-```
-engine/              Moteur FastAPI
-  app/routes/        Points d'entrée HTTP
-  app/modules/       planification/, prevention/, diagnostic/
-  app/responses/     Assemblage des réponses à partir des gabarits
-  tests/
-channels/
-  whatsapp/          Bot WhatsApp (webhook)
-  pwa/               Appli web installable
-dashboard/           Tableau de bord
-content/
-  fiches/            Fiches agronomiques (maladies, cultures)
-  templates/         Gabarits de réponses FR / wolof
-  audio/wo/          Audios wolof pré-enregistrés
-ml/
-  notebooks/ training/ eval/
-  MODEL_CARD.md      Fiche du modèle de diagnostic
-data/
-  README.md          Registre de provenance des données
-  sample/            Petits échantillons publics uniquement
-research/
-  protocole_test.md  Protocole des tests utilisateurs
-  consentement.md    Formulaire de consentement
-  retours/           Retours terrain (seuls les retours anonymisés sont commités)
-docs/
-  architecture.md api.md decisions.md risques.md TACHES.md
-  rapports-hebdo/    Rapports hebdomadaires
-scripts/             Scripts d'organisation (GitHub)
-```
+## 👥 L'équipe
 
-## Qui fait quoi
+<table>
+<tr>
+<td align="center" width="33%"><b>Salam</b><br><sub>Chef de projet · moteur, façades, tableau de bord</sub><br><code>engine/</code> <code>channels/</code> <code>dashboard/</code></td>
+<td align="center" width="33%"><b>Oscar</b><br><sub>IA et données · propriétaire du dépôt</sub><br><code>ml/</code> <code>data/</code></td>
+<td align="center" width="33%"><b>Rama</b><br><sub>Contenu agronomique, tests utilisateurs, pitch</sub><br><code>content/</code> <code>research/</code></td>
+</tr>
+</table>
 
-| Membre | Rôle | Périmètre dans le dépôt |
-|---|---|---|
-| Salam | Chef de projet, moteur, canaux, tableau de bord | `engine/`, `channels/`, `dashboard/` |
-| Oscar | IA et données, propriétaire du dépôt | `ml/`, `data/`, `engine/app/modules/` |
-| Rama | Contenu agronomique, gabarits FR/wolof, tests utilisateurs, pitch | `content/`, `research/` |
+**Jalons 2026** : 3 nov fondations · 10 nov chaîne complète · 17 nov gel de la v1.0 · 22 nov livraison · 25 nov revue du jury · 10 déc finale. Plan de tâches : [docs/TACHES.md](docs/TACHES.md).
 
-Plan de tâches détaillé : [docs/TACHES.md](docs/TACHES.md). Document de suivi partagé : TODO_LIEN_DOC
+---
 
-## Jalons 2026
-
-| Date | Jalon |
-|---|---|
-| 3 nov | J1 |
-| 10 nov | J2 |
-| 17 nov | J3 : gel des fonctionnalités |
-| 22 nov | J4 : fin de construction |
-| 25 nov | J5 : revue du jury |
-
-## Règles du concours
-
-- Pas de maquette cliquable, pas de démo factice : ce qui est montré fonctionne réellement.
-- Pas de données inventées.
-- Provenance, méthode et résultats documentés (voir [data/README.md](data/README.md) et [ml/MODEL_CARD.md](ml/MODEL_CARD.md)).
-
-## Données personnelles et secrets
-
-> **Les photos et positions GPS de vrais agriculteurs ne sont JAMAIS commitées, même dans un dépôt privé.**
->
-> Les secrets (jetons, clés) ne sont jamais commités non plus : utiliser un fichier `.env` local (voir [.env.example](.env.example)).
-
-## Contribuer
-
-Voir [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Licence
-
-[MIT](LICENSE)
+<p align="center"><sub>Code sous licence <a href="LICENSE">MIT</a> · les données et images gardent la licence de leur source (<a href="data/README.md">data/</a>) · <a href="CONTRIBUTING.md">Contribuer</a></sub></p>
