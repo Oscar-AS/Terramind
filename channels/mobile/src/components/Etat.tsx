@@ -53,9 +53,13 @@ export function nomLisible(document: string): string {
 }
 
 /** D'où vient le conseil : toujours montré, discrètement. */
+// Nos notes de travail ne sont pas des sources publiées : le bot Telegram les masque aussi.
+const SOURCES_INTERNES = ['Seuils météo des maladies et ravageurs'];
+
 export function Sources({ sources }: { sources: Source[] }) {
-  if (!sources.length) return null;
-  const lisibles = sources.map((s) => ({ ...s, document: nomLisible(s.document) }));
+  const publiees = sources.filter((s) => !SOURCES_INTERNES.some((i) => s.document.startsWith(i)));
+  if (!publiees.length) return null;
+  const lisibles = publiees.map((s) => ({ ...s, document: nomLisible(s.document) }));
   const uniques = [...new Map(lisibles.map((s) => [`${s.document} ${s.page}`, s])).values()];
   return (
     <Carte style={styles.sources}>

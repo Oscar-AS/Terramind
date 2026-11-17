@@ -39,13 +39,16 @@ export default function Cultures() {
 
   // Repiquage dans les 12 derniers mois : si le mois choisi est après le mois courant, c'est l'an dernier.
   const annee = mois > aujourdhui.getMonth() ? aujourdhui.getFullYear() - 1 : aujourdhui.getFullYear();
-  const joursDuMois = new Date(annee, mois + 1, 0).getDate();
+  // Mois en cours : pas au-delà d'aujourd'hui (une plantation n'est jamais dans le futur).
+  const joursDuMois = mois === aujourdhui.getMonth() && annee === aujourdhui.getFullYear()
+    ? aujourdhui.getDate() : new Date(annee, mois + 1, 0).getDate();
   const j = Math.min(jour, joursDuMois);
   const date = `${annee}-${String(mois + 1).padStart(2, '0')}-${String(j).padStart(2, '0')}`;
 
   const enregistrer = () => {
     profil.ecrire({ culture, dateRepiquage: date });
-    router.push('/notifications');
+    // Pas d'écran « Je te préviens ? » : aucune notification n'est encore envoyée (règle « rien de factice »).
+    router.dismissTo('/accueil');
   };
 
   return (

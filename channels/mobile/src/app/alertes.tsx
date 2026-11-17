@@ -93,7 +93,7 @@ export default function AlertesEcran() {
                     </View>
                   </View>
                   <T v="corps">{a.conseil}</T>
-                  {a.niveau === 'date_requise' ? null : retours[a.id] ? <T v="corpsGras" style={{ color: couleurs.feuille }}>{"Merci, c'est noté."}</T> : (
+                  {a.niveau === 'date_requise' ? null : retours[a.id] ? <T v="corpsGras" style={{ color: couleurs.feuille }}>{'Merci pour ta réponse.'}</T> : (
                     <>
                       <T v="petit">As-tu vu des signes dans ton champ ?</T>
                       <View style={styles.boutons}>

@@ -36,7 +36,7 @@ export default function Question() {
     <Ecran titre="Poser une question">
       <View style={styles.saisie}>
         <TextInput value={texte} onChangeText={setTexte} placeholder="Écris ta question ici" placeholderTextColor={couleurs.encreDouce}
-          multiline style={styles.champ} accessibilityLabel="Ta question" />
+          multiline maxLength={2000} style={styles.champ} accessibilityLabel="Ta question" />
         <Pressable accessibilityRole="button" accessibilityLabel="Envoyer" onPress={() => envoyer()} disabled={envoi}
           style={({ pressed }) => [styles.envoyer, (pressed || envoi) && { opacity: 0.7 }]}>
           <PaperPlaneRight size={26} color={couleurs.blanc} weight="fill" />

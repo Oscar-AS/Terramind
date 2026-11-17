@@ -48,6 +48,8 @@ export type Diagnostic = {
     que_faire: string | null;
     eviter: string | null;
   } | null;
+  /** Ravageurs que la photo ne reconnaît pas (mineuse de la tomate) : question oui/non tirée de la fiche. */
+  questions_suivi?: { question: string; si_oui: string; fiche: string }[];
 };
 
 export class ErreurReseau extends Error {}
@@ -58,14 +60,25 @@ function commun() {
   return { utilisateur: p.id, canal: 'mobile', langue: p.langue ?? 'fr' };
 }
 
+// Le serveur gratuit (Render) se met en veille : le premier appel le réveille en une minute environ.
+// Au-delà de 90 secondes, on arrête d'attendre au lieu de laisser tourner le chargement sans fin.
+const DELAI_MS = 90_000;
+
 async function appeler<T>(chemin: string, init: RequestInit): Promise<Reponse<T>> {
+  const arret = new AbortController();
+  const minuterie = setTimeout(() => arret.abort(), DELAI_MS);
   let r: Response;
   try {
-    r = await fetch(`${ENGINE_URL}${chemin}`, init);
+    r = await fetch(`${ENGINE_URL}${chemin}`, { ...init, signal: arret.signal });
   } catch {
-    throw new ErreurReseau('Pas de connexion avec TerraMind. Vérifie ton réseau.');
+    throw new ErreurReseau(arret.signal.aborted
+      ? 'TerraMind met trop de temps à répondre. Réessaie dans une minute.'
+      : 'Pas de connexion avec TerraMind. Vérifie ton réseau.');
+  } finally {
+    clearTimeout(minuterie);
   }
   const corps = await r.json().catch(() => null);
+  if (r.status === 422) throw new ErreurReseau('Ta demande est trop longue ou incomplète. Raccourcis-la et réessaie.');
   if (!corps?.message) throw new ErreurReseau('Le service ne répond pas correctement. Réessaie plus tard.');
   return corps as Reponse<T>;
 }

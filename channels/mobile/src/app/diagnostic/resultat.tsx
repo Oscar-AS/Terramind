@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import {
-  CameraPlus, FirstAidKit, FrameCorners, type Icon, Info, Leaf, Lightbulb, Question, SealCheck, ShieldCheck, Sun, Warning,
+  CameraPlus, FirstAidKit, FrameCorners, type Icon, Info, Leaf, Lightbulb, MagnifyingGlass, Question, SealCheck, ShieldCheck, Sun, Warning,
 } from 'phosphor-react-native';
 import { useEffect, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
@@ -176,6 +176,18 @@ export default function Resultat() {
                   </Carte>
                 </Apparition>
               ) : null}
+              {(reponse.donnees.questions_suivi ?? []).map((q) => (
+                <Apparition key={q.fiche} ordre={5}>
+                  <Carte>
+                    <View style={styles.conseilsTete}>
+                      <Pastille Icone={MagnifyingGlass} taille={44} />
+                      <T v="corpsGras" style={{ flex: 1 }}>À vérifier aussi</T>
+                    </View>
+                    <T v="corps">{q.question}</T>
+                    <T v="petit">Si oui : {q.si_oui}</T>
+                  </Carte>
+                </Apparition>
+              ))}
               {!sain ? (
                 <Apparition ordre={6} style={styles.agent}>
                   <FirstAidKit size={24} color={couleurs.terre} weight="duotone" />

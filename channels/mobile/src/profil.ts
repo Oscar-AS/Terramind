@@ -58,4 +58,6 @@ export const CULTURES = [
   { id: 'potato', libelle: 'Pomme de terre', icone: '🥔' },
   { id: 'pepper', libelle: 'Poivron', icone: '🫑' },
   { id: 'carrot', libelle: 'Carotte', icone: '🥕' },
+  { id: 'chili', libelle: 'Piment', icone: '🌶️' },
+  { id: 'bitter_eggplant', libelle: 'Jaxatu', icone: '🍆' },
 ];

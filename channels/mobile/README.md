@@ -31,7 +31,6 @@ flowchart TD
     A --> PL["Que planter ?<br/>sol + saison"]
     A --> Q["Question<br/>réponse tirée des fiches"]
     A --> MC["Mes cultures<br/>culture + date de repiquage"]
-    MC --> N["Notifications<br/>expliquées avant la demande"]
     A --> AL["Alertes de la semaine<br/>j'ai vu / rien vu"]
 ```
 
@@ -45,7 +44,6 @@ Les 3 écrans de première ouverture ne s'affichent qu'une fois. Ensuite, l'appl
 | Une action par écran, pas de menus imbriqués | Les utilisateurs peu lettrés évitent la navigation hiérarchique | Microsoft Research, interfaces sans texte |
 | Icônes + couleur + mot sur chaque badge | Ne jamais compter sur la couleur seule | Règles d'accessibilité |
 | Position demandée **après** une explication, avec une liste de zones si refus | La fenêtre système brute fait refuser | Analyse de parcours (screensdesign) |
-| Notifications demandées après la date de repiquage | C'est là que l'agriculteur comprend à quoi elles servent | idem |
 | Résultat « je ne suis pas sûr » assumé | Mieux vaut orienter vers un agent qu'inventer | Règle du projet (D6, D8) |
 
 **Identité visuelle « Terre des Niayes »** : sable, vert forêt et terre cuite (contrastes vérifiés), polices Bricolage Grotesque et Figtree, icônes Phosphor bicolores, apparitions douces et boutons « à ressort ». Le tout est défini dans [`src/theme.ts`](src/theme.ts) et [`src/components/ui.tsx`](src/components/ui.tsx).
@@ -54,7 +52,7 @@ Les 3 écrans de première ouverture ne s'affichent qu'une fois. Ensuite, l'appl
 
 | Chemin | Contenu |
 |---|---|
-| [`src/app/`](src/app/) | Un fichier par écran (Expo Router) : `bienvenue/`, `accueil`, `plan`, `cultures`, `notifications`, `diagnostic/`, `alertes`, `question` |
+| [`src/app/`](src/app/) | Un fichier par écran (Expo Router) : `bienvenue/`, `accueil`, `plan`, `cultures`, `diagnostic/`, `alertes`, `question` |
 | [`src/api.ts`](src/api.ts) | Appels au moteur (`/v1/plan`, `/v1/alert`, `/v1/diagnose`, `/v1/chat`, `/v1/feedback`) |
 | [`src/profil.ts`](src/profil.ts) | Ce que l'agriculteur a indiqué, gardé **sur le téléphone seulement** ; zones pilotes et cultures |
 | [`src/components/`](src/components/) | Cadre d'écran, boutons, cartes, chargement animé, sources, feuille glissante |
@@ -86,7 +84,7 @@ Sans `EXPO_PUBLIC_ENGINE_URL`, l'application appelle `http://localhost:8000` (le
 
 - Le bouton « Écouter » est en place, mais la voix wolof n'est pas encore branchée. L'application le dit sur l'écran de langue.
 - Les retours « j'ai vu / rien vu » sont envoyés au moteur, qui ne les stocke pas encore.
-- Les alertes s'affichent dans l'application. L'envoi automatique de notifications n'est pas encore programmé.
+- Les alertes s'affichent dans l'application. Pas encore de notifications : l'écran qui les demandait a été retiré (16 nov) tant qu'aucune n'est réellement envoyée.
 
 ## Responsable
 
