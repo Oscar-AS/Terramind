@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
-import { Bell, CalendarCheck, Camera, ChatCircleText, type Icon, MapPin, Plant, SpeakerHigh } from 'phosphor-react-native';
+import { Bell, CalendarCheck, Camera, ChatCircleText, type Icon, MapPin, Plant, Translate } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -40,8 +40,11 @@ export default function Accueil() {
               <T v="petit">{p.position?.nom ?? 'Ton champ'}</T>
             </View>
           </View>
-          <Pressable accessibilityRole="button" accessibilityLabel="Écouter" style={styles.ecouter} hitSlop={8}>
-            <SpeakerHigh size={26} color={couleurs.foret} weight="duotone" />
+          {/* Changer de langue à tout moment (en wolof, les réponses se lisent à voix haute). */}
+          <Pressable accessibilityRole="button" accessibilityLabel={p.langue === 'wo' ? 'Passer en français' : 'Passer en wolof'}
+            onPress={() => setP(profil.ecrire({ langue: p.langue === 'wo' ? 'fr' : 'wo' }))} style={styles.langue} hitSlop={8}>
+            <Translate size={22} color={couleurs.foret} weight="duotone" />
+            <T v="etiquette" style={{ color: couleurs.foret }}>{p.langue === 'wo' ? 'Français' : 'Wolof'}</T>
           </Pressable>
         </Apparition>
 
@@ -94,7 +97,7 @@ const styles = StyleSheet.create({
   contenu: { padding: tailles.marge, gap: 16, paddingBottom: 40 },
   haut: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 8 },
   zone: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  ecouter: { width: 52, height: 52, borderRadius: 26, backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait, alignItems: 'center', justifyContent: 'center' },
+  langue: { flexDirection: 'row', gap: 6, paddingHorizontal: 14, height: 52, borderRadius: 26, backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait, alignItems: 'center', justifyContent: 'center' },
   hero: { height: 340, justifyContent: 'flex-end', borderRadius: 28, overflow: 'hidden', ...ombre },
   heroImage: { borderRadius: 28 },
   heroBas: { padding: 20, gap: 8 },

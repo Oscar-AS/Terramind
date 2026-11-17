@@ -1,10 +1,30 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { ArrowRight, SpeakerHigh } from 'phosphor-react-native';
+import { ArrowRight, SpeakerHigh, Stop } from 'phosphor-react-native';
 import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import type { PhraseWolof } from '@/api';
+import { LecteurVoix, useLecteur } from '@/components/Voix';
 import { couleurs, polices, tailles } from '@/theme';
+
+// Note bilingue relue (comme le message de départ du bot) : une phrase en français, puis en wolof,
+// qui explique comment choisir sa langue à l'écran suivant. Servie par le moteur.
+const VOIX_ACCUEIL: PhraseWolof[] = [{ cle: 'choix_langue', texte_wo: '', texte_fr: '', audio_url: '/audio/wo/choix_langue.mp3' }];
+
+function Ecouter() {
+  const { jouer, arreter, enCours } = useLecteur();
+  const actif = enCours === VOIX_ACCUEIL;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={actif ? 'Arrêter' : 'Écouter'}
+      onPress={() => (actif ? arreter() : jouer(VOIX_ACCUEIL))}
+      style={styles.ecouter}>
+      {actif ? <Stop size={30} color={couleurs.blanc} weight="fill" /> : <SpeakerHigh size={32} color={couleurs.blanc} weight="duotone" />}
+    </Pressable>
+  );
+}
 
 // Écran de bienvenue plein écran (inspiré de Wolt et de PictureThis 01).
 // Photo générée par IA, décorative : voir assets/illustrations/CREDITS.md.
@@ -12,6 +32,7 @@ const PHOTO = require('../../../assets/illustrations/bienvenue.jpg');
 
 export default function Bienvenue() {
   return (
+    <LecteurVoix>
     <ImageBackground source={PHOTO} resizeMode="cover" style={styles.page} accessible={false}>
       {/* Dégradé vert en bas : garde le nom et le bouton lisibles sur la photo. */}
       <LinearGradient
@@ -22,15 +43,9 @@ export default function Bienvenue() {
       <SafeAreaView style={styles.contenu}>
         <View style={styles.bas}>
           <Text style={styles.nom}>TerraMind</Text>
-          {/* Phrase dite à voix haute en wolof au lancement (voix à brancher). */}
           <Text style={styles.promesse}>Prends ta plante en photo, on te dit quoi faire.</Text>
           <View style={styles.boutons}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Écouter"
-              style={styles.ecouter}>
-              <SpeakerHigh size={32} color={couleurs.blanc} weight="duotone" />
-            </Pressable>
+            <Ecouter />
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Commencer"
@@ -43,6 +58,7 @@ export default function Bienvenue() {
         </View>
       </SafeAreaView>
     </ImageBackground>
+    </LecteurVoix>
   );
 }
 
