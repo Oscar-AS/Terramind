@@ -82,7 +82,7 @@
         <a href="https://t.me/TerraMindAfriqueBot" class="bouton bg-soleil text-encre hover:bg-[#F0B947]">
           <i data-i="send" class="h-5 w-5"></i><span data-en="Open the Telegram bot">Ouvrir le bot Telegram</span></a>
         <a data-apk href="#telecharger" aria-disabled="true" class="bouton border border-white/20 bg-white/5 text-sable hover:bg-white/10">
-          <i data-i="download" class="h-5 w-5"></i><span data-en="Android app · coming soon">App Android · bientôt</span></a>
+          <i data-i="download" class="h-5 w-5"></i><span data-en="Download the Android app">Télécharger l'app Android</span></a>
       </div>
       <p data-apk-note class="mt-3 hidden text-[14px] text-clair" role="status"></p>
       <ul class="apparait mt-10 flex flex-wrap gap-x-6 gap-y-2 text-[14px] text-clair" style="--d:320ms">
@@ -307,7 +307,7 @@
         </ol>
         <div class="revele mt-9 flex flex-wrap gap-3">
           <a href="https://t.me/TerraMindAfriqueBot" class="bouton bg-foret text-sable hover:bg-[#245A44]"><i data-i="send" class="h-5 w-5"></i><span data-en="Start on Telegram">Commencer sur Telegram</span></a>
-          <a data-apk href="#telecharger" aria-disabled="true" class="bouton bg-pousse text-foret hover:bg-[#cfe3cb]"><i data-i="download" class="h-5 w-5"></i><span data-en="Android app · coming soon">App Android · bientôt</span></a>
+          <a data-apk href="#telecharger" aria-disabled="true" class="bouton bg-pousse text-foret hover:bg-[#cfe3cb]"><i data-i="download" class="h-5 w-5"></i><span data-en="Download the Android app">Télécharger l'app Android</span></a>
         </div>
         <p data-apk-note class="mt-3 hidden text-[14px] text-encred" role="status"></p>
       </div>
@@ -361,7 +361,7 @@
       <p class="relative mx-auto mt-6 max-w-[560px] text-[18px] leading-[1.6] text-clair" data-en="Open TerraMind on Telegram and ask your first question, in French or Wolof. It's free.">Ouvre TerraMind sur Telegram et pose ta première question, en français ou en wolof. C'est gratuit.</p>
       <div class="relative mt-8 flex flex-wrap justify-center gap-3">
         <a href="https://t.me/TerraMindAfriqueBot" class="bouton bg-soleil text-encre hover:bg-[#F0B947]"><i data-i="send" class="h-5 w-5"></i><span data-en="Open the Telegram bot">Ouvrir le bot Telegram</span></a>
-        <a data-apk href="#telecharger" aria-disabled="true" class="bouton border border-white/20 text-sable hover:bg-white/10"><i data-i="download" class="h-5 w-5"></i><span data-en="Android app · coming soon">App Android · bientôt</span></a>
+        <a data-apk href="#telecharger" aria-disabled="true" class="bouton border border-white/20 text-sable hover:bg-white/10"><i data-i="download" class="h-5 w-5"></i><span data-en="Download the Android app">Télécharger l'app Android</span></a>
       </div>
       <p data-apk-note class="relative mt-3 hidden text-[14px] text-clair" role="status"></p>
     </div>
@@ -395,8 +395,8 @@
 </main>
 
 <script>
-  // Lien de l'APK : à remplir quand l'APK sera compilé. Vide = « bientôt disponible » (aucun faux lien).
-  const APK_URL = '';
+  // Lien de l'APK (EAS Build, 17 nov 2026). Vide = « bientôt disponible » (aucun faux lien).
+  const APK_URL = 'https://expo.dev/artifacts/eas/xIw1POgt2CrySdCF0OPw3Ye-wQrRuNp8i4ow5NY0z5c.apk';
 
   // ---------- Icônes (Lucide, licence ISC), en SVG plutôt qu'en émojis ----------
   const ICONES = {
@@ -473,7 +473,7 @@
       ['Et si TerraMind donne un traitement qui tue nos plantes ?', "Il ne peut pas : TerraMind ne propose jamais de nom de produit chimique ni de dose, parce qu'une erreur de produit peut tuer la plante. Pour un traitement, il renvoie toujours vers un agent agricole."],
       ['TerraMind est-il rentable ?', "C'est le modèle visé : l'application reste gratuite pour les agriculteurs, et des instituts paieraient un abonnement pour accéder à des données agrégées et anonymes (maladies signalées, risques météo). Ces données aideraient à orienter les politiques agricoles et resteraient au Sénégal. Ce service n'a pas encore de clients : il est en préparation."],
       ['TerraMind marche-t-il pour toutes les cultures et toutes les zones ?', "Non. Pour le hackathon, TerraMind couvre la zone des Niayes et 8 cultures : tomate, pomme de terre, oignon, chou pommé, poivron, carotte, piment et jaxatu. Pour ces 8 cultures, il donne la période de semis et surveille la météo (maladies ou ravageurs). Le diagnostic photo reconnaît 21 problèmes, sur 4 de ces cultures : tomate (14), oignon (4), pomme de terre (2) et poivron (1)."],
-      ['Sous quels formats TerraMind est-il disponible ?', "Pour les agriculteurs : le bot Telegram @TerraMindAfriqueBot, disponible dès maintenant, et une application Android, bientôt à télécharger."],
+      ['Sous quels formats TerraMind est-il disponible ?', "Pour les agriculteurs : le bot Telegram @TerraMindAfriqueBot et une application Android (APK), à télécharger depuis ce site sur un téléphone Android. Les deux sont disponibles dès maintenant."],
       ['Comment les clients accèdent-ils aux données ?', "Le modèle prévu est un tableau de bord en ligne, accessible par abonnement mensuel. Il est en cours de conception."],
       ['Quelle est la suite ?', "Si TerraMind est retenu, deux choses seront nécessaires pour l'ouvrir au grand public : le statut d'entreprise officielle, pour proposer aussi le bot sur WhatsApp, et un forfait d'hébergement cloud payant, pour que le serveur ne se mette plus en veille et réponde vite à beaucoup d'agriculteurs à la fois."],
       ['La sécurité de TerraMind est-elle garantie ?', "Aucun système n'est sûr à 100 %. Ce qui est en place aujourd'hui : ton numéro de téléphone n'est jamais demandé, la position du champ est arrondie à environ 1 km, les journaux du serveur n'enregistrent pas le contenu des messages, les webhooks sont protégés par un jeton secret et les clés d'accès restent hors du code. Pour suivre les maladies dans les Niayes, TerraMind gardera des données agricoles (culture, zone, problème repéré) sous un identifiant anonyme. Les instituts recevront des chiffres regroupés par zone, jamais les données d'un agriculteur en particulier.", 'faq-securite'],
@@ -488,7 +488,7 @@
       ['What if TerraMind suggests a treatment that kills our plants?', 'It cannot: TerraMind never suggests a chemical product name or a dose, because one wrong product can kill the plant. For any treatment, it always refers you to an agricultural agent.'],
       ['Is TerraMind profitable?', 'That is the model we aim for: the app stays free for farmers, and institutes would pay a subscription to access aggregated, anonymous data (reported diseases, weather risks). This data would help guide agricultural policy and would stay in Senegal. The service has no clients yet: it is being prepared.'],
       ['Does TerraMind work for every crop and every area?', 'No. For the hackathon, TerraMind covers the Niayes area and 8 crops: tomato, potato, onion, cabbage, sweet pepper, carrot, chilli and jaxatu (bitter eggplant). For all 8, it gives the sowing period and watches the weather (diseases or pests). The photo diagnosis recognises 21 problems on 4 of these crops: tomato (14), onion (4), potato (2) and sweet pepper (1).'],
-      ['In which formats is TerraMind available?', 'For farmers: the Telegram bot @TerraMindAfriqueBot, available now, and an Android app, soon available for download.'],
+      ['In which formats is TerraMind available?', 'For farmers: the Telegram bot @TerraMindAfriqueBot and an Android app (APK), to download from this site on an Android phone. Both are available now.'],
       ['How do clients access the data?', 'The planned model is an online dashboard, available through a monthly subscription. It is being designed.'],
       ["What's next?", 'If TerraMind is selected, two things will be needed to open it to the public: official business status, to offer the bot on WhatsApp too, and a paid cloud hosting plan, so the server no longer goes to sleep and can answer many farmers at once.'],
       ["Is TerraMind's security guaranteed?", 'No system is 100% secure. What is in place today: your phone number is never asked for, the field location is rounded to about 1 km, server logs never record message content, webhooks are protected by a secret token and access keys stay out of the code. To track diseases in the Niayes, TerraMind will keep farming data (crop, area, problem spotted) under an anonymous ID. Institutes will receive figures grouped by area, never the data of an individual farmer.', 'faq-securite'],

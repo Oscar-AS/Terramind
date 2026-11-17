@@ -29,6 +29,7 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(RACINE))
 from engine.app import config  # noqa: E402  (charge .env)
+from engine.app.responses.voix.prononciation import pour_la_voix  # noqa: E402
 
 CATALOGUE = RACINE / "content" / "voix" / "messages_wolof.csv"
 SORTIE = RACINE / "content" / "audio" / "wo"
@@ -54,13 +55,14 @@ def jeton() -> str:
 
 
 def empreinte(texte: str) -> str:
-    return hashlib.sha256(texte.encode()).hexdigest()[:16]
+    """Empreinte de ce qui est réellement dit : changer la table de prononciation refait l'audio."""
+    return hashlib.sha256(pour_la_voix(texte).encode()).hexdigest()[:16]
 
 
 def synthetiser(texte: str, cle_api: str, langue: str = "wo") -> bytes:
     corps = json.dumps(
         {
-            "text": texte,
+            "text": pour_la_voix(texte) if langue == "wo" else texte,
             "language": langue,
             "project_id": config.OCTOPUS_PROJECT_ID or "proj-challenge-f0903409d71542feaa95",
         }

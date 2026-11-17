@@ -23,6 +23,7 @@ from urllib.parse import urlparse
 
 from .. import config
 from ..responses.voix.normalisation import preparer
+from ..responses.voix.prononciation import pour_la_voix
 
 journal = logging.getLogger("terramind.parole")
 LEXIQUE = Path(__file__).resolve().parents[3] / "content" / "voix" / "lexique_wolof.csv"
@@ -79,7 +80,7 @@ def synthetiser(texte_wo: str) -> bytes:
     """Voix wolof d'Octopus (MP3)."""
     entetes = {"Authorization": f"Bearer {config.OCTOPUS_API_KEY}", "User-Agent": AGENT}
     corps = json.dumps(
-        {"text": texte_wo, "language": "wo", "project_id": config.OCTOPUS_PROJECT_ID}
+        {"text": pour_la_voix(texte_wo), "language": "wo", "project_id": config.OCTOPUS_PROJECT_ID}
     ).encode()
     req = urllib.request.Request(
         f"{config.OCTOPUS_URL}/api/tts",
