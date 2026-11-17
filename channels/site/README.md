@@ -56,7 +56,9 @@ Le français est écrit dans le HTML, l'anglais dans l'attribut `data-en` de cha
 
 ## Mise en ligne sur Vercel
 
-Nouveau projet Vercel relié au dépôt, **Root Directory : `channels/site`**, aucun réglage de build. Tant que `main` ne contient pas le site, régler **Settings → Git → Production Branch : `app/mobile`**. Le bouton « Télécharger l'app » reste en « bientôt disponible » tant que `APK_URL` est vide dans le script de la page.
+**En ligne : https://terramind-sigma.vercel.app** (version anglaise : `/en`), depuis le 17 nov 2026.
+
+Le dépôt appartient à Oscar : le site est envoyé depuis un ordinateur avec la CLI (`cd channels/site && npx vercel --prod`), sans import GitHub. Nouveau projet Vercel relié au dépôt, **Root Directory : `channels/site`**, aucun réglage de build. Tant que `main` ne contient pas le site, régler **Settings → Git → Production Branch : `app/mobile`**. Le bouton « Télécharger l'app » reste en « bientôt disponible » tant que `APK_URL` est vide dans le script de la page.
 
 ## Règles
 

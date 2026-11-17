@@ -11,7 +11,7 @@
   &nbsp;·&nbsp;
   <a href="channels/mobile/"><b>📱 L'application mobile</b></a>
   &nbsp;·&nbsp;
-  <a href="channels/site/"><b>🌍 Le site vitrine</b></a>
+  <a href="https://terramind-sigma.vercel.app"><b>🌍 Le site</b></a>
   &nbsp;·&nbsp;
   <a href="docs/api.md"><b>⚙️ L'API</b></a>
 </p>
