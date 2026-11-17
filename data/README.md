@@ -1,9 +1,9 @@
 <p align="center"><img src="../docs/assets/readme/data.svg" alt="data/ : les données de TerraMind" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/sources-ouvertes%20et%20citées-1f4d3a" alt="Sources ouvertes et citées">
-  <img src="https://img.shields.io/badge/empreintes-SHA--256-3f8f5f" alt="Empreintes SHA-256">
-  <img src="https://img.shields.io/badge/données%20inventées-0-d08a2e" alt="Aucune donnée inventée">
+  <img src="https://img.shields.io/badge/sources-ouvertes%20et%20citées-1f4d3a?style=for-the-badge" alt="Sources ouvertes et citées">
+  <img src="https://img.shields.io/badge/empreintes-SHA--256-3f8f5f?style=for-the-badge" alt="Empreintes SHA-256">
+  <img src="https://img.shields.io/badge/données%20inventées-0-d08a2e?style=for-the-badge" alt="Aucune donnée inventée">
 </p>
 
 ## En un coup d'œil

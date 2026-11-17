@@ -1,9 +1,9 @@
 <p align="center"><img src="../docs/assets/readme/deploy.svg" alt="deploy/ : la mise en ligne" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/image-ghcr.io%2Faliounekane%2Fterramind--moteur-1f4d3a?logo=docker&logoColor=white" alt="Image ghcr.io">
-  <img src="https://img.shields.io/badge/hébergement-Render%20(gratuit)-3f8f5f" alt="Render">
-  <img src="https://img.shields.io/badge/plateforme-linux%2Famd64-d08a2e" alt="linux/amd64">
+  <img src="https://img.shields.io/badge/image-ghcr.io%2Faliounekane%2Fterramind--moteur-1f4d3a?logo=docker&logoColor=white&style=for-the-badge" alt="Image ghcr.io">
+  <img src="https://img.shields.io/badge/hébergement-Render%20(gratuit)-3f8f5f?style=for-the-badge" alt="Render">
+  <img src="https://img.shields.io/badge/plateforme-linux%2Famd64-d08a2e?style=for-the-badge" alt="linux/amd64">
 </p>
 
 ## En une phrase

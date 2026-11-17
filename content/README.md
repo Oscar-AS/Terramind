@@ -1,9 +1,9 @@
 <p align="center"><img src="../docs/assets/readme/content.svg" alt="content/ : le savoir du bot" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/fiches-23%20sourcées-1f4d3a" alt="23 fiches sourcées">
-  <img src="https://img.shields.io/badge/vérification-3%20passes%20indépendantes-3f8f5f" alt="Vérification indépendante">
-  <img src="https://img.shields.io/badge/pesticides%20et%20doses-0-d08a2e" alt="Aucun pesticide ni dose">
+  <img src="https://img.shields.io/badge/fiches-23%20sourcées-1f4d3a?style=for-the-badge" alt="23 fiches sourcées">
+  <img src="https://img.shields.io/badge/vérification-3%20passes%20indépendantes-3f8f5f?style=for-the-badge" alt="Vérification indépendante">
+  <img src="https://img.shields.io/badge/pesticides%20et%20doses-0-d08a2e?style=for-the-badge" alt="Aucun pesticide ni dose">
 </p>
 
 ## En une phrase

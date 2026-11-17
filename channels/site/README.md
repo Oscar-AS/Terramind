@@ -1,9 +1,9 @@
 <p align="center"><img src="../../docs/assets/readme/site.svg" alt="channels/site/ : le site vitrine" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/HTML-un%20seul%20fichier-1f4d3a" alt="Un seul fichier HTML">
-  <img src="https://img.shields.io/badge/langues-français%20·%20anglais-3f8f5f" alt="Français et anglais">
-  <img src="https://img.shields.io/badge/hébergement-Vercel-d08a2e?logo=vercel&logoColor=white" alt="Vercel">
+  <img src="https://img.shields.io/badge/HTML-un%20seul%20fichier-1f4d3a?style=for-the-badge" alt="Un seul fichier HTML">
+  <img src="https://img.shields.io/badge/langues-français%20·%20anglais-3f8f5f?style=for-the-badge" alt="Français et anglais">
+  <img src="https://img.shields.io/badge/hébergement-Vercel-d08a2e?logo=vercel&logoColor=white&style=for-the-badge" alt="Vercel">
 </p>
 
 ## En une phrase

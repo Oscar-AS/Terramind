@@ -1,4 +1,10 @@
-# ml/eval/ : les résultats de chaque version du modèle
+<p align="center"><img src="../../docs/assets/readme/eval.svg" alt="ml/eval/ : les résultats du modèle" width="100%"></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/TOM2024-91%2C7%20%25-1f4d3a?style=for-the-badge" alt="TOM2024 91,7 %">
+  <img src="https://img.shields.io/badge/PlantDoc-56%2C9%20%25-3f8f5f?style=for-the-badge" alt="PlantDoc 56,9 %">
+  <img src="https://img.shields.io/badge/en%20ligne-v1%20MobileNetV3-d08a2e?style=for-the-badge" alt="v1 en ligne">
+</p>
 
 | Version | Fiche | Test TOM2024 (terrain) | Test PlantDoc (web) | Statut |
 |---|---|---|---|---|

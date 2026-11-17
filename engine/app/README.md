@@ -1,4 +1,9 @@
-# engine/app/ : le code du moteur
+<p align="center"><img src="../../docs/assets/readme/app.svg" alt="engine/app/ : le code du moteur" width="100%"></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/FastAPI-routes%20·%20modules-1f4d3a?style=for-the-badge" alt="FastAPI">
+  <img src="https://img.shields.io/badge/réponses-sourcées-3f8f5f?style=for-the-badge" alt="Réponses sourcées">
+</p>
 
 Vue d'ensemble, lancement et tests : [`engine/README.md`](../README.md). Ici, où se trouve quoi.
 

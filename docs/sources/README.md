@@ -1,4 +1,9 @@
-# docs/sources/ : d'où viennent nos règles
+<p align="center"><img src="../../docs/assets/readme/sources.svg" alt="docs/sources/ : les sources des règles" width="100%"></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/règles-sourcées-1f4d3a?style=for-the-badge" alt="Règles sourcées">
+  <img src="https://img.shields.io/badge/provenance-documentée-3f8f5f?style=for-the-badge" alt="Provenance documentée">
+</p>
 
 Les documents de recherche qui justifient chaque règle de TerraMind.
 

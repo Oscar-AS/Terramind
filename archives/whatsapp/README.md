@@ -1,4 +1,9 @@
-# Bot WhatsApp (archivé)
+<p align="center"><img src="../../docs/assets/readme/whatsapp.svg" alt="archives/whatsapp/ : le bot WhatsApp archivé" width="100%"></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/statut-archivé%20(D12)-14261d?style=for-the-badge" alt="Archivé">
+  <img src="https://img.shields.io/badge/WhatsApp-Cloud%20API-3f8f5f?style=for-the-badge" alt="WhatsApp Cloud API">
+</p>
 
 **Statut : mis de côté le 13 nov 2026 (décision D12).** La version bêta présentée au jury passe par l'**application mobile** (APK Android et version web, utilisable sur iPhone) et un **bot Telegram**. WhatsApp reste la cible à terme, parce que c'est là que sont les maraîchers des Niayes : on le réactivera si le projet continue après le concours.
 

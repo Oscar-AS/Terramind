@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-label="Les sources : D&#39;où vient chaque seuil, chaque règle, chaque conseil">
+  <defs>
+    <linearGradient id="fond" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f4d3a"/><stop offset="1" stop-color="#14261d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="260" rx="22" fill="url(#fond)"/>
+  <!-- dunes stylisées des Niayes -->
+  <path d="M0 210 C 220 170 380 240 600 200 S 980 160 1200 205 V260 H0z" fill="#3f8f5f" opacity="0.35"/>
+  <path d="M0 232 C 260 205 460 255 700 228 S 1020 210 1200 232 V260 H0z" fill="#d08a2e" opacity="0.45"/>
+  <circle cx="1090" cy="62" r="26" fill="#d08a2e" opacity="0.9"/>
+  <g transform="translate(70 62) scale(1.1)"><path d="M60 30 c-12 -10 -30 -12 -44 -8 v72 c14 -4 32 -2 44 8 c12 -10 30 -12 44 -8 v-72 c-14 -4 -32 -2 -44 8z" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round"/>
+      <line x1="60" y1="30" x2="60" y2="102" stroke="#fff" stroke-width="7"/></g>
+  <text x="230" y="92" font-family="Georgia, 'Times New Roman', serif" font-size="22" fill="#f3e3c3" letter-spacing="3">TERRAMIND AFRIQUE · DOCS/SOURCES/</text>
+  <text x="230" y="146" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="bold" fill="#ffffff">Les sources</text>
+  <text x="230" y="186" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#fbf7ef">D&#39;où vient chaque seuil, chaque règle, chaque conseil</text>
+</svg>

@@ -1,9 +1,9 @@
 <p align="center"><img src="../docs/assets/readme/ml.svg" alt="ml/ : l'intelligence artificielle de diagnostic" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/modèle-MobileNetV3%20v1-1f4d3a" alt="MobileNetV3 v1">
-  <img src="https://img.shields.io/badge/terrain%20TOM2024-91,7%20%25-3f8f5f" alt="91,7 % sur TOM2024">
-  <img src="https://img.shields.io/badge/PlantDoc-56,9%20%25-d08a2e" alt="56,9 % sur PlantDoc">
+  <img src="https://img.shields.io/badge/modèle-MobileNetV3%20v1-1f4d3a?style=for-the-badge" alt="MobileNetV3 v1">
+  <img src="https://img.shields.io/badge/terrain%20TOM2024-91,7%20%25-3f8f5f?style=for-the-badge" alt="91,7 % sur TOM2024">
+  <img src="https://img.shields.io/badge/PlantDoc-56,9%20%25-d08a2e?style=for-the-badge" alt="56,9 % sur PlantDoc">
 </p>
 
 ## En une phrase
@@ -83,8 +83,8 @@ Environ 30 minutes sur un Mac M (accélération MPS). Le modèle est écrit dans
 ## Limites et suite
 
 - Pas de photos des Niayes : aucun test local pour l'instant (photos consenties à collecter).
-- Chou absent du modèle ; mineuse de la tomate trop rare dans TOM2024 (19 images), donc couverte par les **alertes météo**.
-- À venir : ajouter CCMT (Ghana) pour la tomate, et comparer avec ConvNeXt-Tiny.
+- Chou absent du modèle ; mineuse de la tomate trop rare dans TOM2024 (19 images), donc couverte par les **alertes météo** et par une question de suivi après chaque photo de tomate.
+- Déjà essayés et écartés : CCMT (Ghana) en v2 (moins bonne, biais de source) et ConvNeXt-Tiny (6,6 fois plus lourd pour environ 2 points) : voir [eval/](eval/).
 
 ## Responsable
 

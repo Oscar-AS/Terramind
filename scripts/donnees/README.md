@@ -1,4 +1,9 @@
-# scripts/donnees/ : collecter et vérifier les données
+<p align="center"><img src="../../docs/assets/readme/donnees.svg" alt="scripts/donnees/ : la collecte des données" width="100%"></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/sources-publiques-1f4d3a?style=for-the-badge" alt="Sources publiques">
+  <img src="https://img.shields.io/badge/reproductible-oui-3f8f5f?style=for-the-badge" alt="Reproductible">
+</p>
 
 Chaque jeu de données du projet est téléchargé par un script, depuis sa source publique, pour que tout soit reproductible (règle du concours : rien d'inventé, provenance documentée).
 

@@ -1,4 +1,10 @@
-# ml/training/ : entraîner le modèle de diagnostic photo
+<p align="center"><img src="../../docs/assets/readme/training.svg" alt="ml/training/ : l'entraînement du modèle" width="100%"></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/PyTorch-entraînement-1f4d3a?style=for-the-badge" alt="PyTorch">
+  <img src="https://img.shields.io/badge/export-ONNX-3f8f5f?style=for-the-badge" alt="ONNX">
+  <img src="https://img.shields.io/badge/reproductible-oui-d08a2e?style=for-the-badge" alt="Reproductible">
+</p>
 
 | Script | Rôle |
 |---|---|

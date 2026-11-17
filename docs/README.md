@@ -1,9 +1,9 @@
 <p align="center"><img src="assets/readme/docs.svg" alt="docs/ : la documentation" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/décisions-D1%20à%20D12-1f4d3a" alt="Décisions D1 à D12">
-  <img src="https://img.shields.io/badge/seuils-tous%20justifiés-3f8f5f" alt="Seuils justifiés">
-  <img src="https://img.shields.io/badge/difficultés-documentées-d08a2e" alt="Difficultés documentées">
+  <img src="https://img.shields.io/badge/décisions-D1%20à%20D12-1f4d3a?style=for-the-badge" alt="Décisions D1 à D12">
+  <img src="https://img.shields.io/badge/seuils-tous%20justifiés-3f8f5f?style=for-the-badge" alt="Seuils justifiés">
+  <img src="https://img.shields.io/badge/difficultés-documentées-d08a2e?style=for-the-badge" alt="Difficultés documentées">
 </p>
 
 ## En une phrase

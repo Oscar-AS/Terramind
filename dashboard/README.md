@@ -1,7 +1,7 @@
 <p align="center"><img src="../docs/assets/readme/dashboard.svg" alt="dashboard/ : le tableau de bord de TerraMind" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/état-prévu%20le%2014%20nov-d08a2e" alt="État : prévu le 14 novembre">
+  <img src="https://img.shields.io/badge/état-pas%20encore%20construit-d08a2e?style=for-the-badge" alt="État : pas encore construit">
 </p>
 
 ## En une phrase

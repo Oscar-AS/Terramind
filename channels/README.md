@@ -1,9 +1,9 @@
 <p align="center"><img src="../docs/assets/readme/channels.svg" alt="channels/ : les façades de TerraMind" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/app%20mobile-Expo%20·%20Android%20et%20web-3f8f5f" alt="Application mobile Expo">
-  <img src="https://img.shields.io/badge/Telegram-@TerraMindAfriqueBot-1f4d3a?logo=telegram&logoColor=white" alt="Bot Telegram">
-  <img src="https://img.shields.io/badge/WhatsApp-archivé-d08a2e" alt="WhatsApp archivé">
+  <img src="https://img.shields.io/badge/app%20mobile-Expo%20·%20Android%20et%20web-3f8f5f?style=for-the-badge" alt="Application mobile Expo">
+  <img src="https://img.shields.io/badge/Telegram-@TerraMindAfriqueBot-1f4d3a?logo=telegram&logoColor=white&style=for-the-badge" alt="Bot Telegram">
+  <img src="https://img.shields.io/badge/WhatsApp-archivé-d08a2e?style=for-the-badge" alt="WhatsApp archivé">
 </p>
 
 ## En une phrase

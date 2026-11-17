@@ -1,8 +1,8 @@
 <p align="center"><img src="../docs/assets/readme/scripts.svg" alt="scripts/ : les outils" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-bibliothèque%20standard-1f4d3a?logo=python&logoColor=white" alt="Python, bibliothèque standard">
-  <img src="https://img.shields.io/badge/reproductible-oui-3f8f5f" alt="Reproductible">
+  <img src="https://img.shields.io/badge/Python-bibliothèque%20standard-1f4d3a?logo=python&logoColor=white&style=for-the-badge" alt="Python, bibliothèque standard">
+  <img src="https://img.shields.io/badge/reproductible-oui-3f8f5f?style=for-the-badge" alt="Reproductible">
 </p>
 
 ## En une phrase

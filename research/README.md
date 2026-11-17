@@ -1,8 +1,8 @@
 <p align="center"><img src="../docs/assets/readme/research.svg" alt="research/ : le terrain" width="100%"></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/sources-publiques%20et%20citées-1f4d3a" alt="Sources publiques et citées">
-  <img src="https://img.shields.io/badge/tests%20agriculteurs-protocole%20le%2010%20nov-d08a2e" alt="Protocole des tests le 10 novembre">
+  <img src="https://img.shields.io/badge/sources-publiques%20et%20citées-1f4d3a?style=for-the-badge" alt="Sources publiques et citées">
+  <img src="https://img.shields.io/badge/tests%20agriculteurs-protocole%20le%2010%20nov-d08a2e?style=for-the-badge" alt="Protocole des tests le 10 novembre">
 </p>
 
 ## En une phrase

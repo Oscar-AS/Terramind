@@ -1,4 +1,10 @@
-# content/fiches/ : les fiches que TerraMind lit pour répondre
+<p align="center"><img src="../../docs/assets/readme/fiches.svg" alt="content/fiches/ : les fiches de TerraMind" width="100%"></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/fiches-23-1f4d3a?style=for-the-badge" alt="23 fiches">
+  <img src="https://img.shields.io/badge/sources-ISRA%20·%20DPV%20·%20FAO-3f8f5f?style=for-the-badge" alt="Sources ISRA, DPV, FAO">
+  <img src="https://img.shields.io/badge/vérifiées-3%20passes-d08a2e?style=for-the-badge" alt="Vérifiées en 3 passes">
+</p>
 
 Le savoir du bot. TerraMind ne répond **qu'à partir de ces fiches** (RAG, décision D8) : si la réponse n'y est pas, il dit qu'il ne sait pas et oriente vers un agent agricole.
 

@@ -1,8 +1,14 @@
-# content/voix/ : ce que le bot dit en wolof
+<p align="center"><img src="../../docs/assets/readme/voix.svg" alt="content/voix/ : ce que TerraMind dit en wolof" width="100%"></p>
 
-Les phrases que le bot Telegram dit **à voix haute en wolof**, pour les agriculteurs qui ne lisent pas.
+<p align="center">
+  <img src="https://img.shields.io/badge/phrases%20relues-76%20%2F%2076-1f4d3a?style=for-the-badge" alt="76 phrases relues sur 76">
+  <img src="https://img.shields.io/badge/notes%20vocales-76-3f8f5f?style=for-the-badge" alt="76 notes vocales">
+  <img src="https://img.shields.io/badge/voix-Octopus-d08a2e?style=for-the-badge" alt="Voix Octopus">
+</p>
 
-## Les fichiers
+Les phrases que TerraMind dit **à voix haute en wolof** (bot Telegram et application), pour les agriculteurs qui ne lisent pas. **Les 76 phrases ont été relues une par une par un locuteur de l'équipe (17 nov 2026)**, en wolof parlé plutôt qu'en traduction mot à mot ; les notes vocales sont dans [`content/audio/wo/`](../audio/wo/).
+
+## 📁 Les fichiers
 
 | Fichier | Contenu |
 |---|---|
@@ -11,7 +17,7 @@ Les phrases que le bot Telegram dit **à voix haute en wolof**, pour les agricul
 | [`controle_voix.csv`](controle_voix.csv) | Le contrôle « aller-retour » : synthèse vocale, puis transcription, comparées au texte de départ. |
 | `traductions_concordance.csv` | Le détail de la traduction par concordance (les 3 versions, leurs retraductions et l'avis du juge). |
 
-## Le chemin d'une phrase
+## 🔀 Le chemin d'une phrase
 
 ```mermaid
 flowchart LR
