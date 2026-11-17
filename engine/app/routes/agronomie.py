@@ -328,7 +328,7 @@ def traiter_requete_diagnose(corps: dict) -> tuple[int, dict]:
 
 
 try:
-    from fastapi import APIRouter
+    from fastapi import APIRouter, Request
     from fastapi.responses import JSONResponse
 
     router = APIRouter()
@@ -347,7 +347,16 @@ try:
 
     @router.post("/v1/diagnose")
     @router.post("/diagnose")
-    def route_diagnose(corps: dict):
+    async def route_diagnose(request: Request):
+        ctype = (request.headers.get("content-type") or "").lower()
+        if "multipart/form-data" in ctype:
+            form = await request.form()
+            corps: dict = {k: v for k, v in form.items() if not hasattr(v, "read")}
+            fichier = form.get("photo") or form.get("image") or form.get("file")
+            if fichier is not None and hasattr(fichier, "read"):
+                corps["photo_bytes"] = await fichier.read()
+        else:
+            corps = await request.json()
         code, payload = traiter_requete_diagnose(corps)
         return JSONResponse(status_code=code, content=payload)
 

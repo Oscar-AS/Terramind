@@ -1,0 +1,313 @@
+{
+  "date_evaluation": "2026-11-17",
+  "modele": "modeles\\pretrained\\plantvillage_mobilenet_v2",
+  "base": "terramind_v1 (TOM2024 + CCMT)",
+  "nb_classes": 38,
+  "leaf_only": true,
+  "effectifs_evalues": {
+    "train": 27853,
+    "val": 3477,
+    "test": 3477
+  },
+  "seuil_incertain": 0.4,
+  "test_metrics": {
+    "exactitude_globale": 0.803,
+    "exactitude_hors_incertain": 0.8083,
+    "taux_incertain": 0.0098,
+    "par_source": {
+      "ccmt": {
+        "exactitude": 0.7961,
+        "images": 2403
+      },
+      "tom2024": {
+        "exactitude": 0.8184,
+        "images": 1074
+      }
+    },
+    "par_culture": {
+      "cashew": {
+        "exactitude": 0.8947,
+        "images": 655
+      },
+      "cassava": {
+        "exactitude": 0.8247,
+        "images": 736
+      },
+      "maize": {
+        "exactitude": 0.8335,
+        "images": 925
+      },
+      "onion": {
+        "exactitude": 0.8134,
+        "images": 284
+      },
+      "tomato": {
+        "exactitude": 0.6807,
+        "images": 877
+      }
+    },
+    "par_classe": {
+      "cashew__anthracnose": {
+        "libelle": "Anthracnose",
+        "exactitude": 0.7977,
+        "images_test": 173
+      },
+      "cashew__gummosis": {
+        "libelle": "Gommose",
+        "exactitude": 0.9231,
+        "images_test": 39
+      },
+      "cashew__healthy": {
+        "libelle": "Cajou sain",
+        "exactitude": 0.9781,
+        "images_test": 137
+      },
+      "cashew__leaf_miner": {
+        "libelle": "Mineuse des feuilles",
+        "exactitude": 0.8696,
+        "images_test": 138
+      },
+      "cashew__red_rust": {
+        "libelle": "Rouille rouge",
+        "exactitude": 0.9405,
+        "images_test": 168
+      },
+      "cassava__bacterial_blight": {
+        "libelle": "Bactériose",
+        "exactitude": 0.7683,
+        "images_test": 259
+      },
+      "cassava__brown_spot": {
+        "libelle": "Taches brunes",
+        "exactitude": 0.7603,
+        "images_test": 146
+      },
+      "cassava__green_mite": {
+        "libelle": "Acarien vert",
+        "exactitude": 0.8614,
+        "images_test": 101
+      },
+      "cassava__healthy": {
+        "libelle": "Manioc sain",
+        "exactitude": 0.9664,
+        "images_test": 119
+      },
+      "cassava__mosaic": {
+        "libelle": "Mosaïque",
+        "exactitude": 0.8559,
+        "images_test": 111
+      },
+      "maize__abiotic_disorder": {
+        "libelle": "Trouble abiotique",
+        "exactitude": 0.625,
+        "images_test": 8
+      },
+      "maize__curvularia_leaf_spot": {
+        "libelle": "Curvulariose",
+        "exactitude": 0.84,
+        "images_test": 25
+      },
+      "maize__fall_armyworm": {
+        "libelle": "Chenille légionnaire",
+        "exactitude": 0.875,
+        "images_test": 144
+      },
+      "maize__grasshopper": {
+        "libelle": "Criquets",
+        "exactitude": 0.8806,
+        "images_test": 67
+      },
+      "maize__healthy": {
+        "libelle": "Maïs sain",
+        "exactitude": 0.8,
+        "images_test": 75
+      },
+      "maize__helminthosporiosis": {
+        "libelle": "Helminthosporiose",
+        "exactitude": 0.4,
+        "images_test": 15
+      },
+      "maize__leaf_beetle": {
+        "libelle": "Chrysomèle",
+        "exactitude": 0.8817,
+        "images_test": 93
+      },
+      "maize__leaf_blight": {
+        "libelle": "Brûlure des feuilles",
+        "exactitude": 0.7564,
+        "images_test": 78
+      },
+      "maize__leaf_spot": {
+        "libelle": "Taches foliaires",
+        "exactitude": 0.699,
+        "images_test": 103
+      },
+      "maize__rust": {
+        "libelle": "Rouille",
+        "exactitude": 0.7778,
+        "images_test": 9
+      },
+      "maize__streak_virus": {
+        "libelle": "Virus de la striure",
+        "exactitude": 0.7609,
+        "images_test": 92
+      },
+      "maize__stripe": {
+        "libelle": "Stries (stripe)",
+        "exactitude": 0.9444,
+        "images_test": 216
+      },
+      "onion__alternaria": {
+        "libelle": "Alternariose",
+        "exactitude": 0.64,
+        "images_test": 50
+      },
+      "onion__caterpillars": {
+        "libelle": "Chenilles",
+        "exactitude": 0.9474,
+        "images_test": 76
+      },
+      "onion__fusarium": {
+        "libelle": "Fusariose",
+        "exactitude": 0.8333,
+        "images_test": 72
+      },
+      "onion__healthy": {
+        "libelle": "Oignon sain",
+        "exactitude": 0.8333,
+        "images_test": 66
+      },
+      "onion__virosis": {
+        "libelle": "Virose",
+        "exactitude": 0.6,
+        "images_test": 20
+      },
+      "tomato__alternaria": {
+        "libelle": "Alternariose",
+        "exactitude": 0.5556,
+        "images_test": 27
+      },
+      "tomato__bacterial_wilt": {
+        "libelle": "Flétrissement bactérien",
+        "exactitude": 0.68,
+        "images_test": 25
+      },
+      "tomato__healthy": {
+        "libelle": "Tomate saine (feuille)",
+        "exactitude": 0.7787,
+        "images_test": 122
+      },
+      "tomato__helicoverpa_armigera": {
+        "libelle": "Noctuelle de la tomate (Helicoverpa)",
+        "exactitude": 0.72,
+        "images_test": 25
+      },
+      "tomato__late_blight": {
+        "libelle": "Mildiou",
+        "exactitude": 0.8571,
+        "images_test": 7
+      },
+      "tomato__leaf_blight": {
+        "libelle": "Brûlure des feuilles",
+        "exactitude": 0.5,
+        "images_test": 128
+      },
+      "tomato__leaf_curl": {
+        "libelle": "Enroulement des feuilles",
+        "exactitude": 0.5098,
+        "images_test": 51
+      },
+      "tomato__mites": {
+        "libelle": "Acariens",
+        "exactitude": 0.3784,
+        "images_test": 37
+      },
+      "tomato__septoria_leaf_spot": {
+        "libelle": "Septoriose",
+        "exactitude": 0.7162,
+        "images_test": 229
+      },
+      "tomato__verticillium_wilt": {
+        "libelle": "Verticilliose",
+        "exactitude": 0.6364,
+        "images_test": 77
+      },
+      "tomato__virosis": {
+        "libelle": "Virose",
+        "exactitude": 0.8658,
+        "images_test": 149
+      }
+    }
+  },
+  "calibration_val": {
+    "seuil_recommande": 0.4,
+    "courbe_seuil": [
+      {
+        "seuil": 0.4,
+        "exactitude_retenus": 0.8042,
+        "taux_couverture": 0.9827,
+        "taux_incertain": 0.0173
+      },
+      {
+        "seuil": 0.45,
+        "exactitude_retenus": 0.8089,
+        "taux_couverture": 0.9692,
+        "taux_incertain": 0.0308
+      },
+      {
+        "seuil": 0.5,
+        "exactitude_retenus": 0.817,
+        "taux_couverture": 0.9525,
+        "taux_incertain": 0.0475
+      },
+      {
+        "seuil": 0.55,
+        "exactitude_retenus": 0.8264,
+        "taux_couverture": 0.9295,
+        "taux_incertain": 0.0705
+      },
+      {
+        "seuil": 0.6,
+        "exactitude_retenus": 0.836,
+        "taux_couverture": 0.8976,
+        "taux_incertain": 0.1024
+      },
+      {
+        "seuil": 0.65,
+        "exactitude_retenus": 0.8535,
+        "taux_couverture": 0.8596,
+        "taux_incertain": 0.1404
+      },
+      {
+        "seuil": 0.7,
+        "exactitude_retenus": 0.8686,
+        "taux_couverture": 0.8274,
+        "taux_incertain": 0.1726
+      },
+      {
+        "seuil": 0.75,
+        "exactitude_retenus": 0.8832,
+        "taux_couverture": 0.7929,
+        "taux_incertain": 0.2071
+      },
+      {
+        "seuil": 0.8,
+        "exactitude_retenus": 0.8965,
+        "taux_couverture": 0.7558,
+        "taux_incertain": 0.2442
+      },
+      {
+        "seuil": 0.85,
+        "exactitude_retenus": 0.9114,
+        "taux_couverture": 0.7138,
+        "taux_incertain": 0.2862
+      },
+      {
+        "seuil": 0.9,
+        "exactitude_retenus": 0.9305,
+        "taux_couverture": 0.6494,
+        "taux_incertain": 0.3506
+      }
+    ]
+  }
+}

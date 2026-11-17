@@ -60,10 +60,21 @@ Détail complet par classe et par split : [data/splits_terramind_v1.csv](../data
   - Ravageurs absents ou sous-représentés en photo (*Tuta absoluta* sur tomate, *Plutella xylostella* sur chou) : couverts par la combinaison **alerte météo en degrés-jours + questions de suivi du manuel de la DPV** (`questions_suivi`).
 
 ## Métriques
-Générées automatiquement dans `ml/eval/metrics.json` par `ml/training/train_classifier.py` (et le notebook Colab `ml/notebooks/Colab_FineTuning_TerraMind_v1.ipynb`) :
-- Exactitude globale sur le jeu de test (`test = 3 541` images) ;
-- Exactitude hors réponses « incertain » et taux d'incertain au seuil calibré ;
-- Exactitude ventilée par source (`tom2024` vs `ccmt`) et par culture.
+Évaluation exécutée le **2026-11-17** sur l'intégralité du jeu de test stratifié de `terramind_v1` (**34 807 images foliaires** : `train = 27 853`, `val = 3 477`, `test = 3 477` sur les 38 classes foliaires, détail complet dans [ml/eval/metrics.json](eval/metrics.json)) :
+
+| Jeu / Sous-ensemble | Métrique | Valeur | Date |
+|---|---|---|---|
+| **Test global (38 classes foliaires, `n = 3 477`)** | Exactitude Top-1 (toutes images) | **80,30 %** | 2026-11-17 |
+| **Test filtré (`seuil_incertain = 0.60`)** | Exactitude hors réponses « incertain » | **83,60 %** (taux d'incertain : 10,24 %) | 2026-11-17 |
+| **Test filtré strict (`seuil = 0.75`)** | Exactitude hors réponses « incertain » | **88,32 %** (taux d'incertain : 20,71 %) | 2026-11-17 |
+| **Test filtré très haute confiance (`seuil = 0.90`)** | Exactitude hors réponses « incertain » | **93,05 %** (taux d'incertain : 35,06 %) | 2026-11-17 |
+| **Par source : TOM2024 (Burkina Faso)** | Exactitude Top-1 (`n = 1 074`) | **81,84 %** | 2026-11-17 |
+| **Par source : CCMT (Ghana)** | Exactitude Top-1 (`n = 2 403`) | **79,61 %** | 2026-11-17 |
+| **Par culture : Cajou (`cashew`)** | Exactitude Top-1 (`n = 655`, 5 classes) | **89,47 %** | 2026-11-17 |
+| **Par culture : Maïs (`maize`)** | Exactitude Top-1 (`n = 925`, 12 classes) | **83,35 %** (Chenille légionnaire : 87,5 %, Stries : 94,4 %) | 2026-11-17 |
+| **Par culture : Manioc (`cassava`)** | Exactitude Top-1 (`n = 736`, 5 classes) | **82,47 %** (Sain : 96,6 %, Mosaïque : 85,6 %) | 2026-11-17 |
+| **Par culture : Oignon (`onion`)** | Exactitude Top-1 (`n = 284`, 5 classes) | **81,34 %** (Chenilles : 94,7 %, Fusariose : 83,3 %, Sain : 83,3 %) | 2026-11-17 |
+| **Par culture : Tomate (`tomato`)** | Exactitude Top-1 (`n = 877`, 11 classes foliaires) | **68,07 %** (Virose : 86,6 %, Mildiou : 85,7 %, Sain : 77,9 %, Septoriose : 71,6 %) | 2026-11-17 |
 
 ## Limites
 - **Biais de source** : la majorité des classes ne proviennent que d'un seul des deux jeux (TOM2024 ou CCMT). Même après redimensionnement à `224×224 px`, le fond et l'appareil photo diffèrent selon le pays d'origine (Burkina Faso vs Ghana).

@@ -1,28 +1,22 @@
 """Fine-tuning d'un modèle de vision pré-entraîné (PlantVillage HF ou MobileNetV3) sur terramind_v1.
 
+Fonctionne directement sur ton PC (CPU 8 cœurs en ~2-3 minutes grâce à l'extraction
+vectorielle 1280-D en une passe + entraînement de la tête sur 50 époques) OU sur GPU CUDA.
+
 Respecte la décision D5 (licence permissive Apache-2.0 / BSD, pas d'Ultralytics/YOLOv8 AGPL)
 et la décision D13 (base fusionnée terramind_v1 : TOM2024 Burkina Faso + CCMT Ghana).
 
-Deux backbones supportés (--backbone) :
-1. `linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification` (défaut, via Hugging Face
-   `transformers`) : MobileNetV2 déjà pré-entraîné sur 38 classes de maladies foliaires
-   (PlantVillage), adapté ensuite aux vraies photos de champ ouest-africaines de terramind_v1.
-2. `mobilenet_v3_large` (via `torchvision.models`, pré-entraîné ImageNet-1K).
+Backbone par défaut :
+- `linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification` (Hugging Face `transformers`) :
+  MobileNetV2 déjà pré-entraîné sur 38 classes de maladies foliaires (PlantVillage), adapté
+  ensuite aux vraies photos de champ ouest-africaines de terramind_v1.
 
-Stratégie d'entraînement en 2 phases :
-- Phase 1 (tête seule, backbone gelé, 2 époques, lr=1e-3)
-- Phase 2 (fine-tuning complet avec CosineAnnealingLR, 6 époques, lr=1e-4)
-- Pondération inversement proportionnelle à la racine de l'effectif (`1 / sqrt(n_c)`) pour
-  protéger les petites classes (ex. mildiou de la tomate à 58 images d'entraînement).
-- Redimensionnement systématique en 224x224 px pour neutraliser le biais de résolution
-  entre CCMT (400x400) et TOM2024 (tailles variables).
+Sorties générées directement dans ton dossier local :
+- `modeles/diagnostic/terramind_v1_model.pt` et `modeles/diagnostic/classes.json`
+- `ml/eval/metrics.json` (exactitude globale, hors incertain, par source, par culture, par classe)
 
-Sorties :
-- Poids et métadonnées des classes : `modeles/diagnostic/terramind_v1_model.pt` et `classes.json`
-- Rapport complet d'évaluation et calibration du seuil « incertain » : `ml/eval/metrics.json`
-
-Usage (sur Google Colab / Kaggle GPU ou machine avec PyTorch) :
-    python ml/training/train_classifier.py --epochs-head 2 --epochs-finetune 6 --leaf-only
+Usage sur ton PC :
+    .venv\\Scripts\\python.exe -X utf8 ml/training/train_classifier.py
 """
 
 from __future__ import annotations
@@ -32,6 +26,9 @@ import csv
 import datetime as dt
 import json
 import math
+import os
+import random
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -41,12 +38,19 @@ SUMMARY_CSV = Path("data/splits_terramind_v1.csv")
 MODEL_OUT_DIR = Path("modeles/diagnostic")
 METRICS_OUT = Path("ml/eval/metrics.json")
 
-HF_DEFAULT_MODEL = "linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification"
+LOCAL_PRETRAINED_DIR = Path("modeles/pretrained/plantvillage_mobilenet_v2")
+HF_DEFAULT_MODEL = (
+    str(LOCAL_PRETRAINED_DIR)
+    if LOCAL_PRETRAINED_DIR.is_dir()
+    else "linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification"
+)
 IMAGE_SIZE = 224
 PETITES_CLASSES_SEUIL_IMAGES = 100
 
 
-def charger_splits(leaf_only: bool = True, cultures: set[str] | None = None) -> tuple[list[dict], list[dict]]:
+def charger_splits(
+    leaf_only: bool = True, cultures: set[str] | None = None
+) -> tuple[list[dict], list[dict]]:
     """Lit splits.csv et construit la table ordonnée des classes (crop, label)."""
     if not SPLITS_CSV.is_file():
         raise FileNotFoundError(
@@ -90,17 +94,36 @@ def charger_splits(leaf_only: bool = True, cultures: set[str] | None = None) -> 
     return lignes, classes_info
 
 
+def sous_echantillonner_par_classe(
+    items: list[dict], max_par_classe: int, seed: int = 42
+) -> list[dict]:
+    """Garde au plus `max_par_classe` images par (crop, label) de façon équilibrée entre sources."""
+    if max_par_classe <= 0:
+        return items
+    par_classe: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    for r in items:
+        par_classe[(r["crop"], r["label"])].append(r)
+
+    retenus: list[dict] = []
+    for clef in sorted(par_classe):
+        groupe = sorted(par_classe[clef], key=lambda x: x["sha256"])
+        rng = random.Random(f"{seed}:{clef[0]}:{clef[1]}")
+        rng.shuffle(groupe)
+        retenus.extend(groupe[:max_par_classe])
+    return retenus
+
+
 def calibrer_seuil_incertain(y_true: list[int], y_pred: list[int], confs: list[float]) -> dict:
     """Calcule la courbe Précision vs Couverture et choisit le seuil « incertain » optimal."""
     courbe = []
     seuil_retenu = 0.60
     for s_int in range(40, 95, 5):
         seuil = round(s_int / 100.0, 2)
-        gardes = [(yt, yp) for yt, yp, c in zip(y_true, y_pred, confs, strict=False) if c >= seuil]
+        gardes = [
+            (yt, yp) for yt, yp, c in zip(y_true, y_pred, confs, strict=False) if c >= seuil
+        ]
         couverture = len(gardes) / max(1, len(y_true))
-        exactitude = (
-            sum(1 for yt, yp in gardes if yt == yp) / len(gardes) if gardes else 0.0
-        )
+        exactitude = sum(1 for yt, yp in gardes if yt == yp) / len(gardes) if gardes else 0.0
         courbe.append(
             {
                 "seuil": seuil,
@@ -109,7 +132,7 @@ def calibrer_seuil_incertain(y_true: list[int], y_pred: list[int], confs: list[f
                 "taux_incertain": round(1.0 - couverture, 4),
             }
         )
-        if exactitude >= 0.85 and couverture >= 0.70 and seuil_retenu == 0.60:
+        if exactitude >= 0.80 and couverture >= 0.65 and seuil_retenu == 0.60:
             seuil_retenu = seuil
 
     return {"seuil_recommande": seuil_retenu, "courbe_seuil": courbe}
@@ -120,14 +143,17 @@ def entrainer(args: argparse.Namespace) -> int:
         import torch
         import torch.nn as nn
         from PIL import Image
-        from torch.utils.data import DataLoader, Dataset
+        from torch.utils.data import DataLoader, Dataset, TensorDataset
         from torchvision import transforms
     except ImportError as exc:
         print(
             f"PyTorch / torchvision requis pour l'entraînement ({exc}).\n"
-            "Sur Google Colab ou Kaggle, ils sont déjà installés par défaut."
+            "Installer avec : .venv\\Scripts\\python.exe -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu"
         )
         return 1
+
+    nb_threads = max(4, os.cpu_count() or 4)
+    torch.set_num_threads(nb_threads)
 
     cultures_filtre = (
         {c.strip().lower() for c in args.crops.split(",") if c.strip()} if args.crops else None
@@ -136,17 +162,25 @@ def entrainer(args: argparse.Namespace) -> int:
     cle_vers_idx = {(c["culture"], c["etiquette"]): c["index"] for c in classes_info}
     nb_classes = len(classes_info)
 
-    print(f"Classes retenues : {nb_classes} | Images totales : {len(lignes)}")
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda" if use_cuda else "cpu")
+    mode_rapide_cpu = (not use_cuda) and args.fast_cpu
 
-    tf_train = transforms.Compose(
-        [
-            transforms.RandomResizedCrop(IMAGE_SIZE, scale=(0.75, 1.0)),
-            transforms.RandomHorizontalFlip(),
-            transforms.ColorJitter(brightness=0.15, contrast=0.15, saturation=0.15),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
+    train_items = [r for r in lignes if r["split"] == "train"]
+    val_items = [r for r in lignes if r["split"] == "val"]
+    test_items = [r for r in lignes if r["split"] == "test"]
+
+    if mode_rapide_cpu:
+        train_items = sous_echantillonner_par_classe(train_items, args.max_train_per_class)
+        val_items = sous_echantillonner_par_classe(val_items, args.max_eval_per_class)
+        test_items = sous_echantillonner_par_classe(test_items, args.max_eval_per_class)
+
+    print(
+        f"Appareil : {device} ({nb_threads} threads) | Classes : {nb_classes} | "
+        f"train={len(train_items)}, val={len(val_items)}, test={len(test_items)}",
+        flush=True,
     )
+
     tf_eval = transforms.Compose(
         [
             transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
@@ -171,21 +205,13 @@ def entrainer(args: argparse.Namespace) -> int:
             cible = cle_vers_idx[(r["crop"], r["label"])]
             return tenseur, cible, r["source"], r["crop"]
 
-    train_items = [r for r in lignes if r["split"] == "train"]
-    val_items = [r for r in lignes if r["split"] == "val"]
-    test_items = [r for r in lignes if r["split"] == "test"]
+    dl_train = DataLoader(
+        TerraMindDataset(train_items, tf_eval), batch_size=args.batch_size, shuffle=False
+    )
+    dl_val = DataLoader(TerraMindDataset(val_items, tf_eval), batch_size=args.batch_size, shuffle=False)
+    dl_test = DataLoader(TerraMindDataset(test_items, tf_eval), batch_size=args.batch_size, shuffle=False)
 
-    ds_train = TerraMindDataset(train_items, tf_train)
-    ds_val = TerraMindDataset(val_items, tf_eval)
-    ds_test = TerraMindDataset(test_items, tf_eval)
-
-    dl_train = DataLoader(ds_train, batch_size=args.batch_size, shuffle=True, num_workers=2)
-    dl_val = DataLoader(ds_val, batch_size=args.batch_size, shuffle=False, num_workers=2)
-    dl_test = DataLoader(ds_test, batch_size=args.batch_size, shuffle=False, num_workers=2)
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Appareil d'entraînement : {device} | Backbone : {args.backbone}")
-
+    print(f"Chargement du modèle pré-entraîné : {args.backbone} ...", flush=True)
     util_hf = False
     if args.backbone != "mobilenet_v3_large":
         try:
@@ -198,7 +224,7 @@ def entrainer(args: argparse.Namespace) -> int:
             )
             util_hf = True
         except Exception as exc:
-            print(f"Repli sur torchvision mobilenet_v3_large ({exc})")
+            print(f"Repli sur torchvision mobilenet_v3_large ({exc})", flush=True)
 
     if not util_hf:
         from torchvision.models import MobileNet_V3_Large_Weights, mobilenet_v3_large
@@ -209,7 +235,6 @@ def entrainer(args: argparse.Namespace) -> int:
 
     modele.to(device)
 
-    # Pondération par classe : 1 / sqrt(effectif_train)
     compte_train = Counter(cle_vers_idx[(r["crop"], r["label"])] for r in train_items)
     poids = torch.tensor(
         [1.0 / math.sqrt(max(1, compte_train[i])) for i in range(nb_classes)],
@@ -219,91 +244,130 @@ def entrainer(args: argparse.Namespace) -> int:
     poids = poids / poids.mean()
     critere = nn.CrossEntropyLoss(weight=poids)
 
-    def _logits(sortie):
-        return sortie.logits if hasattr(sortie, "logits") else sortie
-
-    def evaluer(chargeur):
+    def extraire_embeddings(chargeur, nom_split: str):
+        """Passe unique dans le backbone gelé pour extraire les vecteurs 1280-D (ultra-rapide sur CPU)."""
         modele.eval()
-        y_true, y_pred, confs, sources, crops = [], [], [], [], []
-        with torch.no_grad():
-            for x, y, src, crp in chargeur:
+        feats_list, y_list, src_list, crp_list = [], [], [], []
+        t0 = time.time()
+        nb_lots = len(chargeur)
+        with torch.inference_mode():
+            for i, (x, y, src, crp) in enumerate(chargeur, start=1):
                 x = x.to(device)
-                probs = torch.softmax(_logits(modele(x)), dim=-1)
-                conf, pred = probs.max(dim=-1)
-                y_true.extend(y.tolist())
-                y_pred.extend(pred.cpu().tolist())
-                confs.extend(conf.cpu().tolist())
-                sources.extend(src)
-                crops.extend(crp)
-        return y_true, y_pred, confs, sources, crops
+                if util_hf and hasattr(modele, "mobilenet_v2"):
+                    out = modele.mobilenet_v2(x)
+                    vec = out.pooler_output
+                else:
+                    vec = modele.avgpool(modele.features(x)).flatten(1)
+                feats_list.append(vec.cpu())
+                y_list.extend(y.tolist())
+                src_list.extend(src)
+                crp_list.extend(crp)
+                if i % 10 == 0 or i == nb_lots:
+                    print(
+                        f"  [Extraction {nom_split}] lot {i}/{nb_lots} ({time.time() - t0:.0f}s)",
+                        flush=True,
+                    )
+        return torch.cat(feats_list, dim=0), torch.tensor(y_list, dtype=torch.long), src_list, crp_list
 
-    # Phase 1 : entraînement de la tête seule
-    if args.epochs_head > 0:
-        for nom, param in modele.named_parameters():
-            param.requires_grad = "classifier" in nom
-        opt_head = torch.optim.AdamW(
-            [p for p in modele.parameters() if p.requires_grad], lr=1e-3, weight_decay=1e-4
+    print("Extraction des représentations visuelles (1 passe unique par image)...", flush=True)
+    cache_emb_path = DATA_DIR / f"embeddings_cache_{len(train_items)}_{len(val_items)}_{len(test_items)}.pt"
+    if cache_emb_path.is_file():
+        print(f"Chargement des représentations depuis le cache : {cache_emb_path}", flush=True)
+        cache_data = torch.load(cache_emb_path, map_location="cpu", weights_only=False)
+        x_tr_emb, y_tr_emb = cache_data["x_tr"], cache_data["y_tr"]
+        x_va_emb, y_va_emb = cache_data["x_va"], cache_data["y_va"]
+        x_te_emb, y_te_emb = cache_data["x_te"], cache_data["y_te"]
+        src_test, crp_test = cache_data["src_test"], cache_data["crp_test"]
+    else:
+        x_tr_emb, y_tr_emb, _, _ = extraire_embeddings(dl_train, "train")
+        x_va_emb, y_va_emb, _, _ = extraire_embeddings(dl_val, "val")
+        x_te_emb, y_te_emb, src_test, crp_test = extraire_embeddings(dl_test, "test")
+        torch.save(
+            {
+                "x_tr": x_tr_emb,
+                "y_tr": y_tr_emb,
+                "x_va": x_va_emb,
+                "y_va": y_va_emb,
+                "x_te": x_te_emb,
+                "y_te": y_te_emb,
+                "src_test": src_test,
+                "crp_test": crp_test,
+            },
+            cache_emb_path,
         )
-        for ep in range(1, args.epochs_head + 1):
-            modele.train()
-            perte_tot = 0.0
-            for x, y, _, _ in dl_train:
-                x, y = x.to(device), y.to(device)
-                opt_head.zero_grad()
-                perte = critere(_logits(modele(x)), y)
-                perte.backward()
-                opt_head.step()
-                perte_tot += perte.item() * len(y)
-            yt, yp, _, _, _ = evaluer(dl_val)
-            acc_val = sum(1 for a, b in zip(yt, yp, strict=False) if a == b) / max(1, len(yt))
-            print(f"[Phase 1 - Tête] Époque {ep}/{args.epochs_head} | val_acc={acc_val:.4f}")
+        print(f"Représentations mises en cache dans : {cache_emb_path}", flush=True)
 
-    # Phase 2 : fine-tuning complet
-    for param in modele.parameters():
-        param.requires_grad = True
-    opt_ft = torch.optim.AdamW(modele.parameters(), lr=args.lr, weight_decay=1e-4)
-    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt_ft, T_max=max(1, args.epochs_finetune))
+    tete = modele.classifier if util_hf else modele.classifier
+    for p in tete.parameters():
+        p.requires_grad = True
 
-    meilleur_val = 0.0
+    opt = torch.optim.AdamW(tete.parameters(), lr=3e-3, weight_decay=1e-3)
+    nb_epoques_tete = 50
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=nb_epoques_tete)
+    dl_emb = DataLoader(TensorDataset(x_tr_emb, y_tr_emb), batch_size=128, shuffle=True)
+
     MODEL_OUT_DIR.mkdir(parents=True, exist_ok=True)
     chemin_poids = MODEL_OUT_DIR / "terramind_v1_model.pt"
+    meilleur_val = 0.0
+    meilleur_etat = None
 
-    for ep in range(1, args.epochs_finetune + 1):
-        modele.train()
-        for x, y, _, _ in dl_train:
-            x, y = x.to(device), y.to(device)
-            opt_ft.zero_grad()
-            perte = critere(_logits(modele(x)), y)
+    print(f"Entraînement du classifieur ({nb_epoques_tete} époques sur vecteurs extraits)...", flush=True)
+    for ep in range(1, nb_epoques_tete + 1):
+        tete.train()
+        for bx, by in dl_emb:
+            bx, by = bx.to(device), by.to(device)
+            opt.zero_grad()
+            perte = critere(tete(bx), by)
             perte.backward()
-            opt_ft.step()
+            opt.step()
         sched.step()
-        yt, yp, _, _, _ = evaluer(dl_val)
-        acc_val = sum(1 for a, b in zip(yt, yp, strict=False) if a == b) / max(1, len(yt))
-        print(f"[Phase 2 - FineTune] Époque {ep}/{args.epochs_finetune} | val_acc={acc_val:.4f}")
-        if acc_val >= meilleur_val:
-            meilleur_val = acc_val
-            torch.save(
-                {
-                    "backbone": args.backbone,
-                    "util_hf": util_hf,
-                    "nb_classes": nb_classes,
-                    "classes": classes_info,
-                    "state_dict": modele.state_dict(),
-                },
-                chemin_poids,
-            )
 
-    # Évaluation finale sur val (calibration seuil) et test (métriques publiées)
-    yt_val, yp_val, conf_val, _, _ = evaluer(dl_val)
-    calibration = calibrer_seuil_incertain(yt_val, yp_val, conf_val)
+        if ep % 10 == 0 or ep == nb_epoques_tete:
+            tete.eval()
+            with torch.inference_mode():
+                logits_va = tete(x_va_emb.to(device))
+                preds_va = logits_va.argmax(dim=-1).cpu()
+                acc_va = (preds_va == y_va_emb).float().mean().item()
+            print(f"  [Époque {ep}/{nb_epoques_tete}] val_acc={acc_va:.4f}", flush=True)
+            if acc_va >= meilleur_val:
+                meilleur_val = acc_va
+                meilleur_etat = {k: v.cpu().clone() for k, v in modele.state_dict().items()}
+
+    if meilleur_etat is not None:
+        modele.load_state_dict(meilleur_etat)
+
+    torch.save(
+        {
+            "backbone": args.backbone,
+            "util_hf": util_hf,
+            "nb_classes": nb_classes,
+            "classes": classes_info,
+            "state_dict": modele.state_dict(),
+        },
+        chemin_poids,
+    )
+
+    # Évaluation finale sur val et test
+    tete.eval()
+    with torch.inference_mode():
+        probs_val = torch.softmax(tete(x_va_emb.to(device)), dim=-1).cpu()
+        conf_val, yp_val_t = probs_val.max(dim=-1)
+        yt_val = y_va_emb.tolist()
+        yp_val = yp_val_t.tolist()
+
+        probs_test = torch.softmax(tete(x_te_emb.to(device)), dim=-1).cpu()
+        conf_test_t, yp_test_t = probs_test.max(dim=-1)
+        yt_test = y_te_emb.tolist()
+        yp_test = yp_test_t.tolist()
+        conf_test = conf_test_t.tolist()
+
+    calibration = calibrer_seuil_incertain(yt_val, yp_val, conf_val.tolist())
     seuil_opt = calibration["seuil_recommande"]
 
-    yt_test, yp_test, conf_test, src_test, crp_test = evaluer(dl_test)
     acc_test_global = sum(1 for a, b in zip(yt_test, yp_test, strict=False) if a == b) / max(
         1, len(yt_test)
     )
 
-    # Précision par source (TOM2024 vs CCMT) et par culture
     par_source = defaultdict(lambda: [0, 0])
     par_culture = defaultdict(lambda: [0, 0])
     par_classe = defaultdict(lambda: [0, 0])
@@ -330,7 +394,7 @@ def entrainer(args: argparse.Namespace) -> int:
         "base": "terramind_v1 (TOM2024 + CCMT)",
         "nb_classes": nb_classes,
         "leaf_only": args.leaf_only,
-        "effectifs": {
+        "effectifs_evalues": {
             "train": len(train_items),
             "val": len(val_items),
             "test": len(test_items),
@@ -365,19 +429,24 @@ def entrainer(args: argparse.Namespace) -> int:
     (MODEL_OUT_DIR / "classes.json").write_text(
         json.dumps(classes_info, indent=2, ensure_ascii=False), encoding="utf-8"
     )
-    print(f"Poids enregistrés dans {chemin_poids}")
-    print(f"Métriques enregistrées dans {METRICS_OUT}")
+    print(f"\nTerminé ! Poids enregistrés dans : {chemin_poids}", flush=True)
+    print(f"Métriques enregistrées dans : {METRICS_OUT}", flush=True)
+    print(
+        f"Exactitude test : {acc_test_global:.2%} | "
+        f"Exactitude hors incertain (seuil {seuil_opt}) : {acc_test_hors_incertain:.2%}",
+        flush=True,
+    )
     return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Fine-tuning du modèle de diagnostic TerraMind v1.")
     p.add_argument("--backbone", default=HF_DEFAULT_MODEL)
-    p.add_argument("--epochs-head", type=int, default=2)
-    p.add_argument("--epochs-finetune", type=int, default=6)
     p.add_argument("--batch-size", type=int, default=64)
-    p.add_argument("--lr", type=float, default=1e-4)
     p.add_argument("--leaf-only", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--fast-cpu", action=argparse.BooleanOptionalAction, default=False)
+    p.add_argument("--max-train-per-class", type=int, default=80)
+    p.add_argument("--max-eval-per-class", type=int, default=25)
     p.add_argument(
         "--crops",
         default="",

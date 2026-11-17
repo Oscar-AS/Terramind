@@ -3,9 +3,11 @@
 Conformément aux décisions D3, D5, D6, D12 et D13 (docs/decisions.md), à la stratégie
 pour les données manquantes (docs/strategie-donnees-manquantes.md § 1) et au contrat
 d'API (docs/api.md § 2) :
-- Charge les poids entraînés (`modeles/diagnostic/terramind_v1_model.pt`) dès qu'ils sont présents.
-- En l'absence de PyTorch ou du fichier `.pt` local (ex. CI légère), utilise un analyseur
-  colorimétrique déterministe (Pillow) adossé aux classes officielles de `data/splits_terramind_v1.csv`.
+- Charge les poids complets (`modeles/diagnostic/terramind_v1_model.pt`) s'ils sont présents en local,
+  OU reconstruit automatiquement le réseau entraîné à partir du backbone Hugging Face
+  (`linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification`) et des poids de la tête
+  entraînée sur les 27 853 images (`tete_terramind_v1.json`, versionnée dans Git, ~130 Ko).
+- En l'absence de PyTorch (ex. CI légère), utilise un analyseur colorimétrique déterministe (Pillow).
 - Applique le seuil « incertain » (`DIAGNOSTIC_CONFIDENCE_THRESHOLD`, défaut 0,60, relevé à 0,75
   pour les petites classes de moins de 100 images comme `tomato/late_blight` ou `maize/rust`).
 - Sous le seuil : `statut = 'incertain'`, `renvoi_agent = True`, aucune maladie affirmée.
@@ -19,7 +21,9 @@ from __future__ import annotations
 import base64
 import csv
 import io
+import json
 import os
+import zlib
 from pathlib import Path
 
 from PIL import Image, ImageStat
@@ -27,6 +31,8 @@ from PIL import Image, ImageStat
 RACINE = Path(__file__).resolve().parents[4]
 SPLITS_SUMMARY_CSV = RACINE / "data" / "splits_terramind_v1.csv"
 MODEL_PT_PATH = RACINE / "modeles" / "diagnostic" / "terramind_v1_model.pt"
+LOCAL_PRETRAINED_DIR = RACINE / "modeles" / "pretrained" / "plantvillage_mobilenet_v2"
+TETE_JSON_PATH = Path(__file__).resolve().parent / "tete_terramind_v1.json"
 
 MIN_SIDE_PX = 64
 SEUIL_INCERTAIN_DEFAUT = 0.60
@@ -131,41 +137,22 @@ def verifier_image(image_bytes: bytes) -> Image.Image:
     return im_rgb
 
 
-def _predire_avec_modele_pytorch(
-    im_rgb: Image.Image,
-    culture_filtre: str | None,
-) -> list[dict] | None:
-    """Utilise les poids PyTorch (`modeles/diagnostic/terramind_v1_model.pt`) s'ils sont présents."""
-    if not MODEL_PT_PATH.is_file():
-        return None
+_CACHE_PYTORCH: dict | None = None
+
+
+def _charger_modele_pytorch() -> dict | None:
+    """Charge et met en cache le modèle PyTorch entraîné (depuis .pt local ou tete_terramind_v1.json)."""
+    global _CACHE_PYTORCH
+    if _CACHE_PYTORCH is not None:
+        return _CACHE_PYTORCH
+
     try:
+        import numpy as np
         import torch
         import torch.nn as nn
         from torchvision import transforms
     except ImportError:
         return None
-
-    checkpoint = torch.load(MODEL_PT_PATH, map_location="cpu", weights_only=False)
-    classes_info = checkpoint["classes"]
-    nb_classes = checkpoint["nb_classes"]
-    backbone = checkpoint.get("backbone", "mobilenet_v3_large")
-    util_hf = checkpoint.get("util_hf", False)
-
-    if util_hf:
-        from transformers import AutoModelForImageClassification
-
-        modele = AutoModelForImageClassification.from_pretrained(
-            backbone, num_labels=nb_classes, ignore_mismatched_sizes=True
-        )
-    else:
-        from torchvision.models import mobilenet_v3_large
-
-        modele = mobilenet_v3_large(weights=None)
-        in_features = modele.classifier[-1].in_features
-        modele.classifier[-1] = nn.Linear(in_features, nb_classes)
-
-    modele.load_state_dict(checkpoint["state_dict"])
-    modele.eval()
 
     tf = transforms.Compose(
         [
@@ -174,6 +161,80 @@ def _predire_avec_modele_pytorch(
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
+
+    # 1. Chargement direct depuis le fichier complet .pt s'il est présent sur la machine
+    if MODEL_PT_PATH.is_file():
+        checkpoint = torch.load(MODEL_PT_PATH, map_location="cpu", weights_only=False)
+        classes_info = checkpoint["classes"]
+        nb_classes = checkpoint["nb_classes"]
+        backbone = checkpoint.get("backbone", "mobilenet_v3_large")
+        if not Path(backbone).exists() and LOCAL_PRETRAINED_DIR.is_dir():
+            backbone = str(LOCAL_PRETRAINED_DIR)
+        util_hf = checkpoint.get("util_hf", False)
+
+        if util_hf:
+            from transformers import AutoModelForImageClassification
+
+            modele = AutoModelForImageClassification.from_pretrained(
+                backbone, num_labels=nb_classes, ignore_mismatched_sizes=True
+            )
+        else:
+            from torchvision.models import mobilenet_v3_large
+
+            modele = mobilenet_v3_large(weights=None)
+            in_features = modele.classifier[-1].in_features
+            modele.classifier[-1] = nn.Linear(in_features, nb_classes)
+
+        modele.load_state_dict(checkpoint["state_dict"])
+        modele.eval()
+        _CACHE_PYTORCH = {"modele": modele, "classes": classes_info, "tf": tf, "torch": torch}
+        return _CACHE_PYTORCH
+
+    # 2. Reconstruction automatique pour Salam / Render à partir de tete_terramind_v1.json (dans Git)
+    if TETE_JSON_PATH.is_file():
+        try:
+            from transformers import AutoModelForImageClassification
+
+            info_tete = json.loads(TETE_JSON_PATH.read_text(encoding="utf-8"))
+            nb_classes = info_tete["nb_classes"]
+            classes_info = info_tete["classes"]
+            source_hf = (
+                str(LOCAL_PRETRAINED_DIR)
+                if LOCAL_PRETRAINED_DIR.is_dir()
+                else info_tete["backbone_hf"]
+            )
+            modele = AutoModelForImageClassification.from_pretrained(
+                source_hf, num_labels=nb_classes, ignore_mismatched_sizes=True
+            )
+            w_bytes = zlib.decompress(base64.b64decode(info_tete["weight_b64_zlib"]))
+            b_bytes = zlib.decompress(base64.b64decode(info_tete["bias_b64_zlib"]))
+            w_arr = np.frombuffer(w_bytes, dtype=np.float16).reshape(info_tete["shape_weight"]).astype(np.float32)
+            b_arr = np.frombuffer(b_bytes, dtype=np.float16).astype(np.float32)
+            with torch.no_grad():
+                modele.classifier.weight.copy_(torch.from_numpy(w_arr))
+                modele.classifier.bias.copy_(torch.from_numpy(b_arr))
+            modele.eval()
+            _CACHE_PYTORCH = {"modele": modele, "classes": classes_info, "tf": tf, "torch": torch}
+            return _CACHE_PYTORCH
+        except Exception:
+            return None
+
+    return None
+
+
+def _predire_avec_modele_pytorch(
+    im_rgb: Image.Image,
+    culture_filtre: str | None,
+) -> list[dict] | None:
+    """Utilise le modèle PyTorch entraîné sur les 27 853 images de terramind_v1."""
+    bundle = _charger_modele_pytorch()
+    if bundle is None:
+        return None
+    torch = bundle["torch"]
+    modele = bundle["modele"]
+    classes_info = bundle["classes"]
+    tf = bundle["tf"]
+
     x = tf(im_rgb).unsqueeze(0)
     with torch.no_grad():
         sortie = modele(x)
@@ -207,7 +268,7 @@ def _predire_heuristique_feuille(
     im_rgb: Image.Image,
     culture_filtre: str | None,
 ) -> list[dict]:
-    """Analyse colorimétrique et de contraste (Pillow) lorsque le fichier .pt n'est pas encore présent."""
+    """Analyse colorimétrique et de contraste (Pillow) lorsque PyTorch n'est pas installé."""
     catalogue = charger_catalogue_classes(leaf_only=True)
     cible_culture = culture_filtre or "tomato"
     classes_culture = [c for c in catalogue if c["culture"] == cible_culture]
@@ -220,7 +281,6 @@ def _predire_heuristique_feuille(
     r_std, g_std, b_std = stat.stddev
     contraste = (r_std + g_std + b_std) / 3.0
 
-    # Si l'image est presque uniforme / floue (contraste très bas), confiance faible -> statut incertain
     if contraste < 12.0:
         conf_principale = 0.38
     else:
@@ -237,12 +297,14 @@ def _predire_heuristique_feuille(
         premier = saines[0]
         suivants = (maladies + ravageurs)[:2]
     elif indice_jaune > 0.25 and len(maladies) >= 2:
-        # Jaunissement marqué (virose / enroulement / alternariose)
-        viroses = [c for c in maladies if "viros" in c["etiquette"] or "curl" in c["etiquette"] or "mosaic" in c["etiquette"]]
+        viroses = [
+            c
+            for c in maladies
+            if "viros" in c["etiquette"] or "curl" in c["etiquette"] or "mosaic" in c["etiquette"]
+        ]
         premier = viroses[0] if viroses else maladies[0]
         suivants = [c for c in maladies + saines if c["etiquette"] != premier["etiquette"]][:2]
     else:
-        # Lésions nécrotiques (alternariose / septoriose / mildiou)
         prioritaires = [
             c
             for c in maladies
@@ -289,11 +351,17 @@ def predict(
         )
 
     im_rgb = verifier_image(image_bytes)
+    stat_glob = ImageStat.Stat(im_rgb.resize((128, 128)))
+    contraste_img = sum(stat_glob.stddev) / 3.0
 
     top3 = _predire_avec_modele_pytorch(im_rgb, culture_norm)
     mode_inference = "pytorch_terramind_v1" if top3 is not None else "heuristique_terramind_v1"
     if top3 is None:
         top3 = _predire_heuristique_feuille(im_rgb, culture_norm)
+
+    # Garde-fou qualité d'image : une photo floue ou quasi uniforme (contraste < 12) est plafonnée sous le seuil
+    if contraste_img < 12.0 and confiance_forcee is None:
+        confiance_forcee = 0.38
 
     if confiance_forcee is not None:
         c1 = round(float(confiance_forcee), 4)
@@ -345,17 +413,20 @@ def predict(
 
 
 def decoder_image_requete(corps: dict) -> bytes:
-    """Extrait les octets d'image depuis un corps JSON (base64) ou génère une feuille de test si demandé."""
-    if "image_base64" in corps and corps["image_base64"]:
-        return base64.b64decode(corps["image_base64"])
+    """Extrait les octets d'image depuis un corps (bytes directs, base64, chemin) ou génère une feuille de test."""
     if "photo_bytes" in corps and isinstance(corps["photo_bytes"], bytes):
         return corps["photo_bytes"]
+    if "image_base64" in corps and corps["image_base64"]:
+        b64_str = str(corps["image_base64"])
+        if "," in b64_str and b64_str.startswith("data:"):
+            b64_str = b64_str.split(",", 1)[1]
+        return base64.b64decode(b64_str)
+    if "image_path" in corps and corps["image_path"]:
+        return Path(str(corps["image_path"])).read_bytes()
 
-    # Génération d'une image de test déterministe 128x128 pour les tests JSON de contrat
     qualite = str(corps.get("qualite_image") or "nette").lower()
     im = Image.new("RGB", (128, 128), color=(60, 140, 50))
     if qualite != "floue":
-        # Ajoute du contraste pour représenter une feuille avec nervures/taches
         px = im.load()
         for y in range(128):
             for x in range(128):
