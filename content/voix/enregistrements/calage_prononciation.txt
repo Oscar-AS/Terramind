@@ -1,0 +1,60 @@
+RÉFÉRENCE 1 (ta voix) : dégg naa fi sa tool nekk
+RÉFÉRENCE 2 (ta voix) : demay beñ a joxe saafara
+
+== tool
+0.91  Dégg naa fi sa tôl nekk.               → deg na fi sa tool nekk
+0.87  Dégg naa fi sa toll nekk.              → deg na fi sa toll nekk
+0.86  Dégg naa fi sa tôle nekk.              → deg naa fi sa toll a nekk
+0.85  Dégg naa fi sa tôôl nekk.              → deg naa fi sa tawl nekk
+0.85  Dégg naa fi sa tool nekk.              → deg naa fi sa toll lekk
+0.84  Dégg naa fi sa tóól nekk.              → deg na fi sa tól nekk
+0.83  Dégg naa fi sa taule nekk.             → deg na fi sa towl a nekk
+0.83  Dégg naa fi sa tóol nekk.              → deg na fi sa tull nekk
+0.58  Dégg naa fi sa taul nekk.              → deg murphy's a tall nekk
+
+== bana_joxe
+0.89  Damay baña djokhé saafara.             → damay bañ a joxe safara
+0.83  Damay bagna jokhe saafara.             → damay bagna joxe saafara
+0.78  Damay baña jokhe saafara.              → damay baañaa jóokee saafara
+0.78  Damay beñ a djokhé saafara.            → demay beng a jókki safara
+0.78  Damay bañ a djokhé saafara.            → damay bayniya joxe safara
+0.78  Damay bainia djokhé saafara.           → demee beyniya joxe safara
+0.76  Damay beñ a jokhe saafara.             → damay beng à jokkee safara
+0.76  Damay bañ a jokhe saafara.             → damay bayniya juxe saafara
+0.76  Damay bainia jokhe saafara.            → dammay bayniya joxe safara
+0.72  Damay beñ a joxe saafara.              → damay beng à diokhe safara
+0.72  Damay beñ a diokhé saafara.            → damay beng à diokhe safara
+0.72  Damay baña joxe saafara.               → damay ba ñaa dioxé saafara
+0.72  Damay baña diokhé saafara.             → damay ba ñaa dioxé saafara
+0.69  Damay bañ a diokhé saafara.            → damay baynia dioxé safara
+0.68  Damay bañ a joxe saafara.              → damay bayniya dioxé safara
+0.68  Damay bainia diokhé saafara.           → demee beyniya dioxé safara
+0.67  Damay bagna joxe saafara.              → demee ba gën a dio xeesaa fara
+0.65  Damay bagna diokhé saafara.            → demee ba ginna diyo xee saafara
+0.65  Damay bainia joxe saafara.             → damay bayniya diyokhe safara
+0.12  Damay bagna djokhé saafara.            → دەمەی بەگنە جوخەی سافەرە
+RÉFÉRENCE (ta voix) : jërëjëf
+
+== jërëjëf
+1.00  Jërë-jëf         → jërëjëf
+0.57  Jerejef          → jerejef
+0.43  Jërëjëf          → jerejev
+0.33  Jeureujeuf       → jeu reu jeu
+0.29  Jërejëf          → jereyev
+0.24  Dieureudieuf     → du redieuf
+0.21  Djeureudjeuf     → dieu redieuf
+0.21  Diéréjef         → di est régef
+
+== saafara (cible : demay beñ a joxe saafara)
+0.92  saaffara   → damay bañ a joxe saafara   a long ✓
+0.92  saa-fara   → damay bañ a joxe saafara   a long ✓
+0.90  sââfara    → damay baañ a joxe saafara   a long ✓
+0.90  sa-afara   → damay bañ a joxe sa afara   
+0.89  saafara    → damay bañ a joxe safara   
+0.88  sââfara    → damay baañ a joxe safara   
+0.88  saaffara   → damay bañ a djoxe safara   
+0.88  saafara    → damay baañ a joxe safara   
+0.88  saafaara   → damay bañ a joxe safaara   a long ✓
+0.86  saafaara   → damay baañ a joxe safaara   a long ✓
+0.85  saa-fara   → damay ba ña joxe safara   
+0.84  sa-afara   → damay bañ a joxe sa affaar   a long ✓
