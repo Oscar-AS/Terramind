@@ -56,9 +56,9 @@ Le français est écrit dans le HTML, l'anglais dans l'attribut `data-en` de cha
 
 ## Mise en ligne sur Vercel
 
-Nouveau projet Vercel relié au dépôt, **Root Directory : `channels/site`**, aucun réglage de build. Le bouton « Télécharger l'app » reste en « bientôt disponible » tant que `APK_URL` est vide dans le script de la page.
+Nouveau projet Vercel relié au dépôt, **Root Directory : `channels/site`**, aucun réglage de build. Tant que `main` ne contient pas le site, régler **Settings → Git → Production Branch : `app/mobile`**. Le bouton « Télécharger l'app » reste en « bientôt disponible » tant que `APK_URL` est vide dans le script de la page.
 
 ## Règles
 
-- Rien d'inventé : pas de faux avis, pas de fausses notes, pas de compteurs. Chaque chiffre affiché vient du dépôt (23 fiches, 20 problèmes reconnus, 8 cultures).
+- Rien d'inventé : pas de faux avis, pas de fausses notes, pas de compteurs. Chaque chiffre affiché vient du dépôt (23 fiches, 21 problèmes reconnus, 8 cultures).
 - Pas de badge Google Play ni App Store tant que l'application n'est pas sur ces stores (règles de Google et d'Apple).
