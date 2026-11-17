@@ -1,0 +1,42 @@
+# Mises à jour de dépendances : une PR groupée par écosystème et par semaine, au plus 3 ouvertes.
+# Les dossiers sans fichier de dépendances sont signalés par Dependabot mais ne bloquent rien.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /engine
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      python:
+        patterns: ["*"]
+    ignore:
+      # Licence AGPL non tranchée : voir docs/decisions.md (D5).
+      - dependency-name: ultralytics
+
+  - package-ecosystem: npm
+    directory: /channels/pwa
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      pwa:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /dashboard
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      dashboard:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      actions:
+        patterns: ["*"]

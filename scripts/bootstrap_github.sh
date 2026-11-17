@@ -26,6 +26,9 @@ labels=(
   "owner:oscar|EDEDED|Responsable : Oscar"
   "owner:salam|EDEDED|Responsable : Salam"
   "owner:rama|EDEDED|Responsable : Rama"
+  "taille:petite|C5DEF5|PR de 100 lignes modifiées ou moins"
+  "taille:moyenne|FEF2C0|PR de 101 à 400 lignes modifiées"
+  "taille:grande|F9D0C4|PR de plus de 400 lignes modifiées"
 )
 for entry in "${labels[@]}"; do
   IFS='|' read -r name color desc <<<"$entry"

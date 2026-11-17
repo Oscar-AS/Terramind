@@ -1,0 +1,133 @@
+# Intégration continue : contrôle chaque pull request vers main et chaque push sur main.
+# Les jobs de langage ne tournent que si leurs fichiers existent (détection dans le job `detect`).
+# Seul le job final `ci-ok` est à rendre obligatoire dans la protection de branche.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GITLEAKS_VERSION: "8.21.2"
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.detect.outputs.python }}
+      node_dirs: ${{ steps.detect.outputs.node_dirs }}
+      content: ${{ steps.detect.outputs.content }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: detect
+        name: Détecter les parties du dépôt à contrôler
+        run: |
+          python=false
+          if [ -f engine/requirements.txt ]; then python=true; fi
+          node_dirs=""
+          for d in channels/pwa dashboard; do
+            if [ -f "$d/package.json" ]; then node_dirs="${node_dirs:+$node_dirs,}\"$d\""; fi
+          done
+          content=false
+          if [ -d content ] && [ -n "$(find content -type f ! -name .gitkeep -print -quit)" ]; then
+            content=true
+          fi
+          {
+            echo "python=$python"
+            echo "node_dirs=[$node_dirs]"
+            echo "content=$content"
+          } | tee -a "$GITHUB_OUTPUT"
+
+  hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan de secrets (gitleaks)
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz gitleaks
+          ./gitleaks git --redact --no-banner --verbose .
+      - name: Fichiers interdits, taille et dépendances interdites
+        run: python3 scripts/check_hygiene.py
+
+  python:
+    needs: detect
+    if: needs.detect.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: engine/requirements*.txt
+      - run: pip install -r engine/requirements.txt -r engine/requirements-dev.txt
+      - run: ruff check .
+      - run: black --check .
+      # TODO : passer --cov-fail-under à 60 après le 10 nov 2026.
+      - run: pytest --cov=engine --cov-report=term-missing --cov-fail-under=0
+      - name: mypy (non bloquant)
+        continue-on-error: true
+        run: mypy engine
+
+  node:
+    needs: detect
+    if: needs.detect.outputs.node_dirs != '[]'
+    name: node (${{ matrix.dir }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir: ${{ fromJSON(needs.detect.outputs.node_dirs) }}
+    defaults:
+      run:
+        working-directory: ${{ matrix.dir }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: ${{ matrix.dir }}/package-lock.json
+      - run: npm ci
+      - run: npm run lint --if-present
+      - run: npm run build
+      - run: npm run test --if-present
+
+  content:
+    needs: detect
+    if: needs.detect.outputs.content == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Vérifier gabarits, audios, règles sol -> culture et fiches
+        run: python3 scripts/check_content.py
+
+  ci-ok:
+    name: ci-ok
+    needs: [detect, hygiene, python, node, content]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vérifier le résultat de tous les jobs (sauté = réussi)
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Résultats : $RESULTS"
+          for result in $RESULTS; do
+            if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+              echo "::error::Au moins un job de la CI a échoué ou a été annulé."
+              exit 1
+            fi
+          done
