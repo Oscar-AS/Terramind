@@ -88,6 +88,9 @@ MESSAGES = [
     ("date_incomprise", "date de plantation illisible", H,
      "Je n'ai pas compris la date. Écris le jour, une barre, puis le mois. Par exemple quinze barre dix, pour le "
      "quinze octobre."),
+    ("date_future", "date de plantation dans le futur", H,
+     "Cette date n'est pas encore arrivée. Écris le jour où tu as planté. Par exemple quinze barre dix, pour le "
+     "quinze octobre."),
     ("plan_intro", "avant le plan de culture", H,
      "Voici ce que tu peux planter ce mois-ci, selon le sol de ton champ et la saison."),
     ("alerte_rien", "aucune alerte", H,
@@ -114,65 +117,64 @@ MESSAGES = [
      "Les nuits très humides de ces derniers jours sont favorables au mildiou de l'oignon. Regarde les feuilles "
      "le matin : des taches pâles et allongées, avec un duvet gris-violet."),
     ("alerte_helicoverpa_armigera", "alerte noctuelle (poivron, piment, jaxatu, tomate)", S,
-     "Une nouvelle génération de noctuelle, le ver des fruits, est probable. Regarde les fruits et les fleurs : "
-     "des fruits troués, des fleurs coupées, des chenilles brunes, vertes ou jaunes."),
+     "De nouvelles chenilles (noctuelle) vont sans doute bientôt sortir et manger tes fruits. Regarde tes fruits "
+     "et tes fleurs : des trous dans les fruits, des fleurs coupées, des petites chenilles."),
     ("alerte_date_requise", "ravageurs : date de plantation inconnue", S,
      "Pour surveiller les insectes de ta culture, j'ai besoin de savoir quand tu l'as plantée."),
     ("alerte_tuta_absoluta", "alerte mineuse", S,
-     "Une nouvelle génération de mineuse de la tomate est probable. Regarde s'il y a des galeries claires dans "
-     "les feuilles."),
+     "De nouvelles petites chenilles (mineuse de la tomate) vont sans doute bientôt sortir et manger l'intérieur "
+     "de tes feuilles. Regarde tes feuilles : des traces claires, comme des petits chemins."),
     ("alerte_plutella_xylostella", "alerte teigne du chou", S,
-     "Une nouvelle génération de teigne du chou est probable. Regarde tes choux de près, surtout le dessous des "
-     "feuilles."),
+     "De nouvelles petites chenilles (teigne du chou) vont sans doute bientôt sortir et manger les feuilles de "
+     "tes choux. Regarde tes choux de près, surtout le dessous des feuilles."),
 
     # --- Résumés oraux des fiches (diagnostic photo) : voix de synthèse, 4 temps ---
     ("fiche_maladie-alternariose", "diagnostic alternariose", S,
-     "Cela ressemble à l'alternariose. C'est un champignon qui fait des taches brunes avec des cercles, comme "
-     "une cible. Il aime l'humidité et peut venir de graines malades. Retire les feuilles brunes, avec des gants. "
-     "Pour éviter qu'elle revienne, sème des graines saines, et arrose au pied, le matin, sans mouiller les "
-     "feuilles."),
+     "Cela ressemble à l'alternariose. C'est une maladie qui fait des taches brunes avec des cercles. Elle aime "
+     "l'humidité et peut venir de graines malades. Retire les feuilles malades, avec des gants. Pour qu'elle ne "
+     "revienne pas, sème des graines saines et arrose au pied, le matin, sans mouiller les feuilles."),
     ("fiche_maladie-mildiou", "diagnostic mildiou", S,
-     "Cela ressemble au mildiou. Cette maladie fait sur les feuilles des taches mal délimitées qui brunissent, "
-     "et par temps très humide le feuillage sèche vite. Enlève tout de suite les parties malades et brûle-les. "
-     "Pour éviter qu'il revienne, espace les plants, arrose au pied, et ne plante pas la tomate à côté de la "
-     "pomme de terre."),
+     "Cela ressemble au mildiou. Cette maladie fait des taches brunes sur les feuilles. Quand il fait très "
+     "humide, les feuilles sèchent vite. Enlève tout de suite les parties malades et brûle-les. Pour qu'il ne "
+     "revienne pas, laisse de l'espace entre les plants, arrose au pied, et ne plante pas la tomate à côté de "
+     "la pomme de terre."),
     ("fiche_maladie-cladosporiose", "diagnostic cladosporiose", S,
-     "Cela ressemble à la cladosporiose. C'est un champignon de la tomate : taches jaunâtres sur le dessus des "
-     "feuilles et duvet brun en dessous. Il aime l'air humide et les plants mal aérés. Aère tes plants et "
-     "enlève les feuilles du bas déjà atteintes. Pour éviter qu'elle revienne, ne mets pas trop d'engrais "
-     "azoté."),
+     "Cela ressemble à la cladosporiose. C'est une maladie de la tomate : des taches jaunes sur le dessus des "
+     "feuilles, et un duvet brun en dessous. Elle aime l'air humide et les plants trop serrés. Laisse de l'espace "
+     "entre tes plants et enlève les feuilles du bas déjà malades. Pour qu'elle ne revienne pas, ne mets pas trop "
+     "d'engrais azoté, comme l'urée."),
     ("fiche_maladie-tache-bacterienne", "diagnostic tache bactérienne", S,
-     "Cela ressemble à la tache bactérienne. C'est une bactérie qui fait de petites taches mouillées qui "
-     "noircissent. Elle aime la pluie et la chaleur, et peut venir de graines malades. Pour un traitement, "
-     "demande à un agent agricole. Pour éviter qu'elle revienne, utilise des semences saines."),
+     "Cela ressemble à la tache bactérienne. C'est une maladie qui fait de petites taches mouillées qui "
+     "deviennent noires. Elle aime la pluie et la chaleur, et peut venir de graines malades. Pour la soigner, "
+     "demande à un agent agricole. Pour qu'elle ne revienne pas, sème des graines saines."),
     ("fiche_maladie-viroses-tomate", "diagnostic virose", S,
-     "Cela ressemble à une virose. C'est un virus : les feuilles se déforment et changent de couleur. Sur la "
-     "tomate, il est souvent apporté par une petite mouche blanche, dès la pépinière. Montre la plante à un "
-     "agent agricole. Pour éviter qu'il revienne, protège la pépinière sous un voile ou une moustiquaire."),
+     "Cela ressemble à une virose. C'est une maladie : les feuilles se déforment et changent de couleur. Sur "
+     "la tomate, elle est souvent apportée par une petite mouche blanche, dès la pépinière. Montre la plante à un "
+     "agent agricole. Pour qu'elle ne revienne pas, couvre la pépinière avec un voile ou une moustiquaire."),
     ("fiche_maladie-fusariose", "diagnostic fusariose", S,
-     "Cela ressemble à la fusariose. C'est un champignon du sol qui entre par les racines : la plante jaunit et "
-     "se fane. Il reste longtemps dans le sol et peut venir de semences malades. Arrache et élimine les plantes "
-     "malades. Pour éviter qu'elle revienne, ne replante pas la même culture au même endroit pendant plusieurs "
-     "années, et utilise des semences saines."),
+     "Cela ressemble à la fusariose. C'est une maladie du sol qui entre par les racines : la plante jaunit et "
+     "perd sa force. Elle reste longtemps dans le sol et peut venir de graines malades. Arrache les plantes "
+     "malades et enlève-les du champ. Pour qu'elle ne revienne pas, ne replante pas la même culture au même "
+     "endroit pendant plusieurs années, et sème des graines saines."),
     ("fiche_maladie-fletrissement-bacterien", "diagnostic flétrissement bactérien", S,
-     "Cela ressemble au flétrissement bactérien. C'est une bactérie : les feuilles deviennent molles et se "
-     "fanent. Elle aime un sol très humide et chaud. Aucun produit n'est efficace : arrache et détruis les "
-     "plantes atteintes. Pour éviter qu'il revienne, change de culture, draine bien le sol, et garde tes outils "
-     "propres."),
+     "Cela ressemble au flétrissement bactérien. C'est une maladie : les feuilles deviennent molles et la plante "
+     "perd sa force. Elle aime un sol très mouillé et chaud. Aucun produit ne la soigne : arrache les plantes "
+     "malades et détruis-les. Pour qu'elle ne revienne pas, change de culture, fais bien sortir l'eau du sol, et "
+     "garde tes outils propres."),
     ("fiche_maladie-septoriose", "diagnostic septoriose", S,
-     "Cela ressemble à la septoriose. C'est un champignon qui fait de petites taches rondes avec des points "
-     "noirs au centre. Il vit dans les débris de plantes malades et se propage quand les feuilles sont "
-     "mouillées. Arrache les plants très atteints. Pour éviter qu'elle revienne, change de culture, enlève les "
-     "restes après la récolte, et arrose au pied."),
+     "Cela ressemble à la septoriose. C'est une maladie qui fait de petites taches rondes avec des points noirs "
+     "au milieu. Elle vit dans les restes de plantes malades et s'étend quand les feuilles sont mouillées. Arrache "
+     "les plants très malades. Pour qu'elle ne revienne pas, change de culture, enlève les restes après la "
+     "récolte, et arrose au pied."),
     ("fiche_maladie-tache-cible", "diagnostic tache cible", S,
-     "Cela ressemble à la tache cible. C'est un champignon des pays chauds et humides, qui fait des taches avec "
-     "des cercles et un bord jaune. Elle ressemble beaucoup à l'alternariose : fais confirmer par un agent "
-     "agricole. Enlève les feuilles du bas atteintes. Pour éviter qu'elle revienne, change de culture et ne "
-     "plante pas à côté d'un champ malade."),
+     "Cela ressemble à la tache cible. C'est une maladie des pays chauds et humides, qui fait des taches avec des "
+     "cercles et un bord jaune. Elle ressemble beaucoup à l'alternariose : demande à un agent agricole de "
+     "vérifier. Enlève les feuilles du bas malades. Pour qu'elle ne revienne pas, change de culture et "
+     "surveille-la. Ne plante pas à côté d'un champ malade."),
     ("fiche_ravageur-noctuelle-tomate", "diagnostic noctuelle", S,
-     "Cela ressemble à la noctuelle de la tomate. C'est la chenille d'un papillon, qui troue les fruits. Elle "
-     "peut venir des herbes autour du champ. Bine le sol pour éliminer les chenilles. Pour éviter qu'elle "
-     "revienne, désherbe autour du champ et change de culture."),
+     "Cela ressemble à la noctuelle : une chenille qui fait des trous dans les fruits. Elle peut venir des "
+     "mauvaises herbes autour du champ. Retourne la terre au pied des plantes pour tuer les chenilles cachées "
+     "dedans. Pour qu'elle ne revienne pas, arrache les mauvaises herbes autour du champ et change de culture."),
     ("fiche_ravageur-chenilles-oignon", "diagnostic chenilles de l'oignon", S,
      "Je vois des chenilles sur l'oignon. Elles mangent les feuilles, surtout la nuit. Ramasse à la main les "
      "feuilles qui portent des œufs ou des groupes de jeunes chenilles. Pour éviter qu'elles reviennent, "
