@@ -75,7 +75,7 @@ Variables (`.env`, modèle dans [.env.example](../.env.example)) : `GEMINI_API_K
 ## ⚠️ Limites connues
 
 - La première lecture du sol prend 15 à 30 s (téléchargement d'une tuile iSDAsoil), puis le résultat est gardé en cache.
-- Le bot Telegram garde l'état de la conversation en mémoire : il est perdu au redémarrage du service.
+- **Mémoire du bot** ([`memoire.py`](app/memoire.py)) : langue, champ (arrondi à ~1 km), culture, date et 3 derniers échanges sont rangés dans Supabase (table [`docs/memoire-bot.sql`](../docs/memoire-bot.sql)), sous une empreinte du numéro de conversation ; ils survivent à la mise en veille de Render. Les échanges de moins d'une heure servent à comprendre une question de suite. `/oublier` efface tout. Sans `SUPABASE_URL` / `SUPABASE_KEY`, l'état reste en mémoire vive et se perd au redémarrage.
 - En wolof (`langue: "wo"`), `/v1/plan`, `/v1/alert` et `/v1/diagnose` renvoient les phrases relues et leurs notes vocales ; `/v1/chat` répond encore en français (le bot Telegram, lui, traduit et lit la réponse). Voir [docs/voix-wolof.md](../docs/voix-wolof.md).
 
 ## 👥 Responsables

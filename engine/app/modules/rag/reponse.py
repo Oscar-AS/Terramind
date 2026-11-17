@@ -83,13 +83,42 @@ def gemini(consigne: str, texte: str, delai: int = 30) -> str | None:
         return None
 
 
-def _gemini(question: str, ps: list[fiches.Passage]) -> str | None:
+SUITE = (" Des échanges précédents peuvent être fournis : sers-t'en seulement pour comprendre de quoi parle "
+         "la question (par exemple « et pour l'oignon ? » après une question sur le mildiou) ; la réponse "
+         "doit toujours venir des extraits de fiches.")
+
+
+def _gemini(question: str, ps: list[fiches.Passage], historique: list[dict] | None = None) -> str | None:
     extraits = "\n\n".join(f"[Fiche « {p.titre} », section « {p.section} »]\n{p.texte}" for p in ps)
-    return gemini(CONSIGNE, f"Extraits de fiches :\n{extraits}\n\nQuestion : {question}")
+    avant = ""
+    if historique:
+        avant = "Échanges précédents :\n" + "\n".join(
+            f"- Agriculteur : {e['question']}\n  TerraMind : {e['reponse']}" for e in historique) + "\n\n"
+    return gemini(CONSIGNE + (SUITE if historique else ""),
+                  f"Extraits de fiches :\n{extraits}\n\n{avant}Question : {question}")
 
 
-def repondre(question: str) -> dict:
-    trouves = [(s, p) for s, p in fiches.chercher(question) if s >= SCORE_MIN]
+def _chercher(question: str, historique: list[dict] | None) -> list[tuple[float, fiches.Passage]]:
+    """Passages de la question d'abord. Avec des échanges récents, on ajoute ceux du sujet en cours
+    (questions récentes + question : « et comment l'éviter ? » après l'alternariose → la partie « éviter »
+    de la fiche alternariose). Gemini voit les échanges et choisit ; une question nouvelle garde ses passages."""
+    propres = [(s, p) for s, p in fiches.chercher(question) if s >= SCORE_MIN]
+    if not historique:
+        return propres
+    vus = {id(p) for _, p in propres}
+    sujet = [(s, p) for s, p in fiches.chercher(" ".join([e["question"] for e in historique] + [question]))
+             if s >= SCORE_MIN and id(p) not in vus][:2]
+    vus |= {id(p) for _, p in sujet}
+    dans_sujet = []
+    if sujet:  # dans la fiche du sujet, les parties qui répondent à la question du moment
+        dans_sujet = [(s, p) for s, p in fiches.chercher(question, n=200)
+                      if p.fiche == sujet[0][1].fiche and s > 0 and id(p) not in vus][:2]
+    return propres + sujet + dans_sujet
+
+
+def repondre(question: str, historique: list[dict] | None = None) -> dict:
+    """`historique` : derniers échanges de la conversation (memoire.echanges_recents), facultatif."""
+    trouves = _chercher(question, historique)
     if not trouves:
         return {"statut": "je_ne_sais_pas", "texte": None, "passages": [], "sources": [], "mode": "aucun"}
     ps = [p for _, p in trouves]
@@ -98,7 +127,7 @@ def repondre(question: str) -> dict:
     prevention = [p for p in fiches.passages() if p.fiche == ps[0].fiche
                   and p.section.lower().startswith(("prévention", "que faire")) and p not in ps]
     ps += prevention[:1]
-    redige = _gemini(question, ps)
+    redige = _gemini(question, ps, historique)
     if redige and "JE_NE_SAIS_PAS" in redige:
         return {"statut": "je_ne_sais_pas", "texte": None, "passages": [], "sources": [], "mode": "gemini"}
     if redige:

@@ -36,7 +36,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
 
-from .. import config
+from .. import config, memoire
 from ..modules import meteo
 from ..modules.planification import sol as sol_module
 from ..modules.planification.cultures import CULTURES
@@ -523,7 +523,8 @@ def _dire_reponse_wolof(chat: int, texte_fr: str):
 def _question(chat: int, texte: str):
     from ..modules.rag.reponse import repondre
 
-    r = repondre(texte)
+    etat = ETATS.setdefault(chat, {})
+    r = repondre(texte, memoire.echanges_recents(etat))
     if r["statut"] != "ok":
         dire(chat, "je_ne_sais_pas")
         envoyer(chat, "Je n'ai pas trouvé la réponse dans mes fiches, et je préfère ne pas inventer.\n"
@@ -537,6 +538,7 @@ def _question(chat: int, texte: str):
         _dire_reponse_wolof(chat, r["texte"])
     sources = " ; ".join(_court(s["document"]) + (f", p. {s['page']}" if s["page"][:1].isdigit() else "")
                          for s in [x for x in r["sources"] if _court(x["document"])][:3])
+    memoire.ajouter_echange(etat, texte, r["texte"].replace("**", ""))
     reponse = escape(r["texte"].replace("**", ""))
     envoyer(chat, f"{reponse}\n\n<i>Sources : {escape(sources)}</i>", reply_markup=CLAVIER)
 
@@ -604,12 +606,17 @@ def traiter(maj: dict):
         _photo(chat, msg["photo"][-1]["file_id"], None)
     elif msg.get("voice") or msg.get("audio"):
         _vocal(chat, msg.get("voice") or msg["audio"])
+    elif texte.startswith("/oublier"):
+        memoire.oublier(chat)
+        ETATS.pop(chat, None)  # rien n'est rangé après : la conversation repart de zéro
+        envoyer(chat, "C'est fait : j'ai oublié ta langue, ton champ, ta culture et nos derniers échanges. "
+                      "Écris /start pour recommencer.")
     elif texte.startswith(("/start", "/langue")) or ("langue" not in etat and not etat.get("attend_date")):
         dire(chat, "choix_langue", toujours=True)  # la question est aussi dite en wolof
         envoyer(chat, CHOIX_LANGUE, reply_markup=CLAVIER_LANGUE)
     elif texte == B_AIDE:
         dire(chat, "accueil")
-        envoyer(chat, ACCUEIL + "\n\n<i>Pour changer de langue, écris /langue.</i>", reply_markup=CLAVIER)
+        envoyer(chat, ACCUEIL + "\n\n<i>Pour changer de langue, écris /langue. Pour que j'oublie tout ce que tu m'as dit, écris /oublier.</i>", reply_markup=CLAVIER)
     elif texte == B_QUESTION:
         dire(chat, "invite_question")
         envoyer(chat, "Je t'écoute. Pose-moi ta question par écrit (en français), ou envoie-moi un message "
@@ -668,21 +675,35 @@ def traiter(maj: dict):
         _question(chat, texte)
 
 
+def _chat_de(maj: dict) -> int | None:
+    q = maj.get("callback_query") or {}
+    return (((maj.get("message") or q.get("message") or {}).get("chat") or {}).get("id")
+            or (q.get("from") or {}).get("id"))
+
+
 def traiter_sans_planter(maj: dict):
-    """Une erreur imprévue ne doit pas laisser l'agriculteur sans réponse."""
+    """Une erreur imprévue ne doit pas laisser l'agriculteur sans réponse. Avant : l'état gardé est rechargé
+    si le serveur a redémarré ; après : il est rangé s'il a changé (mémoire du bot, memoire.py)."""
+    chat = _chat_de(maj)
+    avant = None
+    if chat is not None:
+        if chat not in ETATS:
+            ETATS[chat] = memoire.charger(chat)
+        avant = json.dumps(memoire.vers_json(ETATS[chat]), sort_keys=True, default=str)
     try:
         traiter(maj)
     except Exception as e:
         # Type et ligne seulement : le texte de l'erreur pourrait contenir un message de l'agriculteur.
         ou = traceback.extract_tb(e.__traceback__)[-1]
         journal.error("message non traité : %s (%s:%s)", type(e).__name__, Path(ou.filename).name, ou.lineno)
-        q = maj.get("callback_query") or {}
-        chat = (((maj.get("message") or q.get("message") or {}).get("chat") or {}).get("id")
-                or (q.get("from") or {}).get("id"))
         if chat is not None:
             _appel_silencieux("sendMessage", chat_id=chat, text="Désolé, un problème m'a empêché de répondre. "
                               "Réessaie dans un instant.")
     finally:
+        if chat is not None and chat in ETATS:
+            apres = json.dumps(memoire.vers_json(ETATS[chat]), sort_keys=True, default=str)
+            if apres != avant:
+                memoire.enregistrer(chat, ETATS[chat])
         _limiter_etats()
 
 
