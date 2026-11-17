@@ -105,7 +105,9 @@ def main():
             continue
         if l["statut"] not in statuts or not l["texte_wo"].strip():
             continue
-        existe = any((SORTIE / f"{l['cle']}.{x}").exists() for x in ("ogg", "mp3", "m4a"))
+        if (SORTIE / f"{l['cle']}.m4a").exists():
+            continue  # enregistrée par un locuteur : jamais remplacée par la voix de synthèse
+        existe = any((SORTIE / f"{l['cle']}.{x}").exists() for x in ("ogg", "mp3"))
         meme_texte = deja.get(l["cle"], {}).get("empreinte") == empreinte(l["texte_wo"])
         if existe and meme_texte and not args.forcer:
             continue
@@ -133,7 +135,9 @@ def main():
                 f"  [{i}/{len(a_faire)}] {l['cle']} : échec ({type(e).__name__} {getattr(e, 'code', '')})"
             )
             continue
-        for x in ("ogg", "m4a"):  # un seul fichier par clé : le bot prend le premier trouvé
+        for x in (
+            "ogg",
+        ):  # un seul fichier de synthèse par clé (les .m4a de locuteurs ne sont pas ici)
             (SORTIE / f"{l['cle']}.{x}").unlink(missing_ok=True)
         (SORTIE / f"{l['cle']}.mp3").write_bytes(audio)
         deja[l["cle"]] = {

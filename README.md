@@ -71,13 +71,13 @@ Chaque conseil **cite le document** d'où il vient. Quand TerraMind n'est pas s�
 <table>
 <tr>
 <td align="center" width="25%"><img src="docs/assets/captures/telegram/09a-wolof-accueil.webp" alt="Le bot en wolof : note vocale d'accueil"></td>
-<td align="center" width="25%"><img src="docs/assets/captures/telegram/05a-plan-sol.webp" alt="Ce que dit le sol"></td>
+<td align="center" width="25%"><img src="docs/assets/captures/telegram/09b-wolof-position-test.webp" alt="Notes vocales en wolof après la position test"></td>
 <td align="center" width="25%"><img src="docs/assets/captures/telegram/07b-diagnostic-resultat.webp" alt="Diagnostic : Mildiou, 95 %"></td>
 <td align="center" width="25%"><img src="docs/assets/captures/telegram/08b-reponse-sources.webp" alt="Réponse sourcée"></td>
 </tr>
 <tr>
 <td align="center"><b>Il parle wolof</b><br><sub>Chaque message est aussi une note vocale</sub></td>
-<td align="center"><b>Son sol</b><br><sub>Sable, argile, acidité au point du champ</sub></td>
+<td align="center"><b>Il répond à voix haute</b><br><sub>Notes vocales en wolof, texte en français dessous</sub></td>
 <td align="center"><b>Sa photo</b><br><sub>La maladie expliquée en 4 temps</sub></td>
 <td align="center"><b>Sa question</b><br><sub>Une réponse tirée des fiches, pages citées</sub></td>
 </tr>
