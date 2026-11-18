@@ -14,6 +14,7 @@ import datetime as dt
 import json
 import logging
 import os
+import re
 import threading
 import urllib.request
 
@@ -31,6 +32,7 @@ CONSIGNE = (
     "N'annonce pas une liste (« fais ces actions dans l'ordre ») pour une ou deux actions seulement. "
     "Français simple : 3 à 6 phrases courtes, tutoiement, sans jargon. "
     "Texte simple : pas de Markdown (ni astérisques ni titres), pas d'émoji. "
+    "Écris les apostrophes normalement (c'est, l'oignon, d'abord). "
     "Utilise UNIQUEMENT les extraits de fiches fournis : n'ajoute aucune information extérieure. "
     "Ne cite jamais de produit chimique, de pesticide ni de dose ; pour un traitement, renvoie vers un agent agricole. "
     "Si les extraits ne permettent pas de répondre à la question, réponds exactement : JE_NE_SAIS_PAS"
@@ -59,6 +61,18 @@ class _Plafond:
 PLAFOND = _Plafond()
 
 
+# Gemini oublie parfois les apostrophes (« C est l alternariose », vu le 18 nov 2026).
+# En français, une lettre seule (c, d, j, l, m, n, s, t) ou « qu » devant un mot qui commence par une
+# voyelle ou un h n'existe pas : c'est une élision dont l'apostrophe manque.
+_ELISION = re.compile(
+    r"(?<!\d )\b([cdjlmnstCDJLMNST]|[Qq]u|[Jj]usqu|[Ll]orsqu|[Pp]uisqu) (?=[aeiouyhàâäéèêëîïôöûüAEIOUYHÀÂÉÈÊÎÔÛ])"
+)
+
+
+def remettre_apostrophes(texte: str) -> str:
+    return _ELISION.sub(r"\1'", texte)
+
+
 def gemini(consigne: str, texte: str, delai: int = 30) -> str | None:
     """Appel simple à Gemini (consigne système + un message). None sans clé, plafond atteint ou échec."""
     cle = os.environ.get("GEMINI_API_KEY", "").strip()
@@ -81,7 +95,7 @@ def gemini(consigne: str, texte: str, delai: int = 30) -> str | None:
         with urllib.request.urlopen(req, timeout=delai) as r:
             d = json.loads(r.read())
         reponse = "".join(p.get("text", "") for p in d["candidates"][0]["content"]["parts"]).strip()
-        return reponse or None
+        return remettre_apostrophes(reponse) or None
     except Exception as e:  # quota, réseau, modèle indisponible
         journal.warning("Gemini indisponible (%s)", type(e).__name__)
         return None
