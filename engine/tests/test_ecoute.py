@@ -116,3 +116,28 @@ def test_bot_note_vocale_sans_octopus_ou_trop_longue():
         )
     assert "trop longue" in envoyer.call_args.args[1]
     telecharger.assert_not_called()
+
+
+def test_octopus_lent_un_seul_nouvel_essai(octopus):
+    reponses = [TimeoutError(), _Reponse({"text": "naka", "duration_seconds": 3})]
+    with mock.patch("urllib.request.urlopen", side_effect=reponses) as appel:
+        assert ecoute.transcrire(b"x", "audio/ogg", 3) == "naka"
+        assert appel.call_count == 2
+
+
+def test_octopus_toujours_lent_abandon_apres_deux_essais(octopus):
+    with mock.patch("urllib.request.urlopen", side_effect=TimeoutError()) as appel:
+        with pytest.raises(ecoute.EcouteIndisponible):
+            ecoute.transcrire(b"x", "audio/ogg", 3)
+        assert appel.call_count == 2
+    assert ecoute.COMPTEUR.secondes == 0  # rien n'est décompté du plafond du jour
+
+
+def test_refus_net_pas_de_nouvel_essai(octopus):
+    import urllib.error
+
+    refus = urllib.error.HTTPError("u", 401, "non autorisé", {}, None)
+    with mock.patch("urllib.request.urlopen", side_effect=refus) as appel:
+        with pytest.raises(ecoute.EcouteIndisponible):
+            ecoute.transcrire(b"x", "audio/ogg", 3)
+        assert appel.call_count == 1

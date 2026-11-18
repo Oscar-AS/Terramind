@@ -37,6 +37,9 @@ class EcouteIndisponible(Exception):
     """Octopus non configuré, plafond du jour atteint ou service en panne."""
 
 
+ESSAIS, DELAI = 2, 45  # secondes par essai : au pire 90 s avant de renoncer
+
+
 class NoteTropLongue(Exception):
     pass
 
@@ -95,17 +98,26 @@ def transcrire(audio: bytes, type_mime: str, duree_annoncee: float | None = None
             "Content-Type": f"multipart/form-data; boundary={borne}",
         },
     )
-    try:
-        with urllib.request.urlopen(req, timeout=60) as r:
-            d = json.loads(r.read())
-    except urllib.error.HTTPError as e:
-        COMPTEUR.corriger(reservees, 0)
-        journal.warning("Octopus a refusé la transcription : HTTP %s", e.code)
-        raise EcouteIndisponible(f"HTTP {e.code}") from e
-    except Exception as e:
-        COMPTEUR.corriger(reservees, 0)
-        journal.warning("Octopus injoignable : %s", type(e).__name__)
-        raise EcouteIndisponible(type(e).__name__) from e
+    # Octopus est parfois lent quelques instants (18 nov 2026 : pas de réponse en 60 s, puis 2 s
+    # l'appel suivant). Un 2e essai évite de dire à l'agriculteur « je ne peux pas écouter ».
+    # Un refus net (clé, droits : 4xx) n'est pas réessayé.
+    for essai in range(1, ESSAIS + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=DELAI) as r:
+                d = json.loads(r.read())
+            break
+        except urllib.error.HTTPError as e:
+            if e.code < 500 or essai == ESSAIS:
+                COMPTEUR.corriger(reservees, 0)
+                journal.warning("Octopus a refusé la transcription : HTTP %s", e.code)
+                raise EcouteIndisponible(f"HTTP {e.code}") from e
+            journal.warning("Octopus HTTP %s, nouvel essai", e.code)
+        except Exception as e:
+            if essai == ESSAIS:
+                COMPTEUR.corriger(reservees, 0)
+                journal.warning("Octopus injoignable : %s", type(e).__name__)
+                raise EcouteIndisponible(type(e).__name__) from e
+            journal.warning("Octopus lent ou injoignable (%s), nouvel essai", type(e).__name__)
     duree = float(d.get("duration_seconds") or reservees)
     COMPTEUR.corriger(reservees, duree)
     if duree > DUREE_MAX + 1:
