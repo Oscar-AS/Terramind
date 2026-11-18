@@ -13,6 +13,10 @@ if [ -d "$DOSSIER/assets/node_modules" ]; then
   mv "$DOSSIER/assets/node_modules" "$DOSSIER/assets/modules"
   grep -rl 'assets/node_modules/' "$DOSSIER" | xargs perl -pi -e 's#assets/node_modules/#assets/modules/#g'
 fi
+# Les navigateurs gardent l'ancien favicon en cache : son nom change avec son contenu.
+EMPREINTE=$(shasum "$DOSSIER/favicon.ico" | cut -c1-8)
+cp "$DOSSIER/favicon.ico" "$DOSSIER/favicon-$EMPREINTE.ico"
+grep -rl 'href="/favicon.ico"' "$DOSSIER" --include='*.html' | xargs perl -pi -e "s#href=\"/favicon.ico\"#href=\"/favicon-$EMPREINTE.ico\"#g"
 # Application d'une seule page : toutes les adresses (/plan, /alertes…) renvoient vers index.html.
 cat > "$DOSSIER/vercel.json" <<'JSON'
 { "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
