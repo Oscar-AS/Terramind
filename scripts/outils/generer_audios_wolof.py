@@ -29,6 +29,7 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(RACINE))
 from engine.app import config  # noqa: E402  (charge .env)
+from engine.app.responses.voix.prononciation import pour_la_voix  # noqa: E402
 
 CATALOGUE = RACINE / "content" / "voix" / "messages_wolof.csv"
 SORTIE = RACINE / "content" / "audio" / "wo"
@@ -54,13 +55,14 @@ def jeton() -> str:
 
 
 def empreinte(texte: str) -> str:
-    return hashlib.sha256(texte.encode()).hexdigest()[:16]
+    """Empreinte de ce qui est réellement dit : changer la table de prononciation refait l'audio."""
+    return hashlib.sha256(pour_la_voix(texte).encode()).hexdigest()[:16]
 
 
 def synthetiser(texte: str, cle_api: str, langue: str = "wo") -> bytes:
     corps = json.dumps(
         {
-            "text": texte,
+            "text": pour_la_voix(texte) if langue == "wo" else texte,
             "language": langue,
             "project_id": config.OCTOPUS_PROJECT_ID or "proj-challenge-f0903409d71542feaa95",
         }
@@ -103,7 +105,9 @@ def main():
             continue
         if l["statut"] not in statuts or not l["texte_wo"].strip():
             continue
-        existe = any((SORTIE / f"{l['cle']}.{x}").exists() for x in ("ogg", "mp3", "m4a"))
+        if (SORTIE / f"{l['cle']}.m4a").exists():
+            continue  # enregistrée par un locuteur : jamais remplacée par la voix de synthèse
+        existe = any((SORTIE / f"{l['cle']}.{x}").exists() for x in ("ogg", "mp3"))
         meme_texte = deja.get(l["cle"], {}).get("empreinte") == empreinte(l["texte_wo"])
         if existe and meme_texte and not args.forcer:
             continue
@@ -131,7 +135,9 @@ def main():
                 f"  [{i}/{len(a_faire)}] {l['cle']} : échec ({type(e).__name__} {getattr(e, 'code', '')})"
             )
             continue
-        for x in ("ogg", "m4a"):  # un seul fichier par clé : le bot prend le premier trouvé
+        for x in (
+            "ogg",
+        ):  # un seul fichier de synthèse par clé (les .m4a de locuteurs ne sont pas ici)
             (SORTIE / f"{l['cle']}.{x}").unlink(missing_ok=True)
         (SORTIE / f"{l['cle']}.mp3").write_bytes(audio)
         deja[l["cle"]] = {

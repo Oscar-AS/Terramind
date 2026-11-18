@@ -9,6 +9,7 @@
 <p align="center">
   <a href="https://terramind-sigma.vercel.app"><img src="https://img.shields.io/badge/🌍%20Visiter%20le%20site-terramind--sigma.vercel.app-1f4d3a?style=for-the-badge" alt="Visiter le site : terramind-sigma.vercel.app"></a>
   <a href="https://t.me/TerraMindAfriqueBot"><img src="https://img.shields.io/badge/💬%20Essayer%20le%20bot-@TerraMindAfriqueBot-229ED9?style=for-the-badge&logo=telegram&logoColor=white" alt="Essayer le bot Telegram"></a>
+  <a href="https://expo.dev/artifacts/eas/xIw1POgt2CrySdCF0OPw3Ye-wQrRuNp8i4ow5NY0z5c.apk"><img src="https://img.shields.io/badge/📱%20Télécharger-l'app%20Android%20(APK)-d08a2e?style=for-the-badge&logo=android&logoColor=white" alt="Télécharger l'application Android (APK)"></a>
 </p>
 
 <p align="center">
@@ -69,20 +70,20 @@ Chaque conseil **cite le document** d'où il vient. Quand TerraMind n'est pas s�
 
 <table>
 <tr>
-<td align="center" width="25%"><img src="docs/assets/captures/telegram/02-accueil.webp" alt="Accueil du bot"></td>
-<td align="center" width="25%"><img src="docs/assets/captures/telegram/05a-plan-sol.webp" alt="Ce que dit le sol"></td>
+<td align="center" width="25%"><img src="docs/assets/captures/telegram/09a-wolof-accueil.webp" alt="Le bot en wolof : note vocale d'accueil"></td>
+<td align="center" width="25%"><img src="docs/assets/captures/telegram/09b-wolof-position-test.webp" alt="Notes vocales en wolof après la position test"></td>
 <td align="center" width="25%"><img src="docs/assets/captures/telegram/07b-diagnostic-resultat.webp" alt="Diagnostic : Mildiou, 95 %"></td>
 <td align="center" width="25%"><img src="docs/assets/captures/telegram/08b-reponse-sources.webp" alt="Réponse sourcée"></td>
 </tr>
 <tr>
-<td align="center"><b>Bienvenue</b><br><sub>Des boutons, pas de commandes à retenir</sub></td>
-<td align="center"><b>Son sol</b><br><sub>Sable, argile, acidité au point du champ</sub></td>
+<td align="center"><b>Il parle wolof</b><br><sub>Chaque message est aussi une note vocale</sub></td>
+<td align="center"><b>Il répond à voix haute</b><br><sub>Notes vocales en wolof, texte en français dessous</sub></td>
 <td align="center"><b>Sa photo</b><br><sub>La maladie expliquée en 4 temps</sub></td>
 <td align="center"><b>Sa question</b><br><sub>Une réponse tirée des fiches, pages citées</sub></td>
 </tr>
 </table>
 
-<sub>Vraies captures de <a href="https://t.me/TerraMindAfriqueBot">@TerraMindAfriqueBot</a> branché sur le moteur en ligne, 15 et 16 nov 2026. Position : bouton « position test » (Rufisque), pas celle d'un agriculteur. Toutes les captures : <a href="docs/assets/captures/">docs/assets/captures/</a>.</sub>
+<sub>Vraies captures de <a href="https://t.me/TerraMindAfriqueBot">@TerraMindAfriqueBot</a> branché sur le moteur en ligne, 15, 16 et 17 nov 2026 (mode wolof : 17 nov). Position : bouton « position test » (Rufisque), pas celle d'un agriculteur. Toutes les captures : <a href="docs/assets/captures/">docs/assets/captures/</a>.</sub>
 
 ## 🗣️ Le wolof, à l'oral
 

@@ -272,11 +272,12 @@ def dire(chat: int, cle: str, toujours: bool = False):
     le texte suit de toute façon."""
     if not toujours and ETATS.get(chat, {}).get("langue") != "wo":
         return
-    # Telegram accepte les notes vocales en OGG (Opus), MP3 ou M4A.
+    # Telegram accepte les notes vocales en OGG (Opus), MP3 ou M4A. L'enregistrement d'un locuteur (.m4a)
+    # passe avant la voix de synthèse.
     chemin = next(
         (
             AUDIO_WO / f"{cle}.{ext}"
-            for ext in ("ogg", "mp3", "m4a")
+            for ext in ("m4a", "ogg", "mp3")
             if (AUDIO_WO / f"{cle}.{ext}").exists()
         ),
         None,

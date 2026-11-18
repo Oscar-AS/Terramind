@@ -34,7 +34,11 @@ def phrase(cle: str) -> dict | None:
     l = _phrases().get(cle)
     if not l:
         return None
-    audio = AUDIO_WO / f"{cle}.mp3"
+    # Voix d'Octopus (.mp3), ou enregistrement d'un locuteur (.m4a, prioritaire : prononciation exacte).
+    audio = next(
+        (AUDIO_WO / f"{cle}.{x}" for x in ("m4a", "mp3") if (AUDIO_WO / f"{cle}.{x}").exists()),
+        AUDIO_WO / f"{cle}.mp3",
+    )
     return {
         "cle": cle,
         "texte_wo": l["texte_wo"],

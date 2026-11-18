@@ -6,6 +6,7 @@ Points d'entrée métier /v1 (docs/api.md) : plan, alertes, diagnostic photo, qu
 """
 
 import logging
+import mimetypes
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,6 +26,8 @@ app.add_middleware(
 )
 app.include_router(v1.router)
 app.include_router(telegram.router)
+# Les enregistrements de locuteurs sont en .m4a : type inconnu de Python 3.11 sans cette ligne.
+mimetypes.add_type("audio/mp4", ".m4a")
 # Notes vocales wolof relues (content/audio/wo/), écoutées par l'application en mode wolof.
 if catalogue.AUDIO_WO.is_dir():
     app.mount("/audio/wo", StaticFiles(directory=catalogue.AUDIO_WO), name="audio_wo")

@@ -5,6 +5,7 @@
 !content/audio/wo/
 !content/voix/lexique_wolof.csv
 !content/voix/messages_wolof.csv
+!content/voix/prononciation_voix.csv
 !modeles/diagnostic/
 engine/tests/
 **/__pycache__

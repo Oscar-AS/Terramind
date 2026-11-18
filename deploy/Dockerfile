@@ -20,6 +20,7 @@ COPY --chown=user content/fiches/ content/fiches/
 COPY --chown=user content/audio/wo/ content/audio/wo/
 COPY --chown=user content/voix/lexique_wolof.csv content/voix/lexique_wolof.csv
 COPY --chown=user content/voix/messages_wolof.csv content/voix/messages_wolof.csv
+COPY --chown=user content/voix/prononciation_voix.csv content/voix/prononciation_voix.csv
 # Modèle de diagnostic (ONNX + étiquettes + calibration), produit par ml/training/ ; hors Git.
 COPY --chown=user modeles/diagnostic/ modeles/diagnostic/
 
