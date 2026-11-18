@@ -10,7 +10,7 @@
   <a href="https://terramind-afrique.vercel.app"><img src="https://img.shields.io/badge/🌱%20Ouvrir%20l'app-terramind--afrique.vercel.app-3f8f5f?style=for-the-badge" alt="Ouvrir l'application en ligne : terramind-afrique.vercel.app"></a>
   <a href="https://terramind-sigma.vercel.app"><img src="https://img.shields.io/badge/🌍%20Visiter%20le%20site-terramind--sigma.vercel.app-1f4d3a?style=for-the-badge" alt="Visiter le site : terramind-sigma.vercel.app"></a>
   <a href="https://t.me/TerraMindAfriqueBot"><img src="https://img.shields.io/badge/💬%20Essayer%20le%20bot-@TerraMindAfriqueBot-229ED9?style=for-the-badge&logo=telegram&logoColor=white" alt="Essayer le bot Telegram"></a>
-  <a href="https://expo.dev/artifacts/eas/xIw1POgt2CrySdCF0OPw3Ye-wQrRuNp8i4ow5NY0z5c.apk"><img src="https://img.shields.io/badge/📱%20Télécharger-l'app%20Android%20(APK)-d08a2e?style=for-the-badge&logo=android&logoColor=white" alt="Télécharger l'application Android (APK)"></a>
+  <a href="https://expo.dev/artifacts/eas/mcgAGA13JtmuknxLoSQWJ3bBRHGY02TgFiquqINAYg0.apk"><img src="https://img.shields.io/badge/📱%20Télécharger-l'app%20Android%20(APK)-d08a2e?style=for-the-badge&logo=android&logoColor=white" alt="Télécharger l'application Android (APK)"></a>
 </p>
 
 <p align="center">
