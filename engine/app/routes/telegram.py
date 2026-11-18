@@ -586,7 +586,7 @@ def _vocal(chat: int, note: dict):
         )
         return
     except Exception as e:  # Octopus indisponible, plafond du jour atteint, fichier illisible
-        journal.info("note vocale non traitée : %s", type(e).__name__)
+        journal.warning("note vocale non traitée : %s (%s)", type(e).__name__, e)
         dire(chat, "vocal_indisponible")
         envoyer(
             chat,
