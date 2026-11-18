@@ -1,5 +1,11 @@
 import { router } from 'expo-router';
-import { ArrowRight, Drop, type Icon, Mountains, Question, ThumbsDown, ThumbsUp } from 'phosphor-react-native';
+import type { Icon } from 'phosphor-react-native';
+import { ArrowRight } from 'phosphor-react-native/src/icons/ArrowRight';
+import { Drop } from 'phosphor-react-native/src/icons/Drop';
+import { Mountains } from 'phosphor-react-native/src/icons/Mountains';
+import { Question } from 'phosphor-react-native/src/icons/Question';
+import { ThumbsDown } from 'phosphor-react-native/src/icons/ThumbsDown';
+import { ThumbsUp } from 'phosphor-react-native/src/icons/ThumbsUp';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 

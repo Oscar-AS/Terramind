@@ -1,6 +1,9 @@
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
-import { Camera, Images, Leaf, Sun } from 'phosphor-react-native';
+import { Camera } from 'phosphor-react-native/src/icons/Camera';
+import { Images } from 'phosphor-react-native/src/icons/Images';
+import { Leaf } from 'phosphor-react-native/src/icons/Leaf';
+import { Sun } from 'phosphor-react-native/src/icons/Sun';
 import { useEffect, useState } from 'react';
 import { Animated, Easing, Platform, StyleSheet, View } from 'react-native';
 

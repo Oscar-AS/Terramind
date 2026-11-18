@@ -64,7 +64,7 @@ def synthetiser(texte: str, cle_api: str, langue: str = "wo") -> bytes:
         {
             "text": pour_la_voix(texte) if langue == "wo" else texte,
             "language": langue,
-            "project_id": config.OCTOPUS_PROJECT_ID or "proj-challenge-f0903409d71542feaa95",
+            "project_id": config.OCTOPUS_PROJECT_ID,
         }
     ).encode()
     entetes = {"Authorization": f"Bearer {cle_api}", "User-Agent": AGENT}
@@ -123,6 +123,8 @@ def main():
         sys.exit(
             "Aucun jeton Octopus : remplir OCTOPUS_API_KEY dans .env ou lancer `octopus login`."
         )
+    if not config.OCTOPUS_PROJECT_ID:
+        sys.exit("Aucun projet Octopus : remplir OCTOPUS_PROJECT_ID dans .env.")
 
     SORTIE.mkdir(parents=True, exist_ok=True)
     for i, l in enumerate(a_faire, 1):

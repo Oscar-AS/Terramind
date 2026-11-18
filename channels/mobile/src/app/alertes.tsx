@@ -1,5 +1,13 @@
 import { router } from 'expo-router';
-import { Bug, CalendarCheck, CloudRain, CloudSun, Eye, EyeSlash, type Icon, Leaf, SealCheck } from 'phosphor-react-native';
+import type { Icon } from 'phosphor-react-native';
+import { Bug } from 'phosphor-react-native/src/icons/Bug';
+import { CalendarCheck } from 'phosphor-react-native/src/icons/CalendarCheck';
+import { CloudRain } from 'phosphor-react-native/src/icons/CloudRain';
+import { CloudSun } from 'phosphor-react-native/src/icons/CloudSun';
+import { Eye } from 'phosphor-react-native/src/icons/Eye';
+import { EyeSlash } from 'phosphor-react-native/src/icons/EyeSlash';
+import { Leaf } from 'phosphor-react-native/src/icons/Leaf';
+import { SealCheck } from 'phosphor-react-native/src/icons/SealCheck';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
