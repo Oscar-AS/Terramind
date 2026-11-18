@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Photos d'essai · TerraMind</title>
+  <meta name="description" content="Trois photos de tomates malades pour essayer le diagnostic de TerraMind.">
+  <meta name="theme-color" content="#1F4D3A">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231F4D3A'/%3E%3Cpath d='M8 25c0-10 6-16 17-17 0 11-6 16-17 17z' fill='%23F5EFE3'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Page autonome (petite feuille de style ici) : elle ne dépend pas du site.css compilé par Tailwind. -->
+  <style>
+    :root { --foret: #1F4D3A; --feuille: #3F8F5F; --sable: #F5EFE3; --sable-fonce: #EADFC9; --carte: #FFFCF6; --encre: #1B2A22; --doux: #5B6B61; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--sable); color: var(--encre); font: 400 17px/1.55 'Work Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    .haut { background: var(--foret); color: var(--sable); padding: 20px 20px 72px; }
+    .marque { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font: 600 20px 'Outfit', sans-serif; letter-spacing: -0.03em; }
+    .marque span { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; background: var(--sable); }
+    .page { max-width: 980px; margin: 0 auto; }
+    h1 { font: 600 clamp(30px, 5vw, 44px)/1.1 'Outfit', sans-serif; letter-spacing: -0.03em; margin: 40px 0 12px; }
+    .intro { max-width: 640px; margin: 0; color: #DCE6DF; }
+    .etapes { list-style: none; padding: 0; margin: -48px auto 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .etapes li { display: flex; gap: 12px; align-items: flex-start; background: var(--carte); border-radius: 16px; padding: 16px 18px; box-shadow: 0 6px 24px rgba(31, 77, 58, .10); }
+    .num { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--foret); color: var(--sable); font: 600 15px 'Outfit', sans-serif; }
+    .etapes b { font-weight: 500; }
+    .photos { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin: 36px 0; }
+    figure { margin: 0; background: var(--carte); border-radius: 20px; overflow: hidden; box-shadow: 0 6px 24px rgba(31, 77, 58, .08); display: flex; flex-direction: column; }
+    figure img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; background: var(--sable-fonce); }
+    figcaption { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    figcaption h2 { font: 600 21px 'Outfit', sans-serif; margin: 0; letter-spacing: -0.02em; }
+    .attendu { margin: 0; color: var(--doux); font-size: 15px; }
+    .attendu .cite { color: var(--encre); font-weight: 500; }
+    .bouton { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; background: var(--foret); color: var(--sable); text-decoration: none; font: 500 16px 'Work Sans', sans-serif; padding: 11px 18px; border-radius: 999px; transition: background .2s, transform .2s; }
+    .bouton:hover { background: var(--feuille); transform: translateY(-1px); }
+    .bouton:focus-visible { outline: 3px solid #E3A72F; outline-offset: 2px; }
+    .note { background: var(--sable-fonce); border-radius: 16px; padding: 16px 18px; font-size: 15px; color: var(--doux); }
+    .note p { margin: 0 0 8px; } .note p:last-child { margin: 0; }
+    footer { padding: 28px 0 40px; font-size: 14px; color: var(--doux); }
+    main { padding: 0 20px; }
+  </style>
+</head>
+<body>
+  <header class="haut">
+    <div class="page">
+      <a class="marque" href="/" aria-label="TerraMind, retour au site">
+        <span><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#1F4D3A"/></svg></span>
+        terramind
+      </a>
+      <h1>Photos d'essai</h1>
+      <p class="intro">Pas de tomate malade sous la main ? Prends une de ces trois photos et envoie-la à TerraMind. Il te dira ce qu'il voit.</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="page">
+      <ol class="etapes">
+        <li><div class="num">1</div><div><b>Télécharge</b> une des photos ci-dessous.</div></li>
+        <li><div class="num">2</div><div>Ouvre <a href="https://terramind-afrique.vercel.app">l'application</a>, puis <b>Prendre ma plante en photo</b> → <b>Choisir dans ma galerie</b>.</div></li>
+        <li><div class="num">3</div><div>Ou envoie la photo au bot Telegram <a href="https://t.me/TerraMindAfriqueBot">@TerraMindAfriqueBot</a>.</div></li>
+      </ol>
+
+      <section class="photos" aria-label="Photos à télécharger">
+        <figure>
+          <img src="/essai/mildiou-tomate.jpg" width="300" height="300" alt="Tomate verte avec une grande tache brune : mildiou">
+          <figcaption>
+            <h2>Mildiou</h2>
+            <p class="attendu">TerraMind doit répondre : <b class="cite">« Cela ressemble à : Mildiou »</b></p>
+            <a class="bouton" href="/essai/mildiou-tomate.jpg" download>Télécharger la photo</a>
+          </figcaption>
+        </figure>
+        <figure>
+          <img src="/essai/virose-tomate.jpg" width="407" height="407" alt="Plant de tomate aux feuilles frisées et déformées : virose">
+          <figcaption>
+            <h2>Virose</h2>
+            <p class="attendu">TerraMind doit répondre : <b class="cite">« Cela ressemble à : Virose »</b></p>
+            <a class="bouton" href="/essai/virose-tomate.jpg" download>Télécharger la photo</a>
+          </figcaption>
+        </figure>
+        <figure>
+          <img src="/essai/acariens-tomate.jpg" width="319" height="319" alt="Feuille de tomate tenue en main, piquée de petits points clairs : acariens">
+          <figcaption>
+            <h2>Acariens</h2>
+            <p class="attendu">TerraMind doit répondre : <b class="cite">« Cela ressemble à : Acariens »</b></p>
+            <a class="bouton" href="/essai/acariens-tomate.jpg" download>Télécharger la photo</a>
+          </figcaption>
+        </figure>
+      </section>
+
+      <div class="note">
+        <p><b>D'où viennent ces photos ?</b> Ce sont de vraies photos de champs du Burkina Faso, tirées du jeu de données TOM2024. Elles font partie des photos de test : le modèle ne les a jamais vues pendant son apprentissage.</p>
+        <p>Sur ces photos de test, TerraMind trouve la bonne réponse 9 fois sur 10 (91,7 %). Ses réponses restent une première indication : pour être sûr, l'agriculteur montre sa plante à un agent agricole.</p>
+      </div>
+
+      <footer>
+        Photos : jeu de données TOM2024, <a href="https://huggingface.co/datasets/Project-AgML/TOM2024_disease_classification">Project-AgML/TOM2024_disease_classification</a>, licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr">CC BY 4.0</a>. Images non modifiées.
+        · <a href="/">Retour au site TerraMind</a>
+      </footer>
+    </div>
+  </main>
+</body>
+</html>
