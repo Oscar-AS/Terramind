@@ -7,6 +7,12 @@ rm -rf dist
 EXPO_PUBLIC_ENGINE_URL=https://terramind-moteur.onrender.com npx expo export -p web
 DOSSIER="${TMPDIR:-/tmp}/terramind-app"   # le nom du dossier donne le nom du projet Vercel
 rm -rf "$DOSSIER" && mkdir -p "$DOSSIER" && cp -R dist/. "$DOSSIER/"
+# Vercel n'envoie jamais les dossiers « node_modules » : les polices rangées dans assets/node_modules
+# manquaient en ligne et l'app restait sur un écran vide. On renomme le dossier et ses références.
+if [ -d "$DOSSIER/assets/node_modules" ]; then
+  mv "$DOSSIER/assets/node_modules" "$DOSSIER/assets/modules"
+  grep -rl 'assets/node_modules/' "$DOSSIER" | xargs perl -pi -e 's#assets/node_modules/#assets/modules/#g'
+fi
 # Application d'une seule page : toutes les adresses (/plan, /alertes…) renvoient vers index.html.
 cat > "$DOSSIER/vercel.json" <<'JSON'
 { "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
