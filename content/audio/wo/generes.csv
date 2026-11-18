@@ -11,7 +11,7 @@ alerte_pas_de_regle,relu,01aa529bec044381,144238
 alerte_plutella_xylostella,relu,9b38611d515c66ec,144238
 alerte_rien,relu,c6bb6f72beb5f7f2,141731
 alerte_tuta_absoluta,relu,7d5e58b435a788ea,157195
-attente_photo,relu,adf6259bc8f151a3,63990
+attente_photo,relu,f6c4522909b14e28,61065
 choix_culture,relu,6ca0971e40c0042b,304317
 choix_langue,relu,b4c4785252b89742,135086
 conseils_photo,relu,3c78b2c8068b8038,387491
@@ -57,7 +57,7 @@ fiche_maladie-septoriose,relu,ec2f9abc2f02bc5b,365757
 fiche_maladie-tache-bacterienne,relu,0710abf6fe333141,275060
 fiche_maladie-tache-cible,relu,898f1997bf64c53b,361995
 fiche_maladie-viroses-tomate,relu,246bffe08f9745e8,316020
-fiche_ravageur-acariose-tomate,relu,e4fce7a61c3c7f6f,257087
+fiche_ravageur-acariose-tomate,relu,38c3b7fa24ccf2bf,254580
 fiche_ravageur-chenilles-oignon,relu,e17f97fb5a209229,259595
 fiche_ravageur-noctuelle-tomate,relu,d0cb159098108bd0,255834
 invite_question,relu,f0a6e62292212cc3,66498
@@ -71,7 +71,7 @@ plan_suite,relu,1330b34d4a7679b1,162211
 position_recue,relu,8a13483daea40baf,40585
 question_bas_fond,relu,3dd21745b8f3d963,149672
 question_eau_salee,relu,a70948d2a04e931a,123758
-vocal_ecoute,relu,096fa3b93929b971,51034
+vocal_ecoute,relu,739c465ab01bca7d,48526
 vocal_indisponible,relu,7cf564fbbfe7917e,113727
 vocal_non_compris,relu,0ea53ae788b306a0,112474
 vocal_trop_long,relu,6d622f39e0664de8,85724
