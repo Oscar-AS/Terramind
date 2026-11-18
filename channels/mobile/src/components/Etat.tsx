@@ -1,4 +1,7 @@
-import { ArrowsClockwise, BookOpen, type Icon, WifiSlash } from 'phosphor-react-native';
+import type { Icon } from 'phosphor-react-native';
+import { ArrowsClockwise } from 'phosphor-react-native/src/icons/ArrowsClockwise';
+import { BookOpen } from 'phosphor-react-native/src/icons/BookOpen';
+import { WifiSlash } from 'phosphor-react-native/src/icons/WifiSlash';
 import { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 

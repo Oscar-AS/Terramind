@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Translate } from 'phosphor-react-native';
+import { Translate } from 'phosphor-react-native/src/icons/Translate';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Ecran } from '@/components/Ecran';

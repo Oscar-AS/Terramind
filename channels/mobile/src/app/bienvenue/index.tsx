@@ -1,6 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { ArrowRight, SpeakerHigh, Stop } from 'phosphor-react-native';
+import { ArrowRight } from 'phosphor-react-native/src/icons/ArrowRight';
+import { SpeakerHigh } from 'phosphor-react-native/src/icons/SpeakerHigh';
+import { Stop } from 'phosphor-react-native/src/icons/Stop';
 import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

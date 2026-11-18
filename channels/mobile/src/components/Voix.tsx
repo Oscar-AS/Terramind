@@ -1,7 +1,8 @@
 // Notes vocales wolof (phrases relues par un locuteur, servies par le moteur sur /audio/wo/).
 // Un seul lecteur par écran : une nouvelle lecture arrête la précédente ; les phrases s'enchaînent.
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import { SpeakerHigh, Stop } from 'phosphor-react-native';
+import { SpeakerHigh } from 'phosphor-react-native/src/icons/SpeakerHigh';
+import { Stop } from 'phosphor-react-native/src/icons/Stop';
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 

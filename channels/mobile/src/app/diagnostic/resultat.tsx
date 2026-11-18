@@ -1,7 +1,17 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import {
-  CameraPlus, FirstAidKit, FrameCorners, type Icon, Info, Leaf, Lightbulb, MagnifyingGlass, Question, SealCheck, ShieldCheck, Sun, Warning,
-} from 'phosphor-react-native';
+import type { Icon } from 'phosphor-react-native';
+import { CameraPlus } from 'phosphor-react-native/src/icons/CameraPlus';
+import { FirstAidKit } from 'phosphor-react-native/src/icons/FirstAidKit';
+import { FrameCorners } from 'phosphor-react-native/src/icons/FrameCorners';
+import { Info } from 'phosphor-react-native/src/icons/Info';
+import { Leaf } from 'phosphor-react-native/src/icons/Leaf';
+import { Lightbulb } from 'phosphor-react-native/src/icons/Lightbulb';
+import { MagnifyingGlass } from 'phosphor-react-native/src/icons/MagnifyingGlass';
+import { Question } from 'phosphor-react-native/src/icons/Question';
+import { SealCheck } from 'phosphor-react-native/src/icons/SealCheck';
+import { ShieldCheck } from 'phosphor-react-native/src/icons/ShieldCheck';
+import { Sun } from 'phosphor-react-native/src/icons/Sun';
+import { Warning } from 'phosphor-react-native/src/icons/Warning';
 import { useEffect, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
 

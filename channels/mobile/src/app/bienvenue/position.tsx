@@ -1,6 +1,9 @@
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import { Crosshair, Flask, MapPin, MapTrifold } from 'phosphor-react-native';
+import { Crosshair } from 'phosphor-react-native/src/icons/Crosshair';
+import { Flask } from 'phosphor-react-native/src/icons/Flask';
+import { MapPin } from 'phosphor-react-native/src/icons/MapPin';
+import { MapTrifold } from 'phosphor-react-native/src/icons/MapTrifold';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 

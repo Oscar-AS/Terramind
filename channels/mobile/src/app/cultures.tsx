@@ -1,5 +1,7 @@
 import { router } from 'expo-router';
-import { Check, Minus, Plus } from 'phosphor-react-native';
+import { Check } from 'phosphor-react-native/src/icons/Check';
+import { Minus } from 'phosphor-react-native/src/icons/Minus';
+import { Plus } from 'phosphor-react-native/src/icons/Plus';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 

@@ -1,4 +1,6 @@
-import { BookOpenText, ChatCircleText, PaperPlaneRight } from 'phosphor-react-native';
+import { BookOpenText } from 'phosphor-react-native/src/icons/BookOpenText';
+import { ChatCircleText } from 'phosphor-react-native/src/icons/ChatCircleText';
+import { PaperPlaneRight } from 'phosphor-react-native/src/icons/PaperPlaneRight';
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 

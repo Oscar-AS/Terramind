@@ -1,6 +1,13 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
-import { Bell, CalendarCheck, Camera, ChatCircleText, type Icon, MapPin, Plant, Translate } from 'phosphor-react-native';
+import type { Icon } from 'phosphor-react-native';
+import { Bell } from 'phosphor-react-native/src/icons/Bell';
+import { CalendarCheck } from 'phosphor-react-native/src/icons/CalendarCheck';
+import { Camera } from 'phosphor-react-native/src/icons/Camera';
+import { ChatCircleText } from 'phosphor-react-native/src/icons/ChatCircleText';
+import { MapPin } from 'phosphor-react-native/src/icons/MapPin';
+import { Plant } from 'phosphor-react-native/src/icons/Plant';
+import { Translate } from 'phosphor-react-native/src/icons/Translate';
 import { useCallback, useState } from 'react';
 import { ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

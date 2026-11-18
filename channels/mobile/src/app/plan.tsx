@@ -1,5 +1,11 @@
 import { router } from 'expo-router';
-import { CalendarBlank, CheckCircle, Hourglass, MinusCircle, Plant, Warning, WarningCircle } from 'phosphor-react-native';
+import { CalendarBlank } from 'phosphor-react-native/src/icons/CalendarBlank';
+import { CheckCircle } from 'phosphor-react-native/src/icons/CheckCircle';
+import { Hourglass } from 'phosphor-react-native/src/icons/Hourglass';
+import { MinusCircle } from 'phosphor-react-native/src/icons/MinusCircle';
+import { Plant } from 'phosphor-react-native/src/icons/Plant';
+import { Warning } from 'phosphor-react-native/src/icons/Warning';
+import { WarningCircle } from 'phosphor-react-native/src/icons/WarningCircle';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 

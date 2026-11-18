@@ -1,5 +1,7 @@
 import { router } from 'expo-router';
-import { ArrowLeft, SpeakerHigh, Stop } from 'phosphor-react-native';
+import { ArrowLeft } from 'phosphor-react-native/src/icons/ArrowLeft';
+import { SpeakerHigh } from 'phosphor-react-native/src/icons/SpeakerHigh';
+import { Stop } from 'phosphor-react-native/src/icons/Stop';
 import type { ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
