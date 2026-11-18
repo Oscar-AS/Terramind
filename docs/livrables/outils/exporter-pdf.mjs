@@ -1,0 +1,10 @@
+import puppeteer from 'puppeteer';
+const [src, out] = process.argv.slice(2);
+const b = await puppeteer.launch({ headless: 'new' });
+const p = await b.newPage();
+await p.goto('file://' + src, { waitUntil: 'networkidle0' });
+await p.evaluateHandle('document.fonts.ready');
+const debord = await p.evaluate(() => [...document.querySelectorAll('.page')].map((pg, i) => { const r = pg.getBoundingClientRect(); const bas = Math.max(...[...pg.querySelectorAll('*')].filter(e => !e.closest('.pied') && !e.classList.contains('bandeau')).map(e => e.getBoundingClientRect().bottom)); const pied = pg.querySelector(".pied").getBoundingClientRect().top - r.top; return `page ${i + 1} : contenu jusqu'à ${Math.round(bas - r.top)} px, pied à ${Math.round(pied)} px => marge ${Math.round(pied - (bas - r.top))} px`; }));
+console.log(debord.join('\n'));
+await p.pdf({ path: out, format: 'A4', printBackground: true, preferCSSPageSize: true });
+await b.close();

@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>TerraMind · Fiche de projet</title>
+<!-- Fiche de projet du PAS Challenge 2026. Export PDF : node docs/livrables/exporter-pdf.mjs (voir README du dossier). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Work+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root { --foret:#1F4D3A; --feuille:#3F8F5F; --pousse:#DCEBD9; --sable:#F5EFE3; --sablef:#EADFC9; --carte:#FFFCF6; --encre:#1B2A22; --doux:#55645A; --soleil:#E3A72F; --soleilc:#FBEFCF; --terre:#B4532A; --tg:#229ED9; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #ccc; }
+  body { font: 400 9.7pt/1.45 'Work Sans', sans-serif; color: var(--encre); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; margin: 0 auto 8mm; background: white; position: relative; overflow: hidden; padding: 13mm 15mm 14mm; page-break-after: always; break-after: page; }
+  .page:last-child { page-break-after: auto; break-after: auto; margin-bottom: 0; }
+  @media print { html, body { background: white; } .page { margin: 0; } }
+  h1, h2, h3 { font-family: 'Outfit', sans-serif; letter-spacing: -0.02em; margin: 0; }
+  h2 { font-size: 15.5pt; color: var(--foret); display: flex; align-items: center; gap: 9px; margin: 0 0 7px; }
+  h2 .n { display: inline-grid; place-items: center; width: 25px; height: 25px; border-radius: 8px; background: var(--foret); color: var(--sable); font-size: 12pt; }
+  h3 { font-size: 11.5pt; color: var(--encre); margin: 0 0 3px; }
+  p { margin: 0 0 6px; }
+  ul { margin: 0; padding-left: 16px; } li { margin: 0 0 3px; }
+  b, strong { font-weight: 600; }
+  a { color: var(--foret); text-decoration: none; font-weight: 500; }
+  .doux { color: var(--doux); }
+  .petit { font-size: 8.6pt; line-height: 1.45; }
+  .pied { position: absolute; left: 15mm; right: 15mm; bottom: 7mm; display: flex; justify-content: space-between; font-size: 7.8pt; color: var(--doux); border-top: 1px solid var(--sablef); padding-top: 4px; }
+  .carte { background: var(--carte); border: 1px solid var(--sablef); border-radius: 12px; padding: 10px 12px; }
+  .grille2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grille3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .grille4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+  .pastille { display: inline-block; font-size: 7.8pt; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--feuille); background: var(--pousse); border-radius: 99px; padding: 2px 8px; }
+  .chiffre { font-family: 'Outfit', sans-serif; font-size: 18pt; font-weight: 700; color: var(--foret); line-height: 1; }
+  .source { font-size: 7.6pt; color: var(--doux); }
+  section { margin-bottom: 11px; }
+
+  /* Page 1 : en-tête */
+  .bandeau { background: var(--foret); color: var(--sable); margin: -13mm -15mm 9px; padding: 9mm 15mm 7mm; position: relative; }
+  .logo { display: flex; align-items: center; gap: 9px; font: 600 15pt 'Outfit', sans-serif; letter-spacing: -0.03em; }
+  .logo span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--sable); }
+  .bandeau h1 { font-size: 23pt; line-height: 1.05; margin: 10px 0 6px; max-width: 150mm; }
+  .bandeau .sous { color: #D5E2D9; font-size: 10pt; max-width: 140mm; margin: 0; }
+  .bandeau .concours { position: absolute; right: 15mm; top: 11mm; text-align: right; font-size: 8.4pt; color: #D5E2D9; }
+  .equipe { display: flex; gap: 16px; margin-top: 10px; font-size: 8.6pt; color: #D5E2D9; }
+  .equipe b { color: var(--sable); font-weight: 500; }
+  .essayer { background: var(--sable); border-radius: 14px; padding: 11px 13px; margin-bottom: 11px; }
+  .essayer h3 { font-size: 12.5pt; color: var(--foret); }
+  .qr { display: grid; grid-template-columns: 58px 1fr; gap: 9px; align-items: center; background: white; border-radius: 10px; padding: 8px; }
+  .qr img { width: 58px; height: 58px; }
+  .qr .petit { display: block; font-size: 8pt; line-height: 1.3; }
+  .qr b { display: block; font-family: 'Outfit', sans-serif; font-size: 10.5pt; }
+  .qr .lien { font-size: 7pt; color: var(--feuille); white-space: nowrap; }
+  .note-jury { margin-top: 8px; font-size: 8.8pt; color: var(--encre); background: var(--soleilc); border-radius: 9px; padding: 7px 10px; }
+
+  /* Captures */
+  .ecrans { display: grid; grid-template-columns: repeat(4, 33mm); justify-content: space-around; }
+  .ecran { text-align: center; font-size: 8pt; color: var(--doux); }
+  /* Proportions réelles d'un téléphone : écran 393 × 852 points (iPhone 16), coins arrondis à l'échelle */
+  .ecran img { width: 100%; border-radius: 17px; border: 3.5px solid #1b1b1b; display: block; margin-bottom: 3px; aspect-ratio: 393/852; object-fit: cover; object-position: top; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+
+  /* Architecture */
+  .archi { display: grid; grid-template-columns: 1fr 26px 1.15fr 26px 1.35fr; align-items: stretch; gap: 0; }
+  .colonne { display: flex; flex-direction: column; gap: 7px; }
+  .colonne .titre { font-size: 7.8pt; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--doux); margin-bottom: 1px; }
+  .boite { border-radius: 10px; padding: 7px 9px; font-size: 8.8pt; line-height: 1.35; border: 1px solid var(--sablef); background: var(--carte); }
+  .boite b { display: block; font-size: 9.6pt; }
+  .boite.moteur { background: var(--foret); color: var(--sable); border: 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .boite.moteur b { font-size: 11pt; }
+  .boite.moteur code { font-size: 8.2pt; color: #D5E2D9; display: block; margin-top: 2px; }
+  .boite.octopus { background: var(--soleilc); border-color: #F1D9A0; }
+  .fleche { display: grid; place-items: center; color: var(--feuille); font-size: 15pt; }
+
+  /* Guide de test */
+  .parcours { border-radius: 12px; border: 1px solid var(--sablef); overflow: hidden; margin-bottom: 9px; }
+  .parcours .tete { display: flex; align-items: center; gap: 10px; padding: 7px 11px; background: var(--foret); color: var(--sable); }
+  .parcours .tete.tg { background: var(--tg); }
+  .parcours .tete.apk { background: #7a5a1e; }
+  .parcours .tete h3 { color: inherit; font-size: 11.5pt; margin: 0; }
+  .parcours .tete .duree { margin-left: auto; font-size: 8.2pt; opacity: .9; }
+  .parcours .tete img { width: 40px; height: 40px; background: white; border-radius: 6px; padding: 3px; }
+  table.etapes { width: 100%; border-collapse: collapse; font-size: 8.8pt; line-height: 1.38; }
+  table.etapes td { padding: 4px 9px; vertical-align: top; border-top: 1px solid #EFE8DA; }
+  table.etapes tr:first-child td { border-top: 0; }
+  table.etapes td.num { width: 22px; font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--feuille); }
+  table.etapes td.attendu { width: 44%; color: var(--doux); background: #FBF8F1; }
+  .bouton { display: inline-block; font-weight: 600; color: var(--foret); background: var(--pousse); border-radius: 5px; padding: 0 5px; white-space: nowrap; }
+  .tg .bouton, .bouton.tg { background: #DDF0FA; color: #0f5f86; }
+  .copier { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 8.4pt; background: var(--sable); border: 1px dashed #C9B98F; border-radius: 5px; padding: 0 5px; }
+  .attente { background: #FFF0F0; border: 2px dashed var(--terre); color: var(--terre); font-weight: 600; border-radius: 6px; padding: 3px 7px; display: block; margin-top: 3px; }
+
+  .climat { background: linear-gradient(135deg, #E9F3E7, #F7F1E2); border: 1px solid #CFE2CB; border-radius: 14px; padding: 10px 13px; margin: 10px 0 0; }
+  .climat h3 { font-size: 12.5pt; color: var(--foret); margin-bottom: 4px; }
+  .climat .grille2 { gap: 12px; }
+  .climat h4 { font: 600 9.6pt 'Outfit', sans-serif; margin: 2px 0 3px; color: var(--feuille); text-transform: uppercase; letter-spacing: .04em; }
+  /* Résultats */
+  table.resultats { width: 100%; border-collapse: collapse; font-size: 8.9pt; }
+  table.resultats th { text-align: left; font-size: 7.8pt; text-transform: uppercase; letter-spacing: .05em; color: var(--doux); font-weight: 600; padding: 3px 7px; border-bottom: 2px solid var(--sablef); }
+  table.resultats td { padding: 5px 7px; border-bottom: 1px solid #EFE8DA; vertical-align: top; }
+  table.resultats td:first-child { font-weight: 600; white-space: nowrap; }
+  .liens { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
+  .liens td { padding: 4px 7px; border-bottom: 1px solid #EFE8DA; vertical-align: top; }
+  .liens td:first-child { width: 33%; font-weight: 600; }
+  .liens a { word-break: break-all; }
+</style>
+</head>
+<body>
+
+<!-- ===================== PAGE 1 ===================== -->
+<div class="page">
+  <div class="bandeau">
+    <div class="logo"><span><svg width="16" height="16" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#1F4D3A"/></svg></span>terramind</div>
+    <div class="concours">PAS Challenge 2026 · SALTIS<br>Fiche de projet</div>
+    <h1>Le conseiller agricole dans la poche des maraîchers des Niayes</h1>
+    <p class="sous">Une photo de la plante, la position du champ ou une question : TerraMind dit quoi planter, quel risque arrive avec la météo et quelle est cette maladie. En français, ou en wolof à l'oral. Chaque conseil cite le document d'où il vient.</p>
+    <div class="equipe"><span><b>Alioune Abdou Salam Kane</b> · chef de projet, moteur et canaux</span><span><b>Judicaël Oscar Kafando</b> · IA et données</span><span><b>Ndeye Ramatoulaye Ndoye Fall</b> · contenu agricole et wolof</span></div>
+  </div>
+
+  <div class="essayer">
+    <h3>Essayer TerraMind en une minute : trois façons, au choix</h3>
+    <p class="petit doux" style="margin:2px 0 8px">Scannez un code avec un téléphone, ou cliquez sur le lien. Le guide pas à pas est en page 4. Pas de plante malade sous la main ? Prenez une <a href="https://terramind-sigma.vercel.app/essai">photo d'essai</a> : terramind-sigma.vercel.app/essai</p>
+    <div class="grille3">
+      <div class="qr"><img src="qr/qr_app.svg" alt=""><div><b>1. L'application en ligne</b><span class="petit">Rien à installer, ordinateur ou téléphone.</span><div class="lien">terramind-afrique.vercel.app</div></div></div>
+      <div class="qr"><img src="qr/qr_bot.svg" alt=""><div><b>2. Le bot Telegram</b><span class="petit">Il faut un compte Telegram.</span><div class="lien">t.me/TerraMindAfriqueBot</div></div></div>
+      <div class="qr"><img src="qr/qr_apk.svg" alt=""><div><b>3. L'application Android</b><span class="petit">À installer (APK), Android seulement.</span><div class="lien">lien complet en page 5</div></div></div>
+    </div>
+    <div class="note-jury"><b>À savoir.</b> Le lien de l'application en ligne existe <b>pour que le jury puisse tester sans rien installer</b>, parce qu'un lien est demandé. Dans la vraie vie, l'agriculteur utilise TerraMind <b>sur son téléphone</b> : le bot Telegram, ou l'application Android (3<sup>e</sup> façon). Chaque canal marche <b>en français</b> (réponses écrites) ou <b>en wolof</b> (réponses à écouter), au choix de l'agriculteur.</div>
+  </div>
+
+  <section>
+    <h2><span class="n">1</span>Contexte et problème</h2>
+    <p>Les Niayes, de Dakar à Saint-Louis, sont la grande zone de maraîchage du Sénégal : tomate, oignon, chou, pomme de terre. Un petit maraîcher y décide <b>seul</b> trois choses qui font sa récolte : <b>quoi planter</b> sur son sol et à quelle saison, <b>quand se méfier</b> d'une maladie qui arrive avec l'humidité, et <b>quelle est cette tache</b> sur la feuille. Une erreur peut coûter la saison.</p>
+    <div class="grille3" style="margin:8px 0">
+      <div class="carte"><div class="chiffre">71 %</div><p class="petit" style="margin:4px 0 2px">des exploitants horticoles des Niayes n'ont <b>aucun niveau d'instruction</b> : un conseil écrit et technique ne leur parle pas.</p><div class="source">Recensement de l'horticulture des Niayes, Direction de l'Horticulture, données 2012 (71,3 %)</div></div>
+      <div class="carte"><div class="chiffre">43,9 %</div><p class="petit" style="margin:4px 0 2px">des ménages agricoles de Louga (20,6 % à Thiès) ont subi des <b>ravageurs inhabituels</b>, contre 15,3 % au niveau national.</p><div class="source">Enquête agricole annuelle 2022-2023, DAPSA</div></div>
+      <div class="carte"><div class="chiffre">99 %</div><p class="petit" style="margin:4px 0 2px">des parcelles de chou reçoivent des <b>insecticides</b> (78 % pour l'oignon), souvent sans conseil sur le bon moment.</p><div class="source">Enquête agricole annuelle 2022-2023, DAPSA</div></div>
+    </div>
+    <p>Les agents de conseil agricole sont peu nombreux et ne passent pas chaque semaine. Les savoirs existent pourtant : guides de l'ISRA et de la FAO, manuels de la Protection des végétaux, cartes des sols, météo par satellite. Mais ils sont <b>dispersés, écrits, en français technique</b>, et rarement reliés au champ précis de l'agriculteur.</p>
+  </section>
+
+  <div class="pied"><span>TerraMind · PAS Challenge 2026</span><span>1 / 5</span></div>
+</div>
+
+<!-- ===================== PAGE 2 ===================== -->
+<div class="page">
+  <section>
+    <h2><span class="n">2</span>Solution et valeur ajoutée</h2>
+    <p>TerraMind rassemble ces savoirs et les rend utiles <b>au champ précis</b> de l'agriculteur, en quatre services :</p>
+    <div class="grille2" style="margin:7px 0 9px">
+      <div class="carte"><h3>🌱 Que planter ce mois-ci ?</h3><p class="petit" style="margin:0">TerraMind lit le <b>sol au point du champ</b> (carte iSDAsoil : part de sable, acidité) et le calendrier du guide ISRA / FAO, puis propose les cultures qui conviennent maintenant, parmi 8 cultures des Niayes.</p></div>
+      <div class="carte"><h3>🔔 Quel risque cette semaine ?</h3><p class="petit" style="margin:0">Il regarde la <b>météo des derniers jours dans la zone du champ</b> (NASA POWER) et dit si elle favorise le mildiou, l'alternariose ou un ravageur, avec des règles publiées et testées sur 2020-2025.</p></div>
+      <div class="carte"><h3>📷 Quelle est cette maladie ?</h3><p class="petit" style="margin:0">Une <b>photo</b> suffit. Un modèle de vision reconnaît 21 problèmes de la tomate, de l'oignon, de la pomme de terre et du poivron, puis explique en 4 temps : ce que c'est, pourquoi, que faire, comment éviter.</p></div>
+      <div class="carte"><h3>💬 Une question libre</h3><p class="petit" style="margin:0">L'agriculteur écrit sa question, ou <b>la dit en wolof</b> dans un message vocal sur Telegram. La réponse vient uniquement de nos 23 fiches, avec le document et la page.</p></div>
+    </div>
+    <div class="ecrans">
+      <div class="ecran"><img src="../assets/captures/app/accueil.webp" alt="">Accueil</div>
+      <div class="ecran"><img src="../assets/captures/app/plan.webp" alt="">Que planter</div>
+      <div class="ecran"><img src="../assets/captures/app/resultat.webp" alt="">Diagnostic photo</div>
+      <div class="ecran"><img src="../assets/captures/app/plan-wolof.webp" alt="">En wolof, à écouter</div>
+    </div>
+    <p class="source" style="margin-top:3px">Vraies captures de l'application branchée sur le moteur en ligne. Le visage de l'écran d'accueil est une image générée par IA.</p>
+    <h3 style="margin-top:8px">Ce qui rend TerraMind différent</h3>
+    <ul class="petit">
+      <li><b>Rien d'inventé.</b> Chaque conseil cite sa source (document et page). Un vérificateur indépendant a relu les fiches contre leurs sources.</li>
+      <li><b>Il sait dire « je ne suis pas sûr ».</b> Sous 60 % de confiance, il ne devine pas : il demande une autre photo.</li>
+      <li><b>Jamais de produit chimique ni de dose.</b> Une erreur de dose peut tuer la plante ou l'agriculteur : pour un traitement, TerraMind oriente vers un agent agricole.</li>
+      <li><b>Le wolof à l'oral.</b> Réponses dites à voix haute (76 notes vocales relues par un locuteur), questions vocales comprises grâce à Octopus.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span>Utilisateurs cibles et cas d'usage</h2>
+    <p><b>Qui :</b> les petits maraîchers des Niayes (zone pilote : Rufisque, Thiès, Tivaouane, Kébémer), qui lisent peu ou pas le français. Ensuite, les agents de conseil, qui peuvent s'en servir sur le terrain.</p>
+    <div class="grille3">
+      <div class="carte petit"><b>Avant de semer.</b> Moussa (un exemple) partage la position de son champ. TerraMind lui dit que son sol est sableux, pas acide, et quelles cultures il peut planter ce mois-ci, par exemple la carotte ou la tomate.</div>
+      <div class="carte petit"><b>Pendant la culture.</b> Il a planté de la tomate. Chaque semaine, il demande à TerraMind si la météo des derniers jours favorise une maladie de la tomate, et quoi surveiller.</div>
+      <div class="carte petit"><b>Une tache apparaît.</b> Il envoie une photo. « Cela ressemble à : mildiou », puis quoi faire tout de suite, et quand voir un agent agricole.</div>
+    </div>
+  </section>
+
+  <div class="pied"><span>TerraMind · PAS Challenge 2026</span><span>2 / 5</span></div>
+</div>
+
+<!-- ===================== PAGE 3 ===================== -->
+<div class="page">
+  <section>
+    <h2><span class="n">4</span>Architecture, en bref</h2>
+    <p><b>Un seul moteur, plusieurs façades.</b> L'application et le bot n'ont aucune logique agricole : ils posent la question au même moteur. C'est ce qui nous a permis de passer de WhatsApp à Telegram en quelques jours, quand Meta a bloqué notre compte.</p>
+    <div class="archi" style="margin:10px 0 12px">
+      <div class="colonne">
+        <div class="titre">Ce que voit l'agriculteur</div>
+        <div class="boite"><b>📱 Application</b>Android (APK) et web · Expo</div>
+        <div class="boite"><b>💬 Bot Telegram</b>boutons, photos, notes vocales</div>
+        <div class="boite"><b>🗄️ WhatsApp</b>prêt, mis de côté</div>
+      </div>
+      <div class="fleche">→</div>
+      <div class="colonne">
+        <div class="titre">Le moteur</div>
+        <div class="boite moteur"><b>Moteur TerraMind</b>Python · FastAPI · Render<code>/v1/plan · /v1/alert</code><code>/v1/diagnose · /v1/chat</code><span style="font-size:8.2pt;margin-top:6px;color:#D5E2D9">Garde-fous : seuil « pas sûr », jamais de dose, sources jointes à chaque réponse</span></div>
+      </div>
+      <div class="fleche">→</div>
+      <div class="colonne">
+        <div class="titre">Données et outils</div>
+        <div class="boite"><b>🟫 Sol : iSDAsoil</b>sable, argile, pH au point du champ</div>
+        <div class="boite"><b>🌦️ Météo : NASA POWER</b>humidité, pluie, chaleur de la zone</div>
+        <div class="boite"><b>🧠 Photo : MobileNetV3</b>TOM2024, PlantVillage, PlantDoc</div>
+        <div class="boite"><b>📚 23 fiches sourcées</b>ISRA, FAO, DPV · Gemini reformule</div>
+        <div class="boite octopus"><b>🗣️ Octopus (outil du concours)</b>écoute et parle le wolof</div>
+      </div>
+    </div>
+    <div class="carte petit" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-family:Outfit,sans-serif;font-size:10pt">🗣️ Question vocale en wolof :</b> note vocale sur Telegram <span class="doux">→</span> <b>Octopus</b> la transcrit <span class="doux">→</span> Gemini la traduit <span class="doux">→</span> le moteur cherche dans les fiches <span class="doux">→</span> <b>Octopus</b> dit la réponse en wolof, texte français dessous.</div>
+
+    <div class="climat">
+      <h3>🌍 Le climat au cœur de TerraMind : s'adapter, sans aggraver</h3>
+      <div class="grille2">
+        <div>
+          <h4>Aider à faire face au climat</h4>
+          <ul class="petit">
+            <li><b>Prévenir avant la maladie.</b> Chaque semaine, TerraMind lit la météo réelle de la zone du champ (humidité, pluie, chaleur, par satellite) et prévient quand elle favorise le mildiou, l'alternariose ou un ravageur.</li>
+            <li><b>L'eau des puits devient salée.</b> Dans les Niayes, la nappe se salinise (moins de pluie, nappe trop pompée, eau de mer qui avance). TerraMind demande si l'eau du puits est salée et déconseille alors les cultures qui la supportent mal, comme l'oignon et la carotte.</li>
+            <li><b>Planter selon le sol et la saison</b>, pour ne pas perdre une culture semée au mauvais moment.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Ne pas aggraver</h4>
+          <ul class="petit">
+            <li><b>Moins de produits chimiques.</b> TerraMind ne conseille jamais de pesticide : il propose d'abord de prévenir (espacer les plants, enlever les parties malades, faire tourner les cultures) et oriente vers un agent agricole pour un traitement. Il ne parle de risque que quand la météo le justifie.</li>
+            <li><b>Sobre en énergie.</b> Le modèle photo pèse 17 Mo et répond en 15 ms environ sur un processeur ordinaire, sans carte graphique. L'application en ligne ne fait que 540 Ko.</li>
+            <li><b>Aucun capteur à fabriquer.</b> Les données viennent de satellites et de cartes qui existent déjà (NASA POWER, iSDAsoil).</li>
+          </ul>
+        </div>
+      </div>
+      <p class="source" style="margin:5px 0 0">Salinisation : Diallo et al. 2015 ; European Scientific Journal 2022. Tolérance au sel : guide ISRA / FAO 1987, tableau 1. Effet réel sur les pesticides : pas encore mesuré (tests avec les maraîchers).</p>
+    </div>
+  </section>
+
+  <section>
+    <h3>Les choix et leurs raisons</h3>
+    <table class="resultats">
+      <tr><th>Choix</th><th>Pourquoi</th></tr>
+      <tr><td>Fiches écrites à la main + Gemini</td><td>L'IA <b>reformule</b> en français simple mais n'ajoute rien : si la réponse n'est pas dans une fiche, TerraMind le dit. Pas de produit ni de dose dans les fiches.</td></tr>
+      <tr><td>Petit modèle de vision</td><td>MobileNetV3 : 17 Mo, environ 15 ms par photo, tient sur un serveur gratuit. Un modèle 7 fois plus lourd (ConvNeXt) ne gagnait que 0,1 point sur TOM2024.</td></tr>
+      <tr><td>Vie privée</td><td>Aucun numéro de téléphone demandé. La position du champ est arrondie à environ 1 km. Rien de personnel n'est envoyé à Gemini. <code>/oublier</code> efface tout.</td></tr>
+    </table>
+  </section>
+
+  <div class="pied"><span>TerraMind · PAS Challenge 2026</span><span>3 / 5</span></div>
+</div>
+
+<!-- ===================== PAGE 4 : GUIDE DE TEST ===================== -->
+<div class="page">
+  <h2><span class="n">✓</span>Guide de test, pas à pas</h2>
+  <p class="petit" style="margin-bottom:8px">Pas besoin d'être sur place : la position « test » place le champ à Rufisque, dans la zone pilote. <b>Pas de plante malade sous la main ?</b> Téléchargez une photo d'essai : <a href="https://terramind-sigma.vercel.app/essai">terramind-sigma.vercel.app/essai</a> (mildiou, virose, acariens). <b>Première réponse lente ?</b> Le serveur gratuit se réveille en une minute environ, ensuite c'est rapide.</p>
+
+  <div class="parcours">
+    <div class="tete"><img src="qr/qr_app.svg" alt=""><div><h3>Façon 1 · L'application en ligne (5 min)</h3><span class="petit">terramind-afrique.vercel.app · ordinateur ou téléphone</span></div><span class="duree">Aucun compte</span></div>
+    <table class="etapes">
+      <tr><td class="num">1</td><td>Ouvrez le lien. Touchez <span class="bouton">Commencer</span>, puis <span class="bouton">Français</span>.</td><td class="attendu">« Où est ton champ ? »</td></tr>
+      <tr><td class="num">2</td><td>Touchez <span class="bouton">Envoyer une position test</span>. Répondez <span class="bouton">Non</span> aux deux questions, puis <span class="bouton">C'est bon</span>.</td><td class="attendu">L'accueil : « Bonjour · Rufisque (test) ».</td></tr>
+      <tr><td class="num">3</td><td>Touchez <span class="bouton">Que planter dans mon champ ?</span></td><td class="attendu">Ton sol : 62 % de sable, pH 6,6, « ni acide ni basique ». Puis les cultures conseillées ce mois-ci.</td></tr>
+      <tr><td class="num">4</td><td>Revenez. Touchez <span class="bouton">Prendre ma plante en photo</span> → <span class="bouton">Choisir dans ma galerie</span> → la photo d'essai du mildiou.</td><td class="attendu">« Cela ressemble à : Mildiou », la confiance du modèle, puis la fiche en 4 temps.</td></tr>
+      <tr><td class="num">5</td><td>Revenez. Touchez <span class="bouton">J'ai une question à te poser</span>, puis l'exemple <span class="bouton">Ma tomate a des taches brunes avec des cercles</span>.</td><td class="attendu">Alternariose ou tache cible : quoi faire, et les sources (guide ISRA / FAO, pages).</td></tr>
+      <tr><td class="num">6</td><td>Revenez. Touchez <span class="bouton">J'ai planté</span> → <span class="bouton">Tomate</span> → <span class="bouton">C'est noté</span>, puis <span class="bouton">Que dois-je retenir de la météo de cette semaine ?</span></td><td class="attendu">Ce que la météo des derniers jours à Rufisque dit pour la tomate : un risque, ou « rien d'inquiétant ».</td></tr>
+    </table>
+  </div>
+
+  <div class="parcours tg">
+    <div class="tete tg"><img src="qr/qr_bot.svg" alt=""><div><h3>Façon 2 · Le bot Telegram (5 min)</h3><span class="petit">t.me/TerraMindAfriqueBot · avec un compte Telegram</span></div><span class="duree">Téléphone ou ordinateur</span></div>
+    <table class="etapes">
+      <tr><td class="num">1</td><td>Ouvrez le lien, touchez <span class="bouton tg">Démarrer</span>, puis <span class="bouton tg">Français</span>.</td><td class="attendu">Le bot se présente ; de grands boutons apparaissent en bas.</td></tr>
+      <tr><td class="num">2</td><td>Touchez <span class="bouton tg">Envoyer une position test</span>, répondez aux deux questions.</td><td class="attendu">Le sol de Rufisque et ce qu'on peut planter maintenant, avec les sources.</td></tr>
+      <tr><td class="num">3</td><td>Envoyez une photo d'essai (trombone 📎 à gauche de « Message »).</td><td class="attendu">« Merci, je regarde ta photo », puis « Cela ressemble à : Mildiou » et la fiche.</td></tr>
+      <tr><td class="num">4</td><td>Touchez <span class="bouton tg">J'ai une question à te poser</span> et copiez : <span class="copier">Comment éviter le mildiou de la tomate ?</span></td><td class="attendu">3 à 6 phrases simples, puis « Sources : … » avec les pages.</td></tr>
+      <tr><td class="num">5</td><td><b>En wolof, à l'oral.</b> Écrivez <span class="copier">/langue</span>, touchez <span class="bouton tg">Wolof</span>, puis gardez le micro 🎤 appuyé et dites : <span class="attente">[PHRASE WOLOF À VALIDER PAR SALAM : graphie · prononciation · sens]</span><span class="petit doux">Wolof seulement, moins d'une minute, endroit calme.</span></td><td class="attendu">Une note vocale de réponse, dite en wolof, avec le texte en français dessous.</td></tr>
+    </table>
+  </div>
+
+  <div class="parcours">
+    <div class="tete apk"><img src="qr/qr_apk.svg" alt=""><div><h3>Façon 3 · L'application Android (APK)</h3><span class="petit">Téléphone Android seulement · 107 Mo</span></div><span class="duree">Comme un agriculteur</span></div>
+    <table class="etapes">
+      <tr><td class="num">1</td><td>Scannez le code avec le téléphone Android et téléchargez le fichier. Ouvrez-le ; si Android le demande, autorisez l'installation depuis cette source.</td><td class="attendu">L'icône TerraMind (feuille sur fond vert) apparaît.</td></tr>
+      <tr><td class="num">2</td><td>Suivez les étapes 1 à 6 de la façon 1. Ici, <span class="bouton">Prendre la photo</span> ouvre l'appareil photo, et <span class="bouton">Je suis dans mon champ</span> utilise le vrai GPS.</td><td class="attendu">Les mêmes réponses que la version en ligne : c'est le même moteur.</td></tr>
+    </table>
+  </div>
+
+  <div class="pied"><span>TerraMind · PAS Challenge 2026</span><span>4 / 5</span></div>
+</div>
+
+<!-- ===================== PAGE 5 ===================== -->
+<div class="page">
+  <section>
+    <h2><span class="n">5</span>Résultats et perspectives</h2>
+    <table class="resultats" style="margin-bottom:8px">
+      <tr><th>Brique</th><th>Résultat mesuré</th></tr>
+      <tr><td>📷 Diagnostic photo</td><td><b>91,7 % de bonnes réponses</b> sur 1 058 photos de champs africains (TOM2024) <b>jamais vues</b> pendant l'apprentissage. 21 problèmes reconnus sur 4 cultures.</td></tr>
+      <tr><td>🌱 Que planter</td><td>8 cultures (tomate, pomme de terre, oignon, chou, poivron, carotte, piment, jaxatu), calendrier du guide ISRA / FAO, sol lu au point du champ.</td></tr>
+      <tr><td>🔔 Alertes météo</td><td>7 risques suivis (mildiou, alternariose, mineuse, noctuelle, teigne…), règles publiées testées sur la météo 2020-2025 de la zone.</td></tr>
+      <tr><td>💬 Réponses sourcées</td><td>23 fiches. Trois relectures indépendantes : environ 320 affirmations vérifiées contre leurs sources, 51 corrigées.</td></tr>
+      <tr><td>🗣️ Wolof</td><td>76 phrases relues par un locuteur, 76 notes vocales ; questions vocales comprises sur le bot (Octopus).</td></tr>
+      <tr><td>⚙️ Fiabilité</td><td>85 tests automatiques. Application en ligne : 540 Ko, utilisable en 4 s sur une connexion 3G (mesuré).</td></tr>
+    </table>
+    <div class="grille2">
+      <div class="carte">
+        <h3>Limites, dites franchement</h3>
+        <ul class="petit">
+          <li>Sur des photos prises sur internet, dans d'autres conditions (PlantDoc), le diagnostic tombe à <b>56,9 %</b>. C'est pourquoi il dit « je ne suis pas sûr » sous 60 %.</li>
+          <li>Pas encore de test avec des maraîchers dans leur champ : c'est la prochaine étape.</li>
+          <li>Les règles météo viennent d'études faites hors du Sénégal : TerraMind parle de « temps favorable », jamais de maladie certaine.</li>
+          <li>Telegram est moins utilisé que WhatsApp dans les Niayes.</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>Et ensuite</h3>
+        <ul class="petit">
+          <li><b>Tester avec des maraîchers</b> de Rufisque et Thiès, avec leur accord, et ajouter des photos de leurs champs.</li>
+          <li><b>Revenir sur WhatsApp</b> (le code est prêt), une fois le statut d'entreprise obtenu.</li>
+          <li><b>Un hébergement payant</b>, pour que le serveur ne se mette plus en veille.</li>
+          <li><b>Modèle économique visé :</b> gratuit pour les agriculteurs ; des instituts paieraient un abonnement pour des données anonymes et regroupées par zone (maladies signalées, risques météo). Les données resteraient au Sénégal.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h3>Tous les liens</h3>
+    <table class="liens">
+      <tr><td>Application en ligne (pour le jury)</td><td><a href="https://terramind-afrique.vercel.app">https://terramind-afrique.vercel.app</a></td></tr>
+      <tr><td>Bot Telegram</td><td><a href="https://t.me/TerraMindAfriqueBot">https://t.me/TerraMindAfriqueBot</a></td></tr>
+      <tr><td>Application Android (APK)</td><td><a href="https://expo.dev/artifacts/eas/mcgAGA13JtmuknxLoSQWJ3bBRHGY02TgFiquqINAYg0.apk">https://expo.dev/artifacts/eas/mcgAGA13JtmuknxLoSQWJ3bBRHGY02TgFiquqINAYg0.apk</a></td></tr>
+      <tr><td>Photos d'essai</td><td><a href="https://terramind-sigma.vercel.app/essai">https://terramind-sigma.vercel.app/essai</a></td></tr>
+      <tr><td>Site de présentation</td><td><a href="https://terramind-sigma.vercel.app">https://terramind-sigma.vercel.app</a></td></tr>
+      <tr><td>Code source (le jury peut vérifier)</td><td><a href="https://github.com/Oscar-AS/Terramind">https://github.com/Oscar-AS/Terramind</a></td></tr>
+      <tr><td>Document technique</td><td>TerraMind_Technique.pdf (données, méthode, résultats détaillés)</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h3>L'équipe</h3>
+    <p class="petit">Trois étudiants en dernière année du cycle d'ingénieur statisticien économiste à l'ENSAE de Dakar : <b>Alioune Abdou Salam Kane</b> (chef de projet ; moteur, bot, application, site), <b>Judicaël Oscar Kafando</b> (IA et données : bases d'images, modèle de diagnostic), <b>Ndeye Ramatoulaye Ndoye Fall</b> (contenu agricole, wolof, tests, pitch).</p>
+    <p class="source">Sources des chiffres : Direction de l'Horticulture, recensement des Niayes (données 2012) ; DAPSA, Enquête agricole annuelle 2022-2023. Données : iSDAsoil (CC BY 4.0), NASA POWER, TOM2024 (CC BY 4.0), PlantVillage (CC BY-SA 3.0), PlantDoc (CC BY 4.0). Guides : ISRA / FAO (Beniest et al., 1987), DPV / PADEN, KCOA-Africa, Ephytia (INRAE).</p>
+  </section>
+
+  <div class="pied"><span>TerraMind · PAS Challenge 2026</span><span>5 / 5</span></div>
+</div>
+
+</body>
+</html>
