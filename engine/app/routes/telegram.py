@@ -27,10 +27,12 @@ import json
 import logging
 import os
 import re
+import threading
 import traceback
 import urllib.error
 import urllib.request
 import uuid
+from collections import deque
 from html import escape as _echapper
 from pathlib import Path
 
@@ -973,6 +975,37 @@ def traiter_sans_planter(maj: dict):
         _limiter_etats()
 
 
+# Un agriculteur à la fois, dans l'ordre d'arrivée : sans cela, un bouton touché pendant que le plan
+# s'envoie encore (plusieurs notes vocales en wolof, c'est long) faisait arriver sa réponse au milieu.
+# Les agriculteurs différents restent traités en parallèle.
+_FILES: dict[int, deque] = {}
+_VERROU_FILES = threading.Lock()
+
+
+def traiter_dans_l_ordre(maj: dict):
+    chat = _chat_de(maj)
+    if chat is None:
+        traiter_sans_planter(maj)
+        return
+    with _VERROU_FILES:
+        if chat in _FILES:  # un message de ce chat est déjà en cours : celui-ci attend son tour
+            _FILES[chat].append(maj)
+            return
+        _FILES[chat] = deque()
+    try:
+        while True:
+            traiter_sans_planter(maj)
+            with _VERROU_FILES:
+                if not _FILES[chat]:
+                    del _FILES[chat]
+                    return
+                maj = _FILES[chat].popleft()
+    except BaseException:
+        with _VERROU_FILES:
+            _FILES.pop(chat, None)
+        raise
+
+
 ETATS_MAX = 5000  # agriculteurs gardés en mémoire ; au-delà, on oublie les plus anciens
 
 
@@ -1002,5 +1035,5 @@ async def webhook(
     ):
         raise HTTPException(403, "secret invalide")
     # Réponse immédiate à Telegram ; le travail (sol, météo, photo) se fait ensuite.
-    taches.add_task(traiter_sans_planter, await request.json())
+    taches.add_task(traiter_dans_l_ordre, await request.json())
     return {"ok": True}

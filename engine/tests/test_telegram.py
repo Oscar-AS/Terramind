@@ -79,6 +79,45 @@ class Telegram(unittest.TestCase):
         self.assertFalse(telegram.ETATS[7]["attend_date"])
 
 
+class Ordre(unittest.TestCase):
+    """Un bouton touché pendant que le plan s'envoie encore doit être traité après, pas au milieu."""
+
+    def test_meme_chat_dans_l_ordre_autres_chats_en_parallele(self):
+        import threading
+        import time
+
+        journal = []
+        lent_commence = threading.Event()
+
+        def faux_traiter(maj):
+            t = maj["message"]["text"]
+            journal.append(("debut", t))
+            if t == "plan":
+                lent_commence.set()
+                time.sleep(0.3)
+            journal.append(("fin", t))
+
+        with mock.patch.object(telegram, "traiter_sans_planter", side_effect=faux_traiter):
+            plan = threading.Thread(
+                target=telegram.traiter_dans_l_ordre,
+                args=({"message": {"chat": {"id": 7}, "text": "plan"}},),
+            )
+            plan.start()
+            lent_commence.wait(2)
+            # Même chat, pendant le plan : mis en file, rendu tout de suite.
+            telegram.traiter_dans_l_ordre({"message": {"chat": {"id": 7}, "text": "question"}})
+            # Autre chat : traité sans attendre.
+            telegram.traiter_dans_l_ordre({"message": {"chat": {"id": 8}, "text": "autre"}})
+            self.assertIn(("fin", "autre"), journal)
+            self.assertNotIn(("debut", "question"), journal)
+            plan.join(2)
+        self.assertEqual(
+            [e for e in journal if e[1] != "autre"],
+            [("debut", "plan"), ("fin", "plan"), ("debut", "question"), ("fin", "question")],
+        )
+        self.assertEqual(telegram._FILES, {})
+
+
 if __name__ == "__main__":
     unittest.main()
 
