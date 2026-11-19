@@ -30,7 +30,7 @@ jobs:
       # TODO : chemin d'un endpoint de test qui doit répondre sans "mock": true en production.
       SMOKE_TEST_PATH: ${{ vars.SMOKE_TEST_PATH }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.ref }}
 
