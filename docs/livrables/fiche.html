@@ -62,7 +62,7 @@
   .note-jury { margin-top: 9px; font-size: 8.8pt; color: var(--encre); background: var(--soleilc); border-radius: 9px; padding: 7px 10px; }
 
   /* Captures */
-  .ecrans { display: grid; grid-template-columns: repeat(4, 23mm); justify-content: space-around; }
+  .ecrans { display: grid; grid-template-columns: repeat(4, 22mm); justify-content: space-around; }
   .ecran { text-align: center; font-size: 8.4pt; font-weight: 600; color: var(--foret); white-space: nowrap; }
   /* Proportions réelles d'un téléphone : écran 393 × 852 points (iPhone 16), coins arrondis à l'échelle */
   .ecran img { width: 100%; border-radius: 17px; border: 3.5px solid #1b1b1b; display: block; margin-bottom: 10px; aspect-ratio: 393/852; object-fit: cover; object-position: top; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
@@ -160,6 +160,7 @@
   .parcours.tg .bouton { background: var(--pousse); color: var(--foret); }
   .accent-terre { border-left: 3px solid var(--terre); }
   .accent-vert { border-left: 3px solid var(--feuille); }
+  ul.serre li { margin-bottom: 1px; }
   .pied { border-top: 0; color: #8A968D; }
   .pied span:first-child::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; vertical-align: -1px; background: var(--feuille); border-radius: 9px 0 9px 0; }
 </style>
@@ -227,8 +228,8 @@
       <div class="ecran"><img src="../assets/captures/app/resultat.webp" alt="">Diagnostic photo</div>
       <div class="ecran"><img src="../assets/captures/app/plan-wolof.webp" alt="">En wolof, à écouter</div>
     </div>
-    <h3 style="margin-top:8px">Ce qui rend TerraMind différent</h3>
-    <ul class="petit">
+    <h3 style="margin-top:6px">Ce qui rend TerraMind différent</h3>
+    <ul class="petit serre">
       <li><b>On n'invente rien.</b> Chaque conseil a une source sûre, par exemple l'ISRA au Sénégal ou la FAO, et ces sources ont été vérifiées par un vérificateur indépendant.</li>
       <li><b>TerraMind sait dire « je ne suis pas sûr ».</b> Quand TerraMind fait un diagnostic de la plante par la photo, si son pourcentage de confiance est inférieur à 60 %, il fait savoir qu'il n'est pas sûr et demande au maraîcher de prendre une nouvelle photo.</li>
       <li><b>Jamais de produit chimique ni de dose.</b> Une erreur de dose peut tuer la plante ou l'agriculteur : pour un traitement, TerraMind oriente vers un agent agricole.</li>
