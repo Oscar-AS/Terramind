@@ -100,6 +100,7 @@
   .climat { background: linear-gradient(135deg, #E9F3E7, #F7F1E2); border: 1px solid #CFE2CB; border-radius: 14px; padding: 7px 13px; margin: 7px 0 0; }
   .climat h3 { font-size: 12.5pt; color: var(--foret); margin-bottom: 4px; }
   .climat .grille2 { gap: 12px; grid-template-columns: 1.1fr 1fr; }
+  .climat ul.petit, .climat p.petit { font-size: 8.25pt; }
   .climat h4 { font: 600 9.6pt 'Outfit', sans-serif; margin: 2px 0 3px; color: var(--feuille); text-transform: uppercase; letter-spacing: .04em; }
   /* Résultats */
   table.resultats { width: 100%; border-collapse: collapse; font-size: 8.9pt; }
@@ -325,7 +326,7 @@
           </ul>
         </div>
       </div>
-      <p class="source" style="margin:5px 0 0">Salinisation : Diallo et al. 2015 ; European Scientific Journal 2022. Tolérance au sel : guide ISRA / FAO 1987, tableau 1. Effet réel sur les pesticides : pas encore mesuré (tests avec les maraîchers).</p>
+      <p class="source" style="margin:1px 0 0">Salinisation : Diallo et al. 2015 ; European Scientific Journal 2022. Tolérance au sel : guide ISRA / FAO 1987, tableau 1. Effet réel sur les pesticides : pas encore mesuré (tests avec les maraîchers).</p>
     </div>
   </section>
 
@@ -335,7 +336,7 @@
     <table class="resultats serre">
       <tr><th>Choix</th><th>Pourquoi</th></tr>
       <tr><td>Utiliser un petit modèle photo</td><td>Rapide et facile à faire tourner sur un serveur gratuit.</td></tr>
-      <tr><td>Respecter la vie privée</td><td>Aucun numéro demandé, position du champ arrondie à 1 km, <code>/oublier</code> efface tout.</td></tr>
+      <tr><td>Respecter la vie privée</td><td>Aucun numéro n'est demandé au maraîcher : on lui demande juste la position de son champ, arrondie à 1 km. Quand il a fini d'utiliser TerraMind, il peut effacer ces données avec la commande <code>/oublier</code> sur Telegram.</td></tr>
     </table>
   </section>
 
@@ -344,7 +345,7 @@
 
 <!-- ===================== PAGE 4 : GUIDE DE TEST ===================== -->
 <div class="page">
-  <h2><span class="n"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>Guide de test, pas à pas</h2>
+  <h2><span class="n"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>Comment les membres du jury peuvent tester TerraMind</h2>
   <p class="petit" style="margin-bottom:8px">Pas besoin d'être sur place : la position « test » place le champ à Rufisque, dans la zone pilote. <b>Pas de plante malade sous la main ?</b> Téléchargez une photo d'essai : <a href="https://terramind-sigma.vercel.app/essai">terramind-sigma.vercel.app/essai</a> (mildiou, virose, acariens). <b>Première réponse lente ?</b> Le serveur gratuit se réveille en une minute environ, ensuite c'est rapide.</p>
 
   <div class="parcours">
