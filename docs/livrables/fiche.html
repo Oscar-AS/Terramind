@@ -48,14 +48,16 @@
   .membre .initiales { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--soleil); color: var(--foret); font: 700 10.5pt 'Outfit', sans-serif; }
   .membre b { display: block; color: var(--sable); font: 600 9.6pt/1.2 'Outfit', sans-serif; }
   .membre span { display: block; color: #C9DACF; font-size: 7.8pt; line-height: 1.3; margin-top: 1px; }
-  .essayer { background: var(--sable); border-radius: 14px; padding: 11px 13px; margin-bottom: 11px; }
+  .essayer { background: var(--sable); border-radius: 14px; padding: 13px 15px 14px; margin-bottom: 16px; }
+  .essayer .grille3 { gap: 13px; }
   .essayer h3 { font-size: 12.5pt; color: var(--foret); }
-  .qr { display: grid; grid-template-columns: 58px 1fr; gap: 9px; align-items: center; background: white; border-radius: 10px; padding: 8px; }
+  .qr { display: grid; grid-template-columns: 58px 1fr; gap: 10px; align-items: center; background: white; border-radius: 10px; padding: 10px; }
   .qr img { width: 58px; height: 58px; }
   .qr .petit { display: block; font-size: 8pt; line-height: 1.3; }
   .qr b { display: block; font-family: 'Outfit', sans-serif; font-size: 10.5pt; }
   .qr .lien { font-size: 7pt; color: var(--feuille); white-space: nowrap; }
-  .note-jury { margin-top: 8px; font-size: 8.8pt; color: var(--encre); background: var(--soleilc); border-radius: 9px; padding: 7px 10px; }
+  .aide { display: flex; justify-content: space-between; gap: 10px; font-size: 8.6pt; color: var(--doux); margin: 11px 2px 0; }
+  .note-jury { margin-top: 10px; font-size: 8.8pt; color: var(--encre); background: var(--soleilc); border-radius: 9px; padding: 7px 10px; }
 
   /* Captures */
   .ecrans { display: grid; grid-template-columns: repeat(4, 33mm); justify-content: space-around; }
@@ -127,13 +129,14 @@
 
   <div class="essayer">
     <h3>Comment essayer le produit TerraMind ?</h3>
-    <p class="petit doux" style="margin:2px 0 8px">Il y a trois façons de le faire, au choix : <b>1.</b> l'application en ligne ; <b>2.</b> le bot Telegram ; <b>3.</b> l'application Android. Pour chacune, scannez son code avec un téléphone ou cliquez sur son lien. Le guide pas à pas est en page 4. Pas de plante malade sous la main ? Prenez une <a href="https://terramind-sigma.vercel.app/essai">photo d'essai</a> : terramind-sigma.vercel.app/essai</p>
+    <p class="petit doux" style="margin:3px 0 10px">Il y a trois façons de le faire, au choix. Scannez le code avec un téléphone, ou cliquez sur le lien.</p>
     <div class="grille3">
       <div class="qr"><img src="qr/qr_app.svg" alt=""><div><b>1. L'application en ligne</b><span class="petit">Rien à installer, ordinateur ou téléphone.</span><div class="lien">terramind-afrique.vercel.app</div></div></div>
       <div class="qr"><img src="qr/qr_bot.svg" alt=""><div><b>2. Le bot Telegram</b><span class="petit">Il faut un compte Telegram.</span><div class="lien">t.me/TerraMindAfriqueBot</div></div></div>
       <div class="qr"><img src="qr/qr_apk.svg" alt=""><div><b>3. L'application Android</b><span class="petit">À installer (APK), Android seulement.</span><div class="lien">lien complet en page 5</div></div></div>
     </div>
-    <div class="note-jury"><b>À savoir.</b> Le lien de l'application en ligne existe <b>pour que le jury puisse tester sans rien installer</b>, parce qu'un lien est demandé. Dans la vraie vie, l'agriculteur utilise TerraMind <b>sur son téléphone</b> : le bot Telegram, ou l'application Android (3<sup>e</sup> façon). Chaque canal marche <b>en français</b> (réponses écrites) ou <b>en wolof</b> (réponses à écouter), au choix de l'agriculteur.</div>
+    <p class="aide"><span>📖 Guide pas à pas : <b>page 4</b></span><span>📷 Pas de plante malade ? <a href="https://terramind-sigma.vercel.app/essai">Photos d'essai</a> : terramind-sigma.vercel.app/essai</span></p>
+    <div class="note-jury"><b>À savoir.</b> Le lien en ligne sert seulement au jury, pour tester sans rien installer. Dans la vraie vie, l'agriculteur utilise <b>le bot Telegram ou l'application Android</b>, en <b>français</b> (texte) ou en <b>wolof</b> (voix).</div>
   </div>
 
   <section>
