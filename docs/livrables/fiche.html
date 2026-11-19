@@ -48,7 +48,7 @@
   .membre .initiales { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--soleil); color: var(--foret); font: 700 10.5pt 'Outfit', sans-serif; }
   .membre b { display: block; color: var(--sable); font: 600 9.6pt/1.2 'Outfit', sans-serif; }
   .membre span { display: block; color: #C9DACF; font-size: 7.8pt; line-height: 1.3; margin-top: 1px; }
-  .essayer { background: var(--sable); border-radius: 14px; padding: 12px 15px 12px; margin-bottom: 6px; }
+  .essayer { background: var(--sable); border-radius: 14px; padding: 13px 15px 14px; margin-bottom: 14px; }
   .essayer .grille3 { gap: 13px; }
   .essayer h3 { font-size: 12.5pt; color: var(--foret); }
   .qr { display: grid; grid-template-columns: 58px 1fr; gap: 10px; align-items: center; background: white; border-radius: 10px; padding: 10px; }
@@ -56,7 +56,7 @@
   .qr .petit { display: block; font-size: 8pt; line-height: 1.3; }
   .qr b { display: block; font-family: 'Outfit', sans-serif; font-size: 10.5pt; }
   .qr .lien { font-size: 7pt; color: var(--feuille); white-space: nowrap; }
-  .aide { font-size: 8.7pt; color: var(--encre); margin: 14px 2px 0; display: grid; gap: 5px; }
+  .aide { font-size: 8.7pt; color: var(--encre); margin: 18px 2px 0; display: grid; gap: 5px; }
   .aide p { display: flex; align-items: flex-start; margin: 0; }
   .aide p .ic { margin-top: 0; }
   .note-jury { margin-top: 9px; font-size: 8.8pt; color: var(--encre); background: var(--soleilc); border-radius: 9px; padding: 7px 10px; }
@@ -119,7 +119,7 @@
   h3 { color: var(--foret); }
   .carte { background: #F8F4EC; border: 0; border-radius: 12px; }
   .grille3 > .carte:has(.chiffre) { background: white; box-shadow: 0 1px 0 rgba(31,77,58,.04), 0 6px 16px rgba(31,77,58,.07); border-top: 3px solid var(--soleil); }
-  .chiffre { font-size: 19pt; letter-spacing: -0.03em; }
+  .chiffre { font-size: 21pt; letter-spacing: -0.03em; }
   .grille3 > .carte:has(.chiffre) { padding: 8px 12px; }
   .ic { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: var(--pousse); color: var(--foret); margin-right: 7px; vertical-align: -6px; font-style: normal; flex: none; }
   .ic svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
@@ -191,7 +191,6 @@
     <div class="aide">
       <p><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h14v14H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14"/></svg></i><span><b>Pour tester TerraMind :</b> voir la <b>page 4</b>, où nous avons préparé un parcours de test pour pouvoir tester TerraMind, avec ce qu'il faut faire étape par étape.</span></p>
     </div>
-    <div class="note-jury"><b>À savoir.</b> Le lien en ligne sert seulement au jury, pour tester sans rien installer. Dans la vraie vie, l'agriculteur utilise <b>le bot Telegram ou l'application Android</b>, en <b>français</b> (texte) ou en <b>wolof</b> (voix).</div>
   </div>
 
   <section>
@@ -203,7 +202,7 @@
       <div class="carte"><div class="chiffre">43,9 %</div><p class="petit" style="margin:4px 0 2px">des ménages agricoles de Louga (20,6 % à Thiès) ont eu <b>bien plus de bêtes qui mangent les cultures</b> que d'habitude (15,3 % dans tout le pays).</p></div>
       <div class="carte"><div class="chiffre">99 %</div><p class="petit" style="margin:4px 0 2px">des parcelles de chou reçoivent des <b>insecticides</b> (78 % pour l'oignon), souvent sans conseil sur le bon moment.</p></div>
     </div>
-    <p class="source" style="margin:0">Sources : Direction de l'Horticulture, recensement des Niayes (données 2012) ; DAPSA, Enquête agricole annuelle 2022-2023.</p>
+    <p class="source" style="margin:4px 0 0">Sources : Direction de l'Horticulture, recensement des Niayes (données 2012) ; DAPSA, Enquête agricole annuelle 2022-2023.</p>
   </section>
 
   <div class="pied"><span>TerraMind · PAS Challenge 2026</span><span>1 / 5</span></div>
@@ -400,6 +399,7 @@
       <tr><td>Code source (le jury peut vérifier)</td><td><a href="https://github.com/Oscar-AS/Terramind">https://github.com/Oscar-AS/Terramind</a></td></tr>
       <tr><td>Document technique</td><td>TerraMind_Technique.pdf (données, méthode, résultats détaillés)</td></tr>
     </table>
+    <div class="note-jury" style="margin-top:8px"><b>À savoir.</b> Le lien en ligne sert seulement au jury, pour tester sans rien installer. Dans la vraie vie, l'agriculteur utilise <b>le bot Telegram ou l'application Android</b>, en <b>français</b> (texte) ou en <b>wolof</b> (voix).</div>
   </section>
 
   <section>
