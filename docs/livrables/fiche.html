@@ -121,6 +121,7 @@
   .grille3 > .carte:has(.chiffre) { background: white; box-shadow: 0 1px 0 rgba(31,77,58,.04), 0 6px 16px rgba(31,77,58,.07); border-top: 3px solid var(--soleil); }
   .chiffre { font-size: 21pt; letter-spacing: -0.03em; }
   .grille3 > .carte:has(.chiffre) { padding: 8px 12px; }
+  .moments > .carte { padding: 8px 12px; }
   .ic { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: var(--pousse); color: var(--foret); margin-right: 7px; vertical-align: -6px; font-style: normal; flex: none; }
   .ic svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
   .carte h3 { display: flex; align-items: center; margin-bottom: 4px; }
@@ -240,7 +241,7 @@
   <section>
     <h2><span class="n">03</span>Utilisateurs cibles et cas d'usage</h2>
     <p>TerraMind est un conseiller agricole pour les <b>maraîchers</b>. Dans le cadre du PAS Challenge, nous avons choisi les <b>Niayes</b> (Rufisque, Thiès, etc.) comme zone de test, pour ne pas avoir trop de données à collecter. Pour bien comprendre les utilisateurs de TerraMind, prenons l'exemple de Moussa, un maraîcher des Niayes : voici trois moments où il utilise TerraMind.</p>
-    <div class="grille3">
+    <div class="grille3 moments">
       <div class="carte petit"><b>Avant de semer.</b> Moussa envoie la position de son champ. TerraMind lui dit quoi planter ce mois-ci, par exemple la carotte ou la tomate.</div>
       <div class="carte petit"><b>Pendant la culture.</b> Il a planté de la tomate. Chaque semaine, TerraMind lui dit si la météo annonce un risque de maladie pour ses tomates.</div>
       <div class="carte petit"><b>Une tache apparaît.</b> Il envoie une photo. TerraMind lui répond « Cela ressemble à : mildiou », et lui dit quoi faire.</div>
