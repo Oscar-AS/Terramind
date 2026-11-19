@@ -135,11 +135,24 @@
   .boite.moteur { box-shadow: 0 8px 20px rgba(31,77,58,.22); }
   .boite.moteur code { background: transparent; padding: 0; }
   .fleche { color: var(--soleil); }
-  .chaine { display: grid; grid-template-columns: 1.1fr 20px 1.15fr 20px 1fr 20px .9fr; align-items: stretch; margin: 0 0 8px; }
-  .chaine .colonne .boite { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-  .chaine .boite.moteur b { font-size: 10.4pt; margin-bottom: 4px; }
-  .chaine .etape { display: block; font-size: 8.6pt; color: #E6EEE8; margin-top: 5px; }
-  .chaine .boite.fin { background: var(--soleilc); box-shadow: none; }
+  .serpent { margin: 0 0 6px; }
+  .serpent .ligne { display: grid; grid-template-columns: 1fr 46px 1fr 46px 1fr; align-items: stretch; }
+  .serpent .bt { background: white; border-radius: 10px; padding: 6px 9px; font-size: 8.3pt; line-height: 1.32; box-shadow: 0 1px 0 rgba(31,77,58,.05), 0 4px 12px rgba(31,77,58,.07); }
+  .serpent .bt .t { display: flex; align-items: center; gap: 5px; font-size: 9.4pt; margin-bottom: 2px; color: var(--foret); }
+  .serpent .num { display: inline-grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; background: var(--foret); color: var(--sable); font-size: 8pt; flex: none; }
+  .serpent .bt.depart { background: #F8F4EC; box-shadow: none; }
+  .serpent .bt.cle { background: var(--foret); color: #E6EEE8; }
+  .serpent .bt.cle .t { color: white; }
+  .serpent .bt.cle .num { background: var(--soleil); color: var(--foret); }
+  .serpent .bt.fin { background: var(--soleilc); box-shadow: none; }
+  .serpent .fl { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .serpent .fl span, .serpent .fb span { font-size: 7.6pt; font-style: italic; color: var(--doux); }
+  .serpent .fl svg { width: 40px; height: 16px; }
+  .serpent svg path { fill: none; stroke: var(--soleil); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .serpent .descente { height: 24px; }
+  .serpent .fb { display: flex; align-items: center; justify-content: center; gap: 4px; }
+  .serpent .fb svg { width: 14px; height: 28px; }
+  .serpent .sous-titre { font-family: Outfit, sans-serif; font-weight: 600; font-size: 9.6pt; color: var(--foret); margin: 7px 0 4px; }
   table.resultats th { color: var(--feuille); border-bottom: 1.5px solid var(--pousse); }
   table.resultats td { border-bottom: 0; }
   table.resultats tr:nth-child(even) td { background: #FAF7F0; }
@@ -260,28 +273,30 @@
 <div class="page">
   <section>
     <h2><span class="n">04</span>Architecture, en bref</h2>
-    <p style="margin:6px 0 8px">Voici, étape par étape, ce qui se passe entre le moment où le maraîcher pose sa question et celui où il reçoit sa réponse :</p>
-    <div class="chaine">
-      <div class="colonne">
-        <div class="titre">1. Il demande</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg></i>Dans l'application</b>sur un téléphone Android, ou sur internet</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M21 4L3 11l7 2.5L12.5 21z"/><path d="M10 13.5L21 4"/></svg></i>Ou sur Telegram</b>rien à télécharger en plus : on écrit à TerraMind comme à un ami</div>
+    <p style="margin:6px 0 8px">Voici ce qui se passe, étape par étape, quand Moussa pose une question <b>à voix haute, en wolof</b> (une question écrite en français passe directement à l'étape 3) :</p>
+    <div class="serpent">
+      <div class="ligne">
+        <div class="bt depart"><strong class="t">Moussa envoie une note vocale</strong>dans l'application, ou sur Telegram (rien à télécharger en plus)</div>
+        <div class="fl"><span>puis</span><svg viewBox="0 0 44 24"><path d="M2 12H40M34 6l6 6-6 6"/></svg></div>
+        <div class="bt "><strong class="t"><span class="num">1</span>TerraMind écoute</strong>Octopus, l'outil du concours, transforme la voix en texte wolof : c'est la <b>transcription</b>.</div>
+        <div class="fl"><span>puis</span><svg viewBox="0 0 44 24"><path d="M2 12H40M34 6l6 6-6 6"/></svg></div>
+        <div class="bt "><strong class="t"><span class="num">2</span>Il traduit</strong>Gemini, une IA de Google, traduit ce texte wolof en français pour pouvoir chercher la réponse.</div>
       </div>
-      <div class="fleche">→</div>
-      <div class="colonne">
-        <div class="titre">2. TerraMind cherche</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h14v14H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14"/></svg></i>Pour une question</b>il cherche dans des sources sûres : fiches de l'ISRA et de la FAO, cartes des sols, météo par satellite</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 15c0-4 3-7 8-7 0 4-3 7-8 7z"/></svg></i>Pour une photo</b>il la compare à ce qu'il a appris en étudiant plus de 14 000 photos de plantes saines et malades, pour reconnaître la maladie</div>
+      <div class="ligne descente"><div></div><div></div><div></div><div></div><div class="fb"><svg viewBox="0 0 24 30"><path d="M12 2V28M6 22l6 6 6-6"/></svg><span>ensuite</span></div></div>
+      <div class="ligne">
+        <div class="bt fin"><strong class="t"><span class="num">5</span>Il répond en wolof</strong>Gemini traduit le conseil en wolof, puis Octopus le lit à voix haute. Le texte français s'affiche dessous.</div>
+        <div class="fl"><span>enfin</span><svg viewBox="0 0 44 24"><path d="M42 12H4M10 6l-6 6 6 6"/></svg></div>
+        <div class="bt "><strong class="t"><span class="num">4</span>Il explique simplement</strong>Gemini réécrit le conseil trouvé en mots simples, <b>sans rien ajouter</b>.</div>
+        <div class="fl"><span>puis</span><svg viewBox="0 0 44 24"><path d="M42 12H4M10 6l-6 6 6 6"/></svg></div>
+        <div class="bt cle"><strong class="t"><span class="num">3</span>Il cherche dans ses fiches</strong>TerraMind cherche dans ses 23 fiches vérifiées (ISRA, FAO…) les passages qui répondent. Rien trouvé ? Il dit qu'il ne sait pas.</div>
       </div>
-      <div class="fleche">→</div>
-      <div class="colonne">
-        <div class="titre">3. Il vérifie</div>
-        <div class="boite moteur"><b>Est-il sûr de lui ?</b><span class="etape">Oui : il prépare la réponse avec ce qu'il a trouvé, rien de plus.</span><span class="etape">Non : il le dit, et demande par exemple une autre photo, au lieu d'inventer.</span></div>
-      </div>
-      <div class="fleche">→</div>
-      <div class="colonne">
-        <div class="titre">4. Il répond</div>
-        <div class="boite fin"><b>Le maraîcher reçoit sa réponse</b>en français ou en wolof (écrite ou à écouter), avec la source de l'information</div>
+      <div class="sous-titre">Et quand Moussa envoie une photo :</div>
+      <div class="ligne">
+        <div class="bt depart"><strong class="t">Moussa envoie la photo d'une plante</strong>dans l'application ou sur Telegram</div>
+        <div class="fl"><span>puis</span><svg viewBox="0 0 44 24"><path d="M2 12H40M34 6l6 6-6 6"/></svg></div>
+        <div class="bt cle"><strong class="t"><span class="num">1</span>Il appelle son modèle entraîné</strong>un programme qui a appris à reconnaître les maladies en étudiant plus de 14 000 photos de plantes saines et malades.</div>
+        <div class="fl"><span>puis</span><svg viewBox="0 0 44 24"><path d="M2 12H40M34 6l6 6-6 6"/></svg></div>
+        <div class="bt fin"><strong class="t"><span class="num">2</span>Il répond</strong>« Cela ressemble à : mildiou », avec la fiche de cette maladie. Pas sûr ? Il demande une autre photo.</div>
       </div>
     </div>
     <p class="petit doux" style="margin:0 0 10px">Pour plus de détails, nous vous renvoyons au <b>document technique</b>, où tout est expliqué.</p>
