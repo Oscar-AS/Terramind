@@ -135,10 +135,12 @@
   .boite.moteur { box-shadow: 0 8px 20px rgba(31,77,58,.22); }
   .boite.moteur code { background: transparent; padding: 0; }
   .fleche { color: var(--soleil); }
-  .archi.simple { grid-template-columns: 1fr 26px 1.45fr; }
-  .archi.simple .colonne:first-child .boite { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-  .etapes { margin: 5px 0 0; padding-left: 17px; font-size: 8.8pt; line-height: 1.4; color: #E6EEE8; }
-  .etapes li { margin-top: 3px; }
+  .chaine { display: grid; grid-template-columns: 1.1fr 20px 1.15fr 20px 1fr 20px .9fr; align-items: stretch; margin: 0 0 8px; }
+  .chaine .colonne .boite { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .chaine .boite.note { flex: 0 0 auto; background: transparent; box-shadow: none; padding: 2px 4px; font-size: 8.2pt; color: var(--doux); }
+  .chaine .boite.moteur b { font-size: 10.4pt; margin-bottom: 4px; }
+  .chaine .etape { display: block; font-size: 8.6pt; color: #E6EEE8; margin-top: 5px; }
+  .chaine .boite.fin { background: var(--soleilc); box-shadow: none; }
   table.resultats th { color: var(--feuille); border-bottom: 1.5px solid var(--pousse); }
   table.resultats td { border-bottom: 0; }
   table.resultats tr:nth-child(even) td { background: #FAF7F0; }
@@ -259,23 +261,29 @@
 <div class="page">
   <section>
     <h2><span class="n">04</span>Architecture, en bref</h2>
-    <div class="archi simple" style="margin:8px 0 8px">
+    <p style="margin:6px 0 8px">Voici, étape par étape, ce qui se passe entre le moment où le maraîcher pose sa question et celui où il reçoit sa réponse :</p>
+    <div class="chaine">
       <div class="colonne">
-        <div class="titre">Deux façons d'y accéder</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg></i>L'application</b>à installer sur un téléphone Android, ou à ouvrir sur internet</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M21 4L3 11l7 2.5L12.5 21z"/><path d="M10 13.5L21 4"/></svg></i>Le bot Telegram</b>rien à télécharger en plus : on écrit à TerraMind comme à un ami</div>
+        <div class="titre">1. Il demande</div>
+        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg></i>Dans l'application</b>sur un téléphone Android, ou sur internet</div>
+        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M21 4L3 11l7 2.5L12.5 21z"/><path d="M10 13.5L21 4"/></svg></i>Ou sur Telegram</b>rien à télécharger en plus : on écrit à TerraMind comme à un ami</div>
+        <div class="boite note">Une question écrite ou vocale, la position du champ, ou une photo.</div>
       </div>
       <div class="fleche">→</div>
       <div class="colonne">
-        <div class="titre">Ce que fait TerraMind, pour ne rien inventer</div>
-        <div class="boite moteur"><b>Il répond seulement avec des informations vérifiées</b>
-          <ol class="etapes">
-            <li>Il cherche d'abord dans des sources sûres : fiches de l'ISRA et de la FAO, cartes des sols, météo par satellite.</li>
-            <li>Il répond avec ce qu'il y a trouvé, et dit d'où vient l'information.</li>
-            <li>S'il ne trouve rien ou n'est pas sûr, il le dit, au lieu d'inventer.</li>
-          </ol>
-        </div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 15c0-4 3-7 8-7 0 4-3 7-8 7z"/></svg></i>Pour les photos : un modèle qui reconnaît les maladies</b>Il a appris à partir de plus de 14 000 photos de plantes saines et malades. S'il n'est pas assez sûr de lui, il le dit et demande une autre photo, au lieu de deviner.</div>
+        <div class="titre">2. TerraMind cherche</div>
+        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h14v14H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14"/></svg></i>Pour une question</b>il cherche dans des sources sûres : fiches de l'ISRA et de la FAO, cartes des sols, météo par satellite</div>
+        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 15c0-4 3-7 8-7 0 4-3 7-8 7z"/></svg></i>Pour une photo</b>un modèle qui reconnaît les maladies, appris sur plus de 14 000 photos de plantes saines et malades</div>
+      </div>
+      <div class="fleche">→</div>
+      <div class="colonne">
+        <div class="titre">3. Il vérifie</div>
+        <div class="boite moteur"><b>Est-il sûr de lui ?</b><span class="etape">Oui : il prépare la réponse avec ce qu'il a trouvé, rien de plus.</span><span class="etape">Non : il le dit, et demande par exemple une autre photo, au lieu d'inventer.</span></div>
+      </div>
+      <div class="fleche">→</div>
+      <div class="colonne">
+        <div class="titre">4. Il répond</div>
+        <div class="boite fin"><b>Le maraîcher reçoit sa réponse</b>en français ou en wolof (écrite ou à écouter), avec la source de l'information</div>
       </div>
     </div>
     <p class="petit doux" style="margin:0 0 10px">Pour plus de détails, nous vous renvoyons au <b>document technique</b>, où tout est expliqué.</p>
