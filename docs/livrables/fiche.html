@@ -99,7 +99,7 @@
 
   .climat { background: linear-gradient(135deg, #E9F3E7, #F7F1E2); border: 1px solid #CFE2CB; border-radius: 14px; padding: 10px 13px; margin: 10px 0 0; }
   .climat h3 { font-size: 12.5pt; color: var(--foret); margin-bottom: 4px; }
-  .climat .grille2 { gap: 12px; }
+  .climat .grille2 { gap: 12px; grid-template-columns: 1.08fr 1fr; }
   .climat h4 { font: 600 9.6pt 'Outfit', sans-serif; margin: 2px 0 3px; color: var(--feuille); text-transform: uppercase; letter-spacing: .04em; }
   /* Résultats */
   table.resultats { width: 100%; border-collapse: collapse; font-size: 8.9pt; }
@@ -294,7 +294,7 @@
       <div class="ligne">
         <div class="bt depart"><strong class="t">Moussa prend une photo sur son téléphone et l'envoie à TerraMind</strong>dans l'application ou sur Telegram</div>
         <div class="fl"><span>puis</span><svg viewBox="0 0 44 24"><path d="M2 12H40M34 6l6 6-6 6"/></svg></div>
-        <div class="bt cle"><strong class="t"><span class="num">1</span>Il appelle son modèle entraîné</strong>un modèle de machine learning qui a appris à reconnaître les maladies en étudiant plus de 14 000 photos de plantes saines et malades.</div>
+        <div class="bt cle"><strong class="t"><span class="num">1</span>Il appelle son modèle entraîné</strong>un modèle de machine learning qui a appris à reconnaître les maladies en étudiant plus de 14&nbsp;000 photos de plantes saines et malades.</div>
         <div class="fl"><span>puis</span><svg viewBox="0 0 44 24"><path d="M2 12H40M34 6l6 6-6 6"/></svg></div>
         <div class="bt fin"><strong class="t"><span class="num">2</span>Il répond</strong>« Cela ressemble à : mildiou », avec la fiche de cette maladie. Si TerraMind n'est pas sûr, il demande une autre photo.</div>
       </div>
@@ -303,6 +303,7 @@
 
     <div class="climat">
       <h3><i class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg></i>Le climat au cœur de TerraMind : s'adapter, sans aggraver</h3>
+      <p class="petit" style="margin:0 0 6px">Le climat est un enjeu central du PAS Challenge, et les maraîchers des Niayes en subissent déjà les effets. Le schéma ci-dessus montre comment TerraMind répond à Moussa ; voici maintenant comment ces réponses l'aident à faire face au climat, sans abîmer à son tour l'environnement.</p>
       <div class="grille2">
         <div>
           <h4>Aide le maraîcher à faire face aux effets du climat, comme :</h4>
@@ -313,7 +314,7 @@
         </div>
         <div>
           <h4>Sans aggraver le problème</h4>
-          <p class="petit" style="margin:0 0 3px">Un outil pour le climat ne doit pas abîmer à son tour l'environnement. TerraMind limite son empreinte de bout en bout :</p>
+          <p class="petit" style="margin:0 0 3px">TerraMind limite son empreinte de bout en bout :</p>
           <ul class="petit">
             <li><b>Dans le champ :</b> il ne conseille jamais de pesticide, mais d'abord la prévention (espacer les plants, enlever les parties malades), pour ne pas ajouter de produits dans le sol et dans la nappe.</li>
             <li><b>Pour faire tourner l'outil :</b> un modèle photo de 17 Mo, sans carte graphique, et une application de 540 Ko : peu d'électricité et peu de données mobiles.</li>
@@ -329,7 +330,6 @@
     <h3>Les choix et leurs raisons</h3>
     <table class="resultats">
       <tr><th>Choix</th><th>Pourquoi</th></tr>
-      <tr><td>Fiches écrites à la main + Gemini</td><td>L'IA <b>reformule</b> en français simple mais n'ajoute rien : si la réponse n'est pas dans une fiche, TerraMind le dit. Pas de produit ni de dose dans les fiches.</td></tr>
       <tr><td>Petit modèle de vision</td><td>MobileNetV3 : 17 Mo, environ 15 ms par photo, tient sur un serveur gratuit. Un modèle 7 fois plus lourd (ConvNeXt) ne gagnait que 0,1 point sur TOM2024.</td></tr>
       <tr><td>Vie privée</td><td>Aucun numéro de téléphone demandé. La position du champ est arrondie à environ 1 km. Rien de personnel n'est envoyé à Gemini. <code>/oublier</code> efface tout.</td></tr>
     </table>
