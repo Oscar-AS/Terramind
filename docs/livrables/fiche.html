@@ -135,6 +135,10 @@
   .boite.moteur { box-shadow: 0 8px 20px rgba(31,77,58,.22); }
   .boite.moteur code { background: transparent; padding: 0; }
   .fleche { color: var(--soleil); }
+  .archi.simple { grid-template-columns: 1fr 26px 1.45fr; }
+  .archi.simple .colonne:first-child .boite { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .etapes { margin: 5px 0 0; padding-left: 17px; font-size: 8.8pt; line-height: 1.4; color: #E6EEE8; }
+  .etapes li { margin-top: 3px; }
   table.resultats th { color: var(--feuille); border-bottom: 1.5px solid var(--pousse); }
   table.resultats td { border-bottom: 0; }
   table.resultats tr:nth-child(even) td { background: #FAF7F0; }
@@ -255,30 +259,26 @@
 <div class="page">
   <section>
     <h2><span class="n">04</span>Architecture, en bref</h2>
-    <p><b>Un seul moteur, plusieurs façades.</b> L'application et le bot n'ont aucune logique agricole : ils posent la question au même moteur. C'est ce qui nous a permis de passer de WhatsApp à Telegram en quelques jours, quand Meta a bloqué notre compte.</p>
-    <div class="archi" style="margin:10px 0 12px">
+    <div class="archi simple" style="margin:8px 0 8px">
       <div class="colonne">
-        <div class="titre">Ce que voit l'agriculteur</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg></i>Application</b>Android (APK) et web · Expo</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M21 4L3 11l7 2.5L12.5 21z"/><path d="M10 13.5L21 4"/></svg></i>Bot Telegram</b>boutons, photos, notes vocales</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11h14V8"/><path d="M10 12h4"/></svg></i>WhatsApp</b>prêt, mis de côté</div>
+        <div class="titre">Deux façons d'y accéder</div>
+        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg></i>L'application</b>à installer sur un téléphone Android, ou à ouvrir sur internet</div>
+        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M21 4L3 11l7 2.5L12.5 21z"/><path d="M10 13.5L21 4"/></svg></i>Le bot Telegram</b>rien à télécharger en plus : on écrit à TerraMind comme à un ami</div>
       </div>
       <div class="fleche">→</div>
       <div class="colonne">
-        <div class="titre">Le moteur</div>
-        <div class="boite moteur"><b>Moteur TerraMind</b>Python · FastAPI · Render<code>/v1/plan · /v1/alert</code><code>/v1/diagnose · /v1/chat</code><span style="font-size:8.2pt;margin-top:6px;color:#D5E2D9">Garde-fous : seuil « pas sûr », jamais de dose, sources jointes à chaque réponse</span></div>
-      </div>
-      <div class="fleche">→</div>
-      <div class="colonne">
-        <div class="titre">Données et outils</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M3 8c3-2 6 2 9 0s6 2 9 0"/><path d="M3 13h18M3 18h18"/></svg></i>Sol : iSDAsoil</b>sable, argile, pH au point du champ</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M7 19a4 4 0 0 1-.4-8 5.5 5.5 0 0 1 10.6-1.2A4.5 4.5 0 1 1 17.5 19z"/></svg></i>Météo : NASA POWER</b>humidité, pluie, chaleur de la zone</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 15c0-4 3-7 8-7 0 4-3 7-8 7z"/></svg></i>Photo : MobileNetV3</b>TOM2024, PlantVillage, PlantDoc</div>
-        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h14v14H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14"/></svg></i>23 fiches sourcées</b>ISRA, FAO, DPV · Gemini reformule</div>
-        <div class="boite octopus"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></i>Octopus (outil du concours)</b>écoute et parle le wolof</div>
+        <div class="titre">Ce que fait TerraMind, pour ne rien inventer</div>
+        <div class="boite moteur"><b>Il répond seulement avec des informations vérifiées</b>
+          <ol class="etapes">
+            <li>Il cherche d'abord dans des sources sûres : fiches de l'ISRA et de la FAO, cartes des sols, météo par satellite.</li>
+            <li>Il répond avec ce qu'il y a trouvé, et dit d'où vient l'information.</li>
+            <li>S'il ne trouve rien ou n'est pas sûr, il le dit, au lieu d'inventer.</li>
+          </ol>
+        </div>
+        <div class="boite"><b><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 15c0-4 3-7 8-7 0 4-3 7-8 7z"/></svg></i>Pour les photos : un modèle qui reconnaît les maladies</b>Il a appris à partir de plus de 14 000 photos de plantes saines et malades. S'il n'est pas assez sûr de lui, il le dit et demande une autre photo, au lieu de deviner.</div>
       </div>
     </div>
-    <div class="carte petit" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-family:Outfit,sans-serif;font-size:10pt"><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></i>Question vocale en wolof :</b> note vocale sur Telegram <span class="doux">→</span> <b>Octopus</b> la transcrit <span class="doux">→</span> Gemini la traduit <span class="doux">→</span> le moteur cherche dans les fiches <span class="doux">→</span> <b>Octopus</b> dit la réponse en wolof, texte français dessous.</div>
+    <p class="petit doux" style="margin:0 0 10px">Pour plus de détails, nous vous renvoyons au <b>document technique</b>, où tout est expliqué.</p>
 
     <div class="climat">
       <h3><i class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg></i>Le climat au cœur de TerraMind : s'adapter, sans aggraver</h3>
