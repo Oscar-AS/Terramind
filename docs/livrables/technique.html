@@ -122,6 +122,61 @@
   code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 8pt; background: var(--sable); border-radius: 4px; padding: 0 3px; }
   .boite.moteur code { background: transparent; padding: 0; }
   .ecrans3 { display: grid; grid-template-columns: repeat(4, 26mm); justify-content: space-around; margin-top: 4px; }
+  /* ====== Refonte du design (19 nov) ====== */
+  body { font-size: 9.3pt; line-height: 1.46; }
+  .page { padding: 13mm 15mm 14mm; }
+  h2 { font-size: 16pt; gap: 10px; padding-bottom: 5px; border-bottom: 1.5px solid var(--pousse); margin: 0 0 8px; }
+  h2 .n { width: auto; height: auto; background: none; color: var(--soleil); font-size: 16pt; font-weight: 700; border-radius: 0; letter-spacing: -0.02em; }
+  h3 { color: var(--foret); }
+  .carte { background: #F8F4EC; border: 0; border-radius: 12px; }
+  .grille3 > .carte:has(.chiffre) { background: white; box-shadow: 0 1px 0 rgba(31,77,58,.04), 0 6px 16px rgba(31,77,58,.07); border-top: 3px solid var(--soleil); }
+  .chiffre { font-size: 22pt; letter-spacing: -0.03em; }
+  .ic { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: var(--pousse); color: var(--foret); margin-right: 7px; vertical-align: -6px; font-style: normal; flex: none; }
+  .ic svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .carte h3 { display: flex; align-items: center; margin-bottom: 4px; }
+  .boite { background: white; border: 0; box-shadow: 0 1px 0 rgba(31,77,58,.05), 0 4px 12px rgba(31,77,58,.07); }
+  .boite b { display: flex; align-items: center; }
+  .boite b .ic { width: 18px; height: 18px; border-radius: 5px; margin-right: 6px; vertical-align: 0; }
+  .boite b .ic svg { width: 12px; height: 12px; }
+  .boite.octopus { background: var(--soleilc); box-shadow: none; }
+  .boite.octopus .ic { background: #F3D58E; }
+  .boite.moteur { box-shadow: 0 8px 20px rgba(31,77,58,.22); }
+  .boite.moteur code { background: transparent; padding: 0; }
+  .fleche { color: var(--soleil); }
+  table.resultats th { color: var(--feuille); border-bottom: 1.5px solid var(--pousse); }
+  table.resultats td { border-bottom: 0; }
+  table.resultats tr:nth-child(even) td { background: #FAF7F0; }
+  table.resultats td:first-child { color: var(--foret); border-radius: 6px 0 0 6px; }
+  table.resultats td:last-child { border-radius: 0 6px 6px 0; }
+  table.resultats td:first-child .ic { width: 18px; height: 18px; border-radius: 5px; margin-right: 6px; vertical-align: -4px; }
+  table.resultats td:first-child .ic svg { width: 11px; height: 11px; }
+  .liens td { border-bottom: 1px dashed #E8DFCB; }
+  .liens td:first-child { color: var(--foret); }
+  .essayer { background: linear-gradient(180deg, #F5EFE3, #F1E9D8); }
+  .qr { box-shadow: 0 4px 12px rgba(31,77,58,.08); }
+  .aide .ic { width: 18px; height: 18px; border-radius: 5px; margin-right: 5px; vertical-align: -4px; background: white; }
+  .aide .ic svg { width: 11px; height: 11px; }
+  .climat { border: 0; }
+  .climat h3 .ic { background: white; }
+  .parcours { border: 0; box-shadow: 0 1px 0 rgba(31,77,58,.05), 0 6px 16px rgba(31,77,58,.08); }
+  .parcours .tete, .parcours .tete.tg, .parcours .tete.apk { background: var(--foret); }
+  .parcours .tete.tg { background: #2A6049; }
+  .parcours .tete.apk { background: #3A6E52; }
+  .parcours .tete .duree { background: rgba(245,239,227,.16); border-radius: 99px; padding: 2px 9px; opacity: 1; }
+  table.etapes td.num { color: var(--soleil); font-size: 10pt; }
+  table.etapes td.attendu { background: #F8F4EC; }
+  .bouton { background: var(--pousse); color: var(--foret); border-radius: 99px; padding: 0 7px; }
+  .parcours.tg .bouton { background: var(--pousse); color: var(--foret); }
+  .accent-terre { border-left: 3px solid var(--terre); }
+  .accent-vert { border-left: 3px solid var(--feuille); }
+  .pied { border-top: 0; color: #8A968D; }
+  .pied span:first-child::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; vertical-align: -1px; background: var(--feuille); border-radius: 9px 0 9px 0; }
+  .encadre { background: var(--soleilc); }
+  .encadre.vert { background: #E9F3E7; border-left: 3px solid var(--feuille); }
+  .etape .n { background: var(--pousse); color: var(--foret); border-radius: 99px; }
+  .barre .fond { background: #EFE8DA; }
+  .sommaire .carte { background: white; box-shadow: 0 1px 0 rgba(31,77,58,.04), 0 6px 16px rgba(31,77,58,.07); border-top: 3px solid var(--soleil); }
+  .grille4 > .carte { background: white; box-shadow: 0 1px 0 rgba(31,77,58,.04), 0 6px 16px rgba(31,77,58,.07); border-top: 3px solid var(--soleil); }
 </style>
 </head>
 <body>
@@ -142,7 +197,7 @@
   </div>
 
   <section>
-    <h2><span class="n">·</span>TerraMind en bref</h2>
+    <h2><span class="n">◆</span>TerraMind en bref</h2>
     <p>TerraMind est un conseiller agricole pour les petits maraîchers des Niayes (Sénégal). Il répond à trois questions : <b>que planter</b> sur mon sol ce mois-ci, <b>quel risque</b> la météo annonce cette semaine, et <b>quelle est cette maladie</b> sur ma photo. Il répond aussi aux questions libres. L'agriculteur l'utilise sur son téléphone, par le <b>bot Telegram</b> ou l'<b>application Android</b>, en français (texte) ou en wolof (notes vocales).</p>
     <div class="grille4" style="margin-top:8px">
       <div class="carte"><div class="chiffre">91,7 %</div><span class="petit">de bons diagnostics sur 1 058 photos de terrain africaines jamais vues (TOM2024)</span></div>
@@ -153,7 +208,7 @@
   </section>
 
   <section>
-    <h2><span class="n">·</span>Vérifier par vous-même</h2>
+    <h2><span class="n">◆</span>Vérifier par vous-même</h2>
     <table class="liens">
       <tr><td>Le code, public</td><td><a href="https://github.com/Oscar-AS/Terramind">github.com/Oscar-AS/Terramind</a> · tout ce document y renvoie avec le chemin du fichier</td></tr>
       <tr><td>L'application en ligne</td><td><a href="https://terramind-afrique.vercel.app">terramind-afrique.vercel.app</a> · <b>aucun compte ni identifiant</b> : un bouton « position test » remplace le GPS</td></tr>
@@ -164,7 +219,7 @@
   </section>
 
   <section>
-    <h2><span class="n">·</span>Plan du document</h2>
+    <h2><span class="n">◆</span>Plan du document</h2>
     <div class="sommaire">
       <div class="carte"><b>1. Données</b><span class="petit">Images, sol, météo, documents agricoles, voix. Volume, nettoyage, qualité, vie privée. <span class="doux">Pages 3 et 4</span></span></div>
       <div class="carte"><b>2. Méthode</b><span class="petit">Les quatre briques, le wolof avec Octopus, et pourquoi chaque choix. <span class="doux">Pages 5 et 6</span></span></div>
@@ -178,7 +233,7 @@
 <!-- ===================== PAGE 2 ===================== -->
 <div class="page">
   <section>
-    <h2><span class="n">·</span>Architecture : un moteur, deux façades</h2>
+    <h2><span class="n">◆</span>Architecture : un moteur, deux façades</h2>
     <p>L'application et le bot ne contiennent <b>aucune logique agricole</b>. Ils envoient la demande à un seul <b>moteur</b> (un programme Python sur un serveur), qui interroge les sources et renvoie la réponse. C'est ce qui nous a permis de passer de WhatsApp à Telegram en quelques jours quand Meta a bloqué notre compte (décision D12).</p>
     <div class="archi" style="margin-top:8px">
       <div class="colonne">
@@ -206,7 +261,7 @@
   </section>
 
   <section>
-    <h2><span class="n">·</span>Les outils utilisés</h2>
+    <h2><span class="n">◆</span>Les outils utilisés</h2>
     <table class="resultats">
       <tr><th>Partie</th><th>Outil</th><th>Pourquoi ce choix</th></tr>
       <tr><td>Moteur</td><td>Python, FastAPI, Docker</td><td>Une seule base de code pour toutes les façades ; l'image Docker est publiée sur ghcr.io et tourne sur Render (offre gratuite, 512 Mo de mémoire).</td></tr>
@@ -226,7 +281,7 @@
 <!-- ===================== PAGE 3 ===================== -->
 <div class="page">
   <section>
-    <h2><span class="n">1</span>Données : sources, nature et volume</h2>
+    <h2><span class="n">01</span>Données : sources, nature et volume</h2>
     <p>Règle de l'équipe (décision D6) : <b>aucune donnée inventée</b>. Chaque jeu est public, sa licence est vérifiée, et sa provenance est notée dans <code>data/README.md</code>. Les images restent hors de Git ; un script les retélécharge et vérifie leur empreinte.</p>
     <table class="resultats" style="margin-top:6px">
       <tr><th>Source</th><th>Nature</th><th>Volume utilisé</th><th>Licence · usage</th></tr>
@@ -243,7 +298,7 @@
   </section>
 
   <section>
-    <h2><span class="n">1</span>Préparation des images du diagnostic</h2>
+    <h2><span class="n">01</span>Préparation des images du diagnostic</h2>
     <div class="etape"><span class="n">1</span><div><b>Choix des classes.</b> On garde les cultures des Niayes présentes dans les jeux (tomate, oignon, pomme de terre, poivron) et les classes d'au moins 50 images (décision D8). Résultat : <b>26 classes</b>, dont 21 problèmes (maladies, ravageurs, accidents) et 5 « sain ».</div></div>
     <div class="etape"><span class="n">2</span><div><b>Équilibre labo / terrain.</b> PlantVillage est plafonné à 600 images par classe, pour que le modèle n'apprenne pas surtout des photos de laboratoire. Total : <b>14 074 images d'entraînement</b>.</div></div>
     <div class="etape"><span class="n">3</span><div><b>Découpage sans fuite.</b> Chaque image est rangée en entraînement, validation ou test selon son empreinte (hachage du fichier) : deux copies d'une même photo tombent toujours du même côté. Validation de terrain : 1 291 photos (15 % de TOM2024 + 20 % de PlantDoc). Test : 1 058 photos TOM2024 et 102 PlantDoc, <b>jamais vues</b> à l'entraînement.</div></div>
@@ -255,7 +310,7 @@
 <!-- ===================== PAGE 4 ===================== -->
 <div class="page">
   <section>
-    <h2><span class="n">1</span>Qualité des données : ce que nous avons contrôlé</h2>
+    <h2><span class="n">01</span>Qualité des données : ce que nous avons contrôlé</h2>
     <table class="resultats">
       <tr><th>Contrôle</th><th>Ce que nous avons trouvé et fait</th></tr>
       <tr><td>Images illisibles</td><td>Les 25 220 images CCMT ouvertes une à une ; 200 images TOM2024 contrôlées : aucune illisible.</td></tr>
@@ -270,7 +325,7 @@
   </section>
 
   <section>
-    <h2><span class="n">1</span>Vie privée et données personnelles</h2>
+    <h2><span class="n">01</span>Vie privée et données personnelles</h2>
     <p>Nous appliquons la minimisation des données, principe du RGPD et de la loi sénégalaise n° 2008-12 sur les données personnelles : <b>ne garder que le strict nécessaire, le moins longtemps possible</b>.</p>
     <div class="grille2">
       <div class="carte"><h3>Ce qui est gardé</h3><ul class="petit">
@@ -292,7 +347,7 @@
 <!-- ===================== PAGE 5 ===================== -->
 <div class="page">
   <section>
-    <h2><span class="n">2</span>Méthode : quatre briques, une règle commune</h2>
+    <h2><span class="n">02</span>Méthode : quatre briques, une règle commune</h2>
     <p>Règle commune : <b>chaque conseil vient d'une source citée</b>. Quand TerraMind n'a pas de source ou n'est pas sûr, il le dit, et il ne donne <b>jamais de produit ni de dose</b> : il renvoie vers un agent agricole. Chaque nombre utilisé pour décider est justifié dans <code>docs/seuils-et-parametres.md</code>.</p>
   </section>
 
@@ -336,7 +391,7 @@
   </section>
 
   <section>
-    <h2><span class="n">2</span>Le wolof à l'oral, avec Octopus</h2>
+    <h2><span class="n">02</span>Le wolof à l'oral, avec Octopus</h2>
     <p>Beaucoup d'agriculteurs lisent peu. En mode wolof, TerraMind <b>parle</b> et <b>écoute</b>. Les deux sens passent par <b>Octopus</b>, la plateforme fournie par le concours.</p>
     <div class="grille2">
       <div class="carte"><h3>TerraMind parle (synthèse vocale)</h3><ul class="petit">
@@ -369,7 +424,7 @@
 <!-- ===================== PAGE 7 ===================== -->
 <div class="page">
   <section>
-    <h2><span class="n">3</span>Résultats : le diagnostic photo</h2>
+    <h2><span class="n">03</span>Résultats : le diagnostic photo</h2>
     <p>Toutes les mesures sont faites sur des photos <b>jamais vues</b> à l'entraînement. Détail complet : <code>ml/eval/</code>.</p>
     <table class="resultats">
       <tr><th>Jeu de test</th><th>Photos</th><th>v0</th><th>v1 (en ligne)</th><th>v2 (+ CCMT)</th><th>ConvNeXt-Tiny</th></tr>
@@ -423,7 +478,7 @@
 <!-- ===================== PAGE 8 ===================== -->
 <div class="page">
   <section>
-    <h2><span class="n">3</span>Résultats : alertes, réponses, wolof, service</h2>
+    <h2><span class="n">03</span>Résultats : alertes, réponses, wolof, service</h2>
     <h3>Les alertes rejouées sur 6 ans de météo (2020-2025, 4 points des Niayes)</h3>
     <table class="resultats">
       <tr><th>Règle</th><th>Ce que donne le calcul</th><th>Comparé aux saisons connues dans les Niayes</th></tr>
@@ -460,7 +515,7 @@
 <!-- ===================== PAGE 9 ===================== -->
 <div class="page">
   <section>
-    <h2><span class="n">3</span>Limites, en toute franchise</h2>
+    <h2><span class="n">03</span>Limites, en toute franchise</h2>
     <table class="resultats">
       <tr><th>Limite</th><th>Pourquoi c'est ainsi</th><th>Ce qui la corrigerait</th></tr>
       <tr><td>Aucune photo des Niayes</td><td>Le diagnostic est testé sur des photos du Burkina Faso, proches mais pas identiques</td><td>Collecter des photos avec consentement auprès de maraîchers des Niayes, et tester dessus</td></tr>
@@ -475,7 +530,7 @@
   </section>
 
   <section>
-    <h2><span class="n">3</span>Prochaines étapes</h2>
+    <h2><span class="n">03</span>Prochaines étapes</h2>
     <div class="grille3">
       <div class="carte"><h3>Tester avec des maraîchers</h3><p class="petit">Une saison pilote dans les Niayes : photos réelles (avec consentement), vraies questions, mesure des alertes au champ.</p></div>
       <div class="carte"><h3>Aller sur WhatsApp</h3><p class="petit">Là où sont les agriculteurs. Le moteur ne change pas : seule la façade s'ajoute.</p></div>
@@ -484,7 +539,7 @@
   </section>
 
   <section>
-    <h2><span class="n">·</span>Annexe : où tout vérifier dans le code</h2>
+    <h2><span class="n">◆</span>Annexe : où tout vérifier dans le code</h2>
     <table class="liens">
       <tr><td>Provenance des données</td><td><code>data/README.md</code> · <code>data/extraits/SOURCES.csv</code></td></tr>
       <tr><td>Entraînement et résultats du modèle</td><td><code>ml/training/</code> · <code>ml/eval/diagnostic_v1.md</code> · <code>diagnostic_v2.md</code></td></tr>
