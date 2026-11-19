@@ -28,6 +28,7 @@ from pathlib import Path
 LEXIQUE = Path(__file__).resolve().parents[4] / "content" / "voix" / "lexique_wolof.csv"
 # Résultat du contrôle automatique « aller-retour » (scripts/outils/controle_voix.py).
 CONTROLE = Path(__file__).resolve().parents[4] / "content" / "voix" / "controle_voix.csv"
+PRONONCIATION = CONTROLE.with_name("prononciation_voix.csv")
 
 TAILLE_MAX = 160  # caractères par morceau envoyé à la synthèse
 TAILLE_MIN = 30  # en dessous, on fusionne avec le morceau voisin
@@ -86,16 +87,23 @@ def charger_lexique(chemin=LEXIQUE):
     return chiffres, bases, mots, a_remplir
 
 
-def charger_controle(chemin=CONTROLE):
-    """Mots du lexique que la voix déforme (CER au-dessus du seuil au contrôle aller-retour)."""
+def charger_controle(chemin=CONTROLE, prononciation=PRONONCIATION):
+    """Mots du lexique que la voix déforme (CER au-dessus du seuil au contrôle aller-retour).
+
+    Un mot corrigé depuis dans content/voix/prononciation_voix.csv (la voix lit une autre graphie,
+    calée sur un locuteur) n'est plus à risque : le contrôle date d'avant la correction."""
     if not chemin.exists():
         return set()
+    corriges = set()
+    if prononciation.exists():
+        with open(prononciation, encoding="utf-8") as f:
+            corriges = {r["ecrit"].strip().lower() for r in csv.DictReader(f) if r.get("dit_a_la_voix")}
     with open(chemin, encoding="utf-8") as f:
         return {
             r["texte"].strip().lower()
             for r in csv.DictReader(f)
             if r["type"] == "lexique" and r["statut"] == "a_risque"
-        }
+        } - corriges
 
 
 def nombre_en_wolof(n, chiffres, bases):

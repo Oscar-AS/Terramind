@@ -22,9 +22,7 @@
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.MODIFY_AUDIO_SETTINGS"
-      ],
-      "blockedPermissions": [
+        "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.RECORD_AUDIO"
       ]
     },
@@ -53,8 +51,8 @@
       [
         "expo-audio",
         {
-          "microphonePermission": false,
-          "recordAudioAndroid": false,
+          "microphonePermission": "TerraMind utilise le micro pour écouter la question que tu poses à voix haute, en wolof.",
+          "recordAudioAndroid": true,
           "enableBackgroundPlayback": false
         }
       ],

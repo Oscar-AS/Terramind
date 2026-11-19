@@ -118,6 +118,28 @@ export function poserQuestion(texte: string) {
   return appeler<{ passages: unknown[] }>('/v1/chat', json({ texte }));
 }
 
+/** Question dite en wolof : ce que le moteur a compris, et sa réponse dite en wolof (si la voix a pu être faite). */
+export type Vocal = {
+  transcription: { wolof: string; francais: string | null } | null;
+  voix: PhraseWolof | null;
+};
+
+export async function poserQuestionVocale(uri: string, dureeSecondes: number) {
+  const form = new FormData();
+  if (uri.startsWith('blob:') || uri.startsWith('data:')) {
+    // Web : l'enregistrement du navigateur (souvent audio/webm).
+    const audio = await (await fetch(uri)).blob();
+    form.append('audio', audio, audio.type.includes('webm') ? 'question.webm' : 'question.m4a');
+  } else {
+    // Android / iOS : fichier .m4a écrit par expo-audio.
+    form.append('audio', { uri, name: 'question.m4a', type: 'audio/mp4' } as unknown as Blob);
+  }
+  // La question est dite en wolof : la réponse revient aussi en wolof, à écouter.
+  Object.entries({ ...commun(), langue: 'wo' }).forEach(([k, v]) => form.append(k, v));
+  form.append('duree', String(Math.round(dureeSecondes)));
+  return appeler<Vocal>('/v1/chat/vocal', { method: 'POST', body: form });
+}
+
 export async function diagnostiquer(uri: string, mimeType: string | null) {
   const c = commun();
   const form = new FormData();
