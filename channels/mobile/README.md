@@ -105,7 +105,7 @@ npx tsc --noEmit && npx expo lint # vérifications
 
 Sans `EXPO_PUBLIC_ENGINE_URL`, l'application appelle `http://localhost:8000` (le moteur lancé sur le même ordinateur, utile pour la version web).
 
-**📱 Télécharger l'APK (18 nov 2026)** : https://expo.dev/artifacts/eas/mcgAGA13JtmuknxLoSQWJ3bBRHGY02TgFiquqINAYg0.apk (à ouvrir sur un téléphone Android ; autoriser l'installation depuis le navigateur).
+**📱 Télécharger l'APK (18 nov 2026)** : https://expo.dev/artifacts/eas/p6j-J18atqTvTXm98FDXBm7MMHqNiEscckr8-74V0SE.apk (à ouvrir sur un téléphone Android ; autoriser l'installation depuis le navigateur).
 
 **Distribution sans store** :
 - **Android** : APK fabriqué avec EAS Build, partagé par lien ou QR code. Le profil `apk` de [`eas.json`](eas.json) produit un APK (pas un AAB) qui appelle le moteur en ligne (`https://terramind-moteur.onrender.com`) :
