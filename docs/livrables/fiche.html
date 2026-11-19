@@ -99,7 +99,7 @@
 
   .climat { background: linear-gradient(135deg, #E9F3E7, #F7F1E2); border: 1px solid #CFE2CB; border-radius: 14px; padding: 7px 13px; margin: 7px 0 0; }
   .climat h3 { font-size: 12.5pt; color: var(--foret); margin-bottom: 4px; }
-  .climat .grille2 { gap: 12px; grid-template-columns: 1.15fr 1fr; }
+  .climat .grille2 { gap: 12px; grid-template-columns: 1.1fr 1fr; }
   .climat h4 { font: 600 9.6pt 'Outfit', sans-serif; margin: 2px 0 3px; color: var(--feuille); text-transform: uppercase; letter-spacing: .04em; }
   /* Résultats */
   table.resultats { width: 100%; border-collapse: collapse; font-size: 8.9pt; }
@@ -136,6 +136,7 @@
   .boite.moteur code { background: transparent; padding: 0; }
   .fleche { color: var(--soleil); }
   .serpent { margin: 0 0 6px; }
+  table.serre td, table.serre th { padding-top: 2px; padding-bottom: 2px; }
   .serpent .ligne { display: grid; grid-template-columns: 1fr 46px 1fr 46px 1fr; align-items: stretch; }
   .serpent .bt { background: white; border-radius: 10px; padding: 6px 9px; font-size: 8.3pt; line-height: 1.32; box-shadow: 0 1px 0 rgba(31,77,58,.05), 0 4px 12px rgba(31,77,58,.07); }
   .serpent .bt .t { display: flex; align-items: center; gap: 5px; font-size: 9.4pt; margin-bottom: 2px; color: var(--foret); }
@@ -318,7 +319,7 @@
           <ul class="petit">
             <li><b>Dans le champ :</b> il ne conseille jamais de pesticide, mais d'abord la prévention (espacer les plants, enlever les parties malades), pour ne pas ajouter de produits dans le sol et dans l'eau des puits.</li>
             <li><b>Pour faire tourner l'outil :</b> TerraMind est léger : il n'a pas besoin d'ordinateur puissant et consomme peu d'électricité et peu de crédit internet.</li>
-            <li><b>Pour collecter les données :</b> aucun capteur à fabriquer ni à installer ; tout vient de satellites et de cartes existantes.</li>
+            <li><b>Pour collecter les données :</b> TerraMind n'a pas besoin de capteurs puissants à fabriquer ni à installer ; tout ce qu'il utilise vient des données satellitaires et des cartes déjà existantes.</li>
           </ul>
         </div>
       </div>
@@ -328,7 +329,7 @@
 
   <section>
     <h3>Les choix et leurs raisons</h3>
-    <table class="resultats">
+    <table class="resultats serre">
       <tr><th>Choix</th><th>Pourquoi</th></tr>
       <tr><td>Petit modèle de vision</td><td>MobileNetV3 : 17 Mo, environ 15 ms par photo, tient sur un serveur gratuit. Un modèle 7 fois plus lourd (ConvNeXt) ne gagnait que 0,1 point sur TOM2024.</td></tr>
       <tr><td>Vie privée</td><td>Aucun numéro de téléphone demandé. La position du champ est arrondie à environ 1 km. Rien de personnel n'est envoyé à Gemini. <code>/oublier</code> efface tout.</td></tr>
