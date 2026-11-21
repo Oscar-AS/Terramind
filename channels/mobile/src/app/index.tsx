@@ -1,28 +1,31 @@
 // L'application tient en un seul écran : la conversation avec TerraMind, comme sur le bot Telegram.
 // Un agriculteur qui parle wolof sans lire le français n'a besoin que de ça : les notes vocales se lisent toutes
-// seules, et les grands boutons numérotés en bas de l'écran sont ceux que les notes vocales citent.
-// La logique (textes, parcours, notes vocales) est dans conversation/bot.ts ; ici, seulement l'affichage.
+// seules, et les grands boutons numérotés sous la case « Message » sont ceux que les notes vocales citent
+// (« le petit bouton rond tout à gauche de la case Message », « le micro en bas à droite »).
+// Logique (textes, parcours, notes vocales) : conversation/bot.ts ; ici, seulement l'affichage.
 import {
   RecordingPresets, requestRecordingPermissionsAsync, setAudioModeAsync, useAudioRecorder, useAudioRecorderState,
 } from 'expo-audio';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Location from 'expo-location';
 import { Camera } from 'phosphor-react-native/src/icons/Camera';
 import { Images } from 'phosphor-react-native/src/icons/Images';
 import { Leaf } from 'phosphor-react-native/src/icons/Leaf';
 import { MapPin } from 'phosphor-react-native/src/icons/MapPin';
 import { Microphone } from 'phosphor-react-native/src/icons/Microphone';
-import { PaperPlaneRight } from 'phosphor-react-native/src/icons/PaperPlaneRight';
+import { PaperPlaneTilt } from 'phosphor-react-native/src/icons/PaperPlaneTilt';
 import { Translate } from 'phosphor-react-native/src/icons/Translate';
 import { X } from 'phosphor-react-native/src/icons/X';
-import { type ComponentRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ComponentRef, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View,
+  Animated, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ENGINE_URL } from '@/api';
 import { TexteRiche } from '@/components/Bulle';
+import { Paysage } from '@/components/Paysage';
 import { T } from '@/components/ui';
 import { BulleVocale, useLecteur } from '@/components/Voix';
 import {
@@ -35,11 +38,21 @@ import { couleurs, polices } from '@/theme';
 type Message = {
   id: string;
   de: 'bot' | 'moi';
+  heure: number;
   texte?: string;
   boutons?: BoutonEnLigne[][];
   voix?: string; // adresse complète d'une note vocale
   photo?: string;
   position?: boolean;
+};
+
+// Couleurs propres à la conversation, tirées de la palette (theme.ts).
+const C = {
+  bulleBot: '#F3EDE1',
+  bulleMoi: couleurs.pousse,
+  heure: '#6E776F',
+  pastilleJour: '#EFE8DA',
+  bordDoux: '#E6DDCB',
 };
 
 let compteur = 0;
@@ -48,11 +61,22 @@ const nouvelId = () => `${Date.now().toString(36)}-${(compteur++).toString(36)}`
 const ENREGISTREMENT = { ...RecordingPresets.HIGH_QUALITY, numberOfChannels: 1, bitRate: 64000 };
 const DUREE_MAX_S = 60;
 const minutes = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const heureFr = (t: number) => {
+  const d = new Date(t);
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+};
+const memeJour = (a: number, b: number) => new Date(a).toDateString() === new Date(b).toDateString();
+const jourFr = (t: number) => {
+  if (memeJour(t, Date.now())) return "Aujourd'hui";
+  if (memeJour(t, Date.now() - 86_400_000)) return 'Hier';
+  const d = new Date(t);
+  return `${d.getDate()}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+};
 
 export default function Conversation() {
   const marges = useSafeAreaInsets();
   const { ajouter } = useLecteur();
-  const [messages, setMessages] = useState<Message[]>(() => conversationGardee.lire<Message>());
+  const [messages, setMessages] = useState<Message[]>(() => conversationGardee.lire<Message>().filter((m) => m.de && m.heure));
   const [langue, setLangue] = useState(() => profil.lire().langue);
   const [occupe, setOccupe] = useState(0);
   const [texte, setTexte] = useState('');
@@ -73,8 +97,8 @@ export default function Conversation() {
     conversationGardee.ecrire(messages.map((m) => (m.photo?.startsWith('blob:') ? { ...m, photo: undefined, texte: '[photo]' } : m)));
   }, [messages]);
 
-  const poster = useCallback((m: Omit<Message, 'id'>) => {
-    const complet = { ...m, id: nouvelId() };
+  const poster = useCallback((m: Omit<Message, 'id' | 'heure'>) => {
+    const complet = { ...m, id: nouvelId(), heure: Date.now() };
     setMessages((ms) => [...ms, complet]);
     return complet;
   }, []);
@@ -112,27 +136,17 @@ export default function Conversation() {
 
   const ecrire = (t: string) => {
     if (!t.trim()) return;
+    setTexte('');
+    champ.current?.blur(); // le clavier du téléphone se ferme : les grands boutons reviennent
+    setClavierSysteme(false);
     if (t.trim().startsWith('/oublier')) {
-      setTexte('');
       profil.oublier();
       setLangue(undefined);
       setMessages([]);
       return;
     }
     poster({ de: 'moi', texte: t.trim() });
-    setTexte('');
-    champ.current?.blur(); // le clavier du téléphone se ferme : les grands boutons reviennent
-    setClavierSysteme(false);
     envoyer({ texte: t });
-  };
-
-  const toucherBouton = (libelle: string, bouton: string) => {
-    if (bouton === B_POSITION) {
-      void partagerPosition();
-      return;
-    }
-    poster({ de: 'moi', texte: libelle });
-    envoyer({ texte: bouton });
   };
 
   const partagerPosition = async () => {
@@ -154,6 +168,16 @@ export default function Conversation() {
     }
   };
 
+  const toucherBouton = (libelle: string, bouton: string) => {
+    setMenuPhoto(false);
+    if (bouton === B_POSITION) {
+      void partagerPosition();
+      return;
+    }
+    poster({ de: 'moi', texte: libelle });
+    envoyer({ texte: bouton });
+  };
+
   const choisirPhoto = async (source: 'camera' | 'galerie') => {
     setMenuPhoto(false);
     if (source === 'camera' && Platform.OS !== 'web') {
@@ -165,9 +189,10 @@ export default function Conversation() {
     }
     const options: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 0.8 };
     const r = source === 'camera' ? await ImagePicker.launchCameraAsync(options) : await ImagePicker.launchImageLibraryAsync(options);
-    if (r.canceled || !r.assets?.[0]) return;
-    poster({ de: 'moi', photo: r.assets[0].uri });
-    envoyer({ photo: { uri: r.assets[0].uri, type: r.assets[0].mimeType ?? null } });
+    const photo = r.canceled ? null : r.assets?.[0];
+    if (!photo) return;
+    poster({ de: 'moi', photo: photo.uri });
+    envoyer({ photo: { uri: photo.uri, type: photo.mimeType ?? null } });
   };
 
   // ── Note vocale : garder le doigt appuyé sur le micro, relâcher pour envoyer (comme Telegram) ──
@@ -194,7 +219,7 @@ export default function Conversation() {
 
   const commencerVocal = async () => {
     relache.current = false;
-    const permission = await requestRecordingPermissionsAsync().catch(() => ({ granted: false, canAskAgain: false }));
+    const permission = await requestRecordingPermissionsAsync().catch(() => ({ granted: false }));
     if (!permission.granted) {
       sortie.envoyer('TerraMind a besoin du micro pour écouter ta question. Autorise-le dans les réglages du téléphone, ou écris ta question.');
       return;
@@ -215,52 +240,60 @@ export default function Conversation() {
   };
 
   const boutons = langue ? clavier(langue) : [];
-  const afficherClavier = !clavierSysteme && !menuPhoto && boutons.length > 0;
+  const afficherBoutons = !clavierSysteme && !menuPhoto && boutons.length > 0;
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={[styles.entete, { paddingTop: marges.top + 10 }]}>
-        <View style={styles.logo}><Leaf size={24} color={couleurs.foret} weight="fill" /></View>
+    <KeyboardAvoidingView style={styles.ecran} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {/* Fond : dégradé vert tendre → sable en haut, paysage des Niayes en bas */}
+      <LinearGradient colors={[couleurs.pousse, '#EDF2E2', couleurs.sable]} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
+      <View style={styles.paysage} pointerEvents="none"><Paysage /></View>
+
+      <View style={[styles.entete, { paddingTop: marges.top + 12 }]}>
+        <Avatar taille={46} />
         <View style={{ flex: 1 }}>
           <T style={styles.nom}>TerraMind</T>
-          <T style={styles.statut}>{occupe ? 'écrit…' : 'Assistant maraîchage des Niayes'}</T>
+          <View style={styles.ligneStatut}>
+            <View style={styles.pointVert} />
+            <T style={styles.statut}>{occupe ? 'écrit…' : 'Ton assistant maraîchage'}</T>
+          </View>
         </View>
         <Pressable accessibilityRole="button" accessibilityLabel="Changer de langue" hitSlop={8}
-          onPress={() => envoyer({ texte: '/langue' })} style={styles.boutonEntete}>
-          <Translate size={22} color={couleurs.blanc} weight="bold" />
+          onPress={() => { poster({ de: 'moi', texte: '/langue' }); envoyer({ texte: '/langue' }); }} style={styles.rondEntete}>
+          <Translate size={22} color={couleurs.foret} weight="bold" />
         </Pressable>
       </View>
 
-      <FlatList
-        ref={liste}
-        style={styles.fil}
-        contentContainerStyle={styles.filContenu}
-        data={messages}
-        keyExtractor={(m) => m.id}
-        onContentSizeChange={() => liste.current?.scrollToEnd({ animated: true })}
-        renderItem={({ item }) => (
-          <Bulle m={item} onAction={(action) => {
-            poster({ de: 'moi', texte: libelleAction(item.boutons, action) });
-            envoyer({ action });
-          }} />
-        )}
-        ListFooterComponent={occupe ? <View style={[styles.bulle, styles.bulleBot, styles.attente]}><T style={styles.points}>• • •</T></View> : undefined}
-      />
+      <View style={styles.feuille}>
+        <FlatList
+          ref={liste}
+          contentContainerStyle={styles.filContenu}
+          data={messages}
+          keyExtractor={(m) => m.id}
+          onContentSizeChange={() => liste.current?.scrollToEnd({ animated: true })}
+          renderItem={({ item, index }) => (
+            <>
+              {index === 0 || !memeJour(messages[index - 1].heure, item.heure)
+                ? <View style={styles.jour}><T style={styles.texteJour}>{jourFr(item.heure)}</T></View> : null}
+              <Bulle m={item} suivant={messages[index + 1]} onAction={(action) => {
+                poster({ de: 'moi', texte: libelleAction(item.boutons, action) });
+                envoyer({ action });
+              }} />
+            </>
+          )}
+          ListFooterComponent={occupe ? <Ecrit /> : undefined}
+        />
+      </View>
 
-      <View style={[styles.bas, { paddingBottom: (afficherClavier ? 8 : 10) + (clavierSysteme ? 0 : marges.bottom) }]}>
-        <View style={styles.saisie}>
-          <Pressable accessibilityRole="button" accessibilityLabel="Envoyer une photo de ma plante"
-            onPress={() => setMenuPhoto((v) => !v)} style={[styles.rondSaisie, styles.rondPhoto]}>
-            {menuPhoto ? <X size={24} color={couleurs.foret} weight="bold" /> : <Camera size={26} color={couleurs.foret} weight="fill" />}
-          </Pressable>
+      <View style={[styles.bas, { paddingBottom: (clavierSysteme ? 8 : 10) + (clavierSysteme ? 0 : marges.bottom) }]}>
+        <View style={styles.carteSaisie}>
           {ecoute ? (
-            <View style={[styles.champ, styles.enregistrement]}>
+            <View style={styles.enregistrement}>
               <View style={styles.pointRouge} />
               <T style={styles.texteEnregistrement}>{minutes(etatMicro.durationMillis / 1000)}  ·  Relâche pour envoyer</T>
             </View>
           ) : (
-            <TextInput ref={champ} value={texte} submitBehavior="blurAndSubmit" numberOfLines={1} onChangeText={setTexte} placeholder="Message" placeholderTextColor={couleurs.encreDouce}
-              style={styles.champ} multiline maxLength={2000} accessibilityLabel="Écrire un message"
+            <TextInput ref={champ} value={texte} onChangeText={setTexte} placeholder="Message" placeholderTextColor="#8C877B"
+              style={styles.champ} multiline maxLength={2000} accessibilityLabel="Écrire un message" submitBehavior="blurAndSubmit"
               onFocus={() => { setClavierSysteme(true); setMenuPhoto(false); }} onBlur={() => setClavierSysteme(false)}
               onSubmitEditing={() => ecrire(texte)}
               onKeyPress={(e) => {
@@ -272,37 +305,43 @@ export default function Conversation() {
                 }
               }} />
           )}
-          {texte.trim() ? (
-            <Pressable accessibilityRole="button" accessibilityLabel="Envoyer" onPress={() => ecrire(texte)} style={styles.rondSaisie}>
-              <PaperPlaneRight size={24} color={couleurs.blanc} weight="fill" />
+          <View style={styles.ligneOutils}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Envoyer une photo de ma plante" hitSlop={6}
+              onPress={() => setMenuPhoto((v) => !v)} style={[styles.outil, menuPhoto && styles.outilActif]}>
+              {menuPhoto ? <X size={20} color={couleurs.foret} weight="bold" /> : <Camera size={21} color={couleurs.foret} />}
             </Pressable>
-          ) : (
-            <Pressable accessibilityRole="button" accessibilityLabel="Garder le doigt appuyé pour parler en wolof"
-              onPressIn={() => void commencerVocal()} onPressOut={() => { relache.current = true; void finirVocal(); }}
-              style={[styles.rondSaisie, ecoute && styles.microActif]}>
-              <Microphone size={26} color={couleurs.blanc} weight="fill" />
-            </Pressable>
-          )}
+            <View style={{ flex: 1 }} />
+            {texte.trim() ? (
+              <Pressable accessibilityRole="button" accessibilityLabel="Envoyer" onPress={() => ecrire(texte)}>
+                <RondVert><PaperPlaneTilt size={21} color={couleurs.blanc} weight="fill" /></RondVert>
+              </Pressable>
+            ) : (
+              <Pressable accessibilityRole="button" accessibilityLabel="Garder le doigt appuyé pour parler en wolof"
+                onPressIn={() => void commencerVocal()} onPressOut={() => { relache.current = true; void finirVocal(); }}>
+                <RondVert actif={ecoute}><Microphone size={22} color={couleurs.blanc} weight="fill" /></RondVert>
+              </Pressable>
+            )}
+          </View>
         </View>
 
         {menuPhoto ? (
           <View style={styles.menuPhoto}>
             <Pressable accessibilityRole="button" onPress={() => void choisirPhoto('camera')} style={styles.choixPhoto}>
-              <Camera size={28} color={couleurs.foret} weight="duotone" />
+              <Camera size={26} color={couleurs.foret} weight="duotone" />
               <T style={styles.texteBouton}>Appareil photo</T>
             </Pressable>
             <Pressable accessibilityRole="button" onPress={() => void choisirPhoto('galerie')} style={styles.choixPhoto}>
-              <Images size={28} color={couleurs.foret} weight="duotone" />
+              <Images size={26} color={couleurs.foret} weight="duotone" />
               <T style={styles.texteBouton}>Galerie</T>
             </Pressable>
           </View>
         ) : null}
 
-        {afficherClavier ? (
-          <View style={styles.clavier}>
-            {boutons.map((b) => (
+        {afficherBoutons ? (
+          <View style={styles.boutons}>
+            {boutons.map((b, i) => (
               <Pressable key={b.bouton} accessibilityRole="button" onPress={() => toucherBouton(b.texte, b.bouton)}
-                style={({ pressed }) => [styles.grandBouton, pressed && { backgroundColor: couleurs.pousse }]}>
+                style={({ pressed }) => [styles.pilule, i === 0 && styles.piluleTest, pressed && styles.piluleAppuyee]}>
                 <T style={styles.texteBouton} numberOfLines={2}>{b.texte}</T>
               </Pressable>
             ))}
@@ -313,82 +352,161 @@ export default function Conversation() {
   );
 }
 
-function Bulle({ m, onAction }: { m: Message; onAction: (action: string) => void }) {
-  const moi = m.de === 'moi';
+/** Avatar de TerraMind : une feuille sur un rond dégradé (vert tendre → soleil). */
+function Avatar({ taille }: { taille: number }) {
   return (
-    <View style={{ alignSelf: moi ? 'flex-end' : 'flex-start', maxWidth: '88%', gap: 4 }}>
-      <View style={[styles.bulle, moi ? styles.bulleMoi : styles.bulleBot, m.photo ? styles.bullePhoto : null]}>
-        {m.photo ? <Image source={{ uri: m.photo }} style={styles.photo} accessibilityLabel="Photo envoyée" /> : null}
-        {m.voix ? <BulleVocale id={m.id} adresse={m.voix} moi={moi} /> : null}
-        {m.position ? (
-          <View style={styles.position}>
-            <MapPin size={26} color={couleurs.terre} weight="fill" />
-            <T style={styles.texteBulle}>Position de mon champ</T>
-          </View>
-        ) : null}
-        {m.texte ? <TexteRiche texte={m.texte} style={styles.texteBulle} /> : null}
+    <LinearGradient colors={[couleurs.blanc, couleurs.pousse, couleurs.soleilClair]} start={{ x: 0.1, y: 0 }} end={{ x: 0.9, y: 1 }}
+      style={[styles.avatar, { width: taille, height: taille, borderRadius: taille / 2 }]}>
+      <Leaf size={taille * 0.5} color={couleurs.foret} weight="duotone" />
+    </LinearGradient>
+  );
+}
+
+function RondVert({ children, actif }: { children: ReactNode; actif?: boolean }) {
+  return (
+    <LinearGradient colors={actif ? [couleurs.terre, '#8F3F1E'] : [couleurs.feuille, couleurs.foret]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+      style={[styles.rondVert, actif && { transform: [{ scale: 1.12 }] }]}>
+      {children}
+    </LinearGradient>
+  );
+}
+
+/** « TerraMind écrit » : trois points qui respirent. */
+function Ecrit() {
+  const [v] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    const boucle = Animated.loop(Animated.timing(v, { toValue: 1, duration: 1100, useNativeDriver: true }));
+    boucle.start();
+    return () => boucle.stop();
+  }, [v]);
+  return (
+    <View style={[styles.ligneBot, { marginTop: 10 }]}>
+      <Avatar taille={30} />
+      <View style={[styles.bulle, styles.bulleBot, styles.points]}>
+        {[0, 1, 2].map((i) => (
+          <Animated.View key={i} style={[styles.point, {
+            opacity: v.interpolate({ inputRange: [0, (i + 0.5) / 4, (i + 1.5) / 4, 1], outputRange: [0.3, 1, 0.3, 0.3], extrapolate: 'clamp' }),
+          }]} />
+        ))}
       </View>
-      {m.boutons?.map((ligne, i) => (
-        <View key={i} style={styles.ligneBoutons}>
-          {ligne.map((b) => (
-            <Pressable key={b.action} accessibilityRole="button" onPress={() => onAction(b.action)}
-              style={({ pressed }) => [styles.boutonEnLigne, pressed && { opacity: 0.75 }]}>
-              <T style={styles.texteBoutonEnLigne}>{b.texte}</T>
-            </Pressable>
-          ))}
+    </View>
+  );
+}
+
+function Bulle({ m, suivant, onAction }: { m: Message; suivant?: Message; onAction: (action: string) => void }) {
+  const moi = m.de === 'moi';
+  // Heure et avatar seulement sous le dernier message d'une suite du même côté, comme dans la maquette.
+  const finDeSuite = !suivant || suivant.de !== m.de || suivant.heure - m.heure > 60_000;
+  const contenu = (
+    <View style={[styles.bulle, moi ? styles.bulleMoi : styles.bulleBot, m.photo ? styles.bullePhoto : null]}>
+      {m.photo ? <Image source={{ uri: m.photo }} style={styles.photo} accessibilityLabel="Photo envoyée" /> : null}
+      {m.voix ? <BulleVocale id={m.id} adresse={m.voix} moi={moi} /> : null}
+      {m.position ? (
+        <View style={styles.position}>
+          <View style={styles.pastillePosition}><MapPin size={18} color={couleurs.blanc} weight="fill" /></View>
+          <T style={styles.texteBulle}>Position de mon champ</T>
         </View>
-      ))}
+      ) : null}
+      {m.texte ? <TexteRiche texte={m.texte} style={styles.texteBulle} /> : null}
+    </View>
+  );
+  return (
+    <View style={[styles.message, finDeSuite && { marginBottom: 10 }]}>
+      {moi ? <View style={styles.ligneMoi}>{contenu}</View> : (
+        <>
+          <View style={styles.ligneBot}>
+            {finDeSuite ? <Avatar taille={30} /> : <View style={{ width: 30 }} />}
+            <View style={{ flex: 1, alignItems: 'flex-start' }}>{contenu}</View>
+          </View>
+          {m.boutons?.length ? (
+            <View style={styles.reponses}>
+              {m.boutons.flat().map((b) => (
+                <Pressable key={b.action} accessibilityRole="button" onPress={() => onAction(b.action)}
+                  style={({ pressed }) => [styles.reponse, pressed && styles.piluleAppuyee]}>
+                  <T style={styles.texteReponse}>{b.texte}</T>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+        </>
+      )}
+      {finDeSuite ? <T style={[styles.heure, moi ? { alignSelf: 'flex-end' } : { marginLeft: 40 }]}>{heureFr(m.heure)}</T> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  entete: {
-    flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingBottom: 12,
-    backgroundColor: couleurs.foret,
+  ecran: { flex: 1, backgroundColor: couleurs.sable },
+  paysage: { position: 'absolute', left: 0, right: 0, bottom: 0 },
+  entete: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 18, paddingBottom: 18 },
+  avatar: {
+    alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: couleurs.blanc,
+    shadowColor: couleurs.foret, shadowOpacity: 0.15, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2,
   },
-  logo: { width: 42, height: 42, borderRadius: 21, backgroundColor: couleurs.pousse, alignItems: 'center', justifyContent: 'center' },
-  nom: { fontFamily: polices.titreMoyen, fontSize: 19, color: couleurs.blanc },
-  statut: { fontFamily: polices.texte, fontSize: 13, color: '#CFE3D3' },
-  boutonEntete: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.14)' },
-  fil: { flex: 1, backgroundColor: couleurs.sable },
-  filContenu: { padding: 10, gap: 6 },
-  bulle: { borderRadius: 18, paddingHorizontal: 13, paddingVertical: 9, gap: 8 },
-  bulleBot: { backgroundColor: couleurs.carte, borderTopLeftRadius: 6, borderWidth: 1, borderColor: couleurs.trait },
-  bulleMoi: { backgroundColor: '#D7EBD5', borderTopRightRadius: 6 },
+  nom: { fontFamily: polices.titreMoyen, fontSize: 21, color: couleurs.encre, letterSpacing: -0.3 },
+  ligneStatut: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 1 },
+  pointVert: { width: 8, height: 8, borderRadius: 4, backgroundColor: couleurs.feuille },
+  statut: { fontFamily: polices.texte, fontSize: 13.5, color: couleurs.encreDouce },
+  rondEntete: {
+    width: 46, height: 46, borderRadius: 23, backgroundColor: couleurs.blanc, alignItems: 'center', justifyContent: 'center',
+    shadowColor: couleurs.foret, shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2,
+  },
+  feuille: {
+    flex: 1, backgroundColor: couleurs.carte, borderTopLeftRadius: 30, borderTopRightRadius: 30, overflow: 'hidden',
+    borderBottomLeftRadius: 24, borderBottomRightRadius: 24,
+  },
+  filContenu: { paddingHorizontal: 14, paddingTop: 14, paddingBottom: 6 },
+  jour: { alignSelf: 'center', backgroundColor: C.pastilleJour, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 5, marginVertical: 8 },
+  texteJour: { fontFamily: polices.texte, fontSize: 13, color: couleurs.encreDouce },
+  message: { marginBottom: 4 },
+  ligneMoi: { alignItems: 'flex-end', paddingLeft: 48 },
+  ligneBot: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, paddingRight: 30 },
+  bulle: { borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, gap: 8, maxWidth: '100%' },
+  bulleBot: { backgroundColor: C.bulleBot, borderBottomLeftRadius: 6 },
+  bulleMoi: { backgroundColor: C.bulleMoi, borderBottomRightRadius: 6 },
   bullePhoto: { padding: 4 },
-  photo: { width: 220, height: 220, borderRadius: 14 },
-  attente: { alignSelf: 'flex-start', marginTop: 8 },
-  points: { fontSize: 16, color: couleurs.encreDouce, letterSpacing: 2 },
-  texteBulle: { fontFamily: polices.texte, fontSize: 16.5, lineHeight: 23, color: couleurs.encre },
+  photo: { width: 210, height: 210, borderRadius: 16 },
+  texteBulle: { fontFamily: polices.texte, fontSize: 16, lineHeight: 22.5, color: couleurs.encre },
+  heure: { fontFamily: polices.texte, fontSize: 12, color: C.heure, marginTop: 4 },
   position: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  ligneBoutons: { flexDirection: 'row', gap: 6 },
-  boutonEnLigne: {
-    flex: 1, minHeight: 44, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 8, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: couleurs.feuille,
+  pastillePosition: { width: 30, height: 30, borderRadius: 15, backgroundColor: couleurs.terre, alignItems: 'center', justifyContent: 'center' },
+  reponses: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginLeft: 40, marginTop: 6, paddingRight: 10 },
+  reponse: {
+    minHeight: 40, borderRadius: 999, paddingHorizontal: 16, justifyContent: 'center', backgroundColor: couleurs.blanc,
+    borderWidth: 1.5, borderColor: couleurs.pousse,
   },
-  texteBoutonEnLigne: { fontFamily: polices.texteGras, fontSize: 15.5, color: couleurs.blanc, textAlign: 'center' },
-  bas: { backgroundColor: couleurs.sableFonce, paddingTop: 6, paddingHorizontal: 6, gap: 6, borderTopWidth: 1, borderColor: couleurs.trait },
-  saisie: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
-  rondSaisie: { width: 46, height: 46, borderRadius: 23, backgroundColor: couleurs.foret, alignItems: 'center', justifyContent: 'center' },
-  rondPhoto: { backgroundColor: couleurs.carte, borderWidth: 1.5, borderColor: couleurs.trait },
-  microActif: { backgroundColor: couleurs.terre, transform: [{ scale: 1.15 }] },
+  texteReponse: { fontFamily: polices.texteGras, fontSize: 15, color: couleurs.foret },
+  points: { flexDirection: 'row', gap: 5, paddingVertical: 14 },
+  point: { width: 8, height: 8, borderRadius: 4, backgroundColor: couleurs.feuille },
+  bas: { paddingHorizontal: 12, paddingTop: 8, gap: 7 },
+  carteSaisie: {
+    backgroundColor: couleurs.blanc, borderRadius: 26, paddingHorizontal: 12, paddingTop: 4, paddingBottom: 8, gap: 4,
+    borderWidth: 4, borderColor: 'rgba(220,235,217,0.75)', // halo vert tendre autour de la carte, comme la maquette
+    shadowColor: couleurs.foret, shadowOpacity: 0.12, shadowRadius: 16, shadowOffset: { width: 0, height: 4 }, elevation: 4,
+  },
   champ: {
-    flex: 1, minHeight: 46, maxHeight: 120, borderRadius: 23, backgroundColor: couleurs.carte, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 11,
-    fontFamily: polices.texte, fontSize: 16.5, color: couleurs.encre, borderWidth: 1.5, borderColor: couleurs.trait,
+    minHeight: 34, maxHeight: 110, paddingHorizontal: 4, paddingTop: 8, paddingBottom: 2,
+    fontFamily: polices.texte, fontSize: 16, color: couleurs.encre,
   },
-  enregistrement: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 0, paddingBottom: 0 },
-  pointRouge: { width: 12, height: 12, borderRadius: 6, backgroundColor: couleurs.terre },
+  enregistrement: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 38, paddingHorizontal: 4 },
+  pointRouge: { width: 10, height: 10, borderRadius: 5, backgroundColor: couleurs.terre },
   texteEnregistrement: { fontFamily: polices.texteGras, fontSize: 15, color: couleurs.terre },
+  ligneOutils: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  outil: { width: 40, height: 40, borderRadius: 20, borderWidth: 1.5, borderColor: C.bordDoux, alignItems: 'center', justifyContent: 'center' },
+  outilActif: { backgroundColor: couleurs.pousse, borderColor: couleurs.pousse },
+  rondVert: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   menuPhoto: { flexDirection: 'row', gap: 8 },
   choixPhoto: {
-    flex: 1, alignItems: 'center', gap: 6, paddingVertical: 14, borderRadius: 14, backgroundColor: couleurs.carte,
-    borderWidth: 1.5, borderColor: couleurs.trait,
+    flex: 1, alignItems: 'center', gap: 6, paddingVertical: 14, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.92)',
+    borderWidth: 1, borderColor: couleurs.blanc,
   },
-  clavier: { gap: 5 },
-  grandBouton: {
-    minHeight: 40, borderRadius: 11, paddingHorizontal: 10, paddingVertical: 6, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: couleurs.carte, borderWidth: 1.5, borderColor: couleurs.trait,
+  boutons: { gap: 5 },
+  pilule: {
+    minHeight: 35, borderRadius: 999, paddingHorizontal: 16, paddingVertical: 5, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.88)', borderWidth: 1, borderColor: couleurs.blanc,
+    shadowColor: couleurs.foret, shadowOpacity: 0.06, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, elevation: 1,
   },
-  texteBouton: { fontFamily: polices.texteGras, fontSize: 14.5, lineHeight: 19, color: couleurs.foret, textAlign: 'center' },
+  piluleTest: { backgroundColor: couleurs.soleilClair, borderColor: '#F0D99A' },
+  piluleAppuyee: { backgroundColor: couleurs.pousse },
+  texteBouton: { fontFamily: polices.texteGras, fontSize: 14, lineHeight: 18, color: couleurs.foret, textAlign: 'center' },
 });

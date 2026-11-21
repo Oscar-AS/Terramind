@@ -104,7 +104,10 @@ export function BulleVocale({ id, adresse, moi = false }: { id: string; adresse:
       <View style={{ flex: 1, gap: 4 }}>
         <View style={styles.ondes}>
           {BARRES.map((h, i) => (
-            <View key={i} style={[styles.barre, { height: h, backgroundColor: i < rempli ? couleurs.foret : '#B9C9BC' }]} />
+            <View key={i} style={[styles.barre, {
+              height: h,
+              backgroundColor: i < rempli ? couleurs.foret : moi ? '#A9C9AE' : '#CBD3C4',
+            }]} />
           ))}
         </View>
         <T style={styles.duree}>{actif && duree ? minutes(progression * duree) : 'Message vocal'}</T>
