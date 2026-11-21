@@ -13,10 +13,10 @@ Les façades sont les portes d'entrée de l'agriculteur. Elles transmettent sa d
 ## L'application en images
 
 <p align="center">
-  <img src="../docs/assets/captures/app/bienvenue.webp" width="13.5%" alt="Bienvenue"> <img src="../docs/assets/captures/app/langue.webp" width="13.5%" alt="Wolof ou français"> <img src="../docs/assets/captures/app/accueil.webp" width="13.5%" alt="Accueil"> <img src="../docs/assets/captures/app/resultat.webp" width="13.5%" alt="Diagnostic : Mildiou, 93 %"> <img src="../docs/assets/captures/app/resultat2.webp" width="13.5%" alt="Expliqué en 4 temps"> <img src="../docs/assets/captures/app/plan.webp" width="13.5%" alt="Que planter ce mois-ci"> <img src="../docs/assets/captures/app/alertes.webp" width="13.5%" alt="Alertes météo de la semaine">
+  <img src="../docs/assets/captures/app/bienvenue.webp" width="13.5%" alt="Wolof ou français"> <img src="../docs/assets/captures/app/accueil.webp" width="13.5%" alt="La conversation"> <img src="../docs/assets/captures/app/resultat.webp" width="13.5%" alt="Diagnostic : Mildiou, 93 %"> <img src="../docs/assets/captures/app/resultat2.webp" width="13.5%" alt="Expliqué en 4 temps"> <img src="../docs/assets/captures/app/plan.webp" width="13.5%" alt="Que planter ce mois-ci"> <img src="../docs/assets/captures/app/alertes.webp" width="13.5%" alt="Alertes météo de la semaine">
 </p>
 
-<sub>Vraies captures de l'application branchée sur le moteur (écran d'iPhone 16, 393 × 852 points), 15 nov 2026. Bienvenue → langue → accueil → diagnostic → explication → plan → alertes. Photo du diagnostic : jeu de test de TOM2024 (CC BY 4.0), jamais vue à l'entraînement. Le visage des écrans de bienvenue et d'accueil est une image générée par IA.</sub>
+<sub>Vraies captures de l'application branchée sur le moteur en ligne (393 × 852 points), 21 nov 2026 : choix de la langue, puis tout se passe dans la conversation (diagnostic, explication, plan, alertes). Photo du diagnostic : jeu de test de TOM2024 (CC BY 4.0), jamais vue à l'entraînement.</sub>
 
 ## Le bot Telegram en images
 

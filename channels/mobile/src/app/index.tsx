@@ -90,10 +90,15 @@ export default function Conversation() {
   const champ = useRef<ComponentRef<typeof TextInput>>(null);
   const file = useRef<Promise<void>>(Promise.resolve());
 
-  // Toujours montrer le dernier message (la mise en page d'une bulle peut finir après l'ajout).
+  // Montrer le dernier message quand il arrive (sa mise en page peut finir un peu après l'ajout). Seulement dans
+  // les 2 secondes qui suivent : si l'agriculteur remonte relire une réponse, une photo qui se charge ne doit pas le
+  // ramener en bas.
+  const suivreLaFin = useRef(false);
   useEffect(() => {
+    suivreLaFin.current = true;
     const t = setTimeout(() => liste.current?.scrollToEnd({ animated: true }), 120);
-    return () => clearTimeout(t);
+    const fin = setTimeout(() => { suivreLaFin.current = false; }, 2000);
+    return () => { clearTimeout(t); clearTimeout(fin); };
   }, [messages, occupe]);
 
   useEffect(() => {
@@ -407,7 +412,7 @@ export default function Conversation() {
             contentContainerStyle={styles.filContenu}
             data={messages}
             keyExtractor={(m) => m.id}
-            onContentSizeChange={() => liste.current?.scrollToEnd({ animated: true })}
+            onContentSizeChange={() => { if (suivreLaFin.current) liste.current?.scrollToEnd({ animated: true }); }}
             renderItem={({ item, index }) => (
               <>
                 {index === 0 || !memeJour(messages[index - 1].heure, item.heure)
