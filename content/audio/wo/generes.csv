@@ -68,7 +68,7 @@ photo_incertaine,relu,885c1e59205b06e6,189378
 photo_saine,relu,6b78acedd83a7ad8,122505
 plan_intro,relu,68f3ae5de2fa9447,99517
 plan_suite,relu,1330b34d4a7679b1,162211
-position_recue,relu,8a13483daea40baf,40585
+position_recue,relu,8a13483daea40baf,33061
 question_bas_fond,relu,3dd21745b8f3d963,149672
 question_eau_salee,relu,a70948d2a04e931a,123758
 vocal_ecoute,relu,739c465ab01bca7d,48526

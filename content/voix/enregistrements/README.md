@@ -4,7 +4,7 @@ Enregistrements de **Salam** (locuteur wolof de l'équipe, 17 nov 2026), qui fix
 
 | Fichier | Ce qui est dit | Ce que ça veut dire | Utilisé comment |
 |---|---|---|---|
-| `salam_position_recue.m4a` | Dégg naa fi sa tool nekk. | « J'ai compris où se trouve ton champ. » | **Note vocale du bot** (copiée dans `content/audio/wo/position_recue.m4a`, prioritaire sur la synthèse) |
+| `salam_position_recue.m4a` | Dégg naa fi sa tool nekk. | « J'ai compris où se trouve ton champ. » | Référence de prononciation ; la note vocale est maintenant dite par Octopus (`content/audio/wo/position_recue.mp3`, prise choisie par Salam le 21 nov 2026, graphies « Déggueu » et « tòll ») |
 | `salam_reference_saafara.m4a` | Damay bañ a joxe saafara. | « Je refuse de donner un produit (remède). » | Référence de prononciation pour l'accueil |
 | `salam_reference_jerejef.m4a` | Jërëjëf. | « Merci. » | Référence de prononciation |
 
