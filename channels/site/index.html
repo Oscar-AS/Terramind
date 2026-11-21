@@ -8,14 +8,14 @@
   <meta name="theme-color" content="#1F4D3A">
   <meta property="og:title" content="TerraMind : le conseiller agricole des maraîchers des Niayes">
   <meta property="og:description" content="Photo de ta plante, position du champ ou question : TerraMind répond à partir de documents agricoles publiés et de la météo de la zone de ton champ.">
-  <meta property="og:image" content="captures/resultat.webp?v=20261121">
+  <meta property="og:image" content="captures/resultat.webp?v=20261121b">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231F4D3A'/%3E%3Cpath d='M8 25c0-10 6-16 17-17 0 11-6 16-17 17z' fill='%23F5EFE3'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
   <!-- Feuille de style compilée par la CLI Tailwind v3 (voir README) : pas de Tailwind « Play CDN » en production. -->
   <link rel="stylesheet" href="site.css">
-  <link rel="preload" as="image" href="captures/resultat.webp?v=20261121" fetchpriority="high">
+  <link rel="preload" as="image" href="captures/resultat.webp?v=20261121b" fetchpriority="high">
 </head>
 <body class="bg-foret font-corps text-encre antialiased">
 <a href="#contenu" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-soleil focus:px-4 focus:py-2" data-en="Skip to content">Aller au contenu</a>
@@ -96,11 +96,11 @@
     <div class="apparait relative mx-auto h-[560px] w-full max-w-[460px] sm:h-[620px]" style="--d:200ms">
       <div class="iphone absolute left-0 top-10 hidden rotate-[-7deg] opacity-90 sm:block" style="--w:230px">
         <div class="ecran"><div class="ile"></div><div class="statut">9:41<span class="icones"></span></div>
-          <img src="captures/accueil.webp?v=20261121" width="393" height="852" alt="La conversation dans l'application TerraMind" data-en-alt="The conversation in the TerraMind app"></div>
+          <img src="captures/accueil.webp?v=20261121b" width="393" height="852" alt="La conversation dans l'application TerraMind" data-en-alt="The conversation in the TerraMind app"></div>
       </div>
       <div class="flotte iphone absolute right-1/2 top-0 translate-x-1/2 sm:right-0 sm:translate-x-0" style="--w:270px">
         <div class="ecran"><div class="ile"></div><div class="statut">9:41<span class="icones"></span></div>
-          <img src="captures/resultat.webp?v=20261121" width="393" height="852" fetchpriority="high" alt="Résultat d'un diagnostic dans l'application : Mildiou, confiance du modèle 92 %" data-en-alt="Diagnosis result in the app: late blight, model confidence 92%"></div>
+          <img src="captures/resultat.webp?v=20261121b" width="393" height="852" fetchpriority="high" alt="Résultat d'un diagnostic dans l'application : Mildiou, confiance du modèle 92 %" data-en-alt="Diagnosis result in the app: late blight, model confidence 92%"></div>
       </div>
       <div class="flotte-lente absolute -left-2 bottom-24 hidden rounded-2xl bg-sable px-4 py-3 shadow-xl sm:block">
         <div class="text-[12px] text-encred" data-en="Looks like">Cela ressemble à</div>
@@ -130,7 +130,7 @@
         <div class="sticky top-28">
           <div class="iphone mx-auto" style="--w:330px">
             <div class="ecran"><div class="ile"></div><div class="statut">9:41<span class="icones"></span></div>
-              <img id="ecran-fonction" class="transition-opacity duration-300" src="captures/resultat.webp?v=20261121" width="393" height="852" loading="lazy" alt=""></div>
+              <img id="ecran-fonction" class="transition-opacity duration-300" src="captures/resultat.webp?v=20261121b" width="393" height="852" loading="lazy" alt=""></div>
           </div>
           <p id="legende-fonction" class="mt-5 text-center text-[14px] text-encred"></p>
         </div>
@@ -506,7 +506,7 @@
   };
 
   // ---------- Rendu ----------
-  const iphone = (nom, w, alt, extra = '') => `<div class="iphone ${extra}" style="--w:${w}px"><div class="ecran"><div class="ile"></div><div class="statut">9:41<span class="icones"></span></div><img src="captures/${nom}.webp?v=20261121" width="393" height="852" loading="lazy" alt="${alt}"></div></div>`;
+  const iphone = (nom, w, alt, extra = '') => `<div class="iphone ${extra}" style="--w:${w}px"><div class="ecran"><div class="ile"></div><div class="statut">9:41<span class="icones"></span></div><img src="captures/${nom}.webp?v=20261121b" width="393" height="852" loading="lazy" alt="${alt}"></div></div>`;
   let langue = 'fr';
 
   function rendreFonctions() {
@@ -526,7 +526,7 @@
       </details>`;
     }).join('');
     const img = document.getElementById('ecran-fonction'), leg = document.getElementById('legende-fonction');
-    const montrer = (d) => { if (!d) return; img.style.opacity = 0; setTimeout(() => { img.src = `captures/${d.dataset.ecran}.webp?v=20261121`; img.alt = d.dataset.legende; img.style.opacity = 1; }, 150); leg.textContent = d.dataset.legende; };
+    const montrer = (d) => { if (!d) return; img.style.opacity = 0; setTimeout(() => { img.src = `captures/${d.dataset.ecran}.webp?v=20261121b`; img.alt = d.dataset.legende; img.style.opacity = 1; }, 150); leg.textContent = d.dataset.legende; };
     liste.querySelectorAll('details').forEach((d) => d.addEventListener('toggle', () => { if (d.open) montrer(d); }));
     montrer(liste.querySelector('details[open]'));
   }
