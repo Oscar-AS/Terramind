@@ -11,6 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Location from 'expo-location';
 import { Camera } from 'phosphor-react-native/src/icons/Camera';
 import { CaretDown } from 'phosphor-react-native/src/icons/CaretDown';
+import { CaretUp } from 'phosphor-react-native/src/icons/CaretUp';
 import { ChatText } from 'phosphor-react-native/src/icons/ChatText';
 import { Images } from 'phosphor-react-native/src/icons/Images';
 import { Leaf } from 'phosphor-react-native/src/icons/Leaf';
@@ -19,11 +20,13 @@ import { Microphone } from 'phosphor-react-native/src/icons/Microphone';
 import { PaperPlaneTilt } from 'phosphor-react-native/src/icons/PaperPlaneTilt';
 import { SidebarSimple } from 'phosphor-react-native/src/icons/SidebarSimple';
 import { SpeakerHigh } from 'phosphor-react-native/src/icons/SpeakerHigh';
+import { SquaresFour } from 'phosphor-react-native/src/icons/SquaresFour';
 import { Translate } from 'phosphor-react-native/src/icons/Translate';
 import { X } from 'phosphor-react-native/src/icons/X';
 import { type ComponentRef, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Animated, AppState, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View,
+  Animated, AppState, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput,
+  useWindowDimensions, View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
@@ -110,6 +113,7 @@ export default function Conversation() {
   const [texte, setTexte] = useState('');
   const [clavierSysteme, setClavierSysteme] = useState(false);
   const [menuPhoto, setMenuPhoto] = useState(false);
+  const [boutonsOuverts, setBoutonsOuverts] = useState(true);
   const liste = useRef<FlatList<Message>>(null);
   const champ = useRef<ComponentRef<typeof TextInput>>(null);
   const file = useRef<Promise<void>>(Promise.resolve());
@@ -339,6 +343,7 @@ export default function Conversation() {
 
   const boutons = langue ? clavier(langue) : [];
   const afficherBoutons = !clavierSysteme && !menuPhoto && boutons.length > 0;
+  const { height: hauteurEcran } = useWindowDimensions();
   // Écran d'accueil (maquette, écran du milieu) tant que la langue n'est pas choisie et que rien n'a été envoyé.
   const accueil = !langue && !messages.some((m) => m.de === 'moi');
   const derniereVoix = [...messages].reverse().find((m) => m.voix);
@@ -429,16 +434,30 @@ export default function Conversation() {
       ) : null}
 
       {afficherBoutons && !accueil ? (
-        <View style={styles.boutons}>
-          {/* Un bouton par ligne, dans l'ordre des numéros (demande de Salam, 21 nov) : la note vocale dit
-              « le deux », l'agriculteur compte les lignes. */}
-          {boutons.map((b, i) => (
-            <Pressable key={b.bouton} accessibilityRole="button" onPress={() => toucherBouton(b.texte, b.bouton)}
-              style={({ pressed }) => [styles.pilule, i === 0 && styles.piluleTest, pressed && styles.piluleAppuyee]}>
-              <T style={styles.texteBouton} numberOfLines={2}>{b.texte}</T>
-            </Pressable>
-          ))}
-        </View>
+        <>
+          {/* Poignée : replier les grands boutons pour lire une longue réponse, puis les faire revenir
+              (sur un petit écran, ils prenaient toute la place). */}
+          <Pressable accessibilityRole="button" hitSlop={6} onPress={() => setBoutonsOuverts((v) => !v)}
+            accessibilityLabel={boutonsOuverts ? 'Replier les grands boutons' : 'Afficher les grands boutons'}
+            style={({ pressed }) => [styles.poignee, !boutonsOuverts && styles.poigneeFermee, pressed && { opacity: 0.7 }]}>
+            {boutonsOuverts ? <CaretDown size={18} color={couleurs.foret} weight="bold" />
+              : <><SquaresFour size={18} color={couleurs.blanc} weight="fill" /><CaretUp size={16} color={couleurs.blanc} weight="bold" /></>}
+          </Pressable>
+          {boutonsOuverts ? (
+            // Jamais plus d'environ un tiers de l'écran : au-delà, les boutons défilent et la conversation reste visible.
+            <ScrollView style={{ maxHeight: Math.max(150, hauteurEcran * 0.36) }} contentContainerStyle={styles.boutons}
+              showsVerticalScrollIndicator={false}>
+              {/* Un bouton par ligne, dans l'ordre des numéros (demande de Salam, 21 nov) : la note vocale dit
+                  « le deux », l'agriculteur compte les lignes. */}
+              {boutons.map((b, i) => (
+                <Pressable key={b.bouton} accessibilityRole="button" onPress={() => toucherBouton(b.texte, b.bouton)}
+                  style={({ pressed }) => [styles.pilule, i === 0 && styles.piluleTest, pressed && styles.piluleAppuyee]}>
+                  <T style={styles.texteBouton} numberOfLines={2}>{b.texte}</T>
+                </Pressable>
+              ))}
+            </ScrollView>
+          ) : null}
+        </>
       ) : null}
     </View>
   );
@@ -750,7 +769,12 @@ const styles = StyleSheet.create({
     flex: 1, alignItems: 'center', gap: 6, paddingVertical: 14, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.92)',
     borderWidth: 1, borderColor: couleurs.blanc,
   },
-  boutons: { gap: 8, paddingHorizontal: 4 },
+  boutons: { gap: 8, paddingHorizontal: 4, paddingBottom: 2 },
+  poignee: {
+    alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 4, height: 28, paddingHorizontal: 22,
+    borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.85)', marginTop: -2,
+  },
+  poigneeFermee: { backgroundColor: couleurs.foret, height: 36, paddingHorizontal: 26, borderRadius: 18 },
   pilule: {
     minHeight: 46, borderRadius: 23, paddingHorizontal: 12, paddingVertical: 5, alignItems: 'center', justifyContent: 'center',
     backgroundColor: couleurs.blanc, borderWidth: 1, borderColor: C.bordDoux,
