@@ -508,3 +508,44 @@ def test_date_inconnue_en_wolof():
         with mock.patch.object(tg, "envoyer"):
             tg.traiter({"message": {"chat": {"id": 20 + i}, "text": mot}})
         assert tg.ETATS[20 + i]["repiquage"] is None and not tg.ETATS[20 + i]["attend_date"], mot
+
+
+def test_reponse_preparee_seulement_pour_la_question_de_demo():
+    from engine.app.modules import reponses_preparees as rp
+
+    # La bonne question, en wolof (transcription) ou en français (traduction) : réponse préparée.
+    assert rp.trouver({"wolof": "Naka laa mënë moytu mildiyu ci sama tamaate ?", "francais": None})
+    assert rp.trouver({"wolof": "", "francais": "Comment éviter le mildiou sur ma tomate ?"})
+    # Une autre question (il manque une idée) : chemin habituel.
+    assert rp.trouver({"wolof": "mildiyu ci sama soble", "francais": "Le mildiou sur mon oignon ?"}) is None
+    assert rp.trouver({"wolof": "", "francais": "Quand planter la tomate ?"}) is None
+    assert rp.trouver({"wolof": "", "francais": "Comment soigner le mildiou de la tomate ?"}) is None
+
+
+def test_reponse_preparee_texte_sans_voix_non_validee():
+    from engine.app.modules import reponses_preparees as rp
+
+    prete = rp.trouver({"wolof": "", "francais": "Comment éviter le mildiou sur ma tomate ?"})
+    assert prete["texte_fr"] and prete["sources"]
+    assert rp.adresse_voix({**prete, "voix_validee": False}) is None
+    assert rp.adresse_voix({**prete, "voix_validee": True}) == "/audio/wo/" + prete["audio"]
+
+
+def test_vocal_telegram_question_de_demo_sans_gemini_ni_voix_en_direct():
+    tg = telegram
+    tg.ETATS.clear()
+    tg.ETATS[21] = {"langue": "wo"}
+    compris = {"wolof": "Naka laa mënë moytu mildiyu ci sama tamaate", "francais": None}
+    with (
+        mock.patch("engine.app.modules.ecoute.disponible", return_value=True),
+        mock.patch("engine.app.modules.ecoute.comprendre", return_value=compris),
+        mock.patch.object(tg, "_telecharger", return_value=b"ogg"),
+        mock.patch("engine.app.modules.rag.reponse.repondre") as repondre,
+        mock.patch("engine.app.modules.parole.dire_en_wolof") as voix_directe,
+        mock.patch.object(tg, "envoyer") as envoyer,
+        mock.patch.object(tg, "dire"),
+    ):
+        tg._vocal(21, {"file_id": "x", "duration": 4})
+    repondre.assert_not_called()
+    voix_directe.assert_not_called()
+    assert "mildiou" in envoyer.call_args.args[1].lower() and "Sources" in envoyer.call_args.args[1]

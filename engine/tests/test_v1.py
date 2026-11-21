@@ -161,8 +161,18 @@ class Routes(unittest.TestCase):
                 files={"audio": ("note.m4a", b"\x00" * 2000, "audio/mp4")},
             )
 
+    def test_vocal_question_de_demo_reponse_preparee(self):
+        compris = {"wolof": "Naka laa mënë moytu mildiyu ci sama tamaate", "francais": None}
+        r = self._vocal(compris, voix=None)
+        corps = r.json()
+        self.assertEqual(corps["statut"], "ok")
+        self.assertEqual(corps["donnees"]["mode"], "preparee")
+        self.assertIn("mildiou", corps["message"]["texte"].lower())
+        self.assertTrue(corps["sources"])
+
     def test_vocal_reponse_dite_en_wolof(self):
-        compris = {"wolof": "naka laa mënë moytu mildiyu", "francais": "Comment éviter le mildiou de la tomate ?"}
+        # Pas la question de démonstration (il manque « tomate ») : chemin en direct, voix faite par Octopus.
+        compris = {"wolof": "naka laa mënë faj mildiyu", "francais": "Comment soigner le mildiou ?"}
         r = self._vocal(compris, voix=("Wolof bi.", b"ID3mp3"))
         corps = r.json()
         self.assertEqual(corps["statut"], "ok")

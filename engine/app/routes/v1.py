@@ -417,6 +417,18 @@ async def chat_vocal(
             "erreur", f"Je ne peux pas écouter les messages vocaux pour le moment. {ecrire}", {}, code=503
         )
     donnees = {"transcription": compris, "passages": [], "mode": None, "voix": None}
+    # Question de la démonstration reconnue : réponse préparée (sans Gemini ni voix Octopus en direct).
+    from ..modules import reponses_preparees
+
+    prete = reponses_preparees.trouver(compris)
+    if prete:
+        compris["francais"] = compris["francais"] or prete["question_fr"]
+        donnees["mode"] = "preparee"
+        if adresse := reponses_preparees.adresse_voix(prete):
+            donnees["voix"] = {
+                "cle": prete["cle"], "texte_wo": prete["texte_wo"], "texte_fr": prete["texte_fr"], "audio_url": adresse,
+            }
+        return enveloppe("ok", prete["texte_fr"], donnees, prete["sources"])
     if not compris["francais"]:
         return enveloppe(
             "je_ne_sais_pas",

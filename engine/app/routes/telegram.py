@@ -597,6 +597,21 @@ def _vocal(chat: int, note: dict):
             reply_markup=CLAVIER,
         )
         return
+    # Question de la démonstration reconnue : réponse préparée (sans Gemini ni voix Octopus en direct).
+    from ..modules import reponses_preparees
+
+    prete = reponses_preparees.trouver(compris)
+    if prete:
+        envoyer(chat, f"<i>J'ai compris ta question ainsi : « {escape(compris['francais'] or prete['question_fr'])} »</i>")
+        if reponses_preparees.adresse_voix(prete):
+            dire(chat, prete["cle"])  # en wolof seulement, comme les autres notes vocales
+        sources = " ; ".join(
+            _court(s["document"]) + (f", p. {s['page']}" if str(s["page"])[:1].isdigit() else "")
+            for s in [x for x in prete["sources"] if _court(x["document"])][:3]
+        )
+        memoire.ajouter_echange(ETATS.setdefault(chat, {}), prete["question_fr"], prete["texte_fr"])
+        envoyer(chat, f"{escape(prete['texte_fr'])}\n\n<i>Sources : {escape(sources)}</i>", reply_markup=CLAVIER)
+        return
     if not compris["francais"]:
         dire(chat, "vocal_non_compris")
         envoyer(
