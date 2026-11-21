@@ -39,24 +39,58 @@ export const profil = {
     globalThis.localStorage?.setItem(CLE, JSON.stringify(p));
     return p;
   },
-  /** /oublier : langue, champ, culture et conversation effacés ; un nouvel identifiant anonyme. */
+  /** Remplace tout le profil (passage d'une conversation à une autre : chacune garde son champ, sa culture…). */
+  remplacer(p: Profil): Profil {
+    globalThis.localStorage?.setItem(CLE, JSON.stringify(p));
+    return p;
+  },
+  /** /oublier : langue, champ, culture et toutes les conversations effacés ; un nouvel identifiant anonyme. */
   oublier() {
+    for (const c of conversations.lister()) globalThis.localStorage?.removeItem(CLE_MESSAGES + c.id);
+    globalThis.localStorage?.removeItem(CLE_LISTE);
+    globalThis.localStorage?.removeItem(CLE_ANCIENNE);
     globalThis.localStorage?.removeItem(CLE);
-    globalThis.localStorage?.removeItem(CLE_CONVERSATION);
   },
 };
 
-// La conversation est gardée sur le téléphone (les 150 derniers messages), comme l'historique d'une messagerie.
-const CLE_CONVERSATION = 'terramind.conversation';
-export const conversationGardee = {
-  lire<T>(): T[] {
-    try {
-      return JSON.parse(globalThis.localStorage?.getItem(CLE_CONVERSATION) ?? '[]') as T[];
-    } catch {
-      return [];
+// Plusieurs conversations, comme dans une messagerie : la liste (titre, date, ce que l'agriculteur avait indiqué
+// dans cette conversation) et, pour chacune, ses 150 derniers messages. Tout reste sur le téléphone.
+export type Conversation = { id: string; titre: string; maj: number; profil: Omit<Profil, 'id'> };
+const CLE_LISTE = 'terramind.conversations';
+const CLE_MESSAGES = 'terramind.conversation.';
+const CLE_ANCIENNE = 'terramind.conversation'; // une seule conversation (avant le 21 nov) : reprise comme la première
+
+function lireJson<T>(cle: string, defaut: T): T {
+  try {
+    const brut = globalThis.localStorage?.getItem(cle);
+    return brut ? (JSON.parse(brut) as T) : defaut;
+  } catch {
+    return defaut;
+  }
+}
+
+export const conversations = {
+  lister(): Conversation[] {
+    const liste = lireJson<Conversation[]>(CLE_LISTE, []);
+    const ancienne = globalThis.localStorage?.getItem(CLE_ANCIENNE);
+    if (!liste.length && ancienne) {
+      const { id: _id, ...reste } = profil.lire();
+      const c = { id: nouvelId(), titre: '', maj: Date.now(), profil: reste };
+      globalThis.localStorage?.setItem(CLE_MESSAGES + c.id, ancienne);
+      globalThis.localStorage?.removeItem(CLE_ANCIENNE);
+      conversations.enregistrer([c]);
+      return [c];
     }
+    return liste;
   },
-  ecrire<T>(messages: T[]) {
-    globalThis.localStorage?.setItem(CLE_CONVERSATION, JSON.stringify(messages.slice(-150)));
+  enregistrer(liste: Conversation[]) {
+    globalThis.localStorage?.setItem(CLE_LISTE, JSON.stringify(liste));
   },
+  messages<T>(id: string): T[] {
+    return lireJson<T[]>(CLE_MESSAGES + id, []);
+  },
+  ecrireMessages<T>(id: string, messages: T[]) {
+    globalThis.localStorage?.setItem(CLE_MESSAGES + id, JSON.stringify(messages.slice(-150)));
+  },
+  nouvelId,
 };

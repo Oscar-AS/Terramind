@@ -420,9 +420,16 @@ function poserLangue(s: Sortie) {
   s.envoyer(CHOIX_LANGUE, [[{ texte: 'Wolof', action: 'langue:wo' }, { texte: 'Français', action: 'langue:fr' }]]);
 }
 
-/** Ouverture de l'application sans conversation : la question de la langue, comme /start sur le bot. */
+/** Nouvelle conversation : la question de la langue si elle n'est pas connue (comme /start sur le bot), sinon
+ * directement la bienvenue et sa note vocale. */
 export function demarrer(s: Sortie) {
-  poserLangue(s);
+  if (langue()) bienvenue(s);
+  else poserLangue(s);
+}
+
+function bienvenue(s: Sortie) {
+  dire(s, 'accueil');
+  s.envoyer(ACCUEIL);
 }
 
 async function action(s: Sortie, donnee: string) {
@@ -440,8 +447,7 @@ async function action(s: Sortie, donnee: string) {
   }
   if (donnee === 'langue:wo' || donnee === 'langue:fr') {
     profil.ecrire({ langue: reponse as 'wo' | 'fr' });
-    dire(s, 'accueil');
-    s.envoyer(ACCUEIL);
+    bienvenue(s);
     return;
   }
   if (cle === 'culture' && CULTURES.some(([k]) => k === reponse)) {

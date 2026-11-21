@@ -17,6 +17,7 @@ import { Leaf } from 'phosphor-react-native/src/icons/Leaf';
 import { MapPin } from 'phosphor-react-native/src/icons/MapPin';
 import { Microphone } from 'phosphor-react-native/src/icons/Microphone';
 import { PaperPlaneTilt } from 'phosphor-react-native/src/icons/PaperPlaneTilt';
+import { SidebarSimple } from 'phosphor-react-native/src/icons/SidebarSimple';
 import { SpeakerHigh } from 'phosphor-react-native/src/icons/SpeakerHigh';
 import { Translate } from 'phosphor-react-native/src/icons/Translate';
 import { X } from 'phosphor-react-native/src/icons/X';
@@ -31,12 +32,13 @@ import { ENGINE_URL } from '@/api';
 import { insecables, TexteRiche } from '@/components/Bulle';
 import { Paysage } from '@/components/Paysage';
 import { T } from '@/components/ui';
+import { Panneau } from '@/components/Panneau';
 import { BulleVocale, useLecteur } from '@/components/Voix';
 import {
   B_POSITION, type BoutonEnLigne, clavier, demarrer, type Entree, libelleAction, type Sortie, traiter,
 } from '@/conversation/bot';
 import { NOTES_VOCALES } from '@/conversation/notes-vocales';
-import { conversationGardee, profil } from '@/profil';
+import { type Conversation as Fil, conversations, profil, type Profil } from '@/profil';
 import { couleurs, polices } from '@/theme';
 
 type Message = {
@@ -80,7 +82,17 @@ const jourFr = (t: number) => {
 export default function Conversation() {
   const marges = useSafeAreaInsets();
   const { ajouter, basculer } = useLecteur();
-  const [messages, setMessages] = useState<Message[]>(() => conversationGardee.lire<Message>().filter((m) => m.de && m.heure));
+  // Les conversations (panneau latéral) ; on rouvre la plus récente.
+  const [fils, setFils] = useState<Fil[]>(() => {
+    const l = conversations.lister();
+    if (l.length) return l;
+    const premier = { id: conversations.nouvelId(), titre: '', maj: Date.now(), profil: sansId(profil.lire()) };
+    conversations.enregistrer([premier]);
+    return [premier];
+  });
+  const [filId, setFilId] = useState(() => [...fils].sort((a, b) => b.maj - a.maj)[0].id);
+  const [panneau, setPanneau] = useState(false);
+  const [messages, setMessages] = useState<Message[]>(() => conversations.messages<Message>(filId).filter((m) => m.de && m.heure));
   const [langue, setLangue] = useState(() => profil.lire().langue);
   const [occupe, setOccupe] = useState(0);
   const [texte, setTexte] = useState('');
@@ -114,8 +126,39 @@ export default function Conversation() {
 
   useEffect(() => {
     // Les photos du navigateur (blob:) ne survivent pas à un rechargement : on ne les garde pas.
-    conversationGardee.ecrire(messages.map((m) => (m.photo?.startsWith('blob:') ? { ...m, photo: undefined, texte: '[photo]' } : m)));
-  }, [messages]);
+    conversations.ecrireMessages(filId, messages.map((m) => (m.photo?.startsWith('blob:') ? { ...m, photo: undefined, texte: '[photo]' } : m)));
+    // Titre, date et ce que l'agriculteur a indiqué dans cette conversation (rendu quand il y revient).
+    // (Écrit sur le téléphone seulement ; la liste affichée est relue à l'ouverture du panneau.)
+    conversations.enregistrer(conversations.lister().map((c) => (c.id === filId
+      ? { ...c, titre: titreDe(messages), maj: messages[messages.length - 1]?.heure ?? c.maj, profil: sansId(profil.lire()) } : c)));
+  }, [messages, filId]);
+
+  const ouvrirPanneau = () => {
+    setFils(conversations.lister());
+    setPanneau(true);
+  };
+
+  const nouvelleConversation = () => {
+    if (occupe) return;
+    const p = profil.remplacer({ id: profil.lire().id, langue: profil.lire().langue }); // on garde seulement la langue
+    const c = { id: conversations.nouvelId(), titre: '', maj: Date.now(), profil: sansId(p) };
+    conversations.enregistrer([...conversations.lister(), c]);
+    setFilId(c.id);
+    setMessages([]);
+    setLangue(p.langue);
+    setPanneau(false);
+  };
+
+  const ouvrirConversation = (id: string) => {
+    setPanneau(false);
+    if (id === filId || occupe) return;
+    const c = conversations.lister().find((f) => f.id === id);
+    if (!c) return;
+    const p = profil.remplacer({ id: profil.lire().id, ...c.profil });
+    setFilId(id);
+    setMessages(conversations.messages<Message>(id).filter((m) => m.de && m.heure));
+    setLangue(p.langue);
+  };
 
   const poster = useCallback((m: Omit<Message, 'id' | 'heure'>) => {
     const complet = { ...m, id: nouvelId(), heure: Date.now() };
@@ -161,6 +204,10 @@ export default function Conversation() {
     setClavierSysteme(false);
     if (t.trim().startsWith('/oublier')) {
       profil.oublier();
+      const c = { id: conversations.nouvelId(), titre: '', maj: Date.now(), profil: {} };
+      conversations.enregistrer([c]);
+      setFils([c]);
+      setFilId(c.id);
       setLangue(undefined);
       setMessages([]);
       return;
@@ -374,7 +421,7 @@ export default function Conversation() {
 
       {accueil ? (
         <View style={[styles.enteteAccueil, { paddingTop: marges.top + 12 }]}>
-          <View style={{ width: 46 }} />
+          <BoutonPanneau onPress={ouvrirPanneau} />
           <T style={styles.nomCentre}>TerraMind</T>
           <Pressable accessibilityRole="button" accessibilityLabel="Réécouter le message vocal" hitSlop={8}
             onPress={() => derniereVoix && basculer(derniereVoix.id, derniereVoix.voix!)} style={styles.rondEntete}>
@@ -383,7 +430,7 @@ export default function Conversation() {
         </View>
       ) : (
         <View style={[styles.entete, { paddingTop: marges.top + 12 }]}>
-          <Avatar taille={46} />
+          <BoutonPanneau onPress={ouvrirPanneau} />
           <View style={{ flex: 1 }}>
             <T style={styles.nom}>TerraMind</T>
             <View style={styles.ligneStatut}>
@@ -445,8 +492,31 @@ export default function Conversation() {
       )}
 
       {accueil ? basDeLEcran : null}
+      <Panneau ouvert={panneau} onFermer={() => setPanneau(false)} liste={fils.filter((c) => c.titre || c.id === filId)}
+        actuelle={filId} occupe={occupe > 0} onNouvelle={nouvelleConversation} onChoisir={ouvrirConversation} />
     </KeyboardAvoidingView>
   );
+}
+
+/** Bouton du panneau des conversations, en haut à gauche (comme ChatGPT). */
+function BoutonPanneau({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel="Mes conversations" hitSlop={6} onPress={onPress} style={styles.rondEntete}>
+      <SidebarSimple size={22} color={couleurs.foret} />
+    </Pressable>
+  );
+}
+
+const sansId = ({ id: _id, ...reste }: Profil): Omit<Profil, 'id'> => reste;
+
+/** Titre d'une conversation : sa première vraie demande (le choix de la langue ne compte pas). */
+function titreDe(messages: Message[]): string {
+  const m = messages.find((x) => x.de === 'moi' && !(x.texte && /^(wolof|français|\/langue)$/i.test(x.texte.trim())));
+  if (!m) return '';
+  if (m.photo) return 'Photo de ma plante';
+  if (m.voix) return 'Question au micro';
+  if (m.position) return 'Position de mon champ';
+  return (m.texte ?? '').replace(/^\d\.\s*/, '');
 }
 
 /** Halo diffus autour de l'orbe de l'accueil : dégradé radial, sans bord. */
