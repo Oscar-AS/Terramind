@@ -110,10 +110,6 @@ export function demanderAlertes() {
   }));
 }
 
-export function envoyerRetour(alerteId: string, vu: 'oui' | 'non') {
-  return appeler<{ enregistre: boolean }>('/v1/feedback', json({ alerte_id: alerteId, vu }));
-}
-
 export function poserQuestion(texte: string) {
   return appeler<{ passages: unknown[] }>('/v1/chat', json({ texte }));
 }

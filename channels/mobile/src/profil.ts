@@ -10,7 +10,9 @@ export type Profil = {
   eauSalee?: OuiNon;
   basFond?: OuiNon;
   culture?: string;
-  dateRepiquage?: string; // AAAA-MM-JJ
+  dateRepiquage?: string | null; // AAAA-MM-JJ ; null : l'agriculteur ne s'en souvient pas
+  attendDate?: boolean; // la conversation attend la date de plantation (comme le bot)
+  dateLibre?: boolean; // la date peut être écrite à n'importe quel moment
 };
 
 const CLE = 'terramind.profil';
@@ -37,27 +39,24 @@ export const profil = {
     globalThis.localStorage?.setItem(CLE, JSON.stringify(p));
     return p;
   },
-  premiereOuvertureFaite(): boolean {
-    const p = profil.lire();
-    return Boolean(p.langue && p.position);
+  /** /oublier : langue, champ, culture et conversation effacés ; un nouvel identifiant anonyme. */
+  oublier() {
+    globalThis.localStorage?.removeItem(CLE);
+    globalThis.localStorage?.removeItem(CLE_CONVERSATION);
   },
 };
 
-// Zones pilotes (centroïdes des départements, geoBoundaries) pour qui refuse le GPS.
-export const ZONES = [
-  { nom: 'Rufisque', lat: 14.76, lon: -17.21 },
-  { nom: 'Thiès', lat: 14.75, lon: -16.87 },
-  { nom: 'Tivaouane', lat: 15.09, lon: -16.65 },
-  { nom: 'Kébémer', lat: 15.3, lon: -16.26 },
-];
-
-export const CULTURES = [
-  { id: 'tomato', libelle: 'Tomate', icone: '🍅' },
-  { id: 'onion', libelle: 'Oignon', icone: '🧅' },
-  { id: 'cabbage', libelle: 'Chou', icone: '🥬' },
-  { id: 'potato', libelle: 'Pomme de terre', icone: '🥔' },
-  { id: 'pepper', libelle: 'Poivron', icone: '🫑' },
-  { id: 'carrot', libelle: 'Carotte', icone: '🥕' },
-  { id: 'chili', libelle: 'Piment', icone: '🌶️' },
-  { id: 'bitter_eggplant', libelle: 'Jaxatu', icone: '🍆' },
-];
+// La conversation est gardée sur le téléphone (les 150 derniers messages), comme l'historique d'une messagerie.
+const CLE_CONVERSATION = 'terramind.conversation';
+export const conversationGardee = {
+  lire<T>(): T[] {
+    try {
+      return JSON.parse(globalThis.localStorage?.getItem(CLE_CONVERSATION) ?? '[]') as T[];
+    } catch {
+      return [];
+    }
+  },
+  ecrire<T>(messages: T[]) {
+    globalThis.localStorage?.setItem(CLE_CONVERSATION, JSON.stringify(messages.slice(-150)));
+  },
+};

@@ -65,8 +65,9 @@ POSITION_TEST = {"nom": "Rufisque", "lat": 14.76, "lon": -17.21}
 AVEC_POSITION_TEST = os.environ.get("BOUTON_POSITION_TEST", "1") != "0"
 # Un bouton par ligne : le libellé reste lisible en entier sur un petit écran.
 CLAVIER = {
-    "keyboard": [[{"text": B_POSITION, "request_location": True}]]
-    + ([[{"text": B_POSITION_TEST}]] if AVEC_POSITION_TEST else [])
+    # Bouton test en tout premier (demande de Rama, 21 nov 2026) : les testeurs le voient tout de suite.
+    "keyboard": ([[{"text": B_POSITION_TEST}]] if AVEC_POSITION_TEST else [])
+    + [[{"text": B_POSITION, "request_location": True}]]
     + [[{"text": B_PHOTO}], [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_QUESTION}]],
     # is_persistent : Telegram garde les boutons affichés au lieu de les replier derrière une icône
     # (Bot API 6.4) ; un agriculteur peu habitué aux écrans ne trouverait pas l'icône.
@@ -76,9 +77,9 @@ CLAVIER = {
 # Anciens libellés (claviers encore affichés sur les téléphones) : traités comme les nouveaux.
 # En wolof, beaucoup d'agriculteurs ne lisent pas le français : chaque bouton porte un numéro, que les
 # notes vocales citent (« appuie sur le 2 ») ; l'agriculteur peut réécouter la note autant qu'il veut.
-NUMEROS = {B_POSITION: 1, B_PHOTO: 2, B_PLAN: 3, B_ALERTES: 4, B_QUESTION: 5, B_POSITION_TEST: 6}
-# Rangés dans l'ordre des numéros (1 à 5, puis le bouton test 6), pour que « appuie sur le 2 » corresponde
-# aussi à la 2e ligne pour qui ne lit pas.
+NUMEROS = {B_POSITION_TEST: 0, B_POSITION: 1, B_PHOTO: 2, B_PLAN: 3, B_ALERTES: 4, B_QUESTION: 5}
+# Rangés dans l'ordre des numéros (le bouton test 0 en tête, puis 1 à 5), pour que « appuie sur le 2 »
+# corresponde aussi à la 2e ligne sous le bouton test pour qui ne lit pas.
 CLAVIER_WO = {
     "keyboard": sorted(
         (

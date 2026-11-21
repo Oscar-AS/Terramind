@@ -339,7 +339,8 @@ def test_mode_wolof_boutons_numerotes():
     with mock.patch.object(tg, "_appel") as appel:
         tg.envoyer(14, "texte", reply_markup=tg.CLAVIER)
     clavier = appel.call_args.kwargs["reply_markup"]
-    assert clavier is tg.CLAVIER_WO and clavier["keyboard"][1][0]["text"] == "2. " + tg.B_PHOTO
+    assert clavier is tg.CLAVIER_WO and clavier["keyboard"][0][0]["text"] == "0. " + tg.B_POSITION_TEST
+    assert clavier["keyboard"][2][0]["text"] == "2. " + tg.B_PHOTO
     # « 2. … » ou « 2 » tout court déclenchent la même action que le bouton texte
     for saisi in ("2. " + tg.B_PHOTO, "2"):
         with mock.patch.object(tg, "envoyer") as envoyer:

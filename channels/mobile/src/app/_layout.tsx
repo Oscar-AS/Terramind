@@ -4,6 +4,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, View } from 'react-native';
 
+import { LecteurVoix } from '@/components/Voix';
 import { couleurs } from '@/theme';
 
 // Sur ordinateur (version web pour le jury), l'app garde la largeur d'un téléphone, centrée.
@@ -21,8 +22,10 @@ export default function Racine() {
   return (
     <View style={{ flex: 1, backgroundColor: Platform.OS === 'web' ? couleurs.sableFonce : couleurs.sable }}>
       <View style={[{ flex: 1 }, colonneWeb]}>
-        <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: couleurs.sable } }} />
+        <StatusBar style="light" />
+        <LecteurVoix>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: couleurs.sable } }} />
+        </LecteurVoix>
       </View>
     </View>
   );
