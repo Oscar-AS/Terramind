@@ -23,7 +23,7 @@ import { Translate } from 'phosphor-react-native/src/icons/Translate';
 import { X } from 'phosphor-react-native/src/icons/X';
 import { type ComponentRef, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Animated, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View,
+  Animated, AppState, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
@@ -85,10 +85,22 @@ export default function Conversation() {
   // Les conversations (panneau latéral) ; on rouvre la plus récente.
   const [fils, setFils] = useState<Fil[]>(() => {
     const l = conversations.lister();
-    if (l.length) return l;
-    const premier = { id: conversations.nouvelId(), titre: '', maj: Date.now(), profil: sansId(profil.lire()) };
-    conversations.enregistrer([premier]);
-    return [premier];
+    if (!l.length) {
+      const premier = { id: conversations.nouvelId(), titre: '', maj: Date.now(), profil: sansId(profil.lire()) };
+      conversations.enregistrer([premier]);
+      return [premier];
+    }
+    // Retour après plus de 15 minutes hors de l'application : une nouvelle conversation (l'ancienne reste dans le panneau).
+    const recente = [...l].sort((a, b) => b.maj - a.maj)[0];
+    const anciens = conversations.messages<Message>(recente.id);
+    const derniere = Math.max(conversations.sortie(), anciens[anciens.length - 1]?.heure ?? 0);
+    if (anciens.some((m) => m.de === 'moi') && Date.now() - derniere > ABSENCE_MAX) {
+      const p = profil.remplacer({ id: profil.lire().id, langue: profil.lire().langue });
+      const c = { id: conversations.nouvelId(), titre: '', maj: Date.now(), profil: sansId(p) };
+      conversations.enregistrer([...l, c]);
+      return [...l, c];
+    }
+    return l;
   });
   const [filId, setFilId] = useState(() => [...fils].sort((a, b) => b.maj - a.maj)[0].id);
   const [panneau, setPanneau] = useState(false);
@@ -148,6 +160,25 @@ export default function Conversation() {
     setLangue(p.langue);
     setPanneau(false);
   };
+
+  // Application mise de côté puis reprise : on note l'heure de sortie ; au retour, après plus de 15 minutes, une
+  // nouvelle conversation (un agriculteur qui ne connaît pas le panneau ne reste pas coincé dans l'ancienne).
+  const nouvelleRef = useRef(nouvelleConversation);
+  const reprendreRef = useRef(() => {});
+  useEffect(() => {
+    nouvelleRef.current = nouvelleConversation;
+    reprendreRef.current = () => {
+      const sortie = conversations.sortie();
+      if (sortie && Date.now() - sortie > ABSENCE_MAX && messages.some((m) => m.de === 'moi') && !occupe) nouvelleRef.current();
+    };
+  });
+  useEffect(() => {
+    const abonnement = AppState.addEventListener('change', (etat) => {
+      if (etat === 'active') reprendreRef.current();
+      else conversations.noterSortie();
+    });
+    return () => abonnement.remove();
+  }, []);
 
   const ouvrirConversation = (id: string) => {
     setPanneau(false);
@@ -506,6 +537,8 @@ function BoutonPanneau({ onPress }: { onPress: () => void }) {
     </Pressable>
   );
 }
+
+const ABSENCE_MAX = 15 * 60 * 1000; // 15 minutes hors de l'application
 
 const sansId = ({ id: _id, ...reste }: Profil): Omit<Profil, 'id'> => reste;
 

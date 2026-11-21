@@ -93,4 +93,12 @@ export const conversations = {
     globalThis.localStorage?.setItem(CLE_MESSAGES + id, JSON.stringify(messages.slice(-150)));
   },
   nouvelId,
+  /** Heure à laquelle l'agriculteur a quitté l'application (0 si inconnue). */
+  sortie(): number {
+    return Number(globalThis.localStorage?.getItem(CLE_SORTIE) ?? 0) || 0;
+  },
+  noterSortie() {
+    globalThis.localStorage?.setItem(CLE_SORTIE, String(Date.now()));
+  },
 };
+const CLE_SORTIE = 'terramind.sortie';
