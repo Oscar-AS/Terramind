@@ -27,7 +27,8 @@
       "mots français dans le texte wolof : du",
       "mots que la voix déforme (contrôle aller-retour) : pombiteer"
     ],
-    "voix_validee": false,
-    "prepare_le": "2026-11-21"
+    "voix_validee": true,
+    "prepare_le": "2026-11-21",
+    "validee_par": "Salam (locuteur), écoute du 21 nov 2026"
   }
 }

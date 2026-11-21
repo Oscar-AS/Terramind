@@ -88,4 +88,5 @@ class ControleApresCorrection(unittest.TestCase):
 
         risques = charger_controle()
         self.assertNotIn("tool", risques)  # corrigé en « tôl » (prononciation_voix.csv, 17 nov)
-        self.assertIn("pombiteer", risques)  # pas encore corrigé
+        self.assertNotIn("pombiteer", risques)  # vérifié avec Octopus et validé à l'écoute (21 nov)
+        self.assertIn("karoot", risques)  # pas encore corrigé
