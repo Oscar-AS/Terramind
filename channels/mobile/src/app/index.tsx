@@ -93,13 +93,24 @@ export default function Conversation() {
   // Montrer le dernier message quand il arrive (sa mise en page peut finir un peu après l'ajout). Seulement dans
   // les 2 secondes qui suivent : si l'agriculteur remonte relire une réponse, une photo qui se charge ne doit pas le
   // ramener en bas.
+  // Quand TerraMind répond, la liste s'arrête sur le DÉBUT de sa réponse (ses notes vocales d'abord), pas sur la
+  // fin : une note vocale reste visible et réécoutable même si le texte qui suit est long.
   const suivreLaFin = useRef(false);
+  const defiler = useCallback(() => {
+    const dernierMoi = messages.map((m) => m.de).lastIndexOf('moi');
+    const debutReponse = dernierMoi + 1;
+    if (debutReponse < messages.length && !occupe) {
+      liste.current?.scrollToIndex({ index: debutReponse, viewPosition: 0, viewOffset: 12, animated: true });
+    } else {
+      liste.current?.scrollToEnd({ animated: true });
+    }
+  }, [messages, occupe]);
   useEffect(() => {
     suivreLaFin.current = true;
-    const t = setTimeout(() => liste.current?.scrollToEnd({ animated: true }), 120);
+    const t = setTimeout(defiler, 120);
     const fin = setTimeout(() => { suivreLaFin.current = false; }, 2000);
     return () => { clearTimeout(t); clearTimeout(fin); };
-  }, [messages, occupe]);
+  }, [defiler]);
 
   useEffect(() => {
     // Les photos du navigateur (blob:) ne survivent pas à un rechargement : on ne les garde pas.
@@ -341,17 +352,13 @@ export default function Conversation() {
 
       {afficherBoutons && !accueil ? (
         <View style={styles.boutons}>
-          {rangees(boutons).map((rangee) => (
-            <View key={rangee[0].bouton} style={styles.rangee}>
-              {rangee.map((b) => (
-                <Pressable key={b.bouton} accessibilityRole="button" onPress={() => toucherBouton(b.texte, b.bouton)}
-                  style={({ pressed }) => [styles.pilule, b === boutons[0] && styles.piluleTest, pressed && styles.piluleAppuyee]}>
-                  <T style={[styles.texteBouton, rangee.length === 2 && { fontSize: 15 }]} numberOfLines={2}>
-                      {rangee.length === 2 ? equilibrer(b.texte) : b.texte}
-                    </T>
-                </Pressable>
-              ))}
-            </View>
+          {/* Un bouton par ligne, dans l'ordre des numéros (demande de Salam, 21 nov) : la note vocale dit
+              « le deux », l'agriculteur compte les lignes. */}
+          {boutons.map((b, i) => (
+            <Pressable key={b.bouton} accessibilityRole="button" onPress={() => toucherBouton(b.texte, b.bouton)}
+              style={({ pressed }) => [styles.pilule, i === 0 && styles.piluleTest, pressed && styles.piluleAppuyee]}>
+              <T style={styles.texteBouton} numberOfLines={2}>{b.texte}</T>
+            </Pressable>
           ))}
         </View>
       ) : null}
@@ -403,6 +410,10 @@ export default function Conversation() {
           </Pressable>
           <T style={styles.titreAccueil}>Ton assistant{'\n'}pour le maraîchage</T>
           <T style={styles.sousTitreAccueil}>{insecables('Choisis ta langue : touche « Wolof » ou « Français ».')}</T>
+          {/* La question de la langue, dite en wolof : visible et réécoutable (elle se lit seule à l'arrivée). */}
+          {derniereVoix ? (
+            <View style={styles.vocalAccueil}><BulleVocale id={derniereVoix.id} adresse={derniereVoix.voix!} /></View>
+          ) : null}
         </View>
       ) : (
         <View style={styles.feuille}>
@@ -412,7 +423,9 @@ export default function Conversation() {
             contentContainerStyle={styles.filContenu}
             data={messages}
             keyExtractor={(m) => m.id}
-            onContentSizeChange={() => { if (suivreLaFin.current) liste.current?.scrollToEnd({ animated: true }); }}
+            onContentSizeChange={() => { if (suivreLaFin.current) defiler(); }}
+            initialNumToRender={150}
+            onScrollToIndexFailed={() => liste.current?.scrollToEnd({ animated: true })}
             renderItem={({ item, index }) => (
               <>
                 {index === 0 || !memeJour(messages[index - 1].heure, item.heure)
@@ -434,27 +447,6 @@ export default function Conversation() {
       {accueil ? basDeLEcran : null}
     </KeyboardAvoidingView>
   );
-}
-
-/** Les grands boutons, deux par ligne quand les libellés sont courts, dans l'ordre des numéros (lecture de gauche
- * à droite puis vers le bas) ; un libellé long prend toute la ligne. Libère de la place pour la conversation. */
-function rangees<B extends { texte: string }>(boutons: B[]): B[][] {
-  const lignes: B[][] = [];
-  for (const b of boutons) {
-    const derniere = lignes[lignes.length - 1];
-    if (b.texte.length <= 32 && derniere?.length === 1 && derniere[0].texte.length <= 32) derniere.push(b);
-    else lignes.push([b]);
-  }
-  return lignes;
-}
-
-/** Sur deux lignes, des lignes de même longueur : seule l'espace la plus proche du milieu peut couper, les autres
- * deviennent insécables (plus de mot seul sur la 2e ligne, « Envoyer une position / test »). */
-function equilibrer(texte: string): string {
-  const espaces = [...texte.matchAll(/ /g)].map((m) => m.index ?? 0);
-  if (espaces.length < 2) return texte;
-  const milieu = espaces.reduce((a, b) => (Math.abs(b - texte.length / 2) < Math.abs(a - texte.length / 2) ? b : a));
-  return [...texte].map((c, i) => (c === ' ' && i !== milieu ? '\u00A0' : c)).join('');
 }
 
 /** Halo diffus autour de l'orbe de l'accueil : dégradé radial, sans bord. */
@@ -577,6 +569,10 @@ const styles = StyleSheet.create({
   },
   texteLangue: { fontFamily: polices.texteGras, fontSize: 14.5, color: couleurs.foret },
   centreAccueil: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, paddingBottom: 30 },
+  vocalAccueil: {
+    marginTop: 18, backgroundColor: couleurs.blanc, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10,
+    shadowColor: couleurs.foret, shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2,
+  },
   halo: { width: 96, height: 96, alignItems: 'center', justifyContent: 'center' },
   svgHalo: { position: 'absolute', left: -72, top: -72 },
   titreAccueil: { marginTop: 24, fontFamily: polices.titreDemi, fontSize: 28, lineHeight: 33, color: couleurs.encre, textAlign: 'center', letterSpacing: -0.5 },
@@ -652,9 +648,8 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: couleurs.blanc,
   },
   boutons: { gap: 8, paddingHorizontal: 4 },
-  rangee: { flexDirection: 'row', gap: 8 },
   pilule: {
-    flex: 1, minHeight: 48, borderRadius: 24, paddingHorizontal: 12, paddingVertical: 5, alignItems: 'center', justifyContent: 'center',
+    minHeight: 46, borderRadius: 23, paddingHorizontal: 12, paddingVertical: 5, alignItems: 'center', justifyContent: 'center',
     backgroundColor: couleurs.blanc, borderWidth: 1, borderColor: C.bordDoux,
     shadowColor: couleurs.foret, shadowOpacity: 0.06, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, elevation: 1,
   },
