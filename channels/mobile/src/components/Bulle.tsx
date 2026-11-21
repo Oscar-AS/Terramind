@@ -5,7 +5,7 @@ import { type StyleProp, Text, type TextStyle } from 'react-native';
 import { polices } from '@/theme';
 
 // Typographie française : espace insécable avant ? ! : ; » et après «, pour qu'un « ? » ne reste pas seul en début de ligne.
-const insecables = (t: string) => t.replace(/ ([?!:;»])/g, '\u00A0$1').replace(/« /g, '«\u00A0');
+export const insecables = (t: string) => t.replace(/ ([?!:;»])/g, '\u00A0$1').replace(/« /g, '«\u00A0');
 
 export function TexteRiche({ texte, style }: { texte: string; style?: StyleProp<TextStyle> }) {
   const morceaux: ReactNode[] = [];

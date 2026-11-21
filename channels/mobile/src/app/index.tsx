@@ -10,11 +10,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Location from 'expo-location';
 import { Camera } from 'phosphor-react-native/src/icons/Camera';
+import { CaretDown } from 'phosphor-react-native/src/icons/CaretDown';
+import { ChatText } from 'phosphor-react-native/src/icons/ChatText';
 import { Images } from 'phosphor-react-native/src/icons/Images';
 import { Leaf } from 'phosphor-react-native/src/icons/Leaf';
 import { MapPin } from 'phosphor-react-native/src/icons/MapPin';
 import { Microphone } from 'phosphor-react-native/src/icons/Microphone';
 import { PaperPlaneTilt } from 'phosphor-react-native/src/icons/PaperPlaneTilt';
+import { SpeakerHigh } from 'phosphor-react-native/src/icons/SpeakerHigh';
 import { Translate } from 'phosphor-react-native/src/icons/Translate';
 import { X } from 'phosphor-react-native/src/icons/X';
 import { type ComponentRef, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -22,9 +25,10 @@ import {
   Animated, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 import { ENGINE_URL } from '@/api';
-import { TexteRiche } from '@/components/Bulle';
+import { insecables, TexteRiche } from '@/components/Bulle';
 import { Paysage } from '@/components/Paysage';
 import { T } from '@/components/ui';
 import { BulleVocale, useLecteur } from '@/components/Voix';
@@ -75,7 +79,7 @@ const jourFr = (t: number) => {
 
 export default function Conversation() {
   const marges = useSafeAreaInsets();
-  const { ajouter } = useLecteur();
+  const { ajouter, basculer } = useLecteur();
   const [messages, setMessages] = useState<Message[]>(() => conversationGardee.lire<Message>().filter((m) => m.de && m.heure));
   const [langue, setLangue] = useState(() => profil.lire().langue);
   const [occupe, setOccupe] = useState(0);
@@ -241,114 +245,227 @@ export default function Conversation() {
 
   const boutons = langue ? clavier(langue) : [];
   const afficherBoutons = !clavierSysteme && !menuPhoto && boutons.length > 0;
+  // Écran d'accueil (maquette, écran du milieu) tant que la langue n'est pas choisie et que rien n'a été envoyé.
+  const accueil = !langue && !messages.some((m) => m.de === 'moi');
+  const derniereVoix = [...messages].reverse().find((m) => m.voix);
 
-  return (
-    <KeyboardAvoidingView style={styles.ecran} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      {/* Fond : dégradé vert tendre → sable en haut, paysage des Niayes en bas */}
-      <LinearGradient colors={[couleurs.pousse, '#EDF2E2', couleurs.sable]} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
-      <View style={styles.paysage} pointerEvents="none"><Paysage /></View>
+  const choisirLangue = (action: 'langue:wo' | 'langue:fr') => {
+    poster({ de: 'moi', texte: action === 'langue:wo' ? 'Wolof' : 'Français' });
+    envoyer({ action });
+  };
 
-      <View style={[styles.entete, { paddingTop: marges.top + 12 }]}>
-        <Avatar taille={46} />
-        <View style={{ flex: 1 }}>
-          <T style={styles.nom}>TerraMind</T>
-          <View style={styles.ligneStatut}>
-            <View style={styles.pointVert} />
-            <T style={styles.statut}>{occupe ? 'écrit…' : 'Ton assistant maraîchage'}</T>
-          </View>
-        </View>
-        <Pressable accessibilityRole="button" accessibilityLabel="Changer de langue" hitSlop={8}
-          onPress={() => { poster({ de: 'moi', texte: '/langue' }); envoyer({ texte: '/langue' }); }} style={styles.rondEntete}>
-          <Translate size={22} color={couleurs.foret} weight="bold" />
-        </Pressable>
-      </View>
+  const champSaisie = ecoute ? (
+    <View style={styles.enregistrement}>
+      <View style={styles.pointRouge} />
+      <T style={styles.texteEnregistrement}>{minutes(etatMicro.durationMillis / 1000)}  ·  Relâche pour envoyer</T>
+    </View>
+  ) : (
+    <TextInput ref={champ} value={texte} onChangeText={setTexte} placeholder={accueil ? 'Écris ici…' : 'Message'} placeholderTextColor="#857F72"
+      style={[styles.champ, accueil && styles.champAccueil]} multiline maxLength={2000} accessibilityLabel="Écrire un message"
+      submitBehavior="blurAndSubmit" numberOfLines={Platform.OS === 'web' ? 1 : undefined}
+      onFocus={() => { setClavierSysteme(true); setMenuPhoto(false); }} onBlur={() => setClavierSysteme(false)}
+      onSubmitEditing={() => ecrire(texte)}
+      onKeyPress={(e) => {
+        // Navigateur : Entrée envoie (Maj + Entrée va à la ligne), comme dans une messagerie.
+        const ev = e.nativeEvent as { key: string; shiftKey?: boolean };
+        if (Platform.OS === 'web' && ev.key === 'Enter' && !ev.shiftKey) {
+          e.preventDefault();
+          ecrire(texte);
+        }
+      }} />
+  );
+  const boutonEnvoi = texte.trim() ? (
+    <Pressable accessibilityRole="button" accessibilityLabel="Envoyer" onPress={() => ecrire(texte)}>
+      <RondVert taille={accueil ? 44 : 40}><PaperPlaneTilt size={21} color={couleurs.blanc} weight="fill" /></RondVert>
+    </Pressable>
+  ) : (
+    <Pressable accessibilityRole="button" accessibilityLabel="Garder le doigt appuyé pour parler en wolof"
+      onPressIn={() => void commencerVocal()} onPressOut={() => { relache.current = true; void finirVocal(); }}>
+      <RondVert actif={ecoute} taille={accueil ? 44 : 40}><Microphone size={22} color={couleurs.blanc} weight="fill" /></RondVert>
+    </Pressable>
+  );
+  const boutonPhoto = (taille: number) => (
+    <Pressable accessibilityRole="button" accessibilityLabel="Envoyer une photo de ma plante" hitSlop={6}
+      onPress={() => setMenuPhoto((v) => !v)}
+      style={[styles.outil, { width: taille, height: taille, borderRadius: taille / 2 }, accueil && styles.outilAccueil, menuPhoto && styles.outilActif]}>
+      {menuPhoto ? <X size={20} color={couleurs.foret} weight="bold" /> : <Camera size={22} color={couleurs.foret} />}
+    </Pressable>
+  );
 
-      <View style={styles.feuille}>
-        <FlatList
-          ref={liste}
-          contentContainerStyle={styles.filContenu}
-          data={messages}
-          keyExtractor={(m) => m.id}
-          onContentSizeChange={() => liste.current?.scrollToEnd({ animated: true })}
-          renderItem={({ item, index }) => (
-            <>
-              {index === 0 || !memeJour(messages[index - 1].heure, item.heure)
-                ? <View style={styles.jour}><T style={styles.texteJour}>{jourFr(item.heure)}</T></View> : null}
-              <Bulle m={item} suivant={messages[index + 1]} onAction={(action) => {
-                poster({ de: 'moi', texte: libelleAction(item.boutons, action) });
-                envoyer({ action });
-              }} />
-            </>
-          )}
-          ListFooterComponent={occupe ? <Ecrit /> : undefined}
-        />
-      </View>
-
-      <View style={[styles.bas, { paddingBottom: (clavierSysteme ? 8 : 10) + (clavierSysteme ? 0 : marges.bottom) }]}>
-        <View style={styles.carteSaisie}>
-          {ecoute ? (
-            <View style={styles.enregistrement}>
-              <View style={styles.pointRouge} />
-              <T style={styles.texteEnregistrement}>{minutes(etatMicro.durationMillis / 1000)}  ·  Relâche pour envoyer</T>
-            </View>
-          ) : (
-            <TextInput ref={champ} value={texte} onChangeText={setTexte} placeholder="Message" placeholderTextColor="#8C877B"
-              style={styles.champ} multiline maxLength={2000} accessibilityLabel="Écrire un message" submitBehavior="blurAndSubmit"
-              onFocus={() => { setClavierSysteme(true); setMenuPhoto(false); }} onBlur={() => setClavierSysteme(false)}
-              onSubmitEditing={() => ecrire(texte)}
-              onKeyPress={(e) => {
-                // Navigateur : Entrée envoie (Maj + Entrée va à la ligne), comme dans une messagerie.
-                const ev = e.nativeEvent as { key: string; shiftKey?: boolean };
-                if (Platform.OS === 'web' && ev.key === 'Enter' && !ev.shiftKey) {
-                  e.preventDefault();
-                  ecrire(texte);
-                }
-              }} />
-          )}
-          <View style={styles.ligneOutils}>
-            <Pressable accessibilityRole="button" accessibilityLabel="Envoyer une photo de ma plante" hitSlop={6}
-              onPress={() => setMenuPhoto((v) => !v)} style={[styles.outil, menuPhoto && styles.outilActif]}>
-              {menuPhoto ? <X size={20} color={couleurs.foret} weight="bold" /> : <Camera size={21} color={couleurs.foret} />}
-            </Pressable>
-            <View style={{ flex: 1 }} />
-            {texte.trim() ? (
-              <Pressable accessibilityRole="button" accessibilityLabel="Envoyer" onPress={() => ecrire(texte)}>
-                <RondVert><PaperPlaneTilt size={21} color={couleurs.blanc} weight="fill" /></RondVert>
-              </Pressable>
-            ) : (
-              <Pressable accessibilityRole="button" accessibilityLabel="Garder le doigt appuyé pour parler en wolof"
-                onPressIn={() => void commencerVocal()} onPressOut={() => { relache.current = true; void finirVocal(); }}>
-                <RondVert actif={ecoute}><Microphone size={22} color={couleurs.blanc} weight="fill" /></RondVert>
-              </Pressable>
-            )}
-          </View>
-        </View>
-
-        {menuPhoto ? (
-          <View style={styles.menuPhoto}>
-            <Pressable accessibilityRole="button" onPress={() => void choisirPhoto('camera')} style={styles.choixPhoto}>
-              <Camera size={26} color={couleurs.foret} weight="duotone" />
-              <T style={styles.texteBouton}>Appareil photo</T>
-            </Pressable>
-            <Pressable accessibilityRole="button" onPress={() => void choisirPhoto('galerie')} style={styles.choixPhoto}>
-              <Images size={26} color={couleurs.foret} weight="duotone" />
-              <T style={styles.texteBouton}>Galerie</T>
-            </Pressable>
-          </View>
-        ) : null}
-
-        {afficherBoutons ? (
-          <View style={styles.boutons}>
-            {boutons.map((b, i) => (
-              <Pressable key={b.bouton} accessibilityRole="button" onPress={() => toucherBouton(b.texte, b.bouton)}
-                style={({ pressed }) => [styles.pilule, i === 0 && styles.piluleTest, pressed && styles.piluleAppuyee]}>
-                <T style={styles.texteBouton} numberOfLines={2}>{b.texte}</T>
+  const basDeLEcran = (
+    <View style={[styles.bas, { paddingBottom: (clavierSysteme ? 8 : 12) + (clavierSysteme ? 0 : marges.bottom) }]}>
+      {accueil ? (
+        <>
+          <View style={styles.puces}>
+            {([['langue:wo', 'Wolof', SpeakerHigh], ['langue:fr', 'Français', ChatText]] as const).map(([action, nom, Icone]) => (
+              <Pressable key={action} accessibilityRole="button" onPress={() => choisirLangue(action)}
+                style={({ pressed }) => [styles.puce, pressed && styles.piluleAppuyee]}>
+                <Icone size={18} color={couleurs.foret} weight="duotone" />
+                <T style={styles.textePuce}>{nom}</T>
               </Pressable>
             ))}
           </View>
-        ) : null}
-      </View>
+          <View style={styles.ligneAccueil}>
+            {boutonPhoto(48)}
+            <View style={styles.piluleSaisie}>{champSaisie}{boutonEnvoi}</View>
+          </View>
+        </>
+      ) : (
+        <View style={styles.carteSaisie}>
+          {champSaisie}
+          <View style={styles.ligneOutils}>
+            {boutonPhoto(36)}
+            <View style={{ flex: 1 }} />
+            {boutonEnvoi}
+          </View>
+        </View>
+      )}
+
+      {menuPhoto ? (
+        <View style={styles.menuPhoto}>
+          <Pressable accessibilityRole="button" onPress={() => void choisirPhoto('camera')} style={styles.choixPhoto}>
+            <Camera size={26} color={couleurs.foret} weight="duotone" />
+            <T style={styles.texteBouton}>Appareil photo</T>
+          </Pressable>
+          <Pressable accessibilityRole="button" onPress={() => void choisirPhoto('galerie')} style={styles.choixPhoto}>
+            <Images size={26} color={couleurs.foret} weight="duotone" />
+            <T style={styles.texteBouton}>Galerie</T>
+          </Pressable>
+        </View>
+      ) : null}
+
+      {afficherBoutons && !accueil ? (
+        <View style={styles.boutons}>
+          {rangees(boutons).map((rangee) => (
+            <View key={rangee[0].bouton} style={styles.rangee}>
+              {rangee.map((b) => (
+                <Pressable key={b.bouton} accessibilityRole="button" onPress={() => toucherBouton(b.texte, b.bouton)}
+                  style={({ pressed }) => [styles.pilule, b === boutons[0] && styles.piluleTest, pressed && styles.piluleAppuyee]}>
+                  <T style={[styles.texteBouton, rangee.length === 2 && { fontSize: 15 }]} numberOfLines={2}>
+                      {rangee.length === 2 ? equilibrer(b.texte) : b.texte}
+                    </T>
+                </Pressable>
+              ))}
+            </View>
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+
+  return (
+    <KeyboardAvoidingView style={styles.ecran} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {/* Fond : dégradé vert tendre → crème → sable, paysage des Niayes en bas */}
+      <LinearGradient colors={accueil ? [couleurs.pousse, couleurs.carte, couleurs.carte, couleurs.soleilClair] : [couleurs.pousse, '#EDF2E2', couleurs.sable]}
+        locations={accueil ? [0, 0.32, 0.62, 1] : [0, 0.45, 1]} style={StyleSheet.absoluteFill} />
+      {accueil ? <View style={styles.paysage} pointerEvents="none"><Paysage hauteur={180} /></View> : null}
+
+      {accueil ? (
+        <View style={[styles.enteteAccueil, { paddingTop: marges.top + 12 }]}>
+          <View style={{ width: 46 }} />
+          <T style={styles.nomCentre}>TerraMind</T>
+          <Pressable accessibilityRole="button" accessibilityLabel="Réécouter le message vocal" hitSlop={8}
+            onPress={() => derniereVoix && basculer(derniereVoix.id, derniereVoix.voix!)} style={styles.rondEntete}>
+            <SpeakerHigh size={22} color={couleurs.foret} weight="bold" />
+          </Pressable>
+        </View>
+      ) : (
+        <View style={[styles.entete, { paddingTop: marges.top + 12 }]}>
+          <Avatar taille={46} />
+          <View style={{ flex: 1 }}>
+            <T style={styles.nom}>TerraMind</T>
+            <View style={styles.ligneStatut}>
+              <View style={styles.pointVert} />
+              <T style={styles.statut} numberOfLines={1}>{occupe ? 'écrit…' : 'Assistant maraîchage'}</T>
+            </View>
+          </View>
+          {/* Langue : explicite (le mot, pas seulement une icône) ; touche → la question de la langue, dite en wolof. */}
+          <Pressable accessibilityRole="button" accessibilityLabel="Changer de langue" hitSlop={6}
+            onPress={() => { poster({ de: 'moi', texte: '/langue' }); envoyer({ texte: '/langue' }); }} style={styles.piluleLangue}>
+            <Translate size={18} color={couleurs.foret} weight="bold" />
+            <T style={styles.texteLangue}>{langue === 'wo' ? 'Wolof' : 'Français'}</T>
+            <CaretDown size={13} color={couleurs.foret} weight="bold" />
+          </Pressable>
+        </View>
+      )}
+
+      {accueil ? (
+        <View style={styles.centreAccueil}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Réécouter le message vocal"
+            onPress={() => derniereVoix && basculer(derniereVoix.id, derniereVoix.voix!)} style={styles.halo}>
+            <Halo />
+            <Avatar taille={96} />
+          </Pressable>
+          <T style={styles.titreAccueil}>Ton assistant{'\n'}pour le maraîchage</T>
+          <T style={styles.sousTitreAccueil}>{insecables('Choisis ta langue : touche « Wolof » ou « Français ».')}</T>
+        </View>
+      ) : (
+        <View style={styles.feuille}>
+          <View style={styles.paysageFeuille} pointerEvents="none"><Paysage hauteur={290} decor={false} /></View>
+          <FlatList
+            ref={liste}
+            contentContainerStyle={styles.filContenu}
+            data={messages}
+            keyExtractor={(m) => m.id}
+            onContentSizeChange={() => liste.current?.scrollToEnd({ animated: true })}
+            renderItem={({ item, index }) => (
+              <>
+                {index === 0 || !memeJour(messages[index - 1].heure, item.heure)
+                  ? <View style={styles.jour}><T style={styles.texteJour}>{jourFr(item.heure)}</T></View> : null}
+                <Bulle m={item} suivant={messages[index + 1]} onAction={(action) => {
+                  poster({ de: 'moi', texte: libelleAction(item.boutons, action) });
+                  envoyer({ action });
+                }} />
+              </>
+            )}
+            ListFooterComponent={occupe ? <Ecrit /> : undefined}
+          />
+          {/* fondu sous l'en-tête : les messages ne sont pas coupés net */}
+          <LinearGradient colors={[couleurs.carte, 'rgba(255,252,246,0)']} style={styles.fondu} pointerEvents="none" />
+          {basDeLEcran}
+        </View>
+      )}
+
+      {accueil ? basDeLEcran : null}
     </KeyboardAvoidingView>
+  );
+}
+
+/** Les grands boutons, deux par ligne quand les libellés sont courts, dans l'ordre des numéros (lecture de gauche
+ * à droite puis vers le bas) ; un libellé long prend toute la ligne. Libère de la place pour la conversation. */
+function rangees<B extends { texte: string }>(boutons: B[]): B[][] {
+  const lignes: B[][] = [];
+  for (const b of boutons) {
+    const derniere = lignes[lignes.length - 1];
+    if (b.texte.length <= 32 && derniere?.length === 1 && derniere[0].texte.length <= 32) derniere.push(b);
+    else lignes.push([b]);
+  }
+  return lignes;
+}
+
+/** Sur deux lignes, des lignes de même longueur : seule l'espace la plus proche du milieu peut couper, les autres
+ * deviennent insécables (plus de mot seul sur la 2e ligne, « Envoyer une position / test »). */
+function equilibrer(texte: string): string {
+  const espaces = [...texte.matchAll(/ /g)].map((m) => m.index ?? 0);
+  if (espaces.length < 2) return texte;
+  const milieu = espaces.reduce((a, b) => (Math.abs(b - texte.length / 2) < Math.abs(a - texte.length / 2) ? b : a));
+  return [...texte].map((c, i) => (c === ' ' && i !== milieu ? '\u00A0' : c)).join('');
+}
+
+/** Halo diffus autour de l'orbe de l'accueil : dégradé radial, sans bord. */
+function Halo() {
+  return (
+    <Svg width={240} height={240} style={styles.svgHalo} pointerEvents="none">
+      <Defs>
+        <RadialGradient id="halo" cx="50%" cy="50%" r="50%">
+          <Stop offset="0" stopColor={couleurs.pousse} stopOpacity={0.95} />
+          <Stop offset="0.45" stopColor={couleurs.pousse} stopOpacity={0.55} />
+          <Stop offset="0.75" stopColor={couleurs.soleilClair} stopOpacity={0.25} />
+          <Stop offset="1" stopColor={couleurs.soleilClair} stopOpacity={0} />
+        </RadialGradient>
+      </Defs>
+      <Rect x={0} y={0} width={240} height={240} fill="url(#halo)" />
+    </Svg>
   );
 }
 
@@ -362,10 +479,10 @@ function Avatar({ taille }: { taille: number }) {
   );
 }
 
-function RondVert({ children, actif }: { children: ReactNode; actif?: boolean }) {
+function RondVert({ children, actif, taille = 44 }: { children: ReactNode; actif?: boolean; taille?: number }) {
   return (
     <LinearGradient colors={actif ? [couleurs.terre, '#8F3F1E'] : [couleurs.feuille, couleurs.foret]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-      style={[styles.rondVert, actif && { transform: [{ scale: 1.12 }] }]}>
+      style={[styles.rondVert, { width: taille, height: taille, borderRadius: taille / 2 }, actif && { transform: [{ scale: 1.12 }] }]}>
       {children}
     </LinearGradient>
   );
@@ -381,7 +498,7 @@ function Ecrit() {
   }, [v]);
   return (
     <View style={[styles.ligneBot, { marginTop: 10 }]}>
-      <Avatar taille={30} />
+      <Avatar taille={34} />
       <View style={[styles.bulle, styles.bulleBot, styles.points]}>
         {[0, 1, 2].map((i) => (
           <Animated.View key={i} style={[styles.point, {
@@ -415,7 +532,7 @@ function Bulle({ m, suivant, onAction }: { m: Message; suivant?: Message; onActi
       {moi ? <View style={styles.ligneMoi}>{contenu}</View> : (
         <>
           <View style={styles.ligneBot}>
-            {finDeSuite ? <Avatar taille={30} /> : <View style={{ width: 30 }} />}
+            {finDeSuite ? <Avatar taille={34} /> : <View style={{ width: 34 }} />}
             <View style={{ flex: 1, alignItems: 'flex-start' }}>{contenu}</View>
           </View>
           {m.boutons?.length ? (
@@ -430,7 +547,7 @@ function Bulle({ m, suivant, onAction }: { m: Message; suivant?: Message; onActi
           ) : null}
         </>
       )}
-      {finDeSuite ? <T style={[styles.heure, moi ? { alignSelf: 'flex-end' } : { marginLeft: 40 }]}>{heureFr(m.heure)}</T> : null}
+      {finDeSuite ? <T style={[styles.heure, moi ? { alignSelf: 'flex-end' } : { marginLeft: 44 }]}>{heureFr(m.heure)}</T> : null}
     </View>
   );
 }
@@ -443,44 +560,73 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: couleurs.blanc,
     shadowColor: couleurs.foret, shadowOpacity: 0.15, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2,
   },
-  nom: { fontFamily: polices.titreMoyen, fontSize: 21, color: couleurs.encre, letterSpacing: -0.3 },
+  nom: { fontFamily: polices.titreDemi, fontSize: 20, lineHeight: 23, color: couleurs.encre, letterSpacing: -0.2 },
   ligneStatut: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 1 },
   pointVert: { width: 8, height: 8, borderRadius: 4, backgroundColor: couleurs.feuille },
-  statut: { fontFamily: polices.texte, fontSize: 13.5, color: couleurs.encreDouce },
+  statut: { fontFamily: polices.texte, fontSize: 12.5, color: couleurs.encreDouce },
+  enteteAccueil: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, paddingBottom: 12 },
+  nomCentre: { flex: 1, textAlign: 'center', fontFamily: polices.titreDemi, fontSize: 21, color: couleurs.encre },
+  piluleLangue: {
+    flexDirection: 'row', alignItems: 'center', gap: 5, height: 44, paddingHorizontal: 12, borderRadius: 22, backgroundColor: couleurs.blanc,
+    shadowColor: couleurs.foret, shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2,
+  },
+  texteLangue: { fontFamily: polices.texteGras, fontSize: 14.5, color: couleurs.foret },
+  centreAccueil: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, paddingBottom: 30 },
+  halo: { width: 96, height: 96, alignItems: 'center', justifyContent: 'center' },
+  svgHalo: { position: 'absolute', left: -72, top: -72 },
+  titreAccueil: { marginTop: 24, fontFamily: polices.titreDemi, fontSize: 28, lineHeight: 33, color: couleurs.encre, textAlign: 'center', letterSpacing: -0.5 },
+  sousTitreAccueil: { marginTop: 12, maxWidth: 300, fontFamily: polices.texte, fontSize: 16, lineHeight: 22, color: couleurs.encreDouce, textAlign: 'center' },
+  puces: { flexDirection: 'row', gap: 8, justifyContent: 'center' },
+  puce: {
+    flexDirection: 'row', alignItems: 'center', gap: 8, height: 48, paddingHorizontal: 22, borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.9)', borderWidth: 1, borderColor: couleurs.blanc,
+    shadowColor: couleurs.foret, shadowOpacity: 0.08, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2,
+  },
+  textePuce: { fontFamily: polices.texte, fontSize: 16, color: couleurs.foret },
+  ligneAccueil: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 8 },
+  outilAccueil: { backgroundColor: couleurs.blanc, borderColor: couleurs.blanc, elevation: 2,
+    shadowColor: couleurs.foret, shadowOpacity: 0.08, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } },
+  piluleSaisie: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', minHeight: 52, borderRadius: 26, backgroundColor: couleurs.blanc,
+    paddingLeft: 18, paddingRight: 5, borderWidth: 3, borderColor: 'rgba(220,235,217,0.8)',
+  },
+  champAccueil: { flex: 1, minHeight: 40, paddingTop: 10, paddingBottom: 8 },
   rondEntete: {
     width: 46, height: 46, borderRadius: 23, backgroundColor: couleurs.blanc, alignItems: 'center', justifyContent: 'center',
     shadowColor: couleurs.foret, shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2,
   },
   feuille: {
     flex: 1, backgroundColor: couleurs.carte, borderTopLeftRadius: 30, borderTopRightRadius: 30, overflow: 'hidden',
-    borderBottomLeftRadius: 24, borderBottomRightRadius: 24,
   },
-  filContenu: { paddingHorizontal: 14, paddingTop: 14, paddingBottom: 6 },
+  paysageFeuille: { position: 'absolute', left: 0, right: 0, bottom: 0, opacity: 0.9 },
+  fondu: { position: 'absolute', top: 0, left: 0, right: 0, height: 32 },
+  filContenu: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 },
   jour: { alignSelf: 'center', backgroundColor: C.pastilleJour, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 5, marginVertical: 8 },
   texteJour: { fontFamily: polices.texte, fontSize: 13, color: couleurs.encreDouce },
   message: { marginBottom: 4 },
   ligneMoi: { alignItems: 'flex-end', paddingLeft: 48 },
   ligneBot: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, paddingRight: 30 },
-  bulle: { borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, gap: 8, maxWidth: '100%' },
+  bulle: { borderRadius: 16, paddingHorizontal: 14, paddingVertical: 10, gap: 8, maxWidth: '100%' },
   bulleBot: { backgroundColor: C.bulleBot, borderBottomLeftRadius: 6 },
-  bulleMoi: { backgroundColor: C.bulleMoi, borderBottomRightRadius: 6 },
+  bulleMoi: { backgroundColor: C.bulleMoi, borderBottomRightRadius: 6, paddingHorizontal: 12 },
   bullePhoto: { padding: 4 },
   photo: { width: 210, height: 210, borderRadius: 16 },
   texteBulle: { fontFamily: polices.texte, fontSize: 16, lineHeight: 22.5, color: couleurs.encre },
-  heure: { fontFamily: polices.texte, fontSize: 12, color: C.heure, marginTop: 4 },
+  heure: { fontFamily: polices.texte, fontSize: 12, lineHeight: 14, color: C.heure, marginTop: 4 },
   position: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   pastillePosition: { width: 30, height: 30, borderRadius: 15, backgroundColor: couleurs.terre, alignItems: 'center', justifyContent: 'center' },
-  reponses: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginLeft: 40, marginTop: 6, paddingRight: 10 },
+  reponses: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginLeft: 44, marginTop: 8, paddingRight: 10 },
   reponse: {
-    minHeight: 40, borderRadius: 999, paddingHorizontal: 16, justifyContent: 'center', backgroundColor: couleurs.blanc,
+    minHeight: 44, borderRadius: 999, paddingHorizontal: 18, justifyContent: 'center', backgroundColor: couleurs.blanc,
     borderWidth: 1.5, borderColor: couleurs.pousse,
   },
   texteReponse: { fontFamily: polices.texteGras, fontSize: 15, color: couleurs.foret },
   points: { flexDirection: 'row', gap: 5, paddingVertical: 14 },
   point: { width: 8, height: 8, borderRadius: 4, backgroundColor: couleurs.feuille },
-  bas: { paddingHorizontal: 12, paddingTop: 8, gap: 7 },
+  bas: { paddingHorizontal: 8, paddingTop: 6, gap: 8 },
   carteSaisie: {
-    backgroundColor: couleurs.blanc, borderRadius: 26, paddingHorizontal: 12, paddingTop: 4, paddingBottom: 8, gap: 4,
+    backgroundColor: couleurs.blanc, borderRadius: 26, paddingHorizontal: 12, paddingTop: 8, paddingBottom: 10, minHeight: 112,
+    justifyContent: 'space-between',
     borderWidth: 4, borderColor: 'rgba(220,235,217,0.75)', // halo vert tendre autour de la carte, comme la maquette
     shadowColor: couleurs.foret, shadowOpacity: 0.12, shadowRadius: 16, shadowOffset: { width: 0, height: 4 }, elevation: 4,
   },
@@ -500,10 +646,11 @@ const styles = StyleSheet.create({
     flex: 1, alignItems: 'center', gap: 6, paddingVertical: 14, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.92)',
     borderWidth: 1, borderColor: couleurs.blanc,
   },
-  boutons: { gap: 5 },
+  boutons: { gap: 8, paddingHorizontal: 4 },
+  rangee: { flexDirection: 'row', gap: 8 },
   pilule: {
-    minHeight: 35, borderRadius: 999, paddingHorizontal: 16, paddingVertical: 5, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.88)', borderWidth: 1, borderColor: couleurs.blanc,
+    flex: 1, minHeight: 48, borderRadius: 24, paddingHorizontal: 12, paddingVertical: 5, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: couleurs.blanc, borderWidth: 1, borderColor: C.bordDoux,
     shadowColor: couleurs.foret, shadowOpacity: 0.06, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, elevation: 1,
   },
   piluleTest: { backgroundColor: couleurs.soleilClair, borderColor: '#F0D99A' },
