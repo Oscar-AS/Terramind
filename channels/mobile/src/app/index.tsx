@@ -84,7 +84,7 @@ const jourFr = (t: number) => {
 
 export default function Conversation() {
   const marges = useSafeAreaInsets();
-  const { ajouter, basculer } = useLecteur();
+  const { ajouter, basculer, arreter } = useLecteur();
   // Les conversations (panneau latéral) ; on rouvre la plus récente.
   const [fils, setFils] = useState<Fil[]>(() => {
     const l = conversations.lister();
@@ -220,12 +220,13 @@ export default function Conversation() {
 
   /** Un message à la fois, dans l'ordre (comme traiter_dans_l_ordre du bot). */
   const envoyer = useCallback((e: Entree) => {
+    arreter(); // la personne a répondu : la note vocale précédente se tait (elle peut la relancer en touchant la bulle)
     setOccupe((n) => n + 1);
     file.current = file.current.then(() => traiter(e, sortie)).finally(() => {
       setOccupe((n) => n - 1);
       setLangue(profil.lire().langue);
     });
-  }, [sortie]);
+  }, [sortie, arreter]);
 
   // Première ouverture (ou après /oublier) : la question de la langue, dite aussi en wolof.
   useEffect(() => {
@@ -321,6 +322,7 @@ export default function Conversation() {
 
   const commencerVocal = async () => {
     relache.current = false;
+    arreter(); // sinon la note du bot serait enregistrée avec la question
     const permission = await requestRecordingPermissionsAsync().catch(() => ({ granted: false }));
     if (!permission.granted) {
       sortie.envoyer('TerraMind a besoin du micro pour écouter ta question. Autorise-le dans les réglages du téléphone, ou écris ta question.');

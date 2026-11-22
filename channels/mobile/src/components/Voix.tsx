@@ -1,6 +1,6 @@
 // Messages vocaux wolof de la conversation. Un seul lecteur pour toute l'application : les nouvelles notes
 // vocales du bot se lisent toutes seules, l'une après l'autre (pour qui ne lit pas) ; toucher une bulle la lit
-// (ou l'arrête) et vide la file.
+// (ou l'arrête) et vide la file. Dès que la personne répond, la note en cours s'arrête (arreter).
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { Pause } from 'phosphor-react-native/src/icons/Pause';
 import { Play } from 'phosphor-react-native/src/icons/Play';
@@ -15,11 +15,13 @@ type Lecteur = {
   ajouter: (ids: { id: string; adresse: string }[]) => void;
   /** Lit une seule note tout de suite (toucher), ou l'arrête si elle est en cours. */
   basculer: (id: string, adresse: string) => void;
+  /** Arrête la note en cours et vide la file (la personne a répondu : on passe à la suite). */
+  arreter: () => void;
   enCours: string | null;
   progression: number; // 0 à 1
   duree: number; // secondes, 0 si inconnue
 };
-const Contexte = createContext<Lecteur>({ ajouter: () => {}, basculer: () => {}, enCours: null, progression: 0, duree: 0 });
+const Contexte = createContext<Lecteur>({ ajouter: () => {}, basculer: () => {}, arreter: () => {}, enCours: null, progression: 0, duree: 0 });
 
 export function LecteurVoix({ children }: { children: ReactNode }) {
   const lecteur = useAudioPlayer(null);
@@ -60,27 +62,31 @@ export function LecteurVoix({ children }: { children: ReactNode }) {
     if (!enCoursRef.current) suivante();
   }, [suivante]);
 
+  const arreter = useCallback(() => {
+    file.current = [];
+    if (garde.current) clearTimeout(garde.current);
+    if (enCoursRef.current) lecteur.pause();
+    setEnCours(null);
+  }, [lecteur, setEnCours]);
+
   const basculer = useCallback((id: string, adresse: string) => {
     if (enCoursRef.current === id) {
-      file.current = [];
-      if (garde.current) clearTimeout(garde.current);
-      lecteur.pause();
-      setEnCours(null);
+      arreter();
       return;
     }
     file.current = [{ id, adresse }];
     suivante();
-  }, [lecteur, suivante, setEnCours]);
+  }, [arreter, suivante]);
 
   useEffect(() => {
     if (etat.didJustFinish) suivante();
   }, [etat.didJustFinish, suivante]);
 
   const valeur = useMemo(() => ({
-    ajouter, basculer, enCours,
+    ajouter, basculer, arreter, enCours,
     duree: etat.duration || 0,
     progression: etat.duration ? Math.min(1, etat.currentTime / etat.duration) : 0,
-  }), [ajouter, basculer, enCours, etat.currentTime, etat.duration]);
+  }), [ajouter, basculer, arreter, enCours, etat.currentTime, etat.duration]);
 
   return <Contexte.Provider value={valeur}>{children}</Contexte.Provider>;
 }
