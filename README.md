@@ -10,7 +10,7 @@
   <a href="https://terramind-afrique.vercel.app"><img src="https://img.shields.io/badge/🌱%20Ouvrir%20l'app-terramind--afrique.vercel.app-3f8f5f?style=for-the-badge" alt="Ouvrir l'application en ligne : terramind-afrique.vercel.app"></a>
   <a href="https://terramind-sigma.vercel.app"><img src="https://img.shields.io/badge/🌍%20Visiter%20le%20site-terramind--sigma.vercel.app-1f4d3a?style=for-the-badge" alt="Visiter le site : terramind-sigma.vercel.app"></a>
   <a href="https://t.me/TerraMindAfriqueBot"><img src="https://img.shields.io/badge/💬%20Essayer%20le%20bot-@TerraMindAfriqueBot-229ED9?style=for-the-badge&logo=telegram&logoColor=white" alt="Essayer le bot Telegram"></a>
-  <a href="https://expo.dev/artifacts/eas/mcgAGA13JtmuknxLoSQWJ3bBRHGY02TgFiquqINAYg0.apk"><img src="https://img.shields.io/badge/📱%20Télécharger-l'app%20Android%20(APK)-d08a2e?style=for-the-badge&logo=android&logoColor=white" alt="Télécharger l'application Android (APK)"></a>
+  <a href="https://expo.dev/artifacts/eas/dTPb8L2bq8-6MV-Uep3daUVLfiZ2tnf0YKwFA1Dtj-s.apk"><img src="https://img.shields.io/badge/📱%20Télécharger-l'app%20Android%20(APK)-d08a2e?style=for-the-badge&logo=android&logoColor=white" alt="Télécharger l'application Android (APK)"></a>
 </p>
 
 <p align="center">
@@ -45,7 +45,7 @@ Chaque conseil **cite le document** d'où il vient. Quand TerraMind n'est pas s�
 
 </td>
 <td width="38%" align="center">
-  <img src="docs/assets/captures/app/accueil.webp" width="230" alt="Écran d'accueil de l'application TerraMind">
+  <img src="docs/assets/captures/app/accueil.webp" width="230" alt="La conversation dans l'application TerraMind">
 </td>
 </tr>
 </table>
@@ -58,7 +58,7 @@ Chaque conseil **cite le document** d'où il vient. Quand TerraMind n'est pas s�
 <tr>
 <td align="center" width="25%"><img src="docs/assets/captures/app/plan.webp" alt="Que planter ce mois-ci"></td>
 <td align="center" width="25%"><img src="docs/assets/captures/app/alertes.webp" alt="Alertes météo de la semaine"></td>
-<td align="center" width="25%"><img src="docs/assets/captures/app/resultat.webp" alt="Diagnostic : Mildiou, 93 %"></td>
+<td align="center" width="25%"><img src="docs/assets/captures/app/resultat.webp" alt="Diagnostic : Mildiou, 92 %"></td>
 <td align="center" width="25%"><img src="docs/assets/captures/app/resultat2.webp" alt="La maladie expliquée en 4 temps"></td>
 </tr>
 <tr>
@@ -69,7 +69,7 @@ Chaque conseil **cite le document** d'où il vient. Quand TerraMind n'est pas s�
 </tr>
 </table>
 
-<sub>Vraies captures de l'application branchée sur le moteur, 15 et 17 nov 2026. Profil de démonstration (Rufisque, tomate). Photo du diagnostic : jeu de test de TOM2024 (CC BY 4.0), jamais vue à l'entraînement. Le visage de l'écran d'accueil est une image générée par IA.</sub>
+<sub>Vraies captures de l'application branchée sur le moteur en ligne, 21 nov 2026 : comme sur le bot, tout se passe dans la conversation. Profil de démonstration (position test de Rufisque, tomate). Photo du diagnostic : jeu de test de TOM2024 (CC BY 4.0), jamais vue à l'entraînement.</sub>
 
 ## 💬 Le bot Telegram en action
 

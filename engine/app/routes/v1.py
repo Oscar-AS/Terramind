@@ -15,7 +15,7 @@ from typing import Literal, Optional
 
 from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from ..modules import meteo
@@ -29,6 +29,7 @@ journal = logging.getLogger("terramind.v1")
 router = APIRouter(prefix="/v1")
 VERSION = "0.1"
 PHOTO_MAX = 8 * 1024 * 1024
+AUDIO_MAX = 5 * 1024 * 1024  # une minute de note vocale fait moins de 1 Mo
 Langue = Literal["fr", "wo"]
 Canal = Literal["whatsapp", "telegram", "pwa", "mobile", "dashboard"]
 OuiNon = Literal["oui", "non", "ne_sait_pas"]
@@ -345,6 +346,109 @@ def chat(d: DemandeChat):
         return enveloppe(
             "je_ne_sais_pas", "Je n'ai pas la réponse dans mes fiches. " + AGENT, donnees
         )
+    return enveloppe("ok", r["texte"], donnees, r["sources"])
+
+
+# Réponses dites en wolof pour l'application (POST /v1/chat/vocal) : gardées en mémoire vive quelques
+# minutes, le temps que l'application les lise, puis oubliées (rien n'est écrit sur disque).
+VOIX_REPONSES: dict[str, tuple[float, bytes]] = {}
+VOIX_DUREE = 15 * 60
+VOIX_MAX = 50
+
+
+def _garder_voix(audio: bytes) -> str:
+    import secrets
+    import time
+
+    maintenant = time.time()
+    for cle in [c for c, (t, _) in VOIX_REPONSES.items() if maintenant - t > VOIX_DUREE]:
+        VOIX_REPONSES.pop(cle, None)
+    while len(VOIX_REPONSES) >= VOIX_MAX:
+        VOIX_REPONSES.pop(next(iter(VOIX_REPONSES)))
+    cle = secrets.token_urlsafe(16)
+    VOIX_REPONSES[cle] = (maintenant, audio)
+    return f"/v1/voix/{cle}.mp3"
+
+
+@router.get("/voix/{cle}.mp3")
+def voix_reponse(cle: str):
+    trouve = VOIX_REPONSES.get(cle)
+    if not trouve:
+        return Response(status_code=404)
+    return Response(trouve[1], media_type="audio/mpeg")
+
+
+@router.post("/chat/vocal")
+async def chat_vocal(
+    audio: UploadFile = File(...),
+    utilisateur: str = Form(..., min_length=1, max_length=128),
+    canal: Canal = Form(...),
+    langue: Langue = Form("wo"),
+    duree: Optional[float] = Form(None),
+):
+    """Question dite en wolof (application) : même chaîne que le bot Telegram. Octopus transcrit, Gemini
+    traduit, la réponse vient des fiches (D8) ; elle est ensuite dite en wolof par Octopus si possible.
+    Ni l'audio reçu ni la transcription ne sont conservés."""
+    from ..modules import ecoute, parole
+    from ..modules.rag.reponse import repondre
+
+    ecrire = "Tu peux aussi écrire ta question."
+    if not ecoute.disponible():
+        return enveloppe(
+            "erreur", f"Je ne peux pas écouter les messages vocaux pour le moment. {ecrire}", {}, code=503
+        )
+    contenu = await audio.read(AUDIO_MAX + 1)
+    if len(contenu) > AUDIO_MAX or (duree or 0) > ecoute.DUREE_MAX:
+        return enveloppe(
+            "erreur", "Ta note vocale est trop longue. Pose ta question en moins d'une minute.", {}, code=413
+        )
+    if not contenu:
+        return enveloppe("erreur", "Je n'ai rien entendu. Réessaie en parlant près du téléphone.", {}, code=400)
+    type_mime = (audio.content_type or "audio/mp4").split(";")[0]
+    try:
+        compris = await run_in_threadpool(ecoute.comprendre, contenu, type_mime, duree)
+    except ecoute.NoteTropLongue:
+        return enveloppe(
+            "erreur", "Ta note vocale est trop longue. Pose ta question en moins d'une minute.", {}, code=413
+        )
+    except Exception as e:  # Octopus indisponible, plafond du jour atteint, fichier illisible
+        journal.warning("note vocale (application) non traitée : %s (%s)", type(e).__name__, e)
+        return enveloppe(
+            "erreur", f"Je ne peux pas écouter les messages vocaux pour le moment. {ecrire}", {}, code=503
+        )
+    donnees = {"transcription": compris, "passages": [], "mode": None, "voix": None}
+    # Question de la démonstration reconnue : réponse préparée (sans Gemini ni voix Octopus en direct).
+    from ..modules import reponses_preparees
+
+    prete = reponses_preparees.trouver(compris)
+    if prete:
+        compris["francais"] = compris["francais"] or prete["question_fr"]
+        donnees["mode"] = "preparee"
+        if adresse := reponses_preparees.adresse_voix(prete):
+            donnees["voix"] = {
+                "cle": prete["cle"], "texte_wo": prete["texte_wo"], "texte_fr": prete["texte_fr"], "audio_url": adresse,
+            }
+        return enveloppe("ok", prete["texte_fr"], donnees, prete["sources"])
+    if not compris["francais"]:
+        return enveloppe(
+            "je_ne_sais_pas",
+            "Je n'ai pas bien compris ta note vocale. Redis-la plus lentement, dans un endroit calme. "
+            + ecrire,
+            donnees,
+        )
+    r = await run_in_threadpool(repondre, compris["francais"])
+    donnees.update(passages=r["passages"], mode=r["mode"])
+    if r["statut"] != "ok":
+        return enveloppe("je_ne_sais_pas", "Je n'ai pas la réponse dans mes fiches. " + AGENT, donnees)
+    if langue == "wo":
+        dit = await run_in_threadpool(parole.dire_en_wolof_detail, r["texte"])
+        if dit:
+            donnees["voix"] = {
+                "cle": "reponse",
+                "texte_wo": dit[0],
+                "texte_fr": r["texte"],
+                "audio_url": _garder_voix(dit[1]),
+            }
     return enveloppe("ok", r["texte"], donnees, r["sources"])
 
 

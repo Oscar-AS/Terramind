@@ -80,3 +80,13 @@ class Preparation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ControleApresCorrection(unittest.TestCase):
+    def test_mot_corrige_plus_a_risque(self):
+        from engine.app.responses.voix.normalisation import charger_controle
+
+        risques = charger_controle()
+        self.assertNotIn("tool", risques)  # corrigé en « tôl » (prononciation_voix.csv, 17 nov)
+        self.assertNotIn("pombiteer", risques)  # vérifié avec Octopus et validé à l'écoute (21 nov)
+        self.assertIn("karoot", risques)  # pas encore corrigé

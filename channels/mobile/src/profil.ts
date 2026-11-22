@@ -10,7 +10,9 @@ export type Profil = {
   eauSalee?: OuiNon;
   basFond?: OuiNon;
   culture?: string;
-  dateRepiquage?: string; // AAAA-MM-JJ
+  dateRepiquage?: string | null; // AAAA-MM-JJ ; null : l'agriculteur ne s'en souvient pas
+  attendDate?: boolean; // la conversation attend la date de plantation (comme le bot)
+  dateLibre?: boolean; // la date peut être écrite à n'importe quel moment
 };
 
 const CLE = 'terramind.profil';
@@ -37,27 +39,66 @@ export const profil = {
     globalThis.localStorage?.setItem(CLE, JSON.stringify(p));
     return p;
   },
-  premiereOuvertureFaite(): boolean {
-    const p = profil.lire();
-    return Boolean(p.langue && p.position);
+  /** Remplace tout le profil (passage d'une conversation à une autre : chacune garde son champ, sa culture…). */
+  remplacer(p: Profil): Profil {
+    globalThis.localStorage?.setItem(CLE, JSON.stringify(p));
+    return p;
+  },
+  /** /oublier : langue, champ, culture et toutes les conversations effacés ; un nouvel identifiant anonyme. */
+  oublier() {
+    for (const c of conversations.lister()) globalThis.localStorage?.removeItem(CLE_MESSAGES + c.id);
+    globalThis.localStorage?.removeItem(CLE_LISTE);
+    globalThis.localStorage?.removeItem(CLE_ANCIENNE);
+    globalThis.localStorage?.removeItem(CLE);
   },
 };
 
-// Zones pilotes (centroïdes des départements, geoBoundaries) pour qui refuse le GPS.
-export const ZONES = [
-  { nom: 'Rufisque', lat: 14.76, lon: -17.21 },
-  { nom: 'Thiès', lat: 14.75, lon: -16.87 },
-  { nom: 'Tivaouane', lat: 15.09, lon: -16.65 },
-  { nom: 'Kébémer', lat: 15.3, lon: -16.26 },
-];
+// Plusieurs conversations, comme dans une messagerie : la liste (titre, date, ce que l'agriculteur avait indiqué
+// dans cette conversation) et, pour chacune, ses 150 derniers messages. Tout reste sur le téléphone.
+export type Conversation = { id: string; titre: string; maj: number; profil: Omit<Profil, 'id'> };
+const CLE_LISTE = 'terramind.conversations';
+const CLE_MESSAGES = 'terramind.conversation.';
+const CLE_ANCIENNE = 'terramind.conversation'; // une seule conversation (avant le 21 nov) : reprise comme la première
 
-export const CULTURES = [
-  { id: 'tomato', libelle: 'Tomate', icone: '🍅' },
-  { id: 'onion', libelle: 'Oignon', icone: '🧅' },
-  { id: 'cabbage', libelle: 'Chou', icone: '🥬' },
-  { id: 'potato', libelle: 'Pomme de terre', icone: '🥔' },
-  { id: 'pepper', libelle: 'Poivron', icone: '🫑' },
-  { id: 'carrot', libelle: 'Carotte', icone: '🥕' },
-  { id: 'chili', libelle: 'Piment', icone: '🌶️' },
-  { id: 'bitter_eggplant', libelle: 'Jaxatu', icone: '🍆' },
-];
+function lireJson<T>(cle: string, defaut: T): T {
+  try {
+    const brut = globalThis.localStorage?.getItem(cle);
+    return brut ? (JSON.parse(brut) as T) : defaut;
+  } catch {
+    return defaut;
+  }
+}
+
+export const conversations = {
+  lister(): Conversation[] {
+    const liste = lireJson<Conversation[]>(CLE_LISTE, []);
+    const ancienne = globalThis.localStorage?.getItem(CLE_ANCIENNE);
+    if (!liste.length && ancienne) {
+      const { id: _id, ...reste } = profil.lire();
+      const c = { id: nouvelId(), titre: '', maj: Date.now(), profil: reste };
+      globalThis.localStorage?.setItem(CLE_MESSAGES + c.id, ancienne);
+      globalThis.localStorage?.removeItem(CLE_ANCIENNE);
+      conversations.enregistrer([c]);
+      return [c];
+    }
+    return liste;
+  },
+  enregistrer(liste: Conversation[]) {
+    globalThis.localStorage?.setItem(CLE_LISTE, JSON.stringify(liste));
+  },
+  messages<T>(id: string): T[] {
+    return lireJson<T[]>(CLE_MESSAGES + id, []);
+  },
+  ecrireMessages<T>(id: string, messages: T[]) {
+    globalThis.localStorage?.setItem(CLE_MESSAGES + id, JSON.stringify(messages.slice(-150)));
+  },
+  nouvelId,
+  /** Heure à laquelle l'agriculteur a quitté l'application (0 si inconnue). */
+  sortie(): number {
+    return Number(globalThis.localStorage?.getItem(CLE_SORTIE) ?? 0) || 0;
+  },
+  noterSortie() {
+    globalThis.localStorage?.setItem(CLE_SORTIE, String(Date.now()));
+  },
+};
+const CLE_SORTIE = 'terramind.sortie';

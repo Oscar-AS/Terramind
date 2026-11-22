@@ -27,10 +27,12 @@ import json
 import logging
 import os
 import re
+import threading
 import traceback
 import urllib.error
 import urllib.request
 import uuid
+from collections import deque
 from html import escape as _echapper
 from pathlib import Path
 
@@ -63,8 +65,9 @@ POSITION_TEST = {"nom": "Rufisque", "lat": 14.76, "lon": -17.21}
 AVEC_POSITION_TEST = os.environ.get("BOUTON_POSITION_TEST", "1") != "0"
 # Un bouton par ligne : le libellé reste lisible en entier sur un petit écran.
 CLAVIER = {
-    "keyboard": [[{"text": B_POSITION, "request_location": True}]]
-    + ([[{"text": B_POSITION_TEST}]] if AVEC_POSITION_TEST else [])
+    # Bouton test en tout premier (demande de Rama, 21 nov 2026) : les testeurs le voient tout de suite.
+    "keyboard": ([[{"text": B_POSITION_TEST}]] if AVEC_POSITION_TEST else [])
+    + [[{"text": B_POSITION, "request_location": True}]]
     + [[{"text": B_PHOTO}], [{"text": B_PLAN}], [{"text": B_ALERTES}], [{"text": B_QUESTION}]],
     # is_persistent : Telegram garde les boutons affichés au lieu de les replier derrière une icône
     # (Bot API 6.4) ; un agriculteur peu habitué aux écrans ne trouverait pas l'icône.
@@ -74,9 +77,9 @@ CLAVIER = {
 # Anciens libellés (claviers encore affichés sur les téléphones) : traités comme les nouveaux.
 # En wolof, beaucoup d'agriculteurs ne lisent pas le français : chaque bouton porte un numéro, que les
 # notes vocales citent (« appuie sur le 2 ») ; l'agriculteur peut réécouter la note autant qu'il veut.
-NUMEROS = {B_POSITION: 1, B_PHOTO: 2, B_PLAN: 3, B_ALERTES: 4, B_QUESTION: 5, B_POSITION_TEST: 6}
-# Rangés dans l'ordre des numéros (1 à 5, puis le bouton test 6), pour que « appuie sur le 2 » corresponde
-# aussi à la 2e ligne pour qui ne lit pas.
+NUMEROS = {B_POSITION_TEST: 0, B_POSITION: 1, B_PHOTO: 2, B_PLAN: 3, B_ALERTES: 4, B_QUESTION: 5}
+# Rangés dans l'ordre des numéros (le bouton test 0 en tête, puis 1 à 5), pour que « appuie sur le 2 »
+# corresponde aussi à la 2e ligne sous le bouton test pour qui ne lit pas.
 CLAVIER_WO = {
     "keyboard": sorted(
         (
@@ -586,13 +589,28 @@ def _vocal(chat: int, note: dict):
         )
         return
     except Exception as e:  # Octopus indisponible, plafond du jour atteint, fichier illisible
-        journal.info("note vocale non traitée : %s", type(e).__name__)
+        journal.warning("note vocale non traitée : %s (%s)", type(e).__name__, e)
         dire(chat, "vocal_indisponible")
         envoyer(
             chat,
             f"Je ne peux pas écouter les messages vocaux pour le moment. {ecrire}",
             reply_markup=CLAVIER,
         )
+        return
+    # Question de la démonstration reconnue : réponse préparée (sans Gemini ni voix Octopus en direct).
+    from ..modules import reponses_preparees
+
+    prete = reponses_preparees.trouver(compris)
+    if prete:
+        envoyer(chat, f"<i>J'ai compris ta question ainsi : « {escape(compris['francais'] or prete['question_fr'])} »</i>")
+        if reponses_preparees.adresse_voix(prete):
+            dire(chat, prete["cle"])  # en wolof seulement, comme les autres notes vocales
+        sources = " ; ".join(
+            _court(s["document"]) + (f", p. {s['page']}" if str(s["page"])[:1].isdigit() else "")
+            for s in [x for x in prete["sources"] if _court(x["document"])][:3]
+        )
+        memoire.ajouter_echange(ETATS.setdefault(chat, {}), prete["question_fr"], prete["texte_fr"])
+        envoyer(chat, f"{escape(prete['texte_fr'])}\n\n<i>Sources : {escape(sources)}</i>", reply_markup=CLAVIER)
         return
     if not compris["francais"]:
         dire(chat, "vocal_non_compris")
@@ -973,6 +991,37 @@ def traiter_sans_planter(maj: dict):
         _limiter_etats()
 
 
+# Un agriculteur à la fois, dans l'ordre d'arrivée : sans cela, un bouton touché pendant que le plan
+# s'envoie encore (plusieurs notes vocales en wolof, c'est long) faisait arriver sa réponse au milieu.
+# Les agriculteurs différents restent traités en parallèle.
+_FILES: dict[int, deque] = {}
+_VERROU_FILES = threading.Lock()
+
+
+def traiter_dans_l_ordre(maj: dict):
+    chat = _chat_de(maj)
+    if chat is None:
+        traiter_sans_planter(maj)
+        return
+    with _VERROU_FILES:
+        if chat in _FILES:  # un message de ce chat est déjà en cours : celui-ci attend son tour
+            _FILES[chat].append(maj)
+            return
+        _FILES[chat] = deque()
+    try:
+        while True:
+            traiter_sans_planter(maj)
+            with _VERROU_FILES:
+                if not _FILES[chat]:
+                    del _FILES[chat]
+                    return
+                maj = _FILES[chat].popleft()
+    except BaseException:
+        with _VERROU_FILES:
+            _FILES.pop(chat, None)
+        raise
+
+
 ETATS_MAX = 5000  # agriculteurs gardés en mémoire ; au-delà, on oublie les plus anciens
 
 
@@ -1002,5 +1051,5 @@ async def webhook(
     ):
         raise HTTPException(403, "secret invalide")
     # Réponse immédiate à Telegram ; le travail (sol, météo, photo) se fait ensuite.
-    taches.add_task(traiter_sans_planter, await request.json())
+    taches.add_task(traiter_dans_l_ordre, await request.json())
     return {"ok": True}

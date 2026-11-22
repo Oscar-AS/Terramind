@@ -38,6 +38,7 @@ export const anciens = {
 export const polices = {
   titre: 'BricolageGrotesque_800ExtraBold',
   titreMoyen: 'BricolageGrotesque_700Bold',
+  titreDemi: 'BricolageGrotesque_500Medium',
   texte: 'Figtree_500Medium',
   texteGras: 'Figtree_700Bold',
 } as const;

@@ -100,6 +100,12 @@ def synthetiser(texte_wo: str) -> bytes:
 
 def dire_en_wolof(texte_fr: str) -> bytes | None:
     """Audio wolof de la réponse, ou None (Octopus non configuré, plafond atteint, échec)."""
+    r = dire_en_wolof_detail(texte_fr)
+    return r[1] if r else None
+
+
+def dire_en_wolof_detail(texte_fr: str) -> tuple[str, bytes] | None:
+    """(texte wolof affichable, audio MP3), ou None. Utilisé par l'application, qui montre aussi le texte."""
     if not (config.OCTOPUS_API_KEY and config.OCTOPUS_PROJECT_ID) or not texte_fr.strip():
         return None
     if not COMPTEUR.prendre():
@@ -116,7 +122,7 @@ def dire_en_wolof(texte_fr: str) -> bytes | None:
         if pret.problemes:
             journal.info("réponse vocale wolof écartée : %s", "; ".join(pret.problemes))
             return None
-        return synthetiser(" ".join(pret.morceaux))
+        return wo, synthetiser(" ".join(pret.morceaux))
     except Exception as e:
         journal.warning("réponse vocale wolof impossible : %s", type(e).__name__)
         return None

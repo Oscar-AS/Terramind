@@ -79,6 +79,45 @@ class Telegram(unittest.TestCase):
         self.assertFalse(telegram.ETATS[7]["attend_date"])
 
 
+class Ordre(unittest.TestCase):
+    """Un bouton touché pendant que le plan s'envoie encore doit être traité après, pas au milieu."""
+
+    def test_meme_chat_dans_l_ordre_autres_chats_en_parallele(self):
+        import threading
+        import time
+
+        journal = []
+        lent_commence = threading.Event()
+
+        def faux_traiter(maj):
+            t = maj["message"]["text"]
+            journal.append(("debut", t))
+            if t == "plan":
+                lent_commence.set()
+                time.sleep(0.3)
+            journal.append(("fin", t))
+
+        with mock.patch.object(telegram, "traiter_sans_planter", side_effect=faux_traiter):
+            plan = threading.Thread(
+                target=telegram.traiter_dans_l_ordre,
+                args=({"message": {"chat": {"id": 7}, "text": "plan"}},),
+            )
+            plan.start()
+            lent_commence.wait(2)
+            # Même chat, pendant le plan : mis en file, rendu tout de suite.
+            telegram.traiter_dans_l_ordre({"message": {"chat": {"id": 7}, "text": "question"}})
+            # Autre chat : traité sans attendre.
+            telegram.traiter_dans_l_ordre({"message": {"chat": {"id": 8}, "text": "autre"}})
+            self.assertIn(("fin", "autre"), journal)
+            self.assertNotIn(("debut", "question"), journal)
+            plan.join(2)
+        self.assertEqual(
+            [e for e in journal if e[1] != "autre"],
+            [("debut", "plan"), ("fin", "plan"), ("debut", "question"), ("fin", "question")],
+        )
+        self.assertEqual(telegram._FILES, {})
+
+
 if __name__ == "__main__":
     unittest.main()
 
@@ -300,7 +339,8 @@ def test_mode_wolof_boutons_numerotes():
     with mock.patch.object(tg, "_appel") as appel:
         tg.envoyer(14, "texte", reply_markup=tg.CLAVIER)
     clavier = appel.call_args.kwargs["reply_markup"]
-    assert clavier is tg.CLAVIER_WO and clavier["keyboard"][1][0]["text"] == "2. " + tg.B_PHOTO
+    assert clavier is tg.CLAVIER_WO and clavier["keyboard"][0][0]["text"] == "0. " + tg.B_POSITION_TEST
+    assert clavier["keyboard"][2][0]["text"] == "2. " + tg.B_PHOTO
     # « 2. … » ou « 2 » tout court déclenchent la même action que le bouton texte
     for saisi in ("2. " + tg.B_PHOTO, "2"):
         with mock.patch.object(tg, "envoyer") as envoyer:
@@ -468,3 +508,44 @@ def test_date_inconnue_en_wolof():
         with mock.patch.object(tg, "envoyer"):
             tg.traiter({"message": {"chat": {"id": 20 + i}, "text": mot}})
         assert tg.ETATS[20 + i]["repiquage"] is None and not tg.ETATS[20 + i]["attend_date"], mot
+
+
+def test_reponse_preparee_seulement_pour_la_question_de_demo():
+    from engine.app.modules import reponses_preparees as rp
+
+    # La bonne question, en wolof (transcription) ou en français (traduction) : réponse préparée.
+    assert rp.trouver({"wolof": "Naka laa mënë moytu mildiyu ci sama tamaate ?", "francais": None})
+    assert rp.trouver({"wolof": "", "francais": "Comment éviter le mildiou sur ma tomate ?"})
+    # Une autre question (il manque une idée) : chemin habituel.
+    assert rp.trouver({"wolof": "mildiyu ci sama soble", "francais": "Le mildiou sur mon oignon ?"}) is None
+    assert rp.trouver({"wolof": "", "francais": "Quand planter la tomate ?"}) is None
+    assert rp.trouver({"wolof": "", "francais": "Comment soigner le mildiou de la tomate ?"}) is None
+
+
+def test_reponse_preparee_texte_sans_voix_non_validee():
+    from engine.app.modules import reponses_preparees as rp
+
+    prete = rp.trouver({"wolof": "", "francais": "Comment éviter le mildiou sur ma tomate ?"})
+    assert prete["texte_fr"] and prete["sources"]
+    assert rp.adresse_voix({**prete, "voix_validee": False}) is None
+    assert rp.adresse_voix({**prete, "voix_validee": True}) == "/audio/wo/" + prete["audio"]
+
+
+def test_vocal_telegram_question_de_demo_sans_gemini_ni_voix_en_direct():
+    tg = telegram
+    tg.ETATS.clear()
+    tg.ETATS[21] = {"langue": "wo"}
+    compris = {"wolof": "Naka laa mënë moytu mildiyu ci sama tamaate", "francais": None}
+    with (
+        mock.patch("engine.app.modules.ecoute.disponible", return_value=True),
+        mock.patch("engine.app.modules.ecoute.comprendre", return_value=compris),
+        mock.patch.object(tg, "_telecharger", return_value=b"ogg"),
+        mock.patch("engine.app.modules.rag.reponse.repondre") as repondre,
+        mock.patch("engine.app.modules.parole.dire_en_wolof") as voix_directe,
+        mock.patch.object(tg, "envoyer") as envoyer,
+        mock.patch.object(tg, "dire"),
+    ):
+        tg._vocal(21, {"file_id": "x", "duration": 4})
+    repondre.assert_not_called()
+    voix_directe.assert_not_called()
+    assert "mildiou" in envoyer.call_args.args[1].lower() and "Sources" in envoyer.call_args.args[1]

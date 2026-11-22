@@ -146,6 +146,65 @@ class Routes(unittest.TestCase):
         self.assertIn("Alternariose", corps["message"]["texte"])
         self.assertTrue(corps["sources"])
 
+    # Question vocale depuis l'application (/v1/chat/vocal) : Octopus et Gemini remplacés.
+    def _vocal(self, compris, voix=None, **champs):
+        from engine.app.modules import ecoute, parole
+
+        with mock.patch.object(ecoute, "disponible", return_value=True), mock.patch.object(
+            ecoute, "comprendre", return_value=compris
+        ), mock.patch.object(parole, "dire_en_wolof_detail", return_value=voix), mock.patch.dict(
+            "os.environ", {"GEMINI_API_KEY": ""}
+        ):
+            return self.c.post(
+                "/v1/chat/vocal",
+                data={**COMMUN, "langue": "wo", **champs},
+                files={"audio": ("note.m4a", b"\x00" * 2000, "audio/mp4")},
+            )
+
+    def test_vocal_question_de_demo_reponse_preparee(self):
+        compris = {"wolof": "Naka laa mënë moytu mildiyu ci sama tamaate", "francais": None}
+        r = self._vocal(compris, voix=None)
+        corps = r.json()
+        self.assertEqual(corps["statut"], "ok")
+        self.assertEqual(corps["donnees"]["mode"], "preparee")
+        self.assertIn("mildiou", corps["message"]["texte"].lower())
+        self.assertTrue(corps["sources"])
+
+    def test_vocal_reponse_dite_en_wolof(self):
+        # Pas la question de démonstration (il manque « tomate ») : chemin en direct, voix faite par Octopus.
+        compris = {"wolof": "naka laa mënë faj mildiyu", "francais": "Comment soigner le mildiou ?"}
+        r = self._vocal(compris, voix=("Wolof bi.", b"ID3mp3"))
+        corps = r.json()
+        self.assertEqual(corps["statut"], "ok")
+        self.assertEqual(corps["donnees"]["transcription"], compris)
+        self.assertTrue(corps["sources"])
+        voix = corps["donnees"]["voix"]
+        self.assertEqual(voix["texte_wo"], "Wolof bi.")
+        audio = self.c.get(voix["audio_url"])
+        self.assertEqual(audio.status_code, 200)
+        self.assertEqual(audio.content, b"ID3mp3")
+        self.assertEqual(self.c.get("/v1/voix/inconnu.mp3").status_code, 404)
+
+    def test_vocal_incompris(self):
+        r = self._vocal({"wolof": "hmm", "francais": None})
+        self.assertEqual(r.json()["statut"], "je_ne_sais_pas")
+        self.assertIn("pas bien compris", r.json()["message"]["texte"])
+
+    def test_vocal_trop_long(self):
+        r = self._vocal({"wolof": "", "francais": None}, duree="75")
+        self.assertEqual(r.status_code, 413)
+
+    def test_vocal_octopus_absent(self):
+        from engine.app.modules import ecoute
+
+        with mock.patch.object(ecoute, "disponible", return_value=False):
+            r = self.c.post(
+                "/v1/chat/vocal",
+                data={**COMMUN, "langue": "wo"},
+                files={"audio": ("note.m4a", b"\x00" * 10, "audio/mp4")},
+            )
+        self.assertEqual(r.status_code, 503)
+
     def test_plan_en_wolof(self):
         with mock.patch("engine.app.modules.planification.plan.sol", return_value=SOL):
             r = self.c.post(

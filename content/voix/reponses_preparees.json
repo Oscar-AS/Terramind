@@ -1,0 +1,34 @@
+{
+  "reponse_preparee_mildiou_tomate": {
+    "question_wo": "Naka laa mënë moytu mildiyu ci sama tamaate ?",
+    "question_fr": "Comment puis-je éviter le mildiou sur ma tomate ?",
+    "texte_fr": "Pour éviter que le mildiou ne revienne, espace bien tes plants et arrose directement au pied au lieu d'arroser les feuilles. Fais cet arrosage de préférence tôt le matin. Évite aussi de planter la tomate et la pomme de terre côte à côte. Enfin, change l'emplacement de tes cultures d'une saison à l'autre et choisis des variétés qui résistent mieux.",
+    "texte_wo": "Ngir bañ mildiyu dellu si, sédalal sa garab yi bu baax te génnal roos ci tànku garab yi fekk du ci xob yi. Defal roos bi ci suba ba mu leer. Moytul itam nga ji tamaate ak pombiteer di benn boonu. Ba ca mujj, soppi fu nga fay def sa mbay ci benn même saay ak saay, te tànn xeet yi gën a muñ.",
+    "sources": [
+      {
+        "document": "Direction de la Protection des Végétaux / PADEN, manuel des ravageurs et maladies des cultures maraîchères des Niayes (archive Wayback, source `paden` de scripts/donnees/telecharger_sources.py)",
+        "page": "88-91"
+      },
+      {
+        "document": "Ephytia (INRAE), Tomate, mildiou",
+        "page": "—"
+      },
+      {
+        "document": "Beniest J. et al., Guide pratique du maraîchage au Sénégal, ISRA / FAO, CDH Cambérène, 1987",
+        "page": "5, 140"
+      },
+      {
+        "document": "KCOA-Africa, Fiche technique : production biologique de la tomate au Sénégal, 2025",
+        "page": "3"
+      }
+    ],
+    "audio": "reponse_preparee_mildiou_tomate.mp3",
+    "points_a_ecouter": [
+      "mots français dans le texte wolof : du",
+      "mots que la voix déforme (contrôle aller-retour) : pombiteer"
+    ],
+    "voix_validee": true,
+    "prepare_le": "2026-11-21",
+    "validee_par": "Salam (locuteur), écoute du 21 nov 2026"
+  }
+}

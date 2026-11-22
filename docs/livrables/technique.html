@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>TerraMind · Document technique</title>
+<!-- Document technique du PAS Challenge 2026 (données, méthode, résultats). Export PDF : node docs/livrables/outils/exporter-pdf.mjs <html> <pdf>. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Work+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root { --foret:#1F4D3A; --feuille:#3F8F5F; --pousse:#DCEBD9; --sable:#F5EFE3; --sablef:#EADFC9; --carte:#FFFCF6; --encre:#1B2A22; --doux:#55645A; --soleil:#E3A72F; --soleilc:#FBEFCF; --terre:#B4532A; --tg:#229ED9; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #ccc; }
+  body { font: 400 9.7pt/1.45 'Work Sans', sans-serif; color: var(--encre); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; margin: 0 auto 8mm; background: white; position: relative; overflow: hidden; padding: 13mm 15mm 14mm; page-break-after: always; break-after: page; }
+  .page:last-child { page-break-after: auto; break-after: auto; margin-bottom: 0; }
+  @media print { html, body { background: white; } .page { margin: 0; } }
+  h1, h2, h3 { font-family: 'Outfit', sans-serif; letter-spacing: -0.02em; margin: 0; }
+  h2 { font-size: 15.5pt; color: var(--foret); display: flex; align-items: center; gap: 9px; margin: 0 0 7px; }
+  h2 .n { display: inline-grid; place-items: center; width: 25px; height: 25px; border-radius: 8px; background: var(--foret); color: var(--sable); font-size: 12pt; }
+  h3 { font-size: 11.5pt; color: var(--encre); margin: 0 0 3px; }
+  p { margin: 0 0 6px; }
+  ul { margin: 0; padding-left: 16px; } li { margin: 0 0 3px; }
+  b, strong { font-weight: 600; }
+  a { color: var(--foret); text-decoration: none; font-weight: 500; }
+  .doux { color: var(--doux); }
+  .petit { font-size: 8.6pt; line-height: 1.45; }
+  .pied { position: absolute; left: 15mm; right: 15mm; bottom: 7mm; display: flex; justify-content: space-between; font-size: 7.8pt; color: var(--doux); border-top: 1px solid var(--sablef); padding-top: 4px; }
+  .carte { background: var(--carte); border: 1px solid var(--sablef); border-radius: 12px; padding: 10px 12px; }
+  .grille2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grille3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .grille4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+  .pastille { display: inline-block; font-size: 7.8pt; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--feuille); background: var(--pousse); border-radius: 99px; padding: 2px 8px; }
+  .chiffre { font-family: 'Outfit', sans-serif; font-size: 18pt; font-weight: 700; color: var(--foret); line-height: 1; }
+  .source { font-size: 7.6pt; color: var(--doux); }
+  section { margin-bottom: 11px; }
+
+  /* Page 1 : en-tête */
+  .bandeau { background: var(--foret); color: var(--sable); margin: -13mm -15mm 9px; padding: 9mm 15mm 7mm; position: relative; }
+  .logo { display: flex; align-items: center; gap: 9px; font: 600 15pt 'Outfit', sans-serif; letter-spacing: -0.03em; }
+  .logo span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--sable); }
+  .bandeau h1 { font-size: 23pt; line-height: 1.05; margin: 10px 0 6px; max-width: 150mm; }
+  .bandeau .sous { color: #D5E2D9; font-size: 10pt; max-width: 140mm; margin: 0; }
+  .bandeau .concours { position: absolute; right: 15mm; top: 11mm; text-align: right; font-size: 8.4pt; color: #D5E2D9; }
+  .equipe-titre { margin-top: 11px; font-size: 8.4pt; font-weight: 500; color: #C9DACF; }
+  .equipe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; }
+  .membre { display: flex; align-items: center; gap: 9px; background: rgba(245,239,227,.10); border: 1px solid rgba(245,239,227,.22); border-radius: 11px; padding: 7px 9px; }
+  .membre .initiales { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--soleil); color: var(--foret); font: 700 10.5pt 'Outfit', sans-serif; }
+  .membre b { display: block; color: var(--sable); font: 600 9.6pt/1.2 'Outfit', sans-serif; }
+  .membre span { display: block; color: #C9DACF; font-size: 7.8pt; line-height: 1.3; margin-top: 1px; }
+  .essayer { background: var(--sable); border-radius: 14px; padding: 11px 13px; margin-bottom: 11px; }
+  .essayer h3 { font-size: 12.5pt; color: var(--foret); }
+  .qr { display: grid; grid-template-columns: 58px 1fr; gap: 9px; align-items: center; background: white; border-radius: 10px; padding: 8px; }
+  .qr img { width: 58px; height: 58px; }
+  .qr .petit { display: block; font-size: 8pt; line-height: 1.3; }
+  .qr b { display: block; font-family: 'Outfit', sans-serif; font-size: 10.5pt; }
+  .qr .lien { font-size: 7pt; color: var(--feuille); white-space: nowrap; }
+  .note-jury { margin-top: 8px; font-size: 8.8pt; color: var(--encre); background: var(--soleilc); border-radius: 9px; padding: 7px 10px; }
+
+  /* Captures */
+  .ecrans { display: grid; grid-template-columns: repeat(4, 33mm); justify-content: space-around; }
+  .ecran { text-align: center; font-size: 8pt; color: var(--doux); }
+  /* Proportions réelles d'un téléphone : écran 393 × 852 points (iPhone 16), coins arrondis à l'échelle */
+  .ecran img { width: 100%; border-radius: 17px; border: 3.5px solid #1b1b1b; display: block; margin-bottom: 3px; aspect-ratio: 393/852; object-fit: cover; object-position: top; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+
+  /* Architecture */
+  .archi { display: grid; grid-template-columns: 1fr 26px 1.15fr 26px 1.35fr; align-items: stretch; gap: 0; }
+  .colonne { display: flex; flex-direction: column; gap: 7px; }
+  .colonne .titre { font-size: 7.8pt; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--doux); margin-bottom: 1px; }
+  .boite { border-radius: 10px; padding: 7px 9px; font-size: 8.8pt; line-height: 1.35; border: 1px solid var(--sablef); background: var(--carte); }
+  .boite b { display: block; font-size: 9.6pt; }
+  .boite.moteur { background: var(--foret); color: var(--sable); border: 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .boite.moteur b { font-size: 11pt; }
+  .boite.moteur .explique { display: block; font-size: 8.6pt; color: #D5E2D9; margin: 4px 0 2px; }
+  .boite.moteur .demande { display: block; font-size: 8.6pt; line-height: 1.3; margin-top: 5px; padding-left: 9px; border-left: 2px solid rgba(213,226,217,.45); }
+  .boite.moteur code { font-size: 7pt; color: #A9C2B2; display: block; margin-top: 1px; }
+  .boite.octopus { background: var(--soleilc); border-color: #F1D9A0; }
+  .fleche { display: grid; place-items: center; color: var(--feuille); font-size: 15pt; }
+
+  /* Guide de test */
+  .parcours { border-radius: 12px; border: 1px solid var(--sablef); overflow: hidden; margin-bottom: 9px; }
+  .parcours .tete { display: flex; align-items: center; gap: 10px; padding: 7px 11px; background: var(--foret); color: var(--sable); }
+  .parcours .tete.tg { background: var(--tg); }
+  .parcours .tete.apk { background: #7a5a1e; }
+  .parcours .tete h3 { color: inherit; font-size: 11.5pt; margin: 0; }
+  .parcours .tete .duree { margin-left: auto; font-size: 8.2pt; opacity: .9; }
+  .parcours .tete img { width: 40px; height: 40px; background: white; border-radius: 6px; padding: 3px; }
+  table.etapes { width: 100%; border-collapse: collapse; font-size: 8.8pt; line-height: 1.38; }
+  table.etapes td { padding: 4px 9px; vertical-align: top; border-top: 1px solid #EFE8DA; }
+  table.etapes tr:first-child td { border-top: 0; }
+  table.etapes td.num { width: 22px; font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--feuille); }
+  table.etapes td.attendu { width: 44%; color: var(--doux); background: #FBF8F1; }
+  .bouton { display: inline-block; font-weight: 600; color: var(--foret); background: var(--pousse); border-radius: 5px; padding: 0 5px; white-space: nowrap; }
+  .tg .bouton, .bouton.tg { background: #DDF0FA; color: #0f5f86; }
+  .copier { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 8.4pt; background: var(--sable); border: 1px dashed #C9B98F; border-radius: 5px; padding: 0 5px; }
+  .attente { background: #FFF0F0; border: 2px dashed var(--terre); color: var(--terre); font-weight: 600; border-radius: 6px; padding: 3px 7px; display: block; margin-top: 3px; }
+
+  .climat { background: linear-gradient(135deg, #E9F3E7, #F7F1E2); border: 1px solid #CFE2CB; border-radius: 14px; padding: 10px 13px; margin: 10px 0 0; }
+  .climat h3 { font-size: 12.5pt; color: var(--foret); margin-bottom: 4px; }
+  .climat .grille2 { gap: 12px; }
+  .climat h4 { font: 600 9.6pt 'Outfit', sans-serif; margin: 2px 0 3px; color: var(--feuille); text-transform: uppercase; letter-spacing: .04em; }
+  /* Résultats */
+  table.resultats { width: 100%; border-collapse: collapse; font-size: 8.9pt; }
+  table.resultats th { text-align: left; font-size: 7.8pt; text-transform: uppercase; letter-spacing: .05em; color: var(--doux); font-weight: 600; padding: 3px 7px; border-bottom: 2px solid var(--sablef); }
+  table.resultats td { padding: 5px 7px; border-bottom: 1px solid #EFE8DA; vertical-align: top; }
+  table.resultats td:first-child { font-weight: 600; white-space: nowrap; }
+  .liens { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
+  .liens td { padding: 4px 7px; border-bottom: 1px solid #EFE8DA; vertical-align: top; }
+  .liens td:first-child { width: 33%; font-weight: 600; }
+  .liens a { word-break: break-all; }
+  /* Document technique : ajouts */
+  .sommaire { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+  .sommaire .carte b { font-family: 'Outfit', sans-serif; font-size: 11pt; color: var(--foret); display: block; margin-bottom: 2px; }
+  .barre { display: grid; grid-template-columns: 52mm 1fr 34px; align-items: center; gap: 7px; font-size: 8.5pt; margin: 2px 0; }
+  .barre .fond { background: #EFE8DA; border-radius: 4px; height: 9px; overflow: hidden; }
+  .barre .plein { background: var(--feuille); height: 100%; border-radius: 4px; }
+  .barre .plein.faible { background: var(--terre); }
+  .barre .plein.moyen { background: var(--soleil); }
+  .barre .v { font-weight: 600; text-align: right; }
+  .encadre { background: var(--soleilc); border-radius: 10px; padding: 7px 11px; font-size: 8.9pt; margin: 6px 0 9px; }
+  .encadre.vert { background: #E9F3E7; }
+  .etape { display: grid; grid-template-columns: 22px 1fr; gap: 7px; margin-bottom: 5px; }
+  .etape .n { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; background: var(--pousse); color: var(--foret); font: 600 9pt 'Outfit', sans-serif; }
+  code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 8pt; background: var(--sable); border-radius: 4px; padding: 0 3px; }
+  .boite.moteur code { background: transparent; padding: 0; }
+  .ecrans3 { display: grid; grid-template-columns: repeat(4, 26mm); justify-content: space-around; margin-top: 4px; }
+  /* ====== Refonte du design (19 nov) ====== */
+  body { font-size: 9.3pt; line-height: 1.46; }
+  .page { padding: 13mm 15mm 14mm; }
+  h2 { font-size: 16pt; gap: 10px; padding-bottom: 5px; border-bottom: 1.5px solid var(--pousse); margin: 0 0 8px; }
+  h2 .n { width: auto; height: auto; background: none; color: var(--soleil); font-size: 16pt; font-weight: 700; border-radius: 0; letter-spacing: -0.02em; }
+  h3 { color: var(--foret); }
+  .carte { background: #F8F4EC; border: 0; border-radius: 12px; }
+  .grille3 > .carte:has(.chiffre) { background: white; box-shadow: 0 1px 0 rgba(31,77,58,.04), 0 6px 16px rgba(31,77,58,.07); border-top: 3px solid var(--soleil); }
+  .chiffre { font-size: 22pt; letter-spacing: -0.03em; }
+  .ic { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: var(--pousse); color: var(--foret); margin-right: 7px; vertical-align: -6px; font-style: normal; flex: none; }
+  .ic svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .carte h3 { display: flex; align-items: center; margin-bottom: 4px; }
+  .boite { background: white; border: 0; box-shadow: 0 1px 0 rgba(31,77,58,.05), 0 4px 12px rgba(31,77,58,.07); }
+  .boite b { display: flex; align-items: center; }
+  .boite b .ic { width: 18px; height: 18px; border-radius: 5px; margin-right: 6px; vertical-align: 0; }
+  .boite b .ic svg { width: 12px; height: 12px; }
+  .boite.octopus { background: var(--soleilc); box-shadow: none; }
+  .boite.octopus .ic { background: #F3D58E; }
+  .boite.moteur { box-shadow: 0 8px 20px rgba(31,77,58,.22); }
+  .boite.moteur code { background: transparent; padding: 0; }
+  .fleche { color: var(--soleil); }
+  table.resultats th { color: var(--feuille); border-bottom: 1.5px solid var(--pousse); }
+  table.resultats td { border-bottom: 0; }
+  table.resultats tr:nth-child(even) td { background: #FAF7F0; }
+  table.resultats td:first-child { color: var(--foret); border-radius: 6px 0 0 6px; }
+  table.resultats td:last-child { border-radius: 0 6px 6px 0; }
+  table.resultats td:first-child .ic { width: 18px; height: 18px; border-radius: 5px; margin-right: 6px; vertical-align: -4px; }
+  table.resultats td:first-child .ic svg { width: 11px; height: 11px; }
+  .liens td { border-bottom: 1px dashed #E8DFCB; }
+  .liens td:first-child { color: var(--foret); }
+  .essayer { background: linear-gradient(180deg, #F5EFE3, #F1E9D8); }
+  .qr { box-shadow: 0 4px 12px rgba(31,77,58,.08); }
+  .aide .ic { width: 18px; height: 18px; border-radius: 5px; margin-right: 5px; vertical-align: -4px; background: white; }
+  .aide .ic svg { width: 11px; height: 11px; }
+  .climat { border: 0; }
+  .climat h3 .ic { background: white; }
+  .parcours { border: 0; box-shadow: 0 1px 0 rgba(31,77,58,.05), 0 6px 16px rgba(31,77,58,.08); }
+  .parcours .tete, .parcours .tete.tg, .parcours .tete.apk { background: var(--foret); }
+  .parcours .tete.tg { background: #2A6049; }
+  .parcours .tete.apk { background: #3A6E52; }
+  .parcours .tete .duree { background: rgba(245,239,227,.16); border-radius: 99px; padding: 2px 9px; opacity: 1; }
+  table.etapes td.num { color: var(--soleil); font-size: 10pt; }
+  table.etapes td.attendu { background: #F8F4EC; }
+  .bouton { background: var(--pousse); color: var(--foret); border-radius: 99px; padding: 0 7px; }
+  .parcours.tg .bouton { background: var(--pousse); color: var(--foret); }
+  .accent-terre { border-left: 3px solid var(--terre); }
+  .accent-vert { border-left: 3px solid var(--feuille); }
+  .pied { border-top: 0; color: #8A968D; }
+  .pied span:first-child::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; vertical-align: -1px; background: var(--feuille); border-radius: 9px 0 9px 0; }
+  .encadre { background: var(--soleilc); }
+  .encadre.vert { background: #E9F3E7; border-left: 3px solid var(--feuille); }
+  .encadre.depot { margin: 10px 0 0; padding: 6px 11px; display: flex; align-items: center; gap: 9px; border-left: 3px solid var(--soleil); }
+  .encadre.depot .ic-code { width: 18px; height: 18px; flex: none; display: inline-grid; place-items: center; }
+  .encadre.depot .ic-code svg { width: 17px; height: 17px; fill: none; stroke: #B7791F; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .etape .n { background: var(--pousse); color: var(--foret); border-radius: 99px; }
+  .barre .fond { background: #EFE8DA; }
+  .sommaire .carte { background: white; box-shadow: 0 1px 0 rgba(31,77,58,.04), 0 6px 16px rgba(31,77,58,.07); border-top: 3px solid var(--soleil); }
+  .grille4 > .carte { background: white; box-shadow: 0 1px 0 rgba(31,77,58,.04), 0 6px 16px rgba(31,77,58,.07); border-top: 3px solid var(--soleil); }
+</style>
+</head>
+<body>
+
+<!-- ===================== PAGE 1 ===================== -->
+<div class="page">
+  <div class="bandeau">
+    <div class="logo"><span><svg width="16" height="16" viewBox="0 0 32 32"><path d="M6 27c0-12 7-19 20-21 0 13-7 20-20 21z" fill="#1F4D3A"/></svg></span>terramind</div>
+    <div class="concours">PAS Challenge 2026 · SALTIS<br>Document technique</div>
+    <h1>Données, méthode et résultats</h1>
+    <p class="sous">Ce document explique d'où viennent les données de TerraMind, comment chaque brique a été construite, et ce qu'elle vaut vraiment, chiffres à l'appui, limites comprises. Tout ce qui est décrit ici tourne en ligne et peut être vérifié dans le code.</p>
+    <div class="equipe-titre">L'équipe étudie à l'ENSAE Dakar (École nationale de la statistique et de l'analyse économique)</div>
+    <div class="equipe">
+      <div class="membre"><span class="initiales">AK</span><div><b>Alioune Abdou Salam Kane</b><span>Chef de projet, responsable du moteur, du bot Telegram et de la conception de l'application mobile</span></div></div>
+      <div class="membre"><span class="initiales">JK</span><div><b>Judicaël Oscar Kafando</b><span>Responsable de la collecte des données et de l'entraînement des modèles</span></div></div>
+      <div class="membre"><span class="initiales">NF</span><div><b>Ndeye Ramatoulaye Ndoye Fall</b><span>Responsable du contenu agricole, du wolof et du pitch</span></div></div>
+    </div>
+  </div>
+
+  <div class="encadre depot"><i class="ic-code"><svg viewBox="0 0 24 24"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/></svg></i><span>Tout le code de TerraMind est public. Pour le consulter, cliquez sur ce lien&nbsp;:<a href="https://github.com/Oscar-AS/Terramind" style="display:block;margin-top:2px;font-size:9.6pt"><b>github.com/Oscar-AS/Terramind</b></a></span></div>
+
+  <section>
+    <h2><span class="n">◆</span>TerraMind en bref</h2>
+    <p>TerraMind est un conseiller agricole pour les petits maraîchers des Niayes (Sénégal). Il répond à trois questions : <b>que planter</b> sur mon sol ce mois-ci, <b>quel risque</b> la météo annonce cette semaine, et <b>quelle est cette maladie</b> sur ma photo. Il répond aussi aux questions libres. L'agriculteur l'utilise sur son téléphone, par le <b>bot Telegram</b> ou l'<b>application Android</b>, en français (texte) ou en wolof (notes vocales).</p>
+    <div class="grille4" style="margin-top:8px">
+      <div class="carte"><div class="chiffre">91,7 %</div><span class="petit">de bons diagnostics sur 1 058 photos de terrain africaines jamais vues (TOM2024)</span></div>
+      <div class="carte"><div class="chiffre">23</div><span class="petit">fiches agricoles écrites à partir de 27 documents publics (ISRA, PADEN, DPV, FAO…)</span></div>
+      <div class="carte"><div class="chiffre">76</div><span class="petit">phrases wolof relues par un locuteur, dites par la voix d'Octopus</span></div>
+      <div class="carte"><div class="chiffre">88</div><span class="petit">tests automatiques du moteur, tous réussis (19 nov 2026)</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">◆</span>Vérifier par vous-même</h2>
+    <table class="liens">
+      <tr><td>L'application en ligne</td><td><a href="https://terramind-afrique.vercel.app">terramind-afrique.vercel.app</a> · <b>aucun compte ni identifiant</b> : un bouton « position test » remplace le GPS</td></tr>
+      <tr><td>Le bot Telegram</td><td><a href="https://t.me/TerraMindAfriqueBot">t.me/TerraMindAfriqueBot</a> · il faut seulement un compte Telegram personnel</td></tr>
+      <tr><td>Photos d'essai</td><td><a href="https://terramind-sigma.vercel.app/essai">terramind-sigma.vercel.app/essai</a> · 3 photos du jeu de test TOM2024 (CC BY 4.0)</td></tr>
+      <tr><td>Le moteur, en direct</td><td><a href="https://terramind-moteur.onrender.com/sante">terramind-moteur.onrender.com/sante</a> · hébergement gratuit : le premier appel peut prendre 30 à 50 s (réveil du serveur)</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="n">◆</span>Plan du document</h2>
+    <div class="sommaire">
+      <div class="carte"><b>1. Données</b><span class="petit">Images, sol, météo, documents agricoles, voix. Volume, nettoyage, qualité, vie privée. <span class="doux">Pages 3 et 4</span></span></div>
+      <div class="carte"><b>2. Méthode</b><span class="petit">Les quatre briques, le wolof avec Octopus, et pourquoi chaque choix. <span class="doux">Pages 5 et 6</span></span></div>
+      <div class="carte"><b>3. Résultats</b><span class="petit">Chiffres, tableaux, captures, limites et prochaines étapes. <span class="doux">Pages 7 à 9</span></span></div>
+    </div>
+    <p class="petit doux" style="margin-top:7px">L'architecture d'ensemble est en page 2. Les mots techniques sont expliqués la première fois qu'ils apparaissent.</p>
+  </section>
+  <div class="pied"><span>TerraMind · PAS Challenge 2026 · Document technique</span><span>1 / 9</span></div>
+</div>
+
+<!-- ===================== PAGE 2 ===================== -->
+<div class="page">
+  <section>
+    <h2><span class="n">◆</span>Architecture : un moteur, deux façades</h2>
+    <p>L'application et le bot ne contiennent <b>aucune logique agricole</b>. Ils envoient la demande à un seul <b>moteur</b> (un programme Python sur un serveur), qui interroge les sources et renvoie la réponse. C'est ce qui nous a permis de passer de WhatsApp à Telegram en quelques jours quand Meta a bloqué notre compte (décision D12).</p>
+    <div class="archi" style="margin-top:8px">
+      <div class="colonne">
+        <div class="titre">Ce que voit l'agriculteur</div>
+        <div class="boite"><b>Bot Telegram</b>Texte, photo, position, notes vocales</div>
+        <div class="boite"><b>Application Android</b>Expo / React Native (APK)</div>
+        <div class="boite"><b>Application web</b>La même, dans le navigateur (pour le jury)</div>
+      </div>
+      <div class="fleche">→</div>
+      <div class="colonne">
+        <div class="titre">Le moteur (Render)</div>
+        <div class="boite moteur"><b>FastAPI · Python</b>
+          <span class="explique">Il reçoit 5 sortes de demandes et renvoie la réponse&nbsp;:</span>
+          <span class="demande">«&nbsp;Que planter dans mon champ&nbsp;?&nbsp;» <code>/v1/plan</code></span>
+          <span class="demande">«&nbsp;Quels risques pour mes plantes cette semaine&nbsp;?&nbsp;» <code>/v1/alert</code></span>
+          <span class="demande">Une photo&nbsp;: «&nbsp;Ma plante est&#8209;elle malade&nbsp;?&nbsp;» <code>/v1/diagnose</code></span>
+          <span class="demande">Une question libre, écrite ou vocale <code>/v1/chat</code></span>
+          <span class="demande">Les messages du bot Telegram <code>/telegram</code></span></div>
+      </div>
+      <div class="fleche">→</div>
+      <div class="colonne">
+        <div class="titre">Sources et services</div>
+        <div class="boite"><b>iSDAsoil</b>Sol au point du champ, pixels de 30 m</div>
+        <div class="boite"><b>NASA POWER</b>Météo heure par heure</div>
+        <div class="boite"><b>MobileNetV3 (ONNX)</b>Le modèle de diagnostic, 17 Mo</div>
+        <div class="boite"><b>23 fiches + Gemini (RAG)</b>Réponses rédigées uniquement à partir des fiches</div>
+        <div class="boite octopus"><b>Octopus (outil du concours)</b>Voix wolof et reconnaissance de la parole wolof</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">◆</span>Les outils utilisés</h2>
+    <table class="resultats">
+      <tr><th>Partie</th><th>Outil</th><th>Pourquoi ce choix</th></tr>
+      <tr><td>Moteur</td><td>Python, FastAPI, Docker</td><td>Une seule base de code pour toutes les façades ; l'image Docker est publiée sur ghcr.io et tourne sur Render (offre gratuite, 512 Mo de mémoire).</td></tr>
+      <tr><td>Diagnostic</td><td>PyTorch (entraînement), ONNX Runtime (en ligne)</td><td>ONNX Runtime fait tourner le modèle sans PyTorch : image plus légère, 15 ms par photo sur un cœur de processeur.</td></tr>
+      <tr><td>Voix wolof</td><td><b>Octopus</b> : synthèse vocale (TTS) et reconnaissance de la parole (ASR) wolof</td><td>Plateforme fournie par le concours ; elle parle et comprend le wolof sans que nous ayons à héberger un modèle vocal de plusieurs Go.</td></tr>
+      <tr><td>Rédaction</td><td>Gemini <code>gemini-3.5-flash-lite</code></td><td>Le plus rapide et le moins cher ; son rôle se limite à reformuler les extraits de fiches et à traduire.</td></tr>
+      <tr><td>Mémoire du bot</td><td>Supabase (PostgreSQL)</td><td>Render efface tout à chaque redémarrage ; la conversation doit survivre.</td></tr>
+      <tr><td>Application</td><td>Expo (React Native), EAS, Vercel</td><td>Un seul code pour Android et le web ; APK compilé sur EAS, version web publiée sur Vercel.</td></tr>
+      <tr><td>Qualité</td><td>pytest, GitHub Actions, gitleaks</td><td>88 tests du moteur ; contrôle de tout l'historique Git avant de rendre le dépôt public (aucun secret trouvé).</td></tr>
+    </table>
+  </section>
+
+  <div class="encadre vert"><b>Pour le jury.</b> Aucun compte de démonstration n'est nécessaire. L'application web s'ouvre sans identifiant ; le bouton « position test » place le champ à Rufisque. Le bot demande seulement un compte Telegram. Les clés des services (Octopus, Gemini, Supabase, Telegram) restent côté serveur et ne sont jamais dans le dépôt.</div>
+  <div class="pied"><span>TerraMind · PAS Challenge 2026 · Document technique</span><span>2 / 9</span></div>
+</div>
+
+<!-- ===================== PAGE 3 ===================== -->
+<div class="page">
+  <section>
+    <h2><span class="n">01</span>Données : sources, nature et volume</h2>
+    <p>Règle de l'équipe (décision D6) : <b>aucune donnée inventée</b>. Chaque jeu est public, sa licence est vérifiée, et sa provenance est notée dans <code>data/README.md</code>. Les images restent hors de Git ; un script les retélécharge et vérifie leur empreinte.</p>
+    <table class="resultats" style="margin-top:6px">
+      <tr><th>Source</th><th>Nature</th><th>Volume utilisé</th><th>Licence · usage</th></tr>
+      <tr><td>TOM2024</td><td>Photos de terrain, Burkina Faso : tomate, oignon (feuilles, fruits, plantes entières)</td><td>12 082 images, 24 classes ; tomate et oignon gardés</td><td>CC BY 4.0 · entraînement et test du diagnostic</td></tr>
+      <tr><td>PlantVillage</td><td>Feuilles photographiées en laboratoire, fond uni</td><td>Plafonné à 600 images par classe</td><td>CC BY-SA · entraînement</td></tr>
+      <tr><td>PlantDoc</td><td>Photos du web, fonds variés, plusieurs feuilles</td><td>Entraînement + 102 photos de test</td><td>CC BY 4.0 · entraînement, test « difficile »</td></tr>
+      <tr><td>CCMT</td><td>Photos du Ghana, 400 × 400 px</td><td>25 220 images, 24 071 après nettoyage</td><td>CC BY 4.0 · essayé (v2), <b>non retenu</b></td></tr>
+      <tr><td>iSDAsoil</td><td>Cartes du sol de l'Afrique, pixels de 30 m, 0 à 20 cm</td><td>Lu à la demande, au point du champ</td><td>CC BY 4.0 · que planter</td></tr>
+      <tr><td>NASA POWER</td><td>Météo heure par heure (température, humidité)</td><td>7 derniers jours ; 2020-2025 pour le test des règles</td><td>Publique · alertes</td></tr>
+      <tr><td>Documents agricoles</td><td>Guide ISRA/FAO 1987, fiches PADEN, manuel DPV, livrets français-wolof, articles</td><td>27 documents → 23 fiches</td><td>Cités page par page · réponses</td></tr>
+      <tr><td>Statistiques</td><td>ANSD (RGPH-5), DAPSA (enquêtes agricoles 2020-2023), recensement des Niayes 2012</td><td>11 tableaux extraits</td><td>Publiques · contexte et choix des cultures</td></tr>
+      <tr><td>Voix wolof</td><td>Phrases du bot traduites et relues ; 3 enregistrements d'un locuteur de l'équipe</td><td>76 phrases, 76 notes vocales</td><td>Produites par l'équipe · bot et application</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="n">01</span>Préparation des images du diagnostic</h2>
+    <div class="etape"><span class="n">1</span><div><b>Choix des classes.</b> On garde les cultures des Niayes présentes dans les jeux (tomate, oignon, pomme de terre, poivron) et les classes d'au moins 50 images (décision D8). Résultat : <b>26 classes</b>, dont 21 problèmes (maladies, ravageurs, accidents) et 5 « sain ».</div></div>
+    <div class="etape"><span class="n">2</span><div><b>Équilibre labo / terrain.</b> PlantVillage est plafonné à 600 images par classe, pour que le modèle n'apprenne pas surtout des photos de laboratoire. Total : <b>14 074 images d'entraînement</b>.</div></div>
+    <div class="etape"><span class="n">3</span><div><b>Découpage sans fuite.</b> Chaque image est rangée en entraînement, validation ou test selon son empreinte (hachage du fichier) : deux copies d'une même photo tombent toujours du même côté. Validation de terrain : 1 291 photos (15 % de TOM2024 + 20 % de PlantDoc). Test : 1 058 photos TOM2024 et 102 PlantDoc, <b>jamais vues</b> à l'entraînement.</div></div>
+    <div class="etape"><span class="n">4</span><div><b>Mise au format.</b> Images ramenées à 224 × 224 px ; à l'entraînement, recadrages serrés, flou et effacements aléatoires, pour ressembler aux photos de téléphone.</div></div>
+  </section>
+  <div class="pied"><span>TerraMind · PAS Challenge 2026 · Document technique</span><span>3 / 9</span></div>
+</div>
+
+<!-- ===================== PAGE 4 ===================== -->
+<div class="page">
+  <section>
+    <h2><span class="n">01</span>Qualité des données : ce que nous avons contrôlé</h2>
+    <table class="resultats">
+      <tr><th>Contrôle</th><th>Ce que nous avons trouvé et fait</th></tr>
+      <tr><td>Images illisibles</td><td>Les 25 220 images CCMT ouvertes une à une ; 200 images TOM2024 contrôlées : aucune illisible.</td></tr>
+      <tr><td>Étiquettes douteuses</td><td>CCMT : « leaf blight » et « leaf curl » de la tomate ne disent pas de quelle maladie il s'agit ; exclus faute de source (décision D14).</td></tr>
+      <tr><td>Feuilles ou fruits ?</td><td>Toutes les images tomate de TOM2024 regardées par classe : le mildiou y est presque toujours sur <b>fruit</b>, alors que PlantVillage et PlantDoc ne montrent que des feuilles. Consigne photo adaptée : « montre ce qui t'inquiète ».</td></tr>
+      <tr><td>Biais de source</td><td>Quand une classe ne vient que d'un jeu, le modèle peut reconnaître le style des photos au lieu de la maladie. Vérifié avec CCMT (v2) : 98,7 % sur son propre test, mais chute sur PlantDoc. D'où des résultats mesurés <b>source par source</b>.</td></tr>
+      <tr><td>Sol</td><td>Un pixel de 30 m peut tomber sur une piste ou une mare : on prend la moyenne de 5 × 5 pixels (environ 150 m). Contrôle : 59 à 83 % de sable mesurés dans les Niayes, cohérent avec les études publiées.</td></tr>
+      <tr><td>Météo</td><td>NASA POWER publie avec 2 jours de retard (mesuré le 13 nov) : on garde un jour de marge et on rejette les journées de moins de 20 heures.</td></tr>
+      <tr><td>Fiches</td><td><b>3 vérifications indépendantes</b>, phrase par phrase, contre les documents sources : environ 320 affirmations contrôlées, <b>51 corrigées</b>. Un test automatique vérifie qu'aucune fiche ne nomme de produit ni de dose.</td></tr>
+      <tr><td>Wolof</td><td>Chaque phrase traduite par 3 systèmes (Gemini, NLLB-200, Teranga), puis <b>relue par un locuteur</b>. Aucune note vocale n'est produite pour une phrase non relue.</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="n">01</span>Vie privée et données personnelles</h2>
+    <p>Nous appliquons la minimisation des données, principe du RGPD et de la loi sénégalaise n° 2008-12 sur les données personnelles : <b>ne garder que le strict nécessaire, le moins longtemps possible</b>.</p>
+    <div class="grille2">
+      <div class="carte"><h3>Ce qui est gardé</h3><ul class="petit">
+        <li><b>Position arrondie à 0,01°</b> (environ 1 km) : on ne localise jamais la parcelle.</li>
+        <li>Langue, culture déclarée, date de plantation, 3 derniers échanges (pour suivre la conversation).</li>
+        <li>Rangé sous une <b>empreinte SHA-256 salée</b> du numéro de conversation : le numéro Telegram n'est jamais stocké.</li>
+        <li>La commande <code>/oublier</code> efface tout.</li></ul></div>
+      <div class="carte"><h3>Ce qui n'est jamais gardé</h3><ul class="petit">
+        <li>Les <b>photos</b> envoyées : analysées en mémoire, puis oubliées.</li>
+        <li>Les <b>notes vocales</b> et leur transcription : les journaux ne gardent que des durées.</li>
+        <li>Le nom, le numéro de téléphone, la photo de profil.</li>
+        <li>Gemini ne reçoit que la question et des extraits de fiches, rien sur la personne.</li></ul></div>
+    </div>
+    <p class="petit doux" style="margin-top:7px">Aucune photo ni position d'agriculteur n'a été collectée pour l'entraînement : toutes les images viennent de jeux publics. Avant de rendre le dépôt public, tout l'historique Git (158 commits) a été passé au détecteur de secrets gitleaks et relu : aucune clé, aucun numéro, aucune donnée personnelle. Les captures d'écran du bot ont été vérifiées une à une.</p>
+  </section>
+  <div class="pied"><span>TerraMind · PAS Challenge 2026 · Document technique</span><span>4 / 9</span></div>
+</div>
+
+<!-- ===================== PAGE 5 ===================== -->
+<div class="page">
+  <section>
+    <h2><span class="n">02</span>Méthode : quatre briques, une règle commune</h2>
+    <p>Règle commune : <b>chaque conseil vient d'une source citée</b>. Quand TerraMind n'a pas de source ou n'est pas sûr, il le dit, et il ne donne <b>jamais de produit ni de dose</b> : il renvoie vers un agent agricole. Chaque nombre utilisé pour décider est justifié dans <code>docs/seuils-et-parametres.md</code>.</p>
+  </section>
+
+  <section>
+    <h3>Que planter ? <span class="pastille">/v1/plan</span></h3>
+    <div class="etape"><span class="n">1</span><div>Le moteur lit le sol au point du champ dans iSDAsoil (sable, argile, pH), en ne téléchargeant que le morceau de carte utile.</div></div>
+    <div class="etape"><span class="n">2</span><div>Il demande ce qu'aucune carte ne sait : l'eau du puits est-elle salée ? le champ est-il en bas-fond ?</div></div>
+    <div class="etape"><span class="n">3</span><div>Il croise avec les règles du guide ISRA de 1987 (périodes de semis, pH, tolérance au sel, sols lourds au-delà de 35 % d'argile) et classe <b>8 cultures</b> : tomate, pomme de terre, oignon, chou, poivron, carotte, piment, jaxatu.</div></div>
+    <p class="petit doux"><b>Pourquoi des règles et pas un modèle appris ?</b> Il n'existe aucune donnée ouverte de rendement par parcelle au Sénégal. Une règle publiée est vérifiable ; un modèle appris sur rien ne l'est pas.</p>
+  </section>
+
+  <section>
+    <h3>Quel risque cette semaine ? <span class="pastille">/v1/alert</span></h3>
+    <p>Sur les 7 derniers jours de météo horaire, le moteur applique des modèles publiés, choisis pour leur usage en conseil agricole :</p>
+    <ul class="petit">
+      <li><b>Mildiou</b> : critères Hutton (Tmin ≥ 10 °C, humidité ≥ 90 % pendant 6 h, 2 jours de suite), avec le plafond de 26,6 °C du modèle de Wallin, sinon il sonnerait tout l'hivernage.</li>
+      <li><b>Alternariose</b> : TOMCAST (Madden et al. 1978), alerte à 15 points, le bas de la fourchette publiée.</li>
+      <li><b>Mineuse de la tomate et teigne du chou</b> : degrés-jours depuis le repiquage ; alerte à partir de la 3<sup>e</sup> génération.</li>
+    </ul>
+    <p class="petit doux"><b>Pourquoi ?</b> Ces règles sont publiques et expliquables. Nous les avons rejouées sur 2020-2025 (§ 3) ; d'où deux garde-fous : pas d'alerte sans culture déclarée, et un calcul par point (Rufisque, sur la côte, se comporte autrement que l'intérieur).</p>
+  </section>
+
+  <section>
+    <h3>Quelle est cette maladie ? <span class="pastille">/v1/diagnose</span></h3>
+    <div class="etape"><span class="n">1</span><div><b>Modèle</b> : MobileNetV3-Large pré-entraîné sur ImageNet, réentraîné sur nos 26 classes (10 époques, graine 2026, échantillonnage équilibré entre classes).</div></div>
+    <div class="etape"><span class="n">2</span><div><b>Calibration</b> : les « confiances » d'un réseau sont souvent trop sûres d'elles. Une température de 0,81 (méthode de Guo et al. 2017), apprise sur la validation de terrain, les rend honnêtes.</div></div>
+    <div class="etape"><span class="n">3</span><div><b>Seuil « je ne suis pas sûr » à 0,6</b> : en dessous, aucune maladie n'est nommée. Au-dessus, la réponse dit « première indication » et explique le problème en 4 temps (ce que c'est, pourquoi, que faire, comment éviter), à partir des fiches.</div></div>
+    <p class="petit doux"><b>Pourquoi MobileNetV3 ?</b> ConvNeXt-Tiny gagne environ 2 points, mais il est 6,6 fois plus lourd et 8 fois plus lent ; sur un serveur gratuit de 512 Mo, une panne de mémoire coûterait plus cher que 2 points (comparaison en § 3).</p>
+  </section>
+  <div class="pied"><span>TerraMind · PAS Challenge 2026 · Document technique</span><span>5 / 9</span></div>
+</div>
+
+<!-- ===================== PAGE 6 ===================== -->
+<div class="page">
+  <section>
+    <h3>Les questions libres <span class="pastille">/v1/chat</span></h3>
+    <div class="etape"><span class="n">1</span><div><b>Recherche</b> : la question est comparée aux 23 fiches avec BM25 (méthode classique de recherche de texte, k1 = 1,4, b = 0,75). Sous un score de 3,5, réponse directe : « je ne sais pas ».</div></div>
+    <div class="etape"><span class="n">2</span><div><b>Rédaction</b> : Gemini reçoit au plus 3 passages et rédige une réponse courte <b>uniquement</b> à partir d'eux, sans produit ni dose. S'il juge que les passages ne répondent pas, il doit dire « je ne sais pas ». Sans Gemini, le moteur renvoie le passage le plus pertinent tel quel.</div></div>
+    <div class="etape"><span class="n">3</span><div><b>Sources</b> : chaque réponse cite la fiche et la page du document d'origine.</div></div>
+    <p class="petit doux"><b>Pourquoi cette méthode, appelée RAG (<i>Retrieval-Augmented Generation</i>, génération augmentée par la recherche) ?</b> Un modèle de langage seul invente volontiers. Ici, il ne fait que reformuler des fiches vérifiées : la connaissance vient des documents, pas du modèle.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>Le wolof à l'oral, avec Octopus</h2>
+    <p>Beaucoup d'agriculteurs lisent peu. En mode wolof, TerraMind <b>parle</b> et <b>écoute</b>. Les deux sens passent par <b>Octopus</b>, la plateforme fournie par le concours.</p>
+    <div class="grille2">
+      <div class="carte"><h3>TerraMind parle (synthèse vocale)</h3><ul class="petit">
+        <li>Les 76 phrases fixes du bot (accueil, plan, alertes, fiches…) sont traduites par 3 systèmes, <b>relues par un locuteur</b>, puis dites par la voix wolof d'Octopus et enregistrées à l'avance : réponse immédiate, coût nul en direct.</li>
+        <li>Les réponses libres sont traduites par Gemini avec un lexique imposé, puis lues par Octopus ; le texte français suit toujours, car ces traductions ne sont pas relues.</li>
+        <li>Plafond quotidien de réponses vocales pour maîtriser le coût (environ 0,02 $ par réponse).</li></ul></div>
+      <div class="carte"><h3>TerraMind écoute (reconnaissance de la parole)</h3><ul class="petit">
+        <li>L'agriculteur envoie une note vocale en wolof (moins d'une minute).</li>
+        <li>Octopus la transcrit en wolof ; Gemini traduit en français ; la question suit le chemin des fiches.</li>
+        <li>Le bot répond « J'ai compris ta question ainsi : … » pour que l'agriculteur puisse vérifier.</li>
+        <li>Octopus est parfois lent : 2 essais de 45 s, puis un message d'excuse (panne réelle du 18 nov, corrigée).</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h3>Corriger la prononciation… avec l'oreille d'Octopus</h3>
+    <p>La voix de synthèse prononçait mal certains mots (« xaaral » sonnait comme « Charles »). Plutôt que de deviner, nous avons utilisé la reconnaissance d'Octopus comme juge :</p>
+    <div class="etape"><span class="n">1</span><div>Un locuteur de l'équipe enregistre le mot ; Octopus le transcrit : c'est la référence.</div></div>
+    <div class="etape"><span class="n">2</span><div>La voix d'Octopus dit plusieurs graphies du mot (« Jërë-jëf », « tôl », « Khaaral »…), et la reconnaissance les retranscrit.</div></div>
+    <div class="etape"><span class="n">3</span><div>On garde la graphie la plus proche de la référence (score de 0 à 1), puis le locuteur valide à l'oreille. L'écran garde l'orthographe officielle ; seule la voix lit la graphie corrigée (<code>content/voix/prononciation_voix.csv</code>).</div></div>
+    <table class="resultats" style="margin-top:5px"><tr><th>Mot à l'écran</th><th>Lu par la voix</th><th>Score</th></tr>
+      <tr><td>Jërëjëf (merci)</td><td>Jërë-jëf</td><td>1,00</td></tr>
+      <tr><td>saafara (remède)</td><td>saaffara</td><td>0,90</td></tr>
+      <tr><td>bañ a joxe (refuser de donner)</td><td>baña djokhé</td><td>0,89</td></tr>
+      <tr><td>xaaral (attends)</td><td>Khaaral</td><td>entendu juste 4 fois sur 4</td></tr></table>
+  </section>
+  <div class="pied"><span>TerraMind · PAS Challenge 2026 · Document technique</span><span>6 / 9</span></div>
+</div>
+
+<!-- ===================== PAGE 7 ===================== -->
+<div class="page">
+  <section>
+    <h2><span class="n">03</span>Résultats : le diagnostic photo</h2>
+    <p>Toutes les mesures sont faites sur des photos <b>jamais vues</b> à l'entraînement. Détail complet : <code>ml/eval/</code>.</p>
+    <table class="resultats">
+      <tr><th>Jeu de test</th><th>Photos</th><th>v0</th><th>v1 (en ligne)</th><th>v2 (+ CCMT)</th><th>ConvNeXt-Tiny</th></tr>
+      <tr><td>TOM2024 (terrain, Burkina Faso)</td><td>1 058</td><td>—</td><td><b>91,7 %</b></td><td>90,7 %</td><td>91,8 %</td></tr>
+      <tr><td>PlantDoc (photos du web, difficiles)</td><td>102</td><td>54,9 %</td><td><b>56,9 %</b></td><td>48,0 %</td><td>58,8 %</td></tr>
+      <tr><td>Validation de terrain</td><td>1 291</td><td>—</td><td>84,2 %</td><td>89,0 %*</td><td>86,0 %</td></tr>
+      <tr><td>Taille · temps par photo</td><td></td><td></td><td><b>17 Mo · 15 ms</b></td><td>17 Mo</td><td>111 Mo · 126 ms</td></tr>
+    </table>
+    <p class="source" style="margin-top:3px">* gonflé par les photos CCMT, faciles pour le modèle (biais de source). v0 : PlantVillage + PlantDoc, 15 classes. Temps mesuré sur un cœur de processeur.</p>
+  </section>
+
+  <section>
+    <h3>Le seuil « je ne suis pas sûr » : couvrir moins, mais avoir plus souvent raison</h3>
+    <table class="resultats">
+      <tr><th>Seuil</th><th>Validation terrain</th><th>Test TOM2024</th><th>Test PlantDoc</th></tr>
+      <tr><td>0,4</td><td>97 % répondues · 86 % justes</td><td>99 % · 92 %</td><td>84 % · 62 %</td></tr>
+      <tr><td><b>0,6 (retenu)</b></td><td><b>90 % · 90 %</b></td><td><b>93 % · 94 %</b></td><td><b>60 % · 72 %</b></td></tr>
+      <tr><td>0,8</td><td>80 % · 93 %</td><td>86 % · 96 %</td><td>33 % · 65 %</td></tr>
+    </table>
+    <p class="petit doux" style="margin-top:3px">Lecture : au seuil 0,6, TerraMind nomme une maladie pour 93 % des photos de terrain, et il a raison 94 fois sur 100 quand il le fait. Pour les autres, il dit qu'il n'est pas sûr. <b>Limite honnête</b> : ce seuil a été choisi après avoir vu les tests ; ces chiffres sont donc un peu optimistes.</p>
+  </section>
+
+  <section>
+    <h3>Taux de bonnes réponses par problème (test TOM2024)</h3>
+    <div class="grille2" style="gap:4px 18px">
+      <div>
+        <div class="barre"><span>Chenilles de l'oignon</span><div class="fond"><div class="plein" style="width:100%"></div></div><span class="v">100 %</span></div>
+        <div class="barre"><span>Coup de soleil (tomate)</span><div class="fond"><div class="plein" style="width:100%"></div></div><span class="v">100 %</span></div>
+        <div class="barre"><span>Oignon sain</span><div class="fond"><div class="plein" style="width:99%"></div></div><span class="v">99 %</span></div>
+        <div class="barre"><span>Fruit de tomate sain</span><div class="fond"><div class="plein" style="width:98.9%"></div></div><span class="v">99 %</span></div>
+        <div class="barre"><span>Virose de l'oignon</span><div class="fond"><div class="plein" style="width:96.4%"></div></div><span class="v">96 %</span></div>
+        <div class="barre"><span>Fusariose de l'oignon</span><div class="fond"><div class="plein" style="width:95.2%"></div></div><span class="v">95 %</span></div>
+        <div class="barre"><span>Nécrose apicale (tomate)</span><div class="fond"><div class="plein" style="width:95.2%"></div></div><span class="v">95 %</span></div>
+        <div class="barre"><span>Tomate saine</span><div class="fond"><div class="plein" style="width:94.7%"></div></div><span class="v">95 %</span></div>
+      </div>
+      <div>
+        <div class="barre"><span>Flétrissement bactérien</span><div class="fond"><div class="plein" style="width:90.6%"></div></div><span class="v">91 %</span></div>
+        <div class="barre"><span>Virose de la tomate</span><div class="fond"><div class="plein" style="width:90.2%"></div></div><span class="v">90 %</span></div>
+        <div class="barre"><span>Noctuelle de la tomate</span><div class="fond"><div class="plein" style="width:87.5%"></div></div><span class="v">88 %</span></div>
+        <div class="barre"><span>Alternariose de l'oignon</span><div class="fond"><div class="plein" style="width:83.8%"></div></div><span class="v">84 %</span></div>
+        <div class="barre"><span>Alternariose de la tomate</span><div class="fond"><div class="plein moyen" style="width:79.2%"></div></div><span class="v">79 %</span></div>
+        <div class="barre"><span>Acariens de la tomate</span><div class="fond"><div class="plein moyen" style="width:70.9%"></div></div><span class="v">71 %</span></div>
+        <div class="barre"><span>Mildiou de la tomate (fruits)</span><div class="fond"><div class="plein faible" style="width:50%"></div></div><span class="v">50 %</span></div>
+      </div>
+    </div>
+    <p class="petit doux" style="margin-top:5px">Point faible connu : le mildiou sur <b>fruit</b> (72 images seulement dans TOM2024). Le modèle le reconnaît bien sur feuille (PlantVillage, PlantDoc), mais une fois sur deux sur fruit.</p>
+  </section>
+  <div class="pied"><span>TerraMind · PAS Challenge 2026 · Document technique</span><span>7 / 9</span></div>
+</div>
+
+<!-- ===================== PAGE 8 ===================== -->
+<div class="page">
+  <section>
+    <h2><span class="n">03</span>Résultats : alertes, réponses, wolof, service</h2>
+    <h3>Les alertes rejouées sur 6 ans de météo (2020-2025, 4 points des Niayes)</h3>
+    <table class="resultats">
+      <tr><th>Règle</th><th>Ce que donne le calcul</th><th>Comparé aux saisons connues dans les Niayes</th></tr>
+      <tr><td>Mildiou</td><td>Saison fraîche : 0,3 à 4 jours d'alerte par mois. Hivernage, intérieur : 15 à 26 jours</td><td>Partiel : sonne surtout quand on cultive peu de tomates → <b>pas d'alerte sans culture déclarée</b></td></tr>
+      <tr><td>Alternariose</td><td>Maximum en hivernage ; pic de mars à mai à Rufisque</td><td>Cohérent avec le CNRADA (« saison chaude et humide »)</td></tr>
+      <tr><td>Mineuse</td><td>Une génération tous les 21 à 34 jours</td><td>Tomate repiquée en décembre : 2 à 6 générations de février à mai, période des pics rapportés (thèse de S. Sylla)</td></tr>
+      <tr><td>Teigne du chou</td><td>Une génération tous les 13 à 21 jours</td><td>Chou repiqué mi-novembre : environ 5 générations mi-février, période du pic rapporté (STDF)</td></tr>
+    </table>
+    <p class="petit doux" style="margin-top:3px">Ce n'est pas une validation au champ : aucune observation datée par parcelle n'existe en accès ouvert. TerraMind dit donc « conditions favorables », jamais « vous avez le mildiou ».</p>
+  </section>
+
+  <section>
+    <div class="grille2">
+      <div class="carte"><h3>Questions libres</h3><p class="petit">Sur 20 questions test, le score de 3,5 sépare les 10 questions agricoles (4,0 à 11,6) des 10 hors sujet (0 à 3,3 : prix du riz, football, Wave…). Seconde barrière : la consigne donnée à Gemini. <b>Limite</b> : « quel temps fait-il à Dakar » obtient 3,51 et passe la première barrière ; seule la consigne l'arrête. À refaire avec de vraies questions d'agriculteurs.</p></div>
+      <div class="carte"><h3>Wolof</h3><p class="petit"><b>76 phrases sur 76</b> relues et dites en wolof, dans le bot et l'application. Phrase test validée par notre locuteur : « Naka laa mënë moytu mildiyu ci sama tamaate ? » (« Comment puis-je éviter le mildiou sur ma tomate ? »), comprise par la chaîne Octopus → Gemini → fiches. <b>Limite</b> : les traductions automatiques du wolof vers le français restent trop fragiles pour valider seules.</p></div>
+      <div class="carte"><h3>Fiabilité du service</h3><p class="petit">88 tests automatiques réussis (moteur, bot, mémoire, prononciation, sécurité : aucune dose). Chaque panne attrapée : sans Gemini, réponse extractive ; sans mémoire, état en mémoire vive ; Octopus lent, second essai puis excuse en wolof.</p></div>
+      <div class="carte"><h3>Léger, pour les réseaux mobiles</h3><p class="petit">Application web : <b>540 Ko</b> au premier chargement (au lieu de 5,8 Mo avant optimisation), affichée en 4 s sur une connexion 3G simulée. Modèle de diagnostic : <b>17 Mo</b>, 15 ms par photo. Notes vocales préparées à l'avance : envoi immédiat.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h3>Vraies captures de l'application branchée sur le moteur en ligne</h3>
+    <div class="ecrans3">
+      <div class="ecran"><img src="../assets/captures/app/plan.webp" alt="">Que planter, selon le sol</div>
+      <div class="ecran"><img src="../assets/captures/app/alertes.webp" alt="">Risques de la semaine</div>
+      <div class="ecran"><img src="../assets/captures/app/resultat.webp" alt="">Diagnostic d'une photo</div>
+      <div class="ecran"><img src="../assets/captures/app/plan-wolof.webp" alt="">Le plan, à écouter en wolof</div>
+    </div>
+    <p class="source" style="margin-top:4px">Captures du 15 et 17 nov 2026, position test (Rufisque). Photo du diagnostic : jeu de test TOM2024 (CC BY 4.0), jamais vue à l'entraînement.</p>
+  </section>
+  <div class="pied"><span>TerraMind · PAS Challenge 2026 · Document technique</span><span>8 / 9</span></div>
+</div>
+
+<!-- ===================== PAGE 9 ===================== -->
+<div class="page">
+  <section>
+    <h2><span class="n">03</span>Limites, en toute franchise</h2>
+    <table class="resultats">
+      <tr><th>Limite</th><th>Pourquoi c'est ainsi</th><th>Ce qui la corrigerait</th></tr>
+      <tr><td>Aucune photo des Niayes</td><td>Le diagnostic est testé sur des photos du Burkina Faso, proches mais pas identiques</td><td>Collecter des photos avec consentement auprès de maraîchers des Niayes, et tester dessus</td></tr>
+      <tr><td>Mildiou sur fruit</td><td>72 images de fruits atteints dans TOM2024</td><td>Plus de photos de fruits ; classe séparée feuille / fruit</td></tr>
+      <tr><td>Alertes non validées au champ</td><td>Pas d'observations datées par parcelle en accès ouvert</td><td>Un suivi de parcelles avec la DPV ou l'ISRA pendant une saison</td></tr>
+      <tr><td>Salinité</td><td>Aucune carte ouverte ne la donne à l'échelle du champ</td><td>On la demande à l'agriculteur ; un test d'eau simple à terme</td></tr>
+      <tr><td>Relecture agronomique</td><td>Les fiches sont vérifiées contre leurs sources, pas encore par un agronome</td><td>Relecture par un agent de l'ANCAR ou de l'ISRA</td></tr>
+      <tr><td>Traductions libres en wolof</td><td>Les réponses libres sont traduites à la volée, sans relecture</td><td>Le texte français est toujours joint ; enrichir les phrases relues</td></tr>
+      <tr><td>Hébergement gratuit</td><td>Render s'endort : premier appel lent (30 à 50 s)</td><td>Un serveur payant de base suffit (le modèle tient en 17 Mo)</td></tr>
+      <tr><td>Pas de WhatsApp</td><td>Compte Meta bloqué en attente de vérification d'entreprise</td><td>Le code est prêt (<code>archives/whatsapp/</code>) ; à réactiver après vérification</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>Prochaines étapes</h2>
+    <div class="grille3">
+      <div class="carte"><h3>Tester avec des maraîchers</h3><p class="petit">Une saison pilote dans les Niayes : photos réelles (avec consentement), vraies questions, mesure des alertes au champ.</p></div>
+      <div class="carte"><h3>Aller sur WhatsApp</h3><p class="petit">Là où sont les agriculteurs. Le moteur ne change pas : seule la façade s'ajoute.</p></div>
+      <div class="carte"><h3>Plus de cultures et de voix</h3><p class="petit">Chou et piment au diagnostic dès que des images ouvertes existent ; plus de phrases wolof relues ; pulaar et sérère ensuite.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">◆</span>Annexe : où tout vérifier dans le code</h2>
+    <table class="liens">
+      <tr><td>Provenance des données</td><td><code>data/README.md</code> · <code>data/extraits/SOURCES.csv</code></td></tr>
+      <tr><td>Entraînement et résultats du modèle</td><td><code>ml/training/</code> · <code>ml/eval/diagnostic_v1.md</code> · <code>diagnostic_v2.md</code></td></tr>
+      <tr><td>Chaque seuil et sa justification</td><td><code>docs/seuils-et-parametres.md</code></td></tr>
+      <tr><td>Règles météo et leur test 2020-2025</td><td><code>docs/sources/seuils-meteo-maladies-ravageurs.md</code></td></tr>
+      <tr><td>Les 23 fiches et leurs 27 sources</td><td><code>content/fiches/</code> · <code>content/fiches/_SOURCES.md</code></td></tr>
+      <tr><td>Voix et lexique wolof</td><td><code>content/voix/</code> · <code>content/voix/enregistrements/</code></td></tr>
+      <tr><td>Le moteur et ses tests</td><td><code>engine/app/</code> · <code>engine/tests/</code> · <code>docs/api.md</code></td></tr>
+      <tr><td>Les décisions D1 à D15</td><td><code>docs/decisions.md</code> · difficultés rencontrées : <code>docs/difficultes.md</code></td></tr>
+    </table>
+    <p class="petit doux" style="margin-top:7px">Code sous licence MIT. Les données et images gardent la licence de leur source. Dépôt : <a href="https://github.com/Oscar-AS/Terramind">github.com/Oscar-AS/Terramind</a></p>
+  </section>
+  <div class="pied"><span>TerraMind · PAS Challenge 2026 · Document technique</span><span>9 / 9</span></div>
+</div>
+
+</body>
+</html>
