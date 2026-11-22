@@ -71,7 +71,9 @@
   .boite b { display: block; font-size: 9.6pt; }
   .boite.moteur { background: var(--foret); color: var(--sable); border: 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
   .boite.moteur b { font-size: 11pt; }
-  .boite.moteur code { font-size: 8.2pt; color: #D5E2D9; display: block; margin-top: 2px; }
+  .boite.moteur .explique { display: block; font-size: 8.6pt; color: #D5E2D9; margin: 4px 0 2px; }
+  .boite.moteur .demande { display: block; font-size: 8.6pt; line-height: 1.3; margin-top: 5px; padding-left: 9px; border-left: 2px solid rgba(213,226,217,.45); }
+  .boite.moteur code { font-size: 7pt; color: #A9C2B2; display: block; margin-top: 1px; }
   .boite.octopus { background: var(--soleilc); border-color: #F1D9A0; }
   .fleche { display: grid; place-items: center; color: var(--feuille); font-size: 15pt; }
 
@@ -246,7 +248,12 @@
       <div class="colonne">
         <div class="titre">Le moteur (Render)</div>
         <div class="boite moteur"><b>FastAPI · Python</b>
-          <code>/v1/plan · que planter</code><code>/v1/alert · risques de la semaine</code><code>/v1/diagnose · photo</code><code>/v1/chat · question libre</code><code>/telegram · le bot</code></div>
+          <span class="explique">Il reçoit 5 sortes de demandes et renvoie la réponse&nbsp;:</span>
+          <span class="demande">«&nbsp;Que planter dans mon champ&nbsp;?&nbsp;» <code>/v1/plan</code></span>
+          <span class="demande">«&nbsp;Quels risques pour mes plantes cette semaine&nbsp;?&nbsp;» <code>/v1/alert</code></span>
+          <span class="demande">Une photo&nbsp;: «&nbsp;Ma plante est&#8209;elle malade&nbsp;?&nbsp;» <code>/v1/diagnose</code></span>
+          <span class="demande">Une question libre, écrite ou vocale <code>/v1/chat</code></span>
+          <span class="demande">Les messages du bot Telegram <code>/telegram</code></span></div>
       </div>
       <div class="fleche">→</div>
       <div class="colonne">
