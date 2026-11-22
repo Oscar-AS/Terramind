@@ -265,7 +265,7 @@
         <div class="boite"><b>iSDAsoil</b>Sol au point du champ, pixels de 30 m</div>
         <div class="boite"><b>NASA POWER</b>Météo heure par heure</div>
         <div class="boite"><b>MobileNetV3 (ONNX)</b>Le modèle de diagnostic, 17 Mo</div>
-        <div class="boite"><b>23 fiches + Gemini</b>Réponses rédigées à partir des fiches</div>
+        <div class="boite"><b>23 fiches + Gemini (RAG)</b>Réponses rédigées uniquement à partir des fiches</div>
         <div class="boite octopus"><b>Octopus (outil du concours)</b>Voix wolof et reconnaissance de la parole wolof</div>
       </div>
     </div>
@@ -398,7 +398,7 @@
     <div class="etape"><span class="n">1</span><div><b>Recherche</b> : la question est comparée aux 23 fiches avec BM25 (méthode classique de recherche de texte, k1 = 1,4, b = 0,75). Sous un score de 3,5, réponse directe : « je ne sais pas ».</div></div>
     <div class="etape"><span class="n">2</span><div><b>Rédaction</b> : Gemini reçoit au plus 3 passages et rédige une réponse courte <b>uniquement</b> à partir d'eux, sans produit ni dose. S'il juge que les passages ne répondent pas, il doit dire « je ne sais pas ». Sans Gemini, le moteur renvoie le passage le plus pertinent tel quel.</div></div>
     <div class="etape"><span class="n">3</span><div><b>Sources</b> : chaque réponse cite la fiche et la page du document d'origine.</div></div>
-    <p class="petit doux"><b>Pourquoi cette méthode, appelée RAG ?</b> Un modèle de langage seul invente volontiers. Ici, il ne fait que reformuler des fiches vérifiées : la connaissance vient des documents, pas du modèle.</p>
+    <p class="petit doux"><b>Pourquoi cette méthode, appelée RAG (<i>Retrieval-Augmented Generation</i>, génération augmentée par la recherche) ?</b> Un modèle de langage seul invente volontiers. Ici, il ne fait que reformuler des fiches vérifiées : la connaissance vient des documents, pas du modèle.</p>
   </section>
 
   <section>
