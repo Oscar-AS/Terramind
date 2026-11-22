@@ -101,6 +101,7 @@
   .climat h3 { font-size: 12.5pt; color: var(--foret); margin-bottom: 4px; }
   .climat .grille2 { gap: 12px; grid-template-columns: 1.1fr 1fr; }
   .climat ul.petit, .climat p.petit { font-size: 8.25pt; }
+  .bilan ul.petit { font-size: 8.3pt; }
   .climat h4 { font: 600 9.6pt 'Outfit', sans-serif; margin: 2px 0 3px; color: var(--feuille); text-transform: uppercase; letter-spacing: .04em; }
   /* Résultats */
   table.resultats { width: 100%; border-collapse: collapse; font-size: 8.9pt; }
@@ -138,6 +139,7 @@
   .fleche { color: var(--soleil); }
   .serpent { margin: 0 0 6px; }
   table.mesures td:first-child { width: 27%; white-space: normal; }
+  table.mesures td { padding-top: 4px; padding-bottom: 4px; }
   .cta { display: inline-block; margin-top: 6px; padding: 5px 12px; border-radius: 999px; background: var(--soleil); color: var(--foret) !important; font-weight: 700; font-size: 9.6pt; text-decoration: underline; text-underline-offset: 2px; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
   .parcours table.etapes td.attendu { width: 39%; }
   table.etapes tr.entete td { font: 600 7.6pt 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: .06em; color: var(--feuille); padding-top: 5px; padding-bottom: 2px; background: white; }
@@ -391,20 +393,20 @@
     <table class="resultats mesures" style="margin-bottom:5px">
       <tr><th>Brique</th><th>Résultat mesuré</th></tr>
       <tr><td><i class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7l2-3h4l2 3"/><circle cx="12" cy="13.5" r="3.5"/></svg></i>Le diagnostic photo</td><td><b>91,7 % de bonnes réponses</b> sur 1 058 photos de champs africains (TOM2024) <b>jamais vues</b> pendant l'apprentissage. 21 problèmes reconnus sur 4 cultures.</td></tr>
-      <tr><td><i class="ic"><svg viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-4 3-7 8-7 0 4-3 7-8 7z"/><path d="M12 14c0-3-2.5-5.5-7-5.5 0 3 2.5 5.5 7 5.5z"/></svg></i>L'option «&nbsp;Quoi planter&nbsp;»</td><td>8 cultures (tomate, pomme de terre, oignon, chou, poivron, carotte, piment, jaxatu), calendrier du guide ISRA / FAO, sol lu au point du champ.</td></tr>
-      <tr><td><i class="ic"><svg viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></i>Les alertes météo</td><td>7 risques suivis (mildiou, alternariose, mineuse, noctuelle, teigne…), règles publiées testées sur la météo 2020-2025 de la zone.</td></tr>
-      <tr><td><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg></i>Est-ce que les réponses sont sourcées ?</td><td>23 fiches. Trois relectures indépendantes : environ 320 affirmations vérifiées contre leurs sources, 51 corrigées.</td></tr>
+      <tr><td><i class="ic"><svg viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-4 3-7 8-7 0 4-3 7-8 7z"/><path d="M12 14c0-3-2.5-5.5-7-5.5 0 3 2.5 5.5 7 5.5z"/></svg></i>L'option «&nbsp;Quoi planter&nbsp;»</td><td>8 cultures (tomate, pomme de terre, oignon, chou, poivron, carotte, piment, jaxatu). Les périodes de semis suivent le calendrier du guide de l'ISRA et de la FAO, et le conseil tient compte du sol à l'endroit précis du champ.</td></tr>
+      <tr><td><i class="ic"><svg viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></i>Les alertes météo</td><td>7 risques suivis (mildiou, alternariose, mineuse, noctuelle, teigne…). Les alertes utilisent des règles tirées de la recherche agricole (par ex. : mildiou si 2 jours chauds et très humides de suite), vérifiées sur 6 ans de météo de la zone (2020-2025).</td></tr>
+      <tr><td><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg></i>Est-ce que les réponses sont sourcées ?</td><td>Le bot répond à partir de 23 fiches écrites d'après des documents officiels (DPV, ISRA, FAO…). Chaque information a été comparée à sa source par une vérification automatique, faite en trois passages : environ 320 informations contrôlées, 51 corrigées.</td></tr>
       <tr><td><i class="ic"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></i>L'exactitude du wolof</td><td>76 phrases relues par un locuteur, 76 notes vocales ; questions vocales comprises sur le bot (Octopus).</td></tr>
       <tr><td><i class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></i>La fiabilité de TerraMind en production</td><td>88 tests automatiques. Application en ligne : 540 Ko, utilisable en 4 s sur une connexion 3G (mesuré).</td></tr>
     </table>
-    <div class="grille2">
+    <div class="grille2 bilan">
       <div class="carte accent-terre">
         <h3>Limites, dites franchement</h3>
         <ul class="petit">
           <li>Sur des photos prises sur internet, dans d'autres conditions (PlantDoc), le diagnostic tombe à <b>56,9 %</b>. C'est pourquoi il dit « je ne suis pas sûr » sous 60 %.</li>
           <li>Pas encore de test avec des maraîchers dans leur champ : c'est la prochaine étape.</li>
-          <li>Les règles météo viennent d'études faites hors du Sénégal : TerraMind parle de « temps favorable », jamais de maladie certaine.</li>
-          <li>Telegram est moins utilisé que WhatsApp dans les Niayes.</li>
+          <li>Faute d'études au Sénégal (à notre connaissance), les règles météo viennent d'études étrangères, vérifiées sur 6 ans de météo des Niayes : TerraMind parle de «&nbsp;temps favorable&nbsp;», jamais de maladie certaine.</li>
+          <li>Telegram, moins utilisé que WhatsApp dans les Niayes, sert seulement au concours : si nous sommes retenus, le bot passera sur WhatsApp.</li>
         </ul>
       </div>
       <div class="carte accent-vert">
