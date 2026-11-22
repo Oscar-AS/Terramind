@@ -175,6 +175,9 @@
   .pied span:first-child::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; vertical-align: -1px; background: var(--feuille); border-radius: 9px 0 9px 0; }
   .encadre { background: var(--soleilc); }
   .encadre.vert { background: #E9F3E7; border-left: 3px solid var(--feuille); }
+  .encadre.depot { margin: 10px 0 0; padding: 6px 11px; display: flex; align-items: center; gap: 9px; border-left: 3px solid var(--soleil); }
+  .encadre.depot .ic-code { width: 18px; height: 18px; flex: none; display: inline-grid; place-items: center; }
+  .encadre.depot .ic-code svg { width: 17px; height: 17px; fill: none; stroke: #B7791F; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
   .etape .n { background: var(--pousse); color: var(--foret); border-radius: 99px; }
   .barre .fond { background: #EFE8DA; }
   .sommaire .carte { background: white; box-shadow: 0 1px 0 rgba(31,77,58,.04), 0 6px 16px rgba(31,77,58,.07); border-top: 3px solid var(--soleil); }
@@ -198,6 +201,8 @@
     </div>
   </div>
 
+  <div class="encadre depot"><i class="ic-code"><svg viewBox="0 0 24 24"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/></svg></i><span>Tout le code de TerraMind est public. Pour le consulter, cliquez sur ce lien&nbsp;:<a href="https://github.com/Oscar-AS/Terramind" style="display:block;margin-top:2px;font-size:9.6pt"><b>github.com/Oscar-AS/Terramind</b></a></span></div>
+
   <section>
     <h2><span class="n">◆</span>TerraMind en bref</h2>
     <p>TerraMind est un conseiller agricole pour les petits maraîchers des Niayes (Sénégal). Il répond à trois questions : <b>que planter</b> sur mon sol ce mois-ci, <b>quel risque</b> la météo annonce cette semaine, et <b>quelle est cette maladie</b> sur ma photo. Il répond aussi aux questions libres. L'agriculteur l'utilise sur son téléphone, par le <b>bot Telegram</b> ou l'<b>application Android</b>, en français (texte) ou en wolof (notes vocales).</p>
@@ -212,7 +217,6 @@
   <section>
     <h2><span class="n">◆</span>Vérifier par vous-même</h2>
     <table class="liens">
-      <tr><td>Le code, public</td><td><a href="https://github.com/Oscar-AS/Terramind">github.com/Oscar-AS/Terramind</a> · tout ce document y renvoie avec le chemin du fichier</td></tr>
       <tr><td>L'application en ligne</td><td><a href="https://terramind-afrique.vercel.app">terramind-afrique.vercel.app</a> · <b>aucun compte ni identifiant</b> : un bouton « position test » remplace le GPS</td></tr>
       <tr><td>Le bot Telegram</td><td><a href="https://t.me/TerraMindAfriqueBot">t.me/TerraMindAfriqueBot</a> · il faut seulement un compte Telegram personnel</td></tr>
       <tr><td>Photos d'essai</td><td><a href="https://terramind-sigma.vercel.app/essai">terramind-sigma.vercel.app/essai</a> · 3 photos du jeu de test TOM2024 (CC BY 4.0)</td></tr>
