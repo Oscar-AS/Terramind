@@ -380,7 +380,11 @@ export default function Conversation() {
       <RondVert taille={accueil ? 44 : 40}><PaperPlaneTilt size={21} color={couleurs.blanc} weight="fill" /></RondVert>
     </Pressable>
   ) : (
+    // Navigateur sur téléphone : un appui long déclenche le menu du navigateur (Android) ou la sélection de texte
+    // (iPhone), et react-native-web y voit alors un doigt relevé : l'enregistrement s'arrêtait sous une seconde et
+    // rien ne partait. Un onLongPress (même vide) lui fait bloquer ce menu au lieu de couper l'appui.
     <Pressable accessibilityRole="button" accessibilityLabel="Garder le doigt appuyé pour parler en wolof"
+      style={Platform.OS === 'web' ? styles.microWeb : undefined} onLongPress={() => {}} delayLongPress={300}
       onPressIn={() => void commencerVocal()} onPressOut={() => { relache.current = true; void finirVocal(); }}>
       <RondVert actif={ecoute} taille={accueil ? 44 : 40}><Microphone size={22} color={couleurs.blanc} weight="fill" /></RondVert>
     </Pressable>
@@ -674,6 +678,8 @@ function Bulle({ m, suivant, onAction }: { m: Message; suivant?: Message; onActi
 }
 
 const styles = StyleSheet.create({
+  // Navigateur : pas de sélection de texte ni de menu « Enregistrer l'image » pendant l'appui sur le micro.
+  microWeb: { userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none', touchAction: 'none' } as object,
   ecran: { flex: 1, backgroundColor: couleurs.sable },
   paysage: { position: 'absolute', left: 0, right: 0, bottom: 0 },
   entete: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 18, paddingBottom: 18 },
