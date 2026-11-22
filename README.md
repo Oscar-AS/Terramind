@@ -45,7 +45,7 @@ Chaque conseil **cite le document** d'où il vient. Quand TerraMind n'est pas s�
 
 </td>
 <td width="38%" align="center">
-  <img src="docs/assets/captures/app/accueil.webp" width="230" alt="La conversation dans l'application TerraMind">
+  <img src="docs/assets/captures/app/ecran-accueil.webp" width="230" alt="L'écran d'accueil de TerraMind : choix de la langue, avec un message vocal en wolof">
 </td>
 </tr>
 </table>
