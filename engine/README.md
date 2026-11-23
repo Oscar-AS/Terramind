@@ -45,7 +45,7 @@ Chaque réponse suit la même **enveloppe** ([docs/api.md](../docs/api.md)) : un
 
 Le bot WhatsApp est archivé dans [archives/whatsapp/](../archives/whatsapp/) ([D12](../docs/decisions.md)).
 
-> **Analogie Kuroko no Basket** : sous le seuil de confiance, le moteur fait comme Kuroko. Plutôt que de forcer un tir raté, il fait la passe : « je ne suis pas sûr, montre ta plante à un agent agricole ». Concrètement, aucune maladie n'est nommée quand la probabilité calibrée est sous 0,6.
+Sous le seuil de confiance, le moteur ne devine pas : aucune maladie n'est nommée quand la probabilité calibrée est sous 0,6. Il répond « je ne suis pas sûr, montre ta plante à un agent agricole ».
 
 ## 🤝 Les règles que le moteur respecte
 

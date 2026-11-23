@@ -25,7 +25,7 @@ flowchart LR
 
 C'est un **examen à livre ouvert**, avec nos fiches pour seul livre ([décision D8](../docs/decisions.md)). Le seuil de 3,5 vient d'une mesure sur 20 questions : 10 questions agricoles entre 4,0 et 11,6, 10 questions hors sujet entre 0 et 3,3 ([docs/seuils-et-parametres.md](../docs/seuils-et-parametres.md)).
 
-> **Analogie Kuroko no Basket** : Riko prépare chaque match avec les données de l'adversaire, jamais au hasard. Le bot fait pareil : il ne « joue » qu'avec ce que les fiches contiennent. Concrètement, Gemini reçoit uniquement les passages trouvés et doit répondre « je ne sais pas » s'ils ne suffisent pas.
+Le bot ne répond qu'avec ce que les fiches contiennent : Gemini reçoit uniquement les passages trouvés et doit répondre « je ne sais pas » s'ils ne suffisent pas.
 
 ## Ce qu'il contient
 

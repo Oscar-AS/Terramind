@@ -147,7 +147,7 @@ flowchart LR
 L'application et le bot n'ont **aucune logique agricole** : ils appellent le même moteur ([décision D1](docs/decisions.md)). C'est ce qui nous a permis de passer de WhatsApp à Telegram en quelques jours quand Meta a bloqué notre compte ([D12](docs/decisions.md), [récit complet](docs/difficultes.md)).
 
 > [!TIP]
-> **Analogie Kuroko no Basket** : le moteur est Kuroko. Il ne marque pas lui-même, ce sont les façades qui parlent à l'agriculteur ; mais c'est lui qui fait circuler chaque ballon vers le bon coéquipier (sol, météo, photo, fiches). Concrètement : une seule base de code agricole sert toutes les façades.
+> Une seule base de code agricole sert toutes les façades. Le moteur ne parle pas lui-même à l'agriculteur : ce sont les façades qui le font ; lui oriente chaque demande vers le bon module (sol, météo, photo, fiches).
 
 ## 📊 Où en est le projet (17 nov 2026)
 
