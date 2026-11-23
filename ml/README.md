@@ -39,7 +39,7 @@ Au **seuil de 0,6** : sur TOM2024, 93 % des photos sont jugées « sûres », do
 
 Le seuil a été choisi après avoir vu les tests, ce qui rend ces derniers chiffres un peu optimistes ([diagnostic_v1.md](eval/diagnostic_v1.md)).
 
-> **Analogie Kuroko no Basket** : un joueur qui ne s'entraîne qu'en salle vide brille à l'entraînement et se perd en match. C'est PlantVillage : 99,8 % sur ses photos de laboratoire en v0, mais 54,9 % au champ. La v1 s'est donc entraînée « en match », avec les photos de terrain de TOM2024, et elle est évaluée sur des photos de terrain.
+Un modèle entraîné seulement sur des photos de laboratoire se trompe au champ : avec PlantVillage, la v0 atteignait 99,8 % sur ces photos de laboratoire, mais 54,9 % sur des photos de terrain. La v1 s'est donc entraînée avec les photos de terrain de TOM2024, et elle est évaluée sur des photos de terrain.
 
 ## Les images d'entraînement (v1)
 
