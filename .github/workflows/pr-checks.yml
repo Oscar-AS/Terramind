@@ -33,7 +33,7 @@ jobs:
           fi
           echo "Titre conforme."
       - name: Description et « Tâche liée » renseignées
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const body = (context.payload.pull_request.body || "").replace(/<!--[\s\S]*?-->/g, "");
@@ -59,11 +59,11 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Étiquettes par chemin
-        uses: actions/labeler@v5
+        uses: actions/labeler@v7
       - name: Étiquette de taille et avertissement au-delà de 400 lignes
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Avertir si docs/api.md change sans approbation d'un CODEOWNER
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const pr = context.payload.pull_request;
